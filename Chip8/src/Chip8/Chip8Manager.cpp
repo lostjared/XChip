@@ -1,21 +1,15 @@
 #include <cstdio>
-#include <cstring>
+#include <algorithm>
 
 #include <Chip8/Chip8Manager.h>
-#include <Chip8/Chip8Cpu.h>
 #include <Chip8/Interfaces/iRenderer.h>
 #include <Chip8/Interfaces/iInput.h>
 #include <Chip8/Utility/Log.h>
 
 
-#define MEMORY_MIN 0x1000
-#define STACK_MIN 16
-#define REGISTERS_MIN 16
-#define GFX_MIN 64 * 32
 
 
-
-Chip8Manager::Chip8Manager() noexcept
+Chip8CpuManager::Chip8CpuManager() noexcept
 	: m_cpu(nullptr),
 	m_rom(nullptr),
 	m_memorysz(0),
@@ -26,7 +20,7 @@ Chip8Manager::Chip8Manager() noexcept
 
 
 
-Chip8Manager::~Chip8Manager()
+Chip8CpuManager::~Chip8CpuManager()
 {
 	if (m_cpu != nullptr)
 		this->Dispose();
@@ -36,7 +30,7 @@ Chip8Manager::~Chip8Manager()
 
 
 
-bool Chip8Manager::Initialize() noexcept
+bool Chip8CpuManager::Initialize() noexcept
 {
 	LOG("Initializing Chip8Manager...");
 	if (m_cpu != nullptr)
@@ -55,7 +49,7 @@ bool Chip8Manager::Initialize() noexcept
 
 
 
-void Chip8Manager::Dispose() noexcept
+void Chip8CpuManager::Dispose() noexcept
 {
 	if (m_cpu != nullptr) 
 	{
@@ -77,7 +71,7 @@ void Chip8Manager::Dispose() noexcept
 
 
 
-bool Chip8Manager::SetMemory(const std::size_t size)
+bool Chip8CpuManager::SetMemory(const std::size_t size)
 {
 	if (size < MEMORY_MIN)
 		LOGerr("WARNING: Memory size: " << size << " is too low!");
@@ -94,6 +88,7 @@ bool Chip8Manager::SetMemory(const std::size_t size)
 		return false;
 	}
 
+	std::fill_n(m_cpu->memory, size, 0);
 	m_memorysz = size;
 	return true;
 }
@@ -101,7 +96,7 @@ bool Chip8Manager::SetMemory(const std::size_t size)
 
 
 
-bool Chip8Manager::SetRegisters(const std::size_t size)
+bool Chip8CpuManager::SetRegisters(const std::size_t size)
 {
 	if (size < REGISTERS_MIN)
 		LOGerr("WARNING: " << size << " registers is too low!");
@@ -117,6 +112,8 @@ bool Chip8Manager::SetRegisters(const std::size_t size)
 		return false;
 	}
 
+	std::fill_n(m_cpu->registers, size, 0);
+
 	return true;
 }
 
@@ -124,7 +121,7 @@ bool Chip8Manager::SetRegisters(const std::size_t size)
 
 
 
-bool Chip8Manager::SetStack(const std::size_t size)
+bool Chip8CpuManager::SetStack(const std::size_t size)
 {
 	if (size < STACK_MIN)
 		LOGerr("WARNING: stack size " << size << " is too low!");
@@ -138,6 +135,8 @@ bool Chip8Manager::SetStack(const std::size_t size)
 		LOGerr("Failed to allocate Chip8 Stack !");
 		return false;
 	}
+	
+	std::fill_n(m_cpu->stack, size, 0);
 
 	return true;
 }
@@ -146,7 +145,7 @@ bool Chip8Manager::SetStack(const std::size_t size)
 
 
 
-bool Chip8Manager::SetGfx(const std::size_t size)
+bool Chip8CpuManager::SetGfx(const std::size_t size)
 {
 	if (size < GFX_MIN) 
 		LOGerr("WARNING: GFX size " << size << " is too low!");
@@ -162,21 +161,23 @@ bool Chip8Manager::SetGfx(const std::size_t size)
 		return false;
 	}
 
+	std::fill_n(m_cpu->gfx, size, 0);
+
 	return true;
 }
 
 
 
-void Chip8Manager::LoadFont(const uint8_t* font, const std::size_t size)
+void Chip8CpuManager::SetFont(const uint8_t* font, const std::size_t size)
 {
 	LOG("Loading Chip8 Font: " << size << " bytes...");
-	std::memcpy(m_cpu->memory, font, sizeof(uint8_t) * size);
+	std::copy_n(font, size, m_cpu->memory);
 }
 
 
 
 
-bool Chip8Manager::LoadRom(const char * fileName)
+bool Chip8CpuManager::LoadRom(const char * fileName)
 {
 	LOG("Loading " << fileName);
 	std::FILE *file = std::fopen(fileName, "rb");
@@ -210,34 +211,18 @@ bool Chip8Manager::LoadRom(const char * fileName)
 }
 
 
-iRenderer* Chip8Manager::GetRenderer()
-{
-	return m_cpu->render;
-}
 
-iInput* Chip8Manager::GetInput()
-{
-	return m_cpu->input;
-}
 
-void Chip8Manager::SetRenderer(iRenderer* rend)
-{
-	m_cpu->render = rend;
-}
 
-void Chip8Manager::SetInput(iInput* input)
-{
-	m_cpu->input = input;
-}
 
-iRenderer* Chip8Manager::SwapRender(iRenderer* rend)
+iRenderer* Chip8CpuManager::SwapRender(iRenderer* rend)
 {
 	auto ret = m_cpu->render;
 	m_cpu->render = rend;
 	return ret;
 }
 
-iInput* Chip8Manager::SwapInput(iInput* input)
+iInput* Chip8CpuManager::SwapInput(iInput* input)
 {
 	auto ret = m_cpu->input;
 	m_cpu->input = input;

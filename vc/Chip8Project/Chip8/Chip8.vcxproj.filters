@@ -12,9 +12,15 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{1a463847-b22c-49e3-8f05-769bae68d5b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Interfaces">
+      <UniqueIdentifier>{b4495b85-52c7-4629-811d-a60f827384e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Chip8\src\Chip8\Chip8Manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Chip8\src\Chip8\Chip8.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -27,6 +33,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Chip8\include\Chip8\Chip8Manager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Chip8\include\Chip8\Interfaces\iInput.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Chip8\include\Chip8\Interfaces\iRenderer.h">
+      <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

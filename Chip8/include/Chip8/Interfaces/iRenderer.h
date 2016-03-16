@@ -21,6 +21,7 @@ public:
 	virtual bool Initialize(const int w, const int h) = 0;
 	virtual void Dispose() noexcept = 0;
 
+	virtual bool IsInitialized() const = 0;
 	virtual bool IsWinClosed() const = 0;
 	virtual WindowMode GetMode() const = 0;
 

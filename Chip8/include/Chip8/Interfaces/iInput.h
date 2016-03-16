@@ -6,7 +6,7 @@
 #define MAX_KEYS 18
 enum class EmulatorKey : uint8_t
 {
-	//Chip8 keypad, which will be emulated in the computer's keypad
+	//Chip8Emu keypad, which will be emulated in the computer's keypad
 	KEY_0,
 	KEY_1, KEY_2, KEY_3,
 	KEY_4, KEY_5, KEY_6,
@@ -36,7 +36,10 @@ public:
 	virtual ~iInput() = default;
 	virtual bool Initialize() = 0;
 	virtual void Dispose() noexcept = 0;
+
+	virtual bool IsInitialized() const = 0;
 	virtual bool IsKeyPressed(const EmulatorKey key) const = 0;
+	
 	
 	// return the current EmulatorKey being Pressed, or NO_KEY_PRESSED..
 	virtual EmulatorKey GetPressedKey() const = 0;

@@ -2,9 +2,12 @@
 #define __CHIP8CPU_H__
 #include <cstdint>
 
+class iRenderer;
+class iInput;
+
 struct Chip8Cpu
 {
-	/* basic Chip8 registers names */
+	/* basic Chip8Emu registers names */
 	enum { V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, VA, VB, VC, VD, VF };
 	
 	uint16_t opcode;
@@ -18,7 +21,7 @@ struct Chip8Cpu
 	uint32_t* gfx      = nullptr;  /* graphics array  */
 	iRenderer* render  = nullptr;
 	iInput* input      = nullptr;
-	bool error         = false;
+	bool exitFlag      = false;
 	
 	uint8_t delayTimer;
 	uint8_t soundTimer;

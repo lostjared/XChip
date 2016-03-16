@@ -6,7 +6,7 @@
 int main(int argc, char **argv)
 {
 	
-	Chip8Manager chpman;
+	Chip8CpuManager chpman;
 
 	/*  debug */
 	std::atexit([]() {std::cin.ignore(); });
