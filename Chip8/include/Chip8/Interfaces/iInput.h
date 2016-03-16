@@ -31,28 +31,15 @@ public:
 	using WaitKeyPressCallback = bool(*)(void*);
 	using ResetCallback = void(*)(void*);
 	using EscapeCallback = void(*)(void*);
-
-
 	virtual ~iInput() = default;
-	virtual bool Initialize() = 0;
+	virtual bool Initialize() noexcept = 0;
 	virtual void Dispose() noexcept = 0;
 
 	virtual bool IsInitialized() const = 0;
 	virtual bool IsKeyPressed(const EmulatorKey key) const = 0;
-	
-	
-	// return the current EmulatorKey being Pressed, or NO_KEY_PRESSED..
-	virtual EmulatorKey GetPressedKey() const = 0;
-	
-	// return true if there is a key press, store the key in m_currentKey
-	virtual bool UpdateKeys() = 0;   
-
-	// loop until there is a key press or until callback returns false
-	virtual EmulatorKey WaitKeyPress() = 0;
-	
-	// set a new value to an emulator key
-	virtual void SetKey(EmulatorKey key, int value) = 0;
-
+	virtual EmulatorKey GetPressedKey() const = 0; /* return the current EmulatorKey being Pressed, or NO_KEY_PRESSED..  */
+	virtual bool UpdateKeys() = 0;                 /* return true if there is a key press, store the key in m_currentKey */
+	virtual EmulatorKey WaitKeyPress() = 0;        /* loop until there is a key press or until callback returns false    */
 	virtual void SetWaitKeyPressCallback(void* arg, WaitKeyPressCallback callback) = 0;
 	virtual void SetResetCallback(void* arg, ResetCallback callback) = 0;
 	virtual void SetEscapeCallback(void* arg, EscapeCallback callback) = 0;

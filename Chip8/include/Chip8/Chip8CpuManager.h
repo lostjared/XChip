@@ -1,5 +1,5 @@
-#ifndef __CHIP8MANAGER_H__
-#define __CHIP8MANAGER_H__
+#ifndef __CHIP8_CPU_MANAGER_H__
+#define __CHIP8_CPU_MANAGER_H__
 #include <cstddef>
 #include <cstdint>
 #include <Chip8/Chip8Cpu.h>
@@ -11,7 +11,7 @@ class Chip8CpuManager
 {
 public:
 	static constexpr std::size_t MEMORY_MIN = 0x1000;
-	static constexpr std::size_t STACK_MIN  = 16;
+	static constexpr std::size_t STACK_MIN = 16;
 	static constexpr std::size_t REGISTERS_MIN = 16;
 	static constexpr std::size_t GFX_MIN = 64 * 32;
 
@@ -29,6 +29,10 @@ public:
 	void SetFont(const uint8_t* font, const std::size_t size);
 	bool LoadRom(const char* fileName);
 
+
+	bool InitRender(const int w, const int h);
+	bool InitInput();
+
 	iRenderer* GetRenderer() { return m_cpu->render; }
 	iInput* GetInput() { return m_cpu->input; }
 
@@ -38,10 +42,10 @@ public:
 	iRenderer* SwapRender(iRenderer* rend);
 	iInput* SwapInput(iInput* input);
 
+
 protected:
 	Chip8Cpu* m_cpu;
-	const char* m_rom;
-	std::size_t m_memorysz;
+	const char* m_romName;
 	std::size_t m_romsz;
 
 };

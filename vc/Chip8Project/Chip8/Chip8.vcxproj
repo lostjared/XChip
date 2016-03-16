@@ -19,15 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Chip8\src\Chip8\Chip8.cpp" />
-    <ClCompile Include="..\..\..\Chip8\src\Chip8\Chip8Manager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\Chip8\include\Chip8\Chip8.h" />
     <ClInclude Include="..\..\..\Chip8\include\Chip8\Chip8Cpu.h" />
-    <ClInclude Include="..\..\..\Chip8\include\Chip8\Chip8Manager.h" />
+    <ClInclude Include="..\..\..\Chip8\include\Chip8\Chip8CpuManager.h" />
+    <ClInclude Include="..\..\..\Chip8\include\Chip8\Chip8Emu.h" />
+    <ClInclude Include="..\..\..\Chip8\include\Chip8\Chip8Instructions.h" />
     <ClInclude Include="..\..\..\Chip8\include\Chip8\Interfaces\iInput.h" />
     <ClInclude Include="..\..\..\Chip8\include\Chip8\Interfaces\iRenderer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Chip8\src\Chip8Instructions.cpp" />
+    <ClCompile Include="..\..\..\Chip8\src\Chip8\Chip8.cpp" />
+    <ClCompile Include="..\..\..\Chip8\src\Chip8\Chip8Manager.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F205D804-BB1E-4E07-97B1-EC030657B3DC}</ProjectGuid>

@@ -1,4 +1,4 @@
-#include <Chip8/Chip8.h>
+#include <Chip8/Chip8Emu.h>
 #include <Chip8/Interfaces/iRenderer.h>
 #include <Chip8/Interfaces/iInput.h>
 #include <Chip8/Utility/Log.h>
@@ -19,6 +19,7 @@ bool Chip8Emu::Initialize() noexcept
 
 	else if (!SetMemory() || !SetRegisters()
 		|| !SetStack() || !SetGfx()) {
+		m_cpu->exitFlag = true;
 		return false;
 	}
 
@@ -44,11 +45,14 @@ bool Chip8Emu::Initialize() noexcept
 
 	SetFont(chip8Font, 80);
 
+	if (! InitRender(CHIP8_DEFAULT_WIDHT, CHIP8_DEFAULT_HEIGHT)
+		|| ! InitInput()) {
+		return false;
+	}
 
-	InitRender(64, 32);
-	InitInput();
+	if(Chip8)
 
-
+	return true;
 }
 
 
@@ -87,6 +91,7 @@ void Chip8Emu::Draw()
 }
 
 
+
 void Chip8Emu::ExecuteNextOpcode()
 {
 	
@@ -102,65 +107,41 @@ void Chip8Emu::CleanFlags()
 }
 
 
-bool Chip8Emu::InitRender(const int w, const int h)
-{
-	if (!m_cpu->render) {
-		LOGerr("Error: NULL iRenderer...");
-		return false;
-	}
-
-	else if (m_cpu->render->IsInitialized()) {
-		m_cpu->render->SetBuffer(m_cpu->gfx);
-		return true;
-	}
-	
-	else if (!m_cpu->render->Initialize(w, h))
-		return false;
-
-	m_cpu->render->SetBuffer(m_cpu->gfx);
-}
-
-
-
-bool Chip8Emu::InitInput()
-{
-	if (!m_cpu->input) {
-		LOGerr("Error: NULL iRenderer...");
-		return false;
-	}
-
-	else if (m_cpu->input->IsInitialized())
-		return true;
-
-
-	return m_cpu->input->Initialize();
-
-}
-
-
 
 
 
 int Chip8Emu::GetInstrPerSec() const
 {
-	return 0;
+	return m_clocks.instrPerSec;
 }
 
 int Chip8Emu::GetFramesPerSec() const
 {
-	return 0;
+	return m_clocks.framesPerSec;
 }
 
 
 void Chip8Emu::SetInstrPerSec(const int instr)
 {
-
+	if (instr > 0) {
+		m_clocks.instr.SetTargetTime(1_sec / instr);
+		m_clocks.instrPerSec = instr;
+	}
+	else {
+		m_clocks.instr.SetTargetTime(0_sec);
+		m_clocks.instrPerSec = 0;
+	}
 
 }
 
 void Chip8Emu::SetFramesPerSec(const int frames)
 {
-
-
-
+	if (frames > 0) {
+		m_clocks.frame.SetTargetTime(1_sec / frames);
+		m_clocks.framesPerSec = frames;
+	}
+	else {
+		m_clocks.frame.SetTargetTime(0_sec);
+		m_clocks.framesPerSec = 0;
+	}
 }

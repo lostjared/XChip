@@ -1,5 +1,6 @@
-#ifndef __CHIP8CPU_H__
-#define __CHIP8CPU_H__
+#ifndef __CHIP8_CPU_H__
+#define __CHIP8_CPU_H__
+#include <cstddef>
 #include <cstdint>
 
 class iRenderer;
@@ -21,12 +22,14 @@ struct Chip8Cpu
 	uint32_t* gfx      = nullptr;  /* graphics array  */
 	iRenderer* render  = nullptr;
 	iInput* input      = nullptr;
-	bool exitFlag      = false;
 	
 	uint8_t delayTimer;
 	uint8_t soundTimer;
 
-	
+	bool exitFlag = false;
+	std::size_t memorysz = 0;
+	std::size_t stacksz  = 0;
+	std::size_t gfxsz    = 0;
 
 	/* prevent mess */
 	Chip8Cpu() noexcept = default;

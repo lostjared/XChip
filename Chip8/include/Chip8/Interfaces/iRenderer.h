@@ -18,7 +18,7 @@ public:
 
 	virtual ~iRenderer() = default;
 	
-	virtual bool Initialize(const int w, const int h) = 0;
+	virtual bool Initialize(const int w, const int h) noexcept = 0;
 	virtual void Dispose() noexcept = 0;
 
 	virtual bool IsInitialized() const = 0;

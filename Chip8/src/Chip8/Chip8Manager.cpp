@@ -1,18 +1,16 @@
 #include <cstdio>
 #include <algorithm>
 
-#include <Chip8/Chip8Manager.h>
+#include <Chip8/Chip8CpuManager.h>
 #include <Chip8/Interfaces/iRenderer.h>
 #include <Chip8/Interfaces/iInput.h>
 #include <Chip8/Utility/Log.h>
 
 
 
-
 Chip8CpuManager::Chip8CpuManager() noexcept
 	: m_cpu(nullptr),
-	m_rom(nullptr),
-	m_memorysz(0),
+	m_romName(nullptr),
 	m_romsz(0)
 {
 	LOG("Constructing Chip8Manager...");
@@ -82,14 +80,15 @@ bool Chip8CpuManager::SetMemory(const std::size_t size)
 	LOG("Setting Chip8 memory: " << size << " bytes...");
 	m_cpu->memory = new(std::nothrow) uint8_t[size];
 	
-	if (!m_cpu->memory) {
+	if (!m_cpu->memory) 
+	{
 		LOGerr("Failed to allocate Chip8 memory !");
-		m_memorysz = 0;
-		return false;
+		m_cpu->memorysz = 0;
+		return !(m_cpu->exitFlag = true);
 	}
 
 	std::fill_n(m_cpu->memory, size, 0);
-	m_memorysz = size;
+	m_cpu->memorysz = size;
 	return true;
 }
 
@@ -109,7 +108,7 @@ bool Chip8CpuManager::SetRegisters(const std::size_t size)
 	
 	if (!m_cpu->registers) {
 		LOGerr("Failed to allocate Chip8 Registers !");
-		return false;
+		return !(m_cpu->exitFlag = true);
 	}
 
 	std::fill_n(m_cpu->registers, size, 0);
@@ -133,7 +132,7 @@ bool Chip8CpuManager::SetStack(const std::size_t size)
 	m_cpu->stack = new(std::nothrow) uint16_t[size];
 	if (!m_cpu->stack) {
 		LOGerr("Failed to allocate Chip8 Stack !");
-		return false;
+		return !(m_cpu->exitFlag = true);
 	}
 	
 	std::fill_n(m_cpu->stack, size, 0);
@@ -158,7 +157,7 @@ bool Chip8CpuManager::SetGfx(const std::size_t size)
 	
 	if (!m_cpu->gfx) {
 		LOGerr("Failed to allocate Chip8 GFX !");
-		return false;
+		return !(m_cpu->exitFlag = true);
 	}
 
 	std::fill_n(m_cpu->gfx, size, 0);
@@ -182,31 +181,79 @@ bool Chip8CpuManager::LoadRom(const char * fileName)
 	LOG("Loading " << fileName);
 	std::FILE *file = std::fopen(fileName, "rb");
 
-	if (file == nullptr)
-	{
+	if ( !file ) {
 		LOGerr("Error at opening file " << fileName << ", interrupting Chip8 instance.");
-		return false;
+		return !(m_cpu->exitFlag = true);
 	}
 
 	// get file size
 	std::fseek(file, 0, SEEK_END);
-	m_romsz = static_cast<std::size_t>(std::ftell(file));
+	auto fileSize = static_cast<std::size_t>(std::ftell(file));
 	std::fseek(file, 0, SEEK_SET);
 
 	// check if file size will not overflow emulated memory size
-	if ( m_romsz > m_memorysz - 0x200 )
+	if ( m_cpu->memorysz < 0x200 
+		|| fileSize > m_cpu->memorysz - 0x200 )
 	{
 		LOGerr("Error, " << fileName << " size not compatible, interrupting Chip8 instance.");
 		std::fclose(file);
-		m_romsz = 0;
-		return false;
+		return !(m_cpu->exitFlag = true);
 	}
 
-	m_rom = fileName;
-	std::fread(m_cpu->memory + 0x200, 1, m_romsz, file);
+	std::fread(m_cpu->memory + 0x200, 1, fileSize, file);
+	m_romsz = fileSize;
+	m_romName = fileName;
 	std::fclose(file);
+
 	LOG("Load Done!");
 
+	return true;
+}
+
+
+
+
+bool Chip8CpuManager::InitRender(const int w, const int h)
+{
+	if (!m_cpu->render) {
+		LOGerr("Error: NULL iRenderer...");
+		return ! (m_cpu->exitFlag = true);
+	}
+
+	else if ( ! m_cpu->render->IsInitialized()) 
+	{
+		if ( ! m_cpu->render->Initialize(w, h)) 
+		{
+			return !(m_cpu->exitFlag = true);
+		}
+	}
+
+	m_cpu->render->SetBuffer(m_cpu->gfx);
+	/* set default callbacks */
+	#define _chp ((Chip8Cpu*)chp)
+	m_cpu->render->SetWinCloseCallback(m_cpu, [](void* chp) { _chp->exitFlag = true; });
+	m_cpu->render->SetWinResizeCallback(m_cpu, [](void* chp) { _chp->render->RenderBuffer(); });
+	#undef _chp
+
+	return true;
+}
+
+
+
+bool Chip8CpuManager::InitInput()
+{
+	if (!m_cpu->input) {
+		LOGerr("Error: NULL iRenderer...");
+		return !(m_cpu->exitFlag = true);
+	}
+
+	else if (m_cpu->input->IsInitialized())
+		return true;
+	else if (!m_cpu->input->Initialize())
+		return !(m_cpu->exitFlag = true);
+
+	#define _chp ((Chip8Cpu*)chp)
+	m_cpu->input->SetEscapeCallback(m_cpu, [](void *chp) { _chp->exitFlag = true; });
 	return true;
 }
 
