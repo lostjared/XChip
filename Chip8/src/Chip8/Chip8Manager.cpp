@@ -1,7 +1,11 @@
 #include <cstdio>
+#include <cstring>
+
 #include <Chip8/Chip8Manager.h>
 #include <Chip8/Chip8Cpu.h>
-#include <Chip8/Utility/log.h>
+#include <Chip8/Interfaces/iRenderer.h>
+#include <Chip8/Interfaces/iInput.h>
+#include <Chip8/Utility/Log.h>
 
 
 #define MEMORY_MIN 0x1000
@@ -55,8 +59,8 @@ void Chip8Manager::Dispose() noexcept
 {
 	if (m_cpu != nullptr) 
 	{
-		delete m_cpu->m_input;
-		delete m_cpu->m_render;
+		delete m_cpu->input;
+		delete m_cpu->render;
 		delete[] m_cpu->gfx;
 		delete[] m_cpu->stack;
 		delete[] m_cpu->registers;
@@ -189,8 +193,7 @@ bool Chip8Manager::LoadRom(const char * fileName)
 	std::fseek(file, 0, SEEK_SET);
 
 	// check if file size will not overflow emulated memory size
-	if (m_memorysz > 0x200 
-		&& m_romsz > m_memorysz - 0x200)
+	if ( m_romsz > m_memorysz - 0x200 )
 	{
 		LOGerr("Error, " << fileName << " size not compatible, interrupting Chip8 instance.");
 		std::fclose(file);
@@ -207,46 +210,36 @@ bool Chip8Manager::LoadRom(const char * fileName)
 }
 
 
-
-
-std::size_t Chip8Manager::GetMemorySize() const;
-std::size_t Chip8Manager::GetRegistersSize() const;
-std::size_t Chip8Manager::GetStackSize() const;
-std::size_t Chip8Manager::GetGfxSize() const;
-
-
-
-
 iRenderer* Chip8Manager::GetRenderer()
 {
-	return m_cpu->m_render;
+	return m_cpu->render;
 }
 
 iInput* Chip8Manager::GetInput()
 {
-	return m_cpu->m_input;
+	return m_cpu->input;
 }
 
 void Chip8Manager::SetRenderer(iRenderer* rend)
 {
-	m_cpu->m_render = rend;
+	m_cpu->render = rend;
 }
 
 void Chip8Manager::SetInput(iInput* input)
 {
-	m_cpu->m_input = input;
+	m_cpu->input = input;
 }
 
 iRenderer* Chip8Manager::SwapRender(iRenderer* rend)
 {
-	auto ret = m_cpu->m_render;
-	m_cpu->m_render = rend;
+	auto ret = m_cpu->render;
+	m_cpu->render = rend;
 	return ret;
 }
 
 iInput* Chip8Manager::SwapInput(iInput* input)
 {
-	auto ret = m_cpu->m_input;
-	m_cpu->m_input = input;
+	auto ret = m_cpu->input;
+	m_cpu->input = input;
 	return ret;
 }

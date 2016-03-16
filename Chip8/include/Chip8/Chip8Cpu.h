@@ -16,13 +16,14 @@ struct Chip8Cpu
 	uint8_t* registers = nullptr;
 	uint16_t* stack    = nullptr;
 	uint32_t* gfx      = nullptr;  /* graphics array  */
-	iRenderer* m_render;
-	iInput* m_input;
-
+	iRenderer* render  = nullptr;
+	iInput* input      = nullptr;
+	bool error         = false;
 	
 	uint8_t delayTimer;
 	uint8_t soundTimer;
 
+	
 
 	/* prevent mess */
 	Chip8Cpu() noexcept = default;

@@ -2,7 +2,8 @@
 #define __CHIP8MANAGER_H__
 #include <cstddef>
 #include <cstdint>
-class Chip8Cpu;
+
+struct Chip8Cpu;
 class iRenderer;
 class iInput;
 
@@ -13,11 +14,6 @@ public:
 	~Chip8Manager();
 	bool Initialize() noexcept;
 	void Dispose() noexcept;
-
-	std::size_t GetMemorySize() const;
-	std::size_t GetRegistersSize() const;
-	std::size_t GetStackSize() const;
-	std::size_t GetGfxSize() const;
 
 
 	bool SetMemory(const std::size_t size);
@@ -36,7 +32,7 @@ public:
 	iRenderer* SwapRender(iRenderer* rend);
 	iInput* SwapInput(iInput* input);
 
-private:
+protected:
 	Chip8Cpu* m_cpu;
 	const char* m_rom;
 	std::size_t m_memorysz;

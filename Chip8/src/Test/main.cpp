@@ -1,12 +1,12 @@
 #include <memory>
 #include <iostream>
-#include <Chip8/Chip8.h>
+#include <Chip8/Chip8Manager.h>
 
 
 int main(int argc, char **argv)
 {
 	
-	Chip8 chip8;
+	Chip8Manager chpman;
 
 	/*  debug */
 	std::atexit([]() {std::cin.ignore(); });

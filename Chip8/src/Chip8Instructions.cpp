@@ -4,9 +4,11 @@
 #include <Chip8/Chip8Instructions.h>
 #include <Chip8/Chip8.h>
 #include <Chip8/Interfaces/iInput.h>
-#include <Chip8/Utility/log.h>
+#include <Chip8/Utility/Log.h>
+
 
 Chip8Instructions::InstrTable Chip8Instructions::s_instrTbl = nullptr;
+
 bool Chip8Instructions::Initialize()
 {
 	LOG("Initializing Instruction Table...");

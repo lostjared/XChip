@@ -77,16 +77,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\chip8\Chip8\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\xchp\Chip8\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\chip8\Chip8\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\xchp\Chip8\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\chip8\Chip8\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\xchp\Chip8\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\chip8\Chip8\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\xchp\Chip8\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
