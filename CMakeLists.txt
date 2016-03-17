@@ -1,7 +1,7 @@
-# xchp test
+# xchip test
 
 
-project(XChp)
+project(XChip)
 cmake_minimum_required(VERSION 2.8)
 
 
@@ -32,16 +32,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeInclude)
 
 #find_package(SDL2 REQUIRED)
 #INCLUDE_DIRECTORIES( ${SDL2_INCLUDE_DIR} )
-INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/Chip8/include/ )
+INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/XChip/include/ )
 
 # ACHAR OS .CPP E .H
-file(GLOB_RECURSE CHIP8SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} Chip8/src/Chip8/*.cpp)
-file(GLOB_RECURSE TESTSRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} Chip8/src/Test/*.cpp)
-file(GLOB_RECURSE HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}  Chip8/include/*.h)
+file(GLOB_RECURSE SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} XChip/src/*.cpp)
+file(GLOB_RECURSE HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}  XChip/include/*.h)
 
 
 # Linkar .cpp para este binário (que tem o nome do projeto)
-add_executable(${PROJECT_NAME} ${HEADERS} ${CHIP8SRC} ${TESTSRC})
+add_executable(${PROJECT_NAME} ${HEADERS} ${SRC} )
 
 # Linkar bibliotecas dinâmicas
 TARGET_LINK_LIBRARIES( ${PROJECT_NAME} )

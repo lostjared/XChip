@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <XChip/Instructions.h>
 #include <XChip/Cpu.h>
 #include <XChip/Utility/Log.h>
@@ -421,12 +423,14 @@ void op_FXx5(Cpu *const xcpu)
 			xcpu->delayTimer = VX;
 			break;
 
+
 		case 0x55: //FX55  Stores V0 to VX in memory starting at address I
-			std::memcpy(xcpu->memory + xcpu->I, xcpu->registers, ((xcpu->opcode & 0x0f00) >> 8) + 1);
+			std::copy_n(xcpu->memory + xcpu->I, ((xcpu->opcode & 0x0f00) >> 8) + 1, xcpu->registers);
 			break;
 
+
 		case 0x65: //FX65  Fills V0 to VX with values from memory starting at address I.
-			std::memcpy(xcpu->registers, xcpu->memory + xcpu->I, ((xcpu->opcode & 0x0f00) >> 8) + 1);
+			std::copy_n(xcpu->registers, ((xcpu->opcode & 0x0f00) >> 8) + 1, xcpu->memory + xcpu->I);
 			break;
 	}
 }
