@@ -27,5 +27,8 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

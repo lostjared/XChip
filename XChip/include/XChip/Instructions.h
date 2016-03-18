@@ -2,15 +2,16 @@
 #define __XCHIP_INSTRUCTIONS_H__
 #include "XChip.h"
 
-XCHIP_NAMESPACE
+_XCHIP_NAMESPACE_
 
 struct Cpu;
 
 using InstrTable = void(*)(Cpu* const);
 
 
-namespace instructions
+namespace instructions 
 {
+
 	extern InstrTable instrTable[16];
 
 	extern void op_0xxx(Cpu *const); // 3 instructions switch

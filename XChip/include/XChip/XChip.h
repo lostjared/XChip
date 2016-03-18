@@ -1,7 +1,7 @@
 #ifndef __XCHIP_H__
 #define __XCHIP_H__
 
-#define XCHIP_NAMESPACE namespace xchip {
+#define _XCHIP_NAMESPACE_ namespace xchip {
 #define NAMESPACE_END }
 
 

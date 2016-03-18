@@ -6,7 +6,7 @@
 
 // avoid too much identation ...
 #define _XCHIP_INSTRUCTIONS_NAMESPACE_ namespace instructions {
-XCHIP_NAMESPACE
+_XCHIP_NAMESPACE_
 _XCHIP_INSTRUCTIONS_NAMESPACE_
 
 
@@ -25,7 +25,8 @@ InstrTable instrTable[16] =
 
 void unknown_opcode(Cpu* const xcpu)
 {
-	LOGerr("Unknown opcode: " << xcpu->opcode);
+	using namespace xcpu::utility;
+	LOGerr("Unknown opcode: "_s + xcpu->opcode);
 }
 
 
@@ -130,8 +131,7 @@ static InstrTable op_8XYx_Table[16] =
 	op_8XY4, op_8XY5, op_8XY6, op_8XY7,
 	unknown_opcode, unknown_opcode, unknown_opcode,
 	unknown_opcode, unknown_opcode, unknown_opcode,
-	op_8XYE,
-	unknown_opcode
+	op_8XYE, unknown_opcode
 };
 
 void op_8XYx(Cpu* const xcpu)
@@ -466,7 +466,11 @@ void op_FX29(Cpu *const xcpu)
 
 
 
-// BCD
+// BCD: Stores the Binary-coded decimal representation of VX, with the most significant 
+// of three digits at the address in I, the middle digit at I plus 1, 
+// and the least significant digit at I plus 2. 
+// (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, 
+//  the tens digit at location I+1, and the ones digit at location I+2.)
 void op_FX33(Cpu *const xcpu)
 {
 	uint8_t Vx = VX;

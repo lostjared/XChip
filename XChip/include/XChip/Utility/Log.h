@@ -1,19 +1,45 @@
 #ifndef LOG_H
 #define LOG_H
-
-#ifdef _WIN32
-#define CLS() std::system("cls")
-#elif __linux__
-#define CLS() std::system("clear")
-#endif
-
-
-
-
 #include <iostream>
+#include <string>
+#include "Traits.h"
 
-#define LOG(x) std::cout << x << std::endl
-#define LOGerr(x) std::cerr << x << std::endl
+namespace xcpu { namespace utility {
+
+	inline std::string operator"" _s(const char* str, std::size_t) { return std::string(str); }
+
+	template<class N>
+	inline enable_if_t<std::is_arithmetic<N>::value, std::string> 
+		operator+(std::string&& str, N val)
+	{
+		return std::move(str += std::to_string(val));
+	}
+
+
+	inline void CLS()
+	{
+		#ifdef _WIN32
+				std::system("cls");
+		#elif __linux__
+				std::system("clear");
+		#endif
+	}
+
+
+	inline void LOG(const std::string& msg)
+	{
+		std::cout << msg << std::endl;
+	}
+
+
+	inline void LOGerr(const std::string& msg)
+	{
+		std::cerr << msg << std::endl;
+	}
+
+
+
+}}
 
 
 

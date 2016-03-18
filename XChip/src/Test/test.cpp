@@ -1,13 +1,12 @@
 #include <XChip/Cpu.h>
-
+#include <XChip/Utility/Log.h>
 
 
 
 
 int main()
 {
-
-	xchip::Cpu xcpu;
 	
+	sizeof(xchip::Cpu);
 
 }

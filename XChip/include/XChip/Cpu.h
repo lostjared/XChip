@@ -2,7 +2,7 @@
 #define __XCHIP_CPU_H__
 #include <cstdint>
 #include "XChip.h"
-XCHIP_NAMESPACE
+_XCHIP_NAMESPACE_
 
 
 
@@ -21,9 +21,6 @@ struct Cpu
 	uint8_t delayTimer;
 	uint8_t soundTimer;
 };
-
-
-
 
 
 
