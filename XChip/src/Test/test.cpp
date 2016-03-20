@@ -7,5 +7,5 @@
 
 int main()
 {	
-
+	std::cout << std::is_pod<xchip::Cpu>::value;
 }

@@ -19,7 +19,7 @@ CpuManager::CpuManager() noexcept
 	_cpu.gfx       = nullptr;
 }
 
-void CpuManager::Dispose()
+void CpuManager::Dispose() noexcept
 {
 	delete[] _cpu.gfx;
 	delete[] _cpu.stack;
@@ -101,7 +101,25 @@ bool CpuManager::SetGfx(const std::size_t size)
 }
 
 
+const uint8_t* CpuManager::GetMemory() const
+{
+	return _cpu.memory;
+}
 
+const uint8_t* CpuManager::GetRegisters() const
+{
+	return _cpu.registers;
+}
+
+const uint16_t* CpuManager::GetStack() const
+{
+	return _cpu.stack;
+}
+
+const uint32_t* CpuManager::GetGfx() const
+{
+	return _cpu.gfx;
+}
 
 
 
