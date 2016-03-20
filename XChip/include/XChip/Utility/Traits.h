@@ -2,7 +2,7 @@
 #define _XCHIP_TRAITS_H_
 #include <type_traits>
 
-namespace xcpu { namespace utility {
+namespace xchip { namespace utility {
 
 	template<bool cond, class T>
 	using enable_if_t = typename std::enable_if<cond, T>::type;

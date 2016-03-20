@@ -11,8 +11,8 @@ struct Cpu
 {
 	uint16_t opcode;
 	uint16_t I;
-	uint16_t pc;
 	uint16_t sp;
+	uint16_t pc;
 	uint8_t* memory;
 	uint8_t* registers;
 	uint16_t* stack;
@@ -29,7 +29,7 @@ struct Cpu
 
 
 
-NAMESPACE_END
+_XCHIP_NAMESPACE_END
 
 
 

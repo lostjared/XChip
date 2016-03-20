@@ -12,7 +12,7 @@
 
 #endif
 
-namespace xcpu { namespace utility {
+namespace xchip { namespace utility {
 
 
 	constexpr std::chrono::microseconds operator""_sec(unsigned long long x) { return std::chrono::seconds(x); }

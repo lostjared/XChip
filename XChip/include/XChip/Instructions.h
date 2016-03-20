@@ -6,12 +6,9 @@ _XCHIP_NAMESPACE_
 
 struct Cpu;
 
-using InstrTable = void(*)(Cpu* const);
-
-
 namespace instructions 
 {
-
+	using InstrTable = void(*)(Cpu* const);
 	extern InstrTable instrTable[16];
 
 	extern void op_0xxx(Cpu *const); // 3 instructions switch
@@ -59,6 +56,8 @@ namespace instructions
 	
 }
 
-NAMESPACE_END
+
+
+_XCHIP_NAMESPACE_END
 
 #endif

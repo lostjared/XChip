@@ -4,7 +4,7 @@
 #include <string>
 #include "Traits.h"
 
-namespace xcpu { namespace utility {
+namespace xchip { namespace utility {
 
 	inline std::string operator"" _s(const char* str, std::size_t) { return std::string(str); }
 
