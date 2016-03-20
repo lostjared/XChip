@@ -2,8 +2,29 @@
 #include <XChip/CpuManager.h>
 #include <XChip/Utility/Log.h>
 namespace xchip {
-
 using namespace xchip::utility;
+
+template<class T>
+inline void clean_arr(T* arr, size_t sz)
+{
+	if(arr != nullptr)
+		std::fill_n(arr, sz, 0);
+}
+
+template<class T>
+inline bool allocate_arr(T* arr, size_t sz)
+{
+	if (arr != nullptr)
+		delete[] arr;
+
+	arr = new(std::nothrow) T[sz];
+
+	if (arr == nullptr) 
+		return false;
+
+	std::fill_n(arr, sz, 0);
+	return true;
+}
 
 
 
@@ -17,9 +38,14 @@ CpuManager::CpuManager() noexcept
 	_cpu.registers = nullptr;
 	_cpu.stack     = nullptr;
 	_cpu.gfx       = nullptr;
+
+	_memorySz    = 0;
+	_registersSz = 0;
+	_stackSz     = 0;
+	_gfxSz       = 0;
 }
 
-void CpuManager::Dispose() noexcept
+CpuManager::~CpuManager()
 {
 	delete[] _cpu.gfx;
 	delete[] _cpu.stack;
@@ -30,18 +56,17 @@ void CpuManager::Dispose() noexcept
 
 bool CpuManager::SetMemory(const std::size_t size)
 {
-	if (_cpu.memory != nullptr)
-		delete[] _cpu.memory;
+	if(size == _memorySz) 
+		return true;
 
-	_cpu.memory = new(std::nothrow) uint8_t[size];
-
-	if (_cpu.memory == nullptr)
+	else if (! allocate_arr(_cpu.memory, size)) 
 	{
 		LOGerr("Cannot allocate Cpu memory size: "_s + size);
+		_memorySz = 0;
 		return false;
 	}
 
-	std::fill_n(_cpu.memory, size, 0);
+	_memorySz = size;
 	return true;
 }
 
@@ -49,56 +74,81 @@ bool CpuManager::SetMemory(const std::size_t size)
 
 bool CpuManager::SetRegisters(const std::size_t size)
 {
-	if (_cpu.registers != nullptr)
-		delete[] _cpu.stack;
+	if(size == _registersSz) 
+		return true;
 
-	_cpu.registers = new(std::nothrow) uint8_t[size];
-
-	if (_cpu.registers == nullptr)
+	else if ( ! allocate_arr(_cpu.registers, size) )
 	{
 		LOGerr("Cannot allocate Cpu registers size: "_s + size);
+		_registersSz = 0;
 		return false;
 	}
 
-	std::fill_n(_cpu.registers, size, 0);
+	_registersSz = size;
 	return true;
 }
 
 
 bool CpuManager::SetStack(const std::size_t size)
 {
-	if (_cpu.stack != nullptr)
-		delete[] _cpu.stack;
+	if(size == _stackSz) 
+		return true;
 
-	_cpu.stack = new(std::nothrow) uint16_t[size];
-
-	if (_cpu.stack == nullptr)
+	else if ( ! allocate_arr(_cpu.stack, size) )
 	{
 		LOGerr("Cannot allocate Cpu stack size: "_s + size);
+		_stackSz = 0;
 		return false;
 	}
 
-	std::fill_n(_cpu.stack, size, 0);
+	_stackSz = size;
 	return true;
 }
 
 
 bool CpuManager::SetGfx(const std::size_t size)
 {
-	if (_cpu.gfx != nullptr)
-		delete[] _cpu.gfx;
+	if(_gfxSz == size)
+		return true;
 
-	_cpu.gfx = new(std::nothrow) uint32_t[size];
-
-	if (_cpu.gfx == nullptr)
+	else if (! allocate_arr(_cpu.gfx, size) )
 	{
 		LOGerr("Cannot allocate Cpu memory size: "_s + size);
+		_gfxSz = 0;
 		return false;
 	}
 
-	std::fill_n(_cpu.gfx, size, 0);
+	_gfxSz = size;
 	return true;
 }
+
+
+
+
+void CpuManager::cleanMemory()
+{
+	
+	clean_arr(_cpu.memory, _memorySz);
+}
+
+void CpuManager::cleanRegisters()
+{
+	
+	clean_arr(_cpu.registers, _registersSz);
+}
+
+void CpuManager::cleanStack()
+{
+	clean_arr(_cpu.stack, _stackSz);
+}
+
+void CpuManager::cleanGfx()
+{
+	clean_arr(_cpu.gfx, _gfxSz);
+}
+
+
+
 
 
 const uint8_t* CpuManager::GetMemory() const
@@ -120,6 +170,24 @@ const uint32_t* CpuManager::GetGfx() const
 {
 	return _cpu.gfx;
 }
+
+const Cpu& CpuManager::GetCpu() const
+{
+	return _cpu;
+}
+
+
+Cpu& CpuManager::GetCpu()
+{
+	return _cpu;
+}
+
+
+
+
+
+
+
 
 
 

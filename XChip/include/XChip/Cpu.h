@@ -1,9 +1,8 @@
 #ifndef __XCHIP_CPU_H__
 #define __XCHIP_CPU_H__
 #include <cstdint>
-#include "XChip.h"
-_XCHIP_NAMESPACE_
 
+namespace xchip {
 
 
 
@@ -29,7 +28,7 @@ struct Cpu
 
 
 
-_XCHIP_NAMESPACE_END
+}
 
 
 

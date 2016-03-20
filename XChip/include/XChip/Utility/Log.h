@@ -6,36 +6,36 @@
 
 namespace xchip { namespace utility {
 
-	inline std::string operator"" _s(const char* str, std::size_t) { return std::string(str); }
+inline std::string operator"" _s(const char* str, std::size_t) { return std::string(str); }
 
-	template<class N>
-	inline enable_if_t<std::is_arithmetic<N>::value, std::string> 
-		operator+(std::string&& str, N val)
-	{
-		return std::move(str += std::to_string(val));
-	}
-
-
-	inline void CLS()
-	{
-		#ifdef _WIN32
-				std::system("cls");
-		#elif __linux__
-				std::system("clear");
-		#endif
-	}
+template<class N>
+inline enable_if_t<std::is_arithmetic<N>::value, std::string> 
+	operator+(std::string&& str, N val)
+{
+	return std::move(str += std::to_string(val));
+}
 
 
-	inline void LOG(const std::string& msg)
-	{
-		std::cout << msg << std::endl;
-	}
+inline void CLS()
+{
+	#ifdef _WIN32
+			std::system("cls");
+	#elif __linux__
+			std::system("clear");
+	#endif
+}
 
 
-	inline void LOGerr(const std::string& msg)
-	{
-		std::cerr << msg << std::endl;
-	}
+inline void LOG(const std::string& msg)
+{
+	std::cout << msg << std::endl;
+}
+
+
+inline void LOGerr(const std::string& msg)
+{
+	std::cerr << msg << std::endl;
+}
 
 
 
