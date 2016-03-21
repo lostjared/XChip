@@ -1,7 +1,6 @@
 #ifndef _XCHIP_CPU_MANAGER_H_
 #define _XCHIP_CPU_MANAGER_H_
 #include <cstddef>
-#include "Utility/Timer.h"
 #include "Cpu.h"
 
 namespace xchip {
