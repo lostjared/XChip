@@ -1,4 +1,5 @@
 #include <iostream>
+#include <XChip/Utility/Alloc.h>
 #include <XChip/CpuManager.h>
 
 int main(void)
@@ -6,7 +7,6 @@ int main(void)
 
 	using namespace xchip;
 
-	int *x = new int[10];
 	CpuManager manager;
 
 	manager.SetMemory(0xFFFF);

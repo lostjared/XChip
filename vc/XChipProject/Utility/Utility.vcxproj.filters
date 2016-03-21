@@ -35,5 +35,8 @@
     <ClCompile Include="..\..\..\XChip\src\XChip\Utility\Alloc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\XChip\src\XChip\Utility\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

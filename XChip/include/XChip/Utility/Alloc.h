@@ -44,26 +44,5 @@ std::size_t get_arr_size(const T* arr)
 
 
 
-template<class T>
-bool alloc_arr(T*& arr, size_t size)
-{
-
-	if (size == get_arr_size(arr))
-		return true;
-
-	else if (arr != nullptr)
-		free_arr(arr);
-
-	arr = (T*) alloc_arr(size * sizeof(T));
-
-	if (arr == nullptr)
-		return false;
-
-	std::fill_n(arr, size, 0);
-	return true;
-}
-
-
-
 }}
 #endif
