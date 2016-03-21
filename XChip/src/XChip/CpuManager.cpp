@@ -1,23 +1,29 @@
 #include <algorithm>
 #include <XChip/CpuManager.h>
 #include <XChip/Utility/Log.h>
+#include <XChip/Utility/Alloc.h>
+
 namespace xchip {
 using namespace xchip::utility;
 
 template<class T>
-inline void clean_arr(T* arr, size_t sz)
+inline void clean_arr(T* arr)
 {
 	if(arr != nullptr)
-		std::fill_n(arr, sz, 0);
+		std::fill_n(arr, get_arr_size(arr), 0);
 }
 
 template<class T>
-inline bool allocate_arr(T* arr, size_t sz)
+static bool allocate_arr(T*& arr, size_t sz)
 {
-	if (arr != nullptr)
+
+	if (sz == get_arr_size(arr))
+		return true;
+
+	else if (arr != nullptr)
 		delete[] arr;
 
-	arr = new(std::nothrow) T[sz];
+	arr = new T[sz];
 
 	if (arr == nullptr) 
 		return false;
@@ -38,11 +44,6 @@ CpuManager::CpuManager() noexcept
 	_cpu.registers = nullptr;
 	_cpu.stack     = nullptr;
 	_cpu.gfx       = nullptr;
-
-	_memorySz    = 0;
-	_registersSz = 0;
-	_stackSz     = 0;
-	_gfxSz       = 0;
 }
 
 CpuManager::~CpuManager()
@@ -54,19 +55,16 @@ CpuManager::~CpuManager()
 }
 
 
+
+
 bool CpuManager::SetMemory(const std::size_t size)
 {
-	if(size == _memorySz) 
-		return true;
-
-	else if (! allocate_arr(_cpu.memory, size)) 
+	if (! allocate_arr(_cpu.memory, size)) 
 	{
 		LOGerr("Cannot allocate Cpu memory size: "_s + size);
-		_memorySz = 0;
 		return false;
 	}
 
-	_memorySz = size;
 	return true;
 }
 
@@ -74,77 +72,98 @@ bool CpuManager::SetMemory(const std::size_t size)
 
 bool CpuManager::SetRegisters(const std::size_t size)
 {
-	if(size == _registersSz) 
-		return true;
-
-	else if ( ! allocate_arr(_cpu.registers, size) )
+	if ( ! allocate_arr(_cpu.registers, size) )
 	{
 		LOGerr("Cannot allocate Cpu registers size: "_s + size);
-		_registersSz = 0;
 		return false;
 	}
 
-	_registersSz = size;
 	return true;
 }
 
 
 bool CpuManager::SetStack(const std::size_t size)
 {
-	if(size == _stackSz) 
-		return true;
-
-	else if ( ! allocate_arr(_cpu.stack, size) )
+	if ( ! allocate_arr(_cpu.stack, size) )
 	{
 		LOGerr("Cannot allocate Cpu stack size: "_s + size);
-		_stackSz = 0;
 		return false;
 	}
 
-	_stackSz = size;
 	return true;
 }
 
 
 bool CpuManager::SetGfx(const std::size_t size)
 {
-	if(_gfxSz == size)
-		return true;
-
-	else if (! allocate_arr(_cpu.gfx, size) )
+	if (! allocate_arr(_cpu.gfx, size) )
 	{
 		LOGerr("Cannot allocate Cpu memory size: "_s + size);
-		_gfxSz = 0;
 		return false;
 	}
 
-	_gfxSz = size;
 	return true;
 }
 
+void CpuManager::SetFont(const uint8_t* font, const size_t size)
+{
+	if(_cpu.memory != nullptr)
+		std::copy_n(font, size, _cpu.memory);
+}
 
 
 
 void CpuManager::cleanMemory()
 {
-	
-	clean_arr(_cpu.memory, _memorySz);
+	clean_arr(_cpu.memory);
 }
+
+
 
 void CpuManager::cleanRegisters()
 {
-	
-	clean_arr(_cpu.registers, _registersSz);
+	clean_arr(_cpu.registers);
 }
+
+
 
 void CpuManager::cleanStack()
 {
-	clean_arr(_cpu.stack, _stackSz);
+	clean_arr(_cpu.stack);
 }
+
+
 
 void CpuManager::cleanGfx()
 {
-	clean_arr(_cpu.gfx, _gfxSz);
+	clean_arr(_cpu.gfx);
+}
+
+
+
+
+
+size_t CpuManager::GetMemorySize() const
+{
+	return get_arr_size(_cpu.memory);
+}
+
+
+size_t CpuManager::GetRegistersSize() const
+{
+	return get_arr_size(_cpu.registers);
+}
+
+
+size_t CpuManager::GetStackSize() const 
+{
+	return get_arr_size(_cpu.stack);
+}
+
+
+size_t CpuManager::GetGfxSize() const 
+{
+	return get_arr_size(_cpu.gfx);
 }
 
 
@@ -156,25 +175,34 @@ const uint8_t* CpuManager::GetMemory() const
 	return _cpu.memory;
 }
 
+
+
 const uint8_t* CpuManager::GetRegisters() const
 {
 	return _cpu.registers;
 }
+
+
 
 const uint16_t* CpuManager::GetStack() const
 {
 	return _cpu.stack;
 }
 
+
+
 const uint32_t* CpuManager::GetGfx() const
 {
 	return _cpu.gfx;
 }
 
+
+
 const Cpu& CpuManager::GetCpu() const
 {
 	return _cpu;
 }
+
 
 
 Cpu& CpuManager::GetCpu()

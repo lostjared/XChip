@@ -128,7 +128,6 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Cpu.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\CpuManager.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Instructions.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\XChip.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\Test\test.cpp" />

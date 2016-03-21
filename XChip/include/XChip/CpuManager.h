@@ -15,6 +15,10 @@ public:
 	CpuManager() noexcept;
 	~CpuManager();
 
+	size_t GetMemorySize() const;
+	size_t GetRegistersSize() const;
+	size_t GetStackSize() const;
+	size_t GetGfxSize() const;
 
 	const uint8_t* GetMemory() const;
 	const uint8_t* GetRegisters() const;
@@ -29,16 +33,15 @@ public:
 	bool SetGfx(const size_t size);
 	void SetFont(const uint8_t* font, const size_t size);
 
+
+
 	void cleanMemory();
 	void cleanRegisters();
 	void cleanStack();
 	void cleanGfx();
+
 private:
 	Cpu _cpu;
-	size_t _memorySz;
-	size_t _registersSz;
-	size_t _stackSz;
-	size_t _gfxSz;
 };
 
 

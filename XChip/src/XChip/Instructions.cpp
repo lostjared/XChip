@@ -1,8 +1,9 @@
 #include <algorithm>
-
 #include <XChip/Instructions.h>
-#include <XChip/Cpu.h>
+#include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Log.h>
+
+
 
 namespace xchip { namespace instructions {
 
@@ -42,7 +43,7 @@ void op_0xxx(Cpu* const _cpu)
 		break;
 
 	case 0x00E0: // clear screen
-		//std::fill_n(_cpu->gfx, _cpu->gfxsz, 0);
+		std::fill_n(_cpu->gfx, utility::get_arr_size(_cpu->gfx), 0);
 		break;
 
 	case 0x00EE: // return from a subroutine ( unwind stack )

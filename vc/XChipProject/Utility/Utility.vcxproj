@@ -121,11 +121,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Alloc.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Assert.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Log.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Timer.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Traits.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

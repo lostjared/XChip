@@ -1,11 +1,29 @@
-#include <XChip/Cpu.h>
-#include <XChip/Instructions.h>
+#include <iostream>
 #include <XChip/CpuManager.h>
-#include <XChip/Utility/Log.h>
+
+int main(void)
+{
+
+	using namespace xchip;
+
+	CpuManager manager;
+
+	manager.SetMemory(0xFFFF);
+	manager.SetRegisters(16);
+	manager.SetStack(16);
+	manager.SetGfx(64 * 32);
+
+
+	std::cout << "size of Chip8-Cpu memory: " << manager.GetMemorySize() << std::endl;
+	std::cout << "size of Chip8-Cpu registers: " << manager.GetRegistersSize() << std::endl;
+	std::cout << "size of Chip8-Cpu stack: " << manager.GetStackSize() << std::endl;
+	std::cout << "size of Chip8-Cpu gfx: " << manager.GetGfxSize() << std::endl;
 
 
 
-int main()
-{	
-	std::cout << std::is_pod<xchip::Cpu>::value;
+	return 0;
+
+
 }
+
+
