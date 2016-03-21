@@ -6,7 +6,7 @@ namespace xchip {
 using namespace xchip::utility;
 
 template<class T>
-bool alloc_arr(T*& arr, size_t size)
+bool alloc_cpu_arr(T*& arr, size_t size)
 {
 
 	if (size == get_arr_size(arr))
@@ -51,7 +51,7 @@ CpuManager::~CpuManager()
 
 bool CpuManager::SetMemory(const std::size_t size)
 {
-	if (! alloc_arr(_cpu.memory, size)) 
+	if ( !alloc_cpu_arr(_cpu.memory, size)) 
 	{
 		LOGerr("Cannot allocate Cpu memory size: "_s + size);
 		return false;
@@ -64,7 +64,7 @@ bool CpuManager::SetMemory(const std::size_t size)
 
 bool CpuManager::SetRegisters(const std::size_t size)
 {
-	if ( ! alloc_arr(_cpu.registers, size) )
+	if ( !alloc_cpu_arr(_cpu.registers, size) )
 	{
 		LOGerr("Cannot allocate Cpu registers size: "_s + size);
 		return false;
@@ -76,7 +76,7 @@ bool CpuManager::SetRegisters(const std::size_t size)
 
 bool CpuManager::SetStack(const std::size_t size)
 {
-	if ( ! alloc_arr(_cpu.stack, size) )
+	if ( !alloc_cpu_arr(_cpu.stack, size) )
 	{
 		LOGerr("Cannot allocate Cpu stack size: "_s + size);
 		return false;
@@ -88,7 +88,7 @@ bool CpuManager::SetStack(const std::size_t size)
 
 bool CpuManager::SetGfx(const std::size_t size)
 {
-	if (! alloc_arr(_cpu.gfx, size) )
+	if ( !alloc_cpu_arr(_cpu.gfx, size) )
 	{
 		LOGerr("Cannot allocate Cpu memory size: "_s + size);
 		return false;
