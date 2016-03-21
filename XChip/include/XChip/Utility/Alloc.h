@@ -1,67 +1,34 @@
 #ifndef _XCHIP_UTILITY_ALLOC_H_
 #define _XCHIP_UTILITY_ALLOC_H
 #include <cstddef>
-#include <cstdlib>
-
-
-
-void* operator new(const std::size_t size)
-{
-	static std::size_t* block;
-	while (true)
-	{
-		block = (std::size_t*) std::malloc(size + sizeof(std::size_t));
-		if (block)
-			break;
-
-		std::new_handler handler = std::set_new_handler(nullptr);
-		if (handler)
-			handler();
-		else
-			return nullptr;
-	}
-
-	*block = size;
-	return (block + 1);
-}
-
-
-void* operator new[](const std::size_t size)
-{
-	static std::size_t* block;
-	while (true)
-	{
-		block = (std::size_t*) std::malloc(size + sizeof(std::size_t));
-		if (block)
-			break;
-
-		std::new_handler handler = std::set_new_handler(nullptr);
-		if (handler)
-			handler();
-		else
-			return nullptr;
-	}
-
-	*block = size;
-	return (block + 1);
-}
-
-
-void operator delete(void* block)
-{
-	if (block != nullptr)
-		free(((std::size_t*)block) - 1);
-
-}
-
-void operator delete[](void* block)
-{
-	if (block != nullptr)
-		free(((std::size_t*)block) - 1);
-}
+#include <algorithm>
 
 
 namespace xchip { namespace utility {
+
+
+
+extern void* alloc_arr(const std::size_t size);
+
+
+inline void free_arr(void* block)
+{
+	std::free(((std::size_t*)block) - 1);
+}
+
+extern std::size_t get_arr_bytes(const void* arr);
+
+
+
+
+
+template<class T>
+void clean_arr(T* arr)
+{
+	if (arr != nullptr)
+		std::fill_n(arr, get_arr_size(arr), 0);
+}
+
 
 
 template<class T>
@@ -73,16 +40,28 @@ std::size_t get_arr_size(const T* arr)
 	return *(size - 1) / sizeof(T);
 }
 
-std::size_t get_arr_bytes(const void* arr)
+
+
+
+
+template<class T>
+bool alloc_arr(T*& arr, size_t size)
 {
-	if (arr == nullptr) return 0;
 
-	const std::size_t* size = (std::size_t*) arr;
-	return *(size - 1);
+	if (size == get_arr_size(arr))
+		return true;
+
+	else if (arr != nullptr)
+		free_arr(arr);
+
+	arr = (T*) alloc_arr(size * sizeof(T));
+
+	if (arr == nullptr)
+		return false;
+
+	std::fill_n(arr, size, 0);
+	return true;
 }
-
-
-
 
 
 

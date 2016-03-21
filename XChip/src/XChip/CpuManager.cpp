@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <XChip/CpuManager.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Alloc.h>
@@ -6,31 +5,7 @@
 namespace xchip {
 using namespace xchip::utility;
 
-template<class T>
-inline void clean_arr(T* arr)
-{
-	if(arr != nullptr)
-		std::fill_n(arr, get_arr_size(arr), 0);
-}
 
-template<class T>
-static bool allocate_arr(T*& arr, size_t sz)
-{
-
-	if (sz == get_arr_size(arr))
-		return true;
-
-	else if (arr != nullptr)
-		delete[] arr;
-
-	arr = new T[sz];
-
-	if (arr == nullptr) 
-		return false;
-
-	std::fill_n(arr, sz, 0);
-	return true;
-}
 
 
 
@@ -48,10 +23,10 @@ CpuManager::CpuManager() noexcept
 
 CpuManager::~CpuManager()
 {
-	delete[] _cpu.gfx;
-	delete[] _cpu.stack;
-	delete[] _cpu.registers;
-	delete[] _cpu.memory;
+	free_arr(_cpu.gfx);
+	free_arr(_cpu.stack);
+	free_arr(_cpu.registers);
+	free_arr(_cpu.memory);
 }
 
 
@@ -59,7 +34,7 @@ CpuManager::~CpuManager()
 
 bool CpuManager::SetMemory(const std::size_t size)
 {
-	if (! allocate_arr(_cpu.memory, size)) 
+	if (! alloc_arr(_cpu.memory, size)) 
 	{
 		LOGerr("Cannot allocate Cpu memory size: "_s + size);
 		return false;
@@ -72,7 +47,7 @@ bool CpuManager::SetMemory(const std::size_t size)
 
 bool CpuManager::SetRegisters(const std::size_t size)
 {
-	if ( ! allocate_arr(_cpu.registers, size) )
+	if ( ! alloc_arr(_cpu.registers, size) )
 	{
 		LOGerr("Cannot allocate Cpu registers size: "_s + size);
 		return false;
@@ -84,7 +59,7 @@ bool CpuManager::SetRegisters(const std::size_t size)
 
 bool CpuManager::SetStack(const std::size_t size)
 {
-	if ( ! allocate_arr(_cpu.stack, size) )
+	if ( ! alloc_arr(_cpu.stack, size) )
 	{
 		LOGerr("Cannot allocate Cpu stack size: "_s + size);
 		return false;
@@ -96,7 +71,7 @@ bool CpuManager::SetStack(const std::size_t size)
 
 bool CpuManager::SetGfx(const std::size_t size)
 {
-	if (! allocate_arr(_cpu.gfx, size) )
+	if (! alloc_arr(_cpu.gfx, size) )
 	{
 		LOGerr("Cannot allocate Cpu memory size: "_s + size);
 		return false;
