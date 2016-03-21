@@ -1,5 +1,6 @@
 #ifndef _XCHIP_UTILITY_ALLOC_H_
 #define _XCHIP_UTILITY_ALLOC_H
+#include <cstdint>
 #include <cstddef>
 #include <algorithm>
 
@@ -16,18 +17,7 @@ inline void free_arr(void* block)
 	std::free(((std::size_t*)block) - 1);
 }
 
-extern std::size_t get_arr_bytes(const void* arr);
 
-
-
-
-
-template<class T>
-void clean_arr(T* arr)
-{
-	if (arr != nullptr)
-		std::fill_n(arr, get_arr_size(arr), 0);
-}
 
 
 
@@ -39,6 +29,21 @@ std::size_t get_arr_size(const T* arr)
 	const std::size_t* size = (std::size_t*) arr;
 	return *(size - 1) / sizeof(T);
 }
+
+
+template<>
+extern std::size_t get_arr_size<uint8_t>(const uint8_t* arr);
+
+template<class T>
+void clean_arr(T* arr)
+{
+	if (arr != nullptr)
+		std::fill_n(arr, get_arr_size(arr), 0);
+}
+
+
+
+
 
 
 

@@ -1,0 +1,174 @@
+#include <SDL2/SDL.h>
+#include <XChip/SDL/SdlRender.h>
+#include <XChip/Utility/Log.h>
+
+namespace xchip {
+
+using namespace utility;
+extern SDL_Event g_sdlEvent;
+extern void UpdateSdlEvents();
+
+SdlRender::SdlRender()
+	: m_window(nullptr),
+	m_rend(nullptr),
+	m_texture(nullptr),
+	m_buffer(nullptr),
+	m_closeClbk(nullptr),
+	m_resizeClbk(nullptr),
+	m_closeClbkArg(nullptr),
+	m_resizeClbkArg(nullptr)
+
+{
+	LOG("Creating SdlRenderer object...");
+}
+
+
+SdlRender::~SdlRender()
+{
+	LOG("Destroying SdlRenderer object...");
+	if (m_window != nullptr)
+		this->Dispose();
+
+	SDL_Quit();
+}
+
+
+
+
+void SdlRender::Dispose() noexcept
+{
+	SDL_DestroyTexture(m_texture);
+	SDL_DestroyRenderer(m_rend);
+	SDL_DestroyWindow(m_window);
+	m_window = nullptr;
+	m_buffer = nullptr;
+	m_closeClbk = nullptr;
+	m_resizeClbk = nullptr;
+	m_closeClbkArg = nullptr;
+	m_resizeClbkArg = nullptr;
+}
+
+
+
+
+bool SdlRender::Initialize(const int width, const int height) noexcept
+{
+
+
+	if (m_window != nullptr)
+		this->Dispose();
+
+	if (SDL_Init(SDL_INIT_VIDEO) != SDL_FALSE) {
+		LOGerr("Couldn't start the application: "_s + SDL_GetError());
+		return false;
+	}
+
+
+	m_pitch = width * 4;
+
+
+	m_window = SDL_CreateWindow("Chip8 Emulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+		width * 4, height * 6, SDL_WINDOW_RESIZABLE);
+
+
+	if (m_window == nullptr) {
+		LOGerr("Couldn't allocate SDL_Window. Error: "_s + SDL_GetError());
+		return false;
+	}
+
+	m_rend = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
+
+
+	if (m_rend == nullptr)
+	{
+		LOGerr("Couldn't allocate SDL_Renderer. Error: "_s + SDL_GetError());
+		SDL_DestroyWindow(m_window);
+		return false;
+	}
+
+
+	m_texture = SDL_CreateTexture(m_rend, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+
+
+	if (m_texture == nullptr)
+	{
+		LOGerr("Couldn't allocate SDL_Texture. Error: "_s + SDL_GetError());
+		SDL_DestroyRenderer(m_rend);
+		SDL_DestroyWindow(m_window);
+		return false;
+	}
+
+	SDL_SetRenderDrawColor(m_rend, 0, 0, 0, 255);
+	SDL_RenderClear(m_rend);
+	SDL_RenderPresent(m_rend);
+
+	return true;
+}
+
+
+
+
+bool SdlRender::UpdateEvents()
+{
+	UpdateSdlEvents();
+	if (g_sdlEvent.type == SDL_WINDOWEVENT)
+	{
+		switch (g_sdlEvent.window.event)
+		{
+			case SDL_WINDOWEVENT_RESIZED: /* fall */
+			case SDL_WINDOWEVENT_RESTORED: if (m_resizeClbk) m_resizeClbk(m_resizeClbkArg);  break;
+			case SDL_WINDOWEVENT_CLOSE: if (m_closeClbk) m_closeClbk(m_closeClbkArg); break;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+
+
+void SdlRender::SetBuffer(const uint32_t* gfx)
+{
+	m_buffer = gfx;
+}
+
+
+
+
+void SdlRender::DrawBuffer()
+{
+	SDL_UpdateTexture(m_texture, nullptr, m_buffer, m_pitch);
+	SDL_RenderCopy(m_rend, m_texture, nullptr, nullptr);
+	SDL_RenderPresent(m_rend);
+}
+
+
+
+
+
+void SdlRender::SetWinCloseCallback(WinCloseCallback callback, const void* arg)
+{
+	m_closeClbkArg = arg;
+	m_closeClbk = callback;
+}
+
+
+
+
+void SdlRender::SetWinResizeCallback(WinResizeCallback callback, const void* arg)
+{
+	m_resizeClbkArg = arg;
+	m_resizeClbk = callback;
+}
+
+
+
+
+
+
+
+
+
+
+}

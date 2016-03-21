@@ -105,6 +105,38 @@ void CpuManager::SetFont(const uint8_t* font, const size_t size)
 
 
 
+bool CpuManager::LoadRom(const char* fileName)
+{
+	LOG("Loading "_s + fileName);
+	std::FILE *file = std::fopen(fileName, "rb");
+
+	if (file == nullptr) 
+	{
+		LOGerr("Error at opening ROM file, interrupting Chip8 instance.");
+		return false;
+	}
+
+	// get file size
+	std::fseek(file, 0, SEEK_END);
+	auto fileSize = std::ftell(file);
+	std::fseek(file, 0, SEEK_SET);
+
+	// check if file size will not overflow emulated memory size
+	if (fileSize > get_arr_size(_cpu.memory))
+	{
+		LOGerr("Error, ROM size not compatible, interrupting Chip8 instance.");
+		std::fclose(file);
+		return false;
+	}
+
+	std::fread(_cpu.memory + 0x200, 1, fileSize, file);
+	std::fclose(file);
+	LOG("Load Done!");
+	return true;
+}
+
+
+
 void CpuManager::cleanMemory()
 {
 	clean_arr(_cpu.memory);
@@ -129,6 +161,20 @@ void CpuManager::cleanStack()
 void CpuManager::cleanGfx()
 {
 	clean_arr(_cpu.gfx);
+}
+
+iRender* CpuManager::SwapRender(iRender* render)
+{
+	auto ret = _cpu.render;
+	_cpu.render = render;
+	return ret;
+}
+
+iInput* CpuManager::SwapInput(iInput* input)
+{
+	auto ret = _cpu.input;
+	_cpu.input = input;
+	return ret;
 }
 
 

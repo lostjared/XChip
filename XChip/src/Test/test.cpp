@@ -1,11 +1,17 @@
 #include <iostream>
-#include <XChip/Utility/Alloc.h>
 #include <XChip/CpuManager.h>
+#include <XChip/SDL/SdlRender.h>
+#include <XChip/SDL/SdlInput.h>
+#include <XChip/Utility/Log.h>
 
-int main(void)
+int main(int argc, char** argv)
 {
-
 	using namespace xchip;
+
+	if (argc < 2) {
+		utility::LOG("No game to load...");
+	}
+	
 
 	CpuManager manager;
 
@@ -19,6 +25,36 @@ int main(void)
 	std::cout << "size of Chip8-Cpu registers: " << manager.GetRegistersSize() << std::endl;
 	std::cout << "size of Chip8-Cpu stack: " << manager.GetStackSize() << std::endl;
 	std::cout << "size of Chip8-Cpu gfx: " << manager.GetGfxSize() << std::endl;
+
+
+	manager.LoadRom(argv[1]);
+
+	bool exit = false;
+
+	auto render = new SdlRender();
+	auto input = new SdlInput();
+
+	render->SetWinCloseCallback([](const void* exit) { *(bool*)exit = true; }, &exit);
+	input->SetWaitKeyCallback([](const void* render) 
+	{ 
+		if(((SdlRender*)render)->UpdateEvents()) 
+			return false; 
+
+		return true;
+	}, &render);
+
+
+
+	while (!exit)
+	{
+	
+	}
+
+
+
+
+
+
 
 
 

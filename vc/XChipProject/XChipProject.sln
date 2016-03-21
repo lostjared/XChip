@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XChip", "XChip\XChip.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "Utility\Utility.vcxproj", "{1C423C1C-5AE6-43A5-9B82-90257927A0ED}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MediaSDL", "MediaSDL\MediaSDL.vcxproj", "{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -34,6 +36,14 @@ Global
 		{1C423C1C-5AE6-43A5-9B82-90257927A0ED}.Release|x64.Build.0 = Release|x64
 		{1C423C1C-5AE6-43A5-9B82-90257927A0ED}.Release|x86.ActiveCfg = Release|Win32
 		{1C423C1C-5AE6-43A5-9B82-90257927A0ED}.Release|x86.Build.0 = Release|Win32
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x64.ActiveCfg = Debug|x64
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x64.Build.0 = Debug|x64
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x86.ActiveCfg = Debug|Win32
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x86.Build.0 = Debug|Win32
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x64.ActiveCfg = Release|x64
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x64.Build.0 = Release|x64
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x86.ActiveCfg = Release|Win32
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

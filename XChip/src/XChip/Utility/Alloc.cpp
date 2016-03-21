@@ -17,8 +17,8 @@ void* alloc_arr(const std::size_t size)
 	return block + 1;
 }
 
-
-std::size_t get_arr_bytes(const void* arr)
+template<>
+std::size_t get_arr_size<uint8_t>(const uint8_t* arr)
 {
 	if (arr == nullptr) return 0;
 

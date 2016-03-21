@@ -3,7 +3,8 @@
 #include <cstdint>
 namespace xchip {
 
-
+class iRender;
+class iInput;
 
 struct Cpu
 {
@@ -15,6 +16,9 @@ struct Cpu
 	uint8_t* registers;
 	uint16_t* stack;
 	uint32_t* gfx;
+	
+	iRender* render;
+	iInput* input;
 
 	uint8_t delayTimer;
 	uint8_t soundTimer;

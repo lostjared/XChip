@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <XChip/Instructions.h>
+#include <XChip/Interfaces/iInput.h>
 #include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Log.h>
 
@@ -329,14 +330,14 @@ void op_EXxx(Cpu *const _cpu)
 	default: unknown_opcode(_cpu); break;
 
 	case 0xE: // EX9E  Skips the next instruction if the key stored in VX is pressed.
-		//if (_cpu->input->IsKeyPressed((EmulatorKey)VX))
-		//	_cpu->pc += 2;
+		if (_cpu->input->IsKeyPressed((Key)VX))
+			_cpu->pc += 2;
 		break;
 
 
 	case 0x1: // 0xEXA1  Skips the next instruction if the key stored in VX isn't pressed.
-	//	if (!_cpu->input->IsKeyPressed((EmulatorKey)VX))
-	//		_cpu->pc += 2;
+		if (!_cpu->input->IsKeyPressed((Key)VX))
+			_cpu->pc += 2;
 		break;
 	}
 }
