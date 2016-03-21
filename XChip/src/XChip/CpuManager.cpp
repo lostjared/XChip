@@ -163,6 +163,8 @@ void CpuManager::cleanGfx()
 	clean_arr(_cpu.gfx);
 }
 
+
+
 iRender* CpuManager::SwapRender(iRender* render)
 {
 	auto ret = _cpu.render;
@@ -203,56 +205,6 @@ size_t CpuManager::GetGfxSize() const
 {
 	return get_arr_size(_cpu.gfx);
 }
-
-
-
-
-
-const uint8_t* CpuManager::GetMemory() const
-{
-	return _cpu.memory;
-}
-
-
-
-const uint8_t* CpuManager::GetRegisters() const
-{
-	return _cpu.registers;
-}
-
-
-
-const uint16_t* CpuManager::GetStack() const
-{
-	return _cpu.stack;
-}
-
-
-
-const uint32_t* CpuManager::GetGfx() const
-{
-	return _cpu.gfx;
-}
-
-
-
-const Cpu& CpuManager::GetCpu() const
-{
-	return _cpu;
-}
-
-
-
-Cpu& CpuManager::GetCpu()
-{
-	return _cpu;
-}
-
-
-
-
-
-
 
 
 

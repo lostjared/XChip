@@ -380,7 +380,7 @@ void op_FX07(Cpu *const _cpu)
 // FX0A   A key press is awaited, and then stored in VX.
 void op_FX0A(Cpu *const _cpu)
 {
-	// VX = static_cast<uint8_t>(_cpu->input->WaitKeyPress());
+	VX = static_cast<uint8_t>(_cpu->input->WaitKeyPress());
 }
 
 

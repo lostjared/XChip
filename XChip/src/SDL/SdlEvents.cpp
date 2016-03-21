@@ -1,6 +1,7 @@
 #include <SDL2/SDL_events.h>
-#include <XChip/Utility/timer.h>
+#include <XChip/Utility/Timer.h>
 
+namespace xchip {
 
 SDL_Event g_sdlEvent;
 void UpdateSdlEvents()
@@ -15,4 +16,19 @@ void UpdateSdlEvents()
 		SDL_PollEvent(&g_sdlEvent);
 		eventTimer.Start();
 	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -1,5 +1,5 @@
 #ifndef _XCHIP_UTILITY_ALLOC_H_
-#define _XCHIP_UTILITY_ALLOC_H
+#define _XCHIP_UTILITY_ALLOC_H_
 #include <cstdint>
 #include <cstddef>
 #include <algorithm>
@@ -32,7 +32,7 @@ std::size_t get_arr_size(const T* arr)
 
 
 template<>
-extern std::size_t get_arr_size<uint8_t>(const uint8_t* arr);
+std::size_t get_arr_size<uint8_t>(const uint8_t* arr);
 
 template<class T>
 void clean_arr(T* arr)

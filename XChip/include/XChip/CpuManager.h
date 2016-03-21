@@ -21,10 +21,10 @@ public:
 
 	const iRender* GetRender() const { return _cpu.render; }
 	const iInput* GetInput() const { return _cpu.input; }
-	const uint8_t* GetMemory() const { _cpu.memory; }
-	const uint8_t* GetRegisters() const { _cpu.registers; }
-	const uint16_t* GetStack() const { _cpu.stack; }
-	const uint32_t* GetGfx() const { _cpu.gfx; }
+	const uint8_t* GetMemory() const { return _cpu.memory; }
+	const uint8_t* GetRegisters() const { return _cpu.registers; }
+	const uint16_t* GetStack() const { return _cpu.stack; }
+	const uint32_t* GetGfx() const { return _cpu.gfx; }
 	const Cpu& GetCpu() const { return _cpu; }
 	Cpu& GetCpu() { return _cpu; }
 
