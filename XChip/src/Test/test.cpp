@@ -12,6 +12,7 @@ int main(int argc, char** argv)
 
 	if (argc < 2) {
 		utility::LOG("No game to load...");
+		return 0;
 	}
 	
 
@@ -29,7 +30,11 @@ int main(int argc, char** argv)
 	std::cout << "size of Chip8-Cpu gfx: " << manager.GetGfxSize() << std::endl;
 
 
-	manager.LoadRom(argv[1]);
+	if( ! manager.LoadRom(argv[1]) )
+	{
+		utility::LOGerr("Failed to load game");
+		return 0;
+	}
 
 	bool exit = false;
 
