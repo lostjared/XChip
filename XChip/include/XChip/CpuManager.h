@@ -26,7 +26,7 @@ public:
 	const uint16_t* GetStack() const { return _cpu.stack; }
 	const uint32_t* GetGfx() const { return _cpu.gfx; }
 	const Cpu& GetCpu() const { return _cpu; }
-	Cpu& GetCpu() { return _cpu; }
+	
 
 	void SetRender(iRender* render) { _cpu.render = render; };
 	void SetInput(iInput* input) { _cpu.input = input; }
@@ -38,13 +38,12 @@ public:
 	void SetFont(const uint8_t* font, const size_t size);
 	bool LoadRom(const char* file);
 
-
 	void cleanMemory();
 	void cleanRegisters();
 	void cleanStack();
 	void cleanGfx();
 
-	
+	Cpu& GetCpu() { return _cpu; }
 	iRender* GetRender() { return _cpu.render; }
 	iInput* GetInput() { return _cpu.input; }
 	iRender* SwapRender(iRender* render);
