@@ -118,7 +118,7 @@ bool CpuManager::LoadRom(const char* fileName)
 
 	// get file size
 	std::fseek(file, 0, SEEK_END);
-	auto fileSize = std::ftell(file);
+	auto fileSize = static_cast<size_t>(std::ftell(file));
 	std::fseek(file, 0, SEEK_SET);
 
 	// check if file size will not overflow emulated memory size
