@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include <XChip/CpuManager.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Alloc.h>
@@ -28,6 +30,8 @@ bool alloc_cpu_arr(T*& arr, const size_t size)
 
 CpuManager::CpuManager() noexcept
 {
+	_cpu.delayTimer = 0;
+	_cpu.soundTimer = 0;
 	_cpu.opcode = 0;
 	_cpu.I      = 0;
 	_cpu.sp     = 0;
