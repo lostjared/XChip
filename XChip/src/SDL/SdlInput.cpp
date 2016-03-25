@@ -135,21 +135,21 @@ Key SdlInput::WaitKeyPress()
 
 
 
-void SdlInput::SetWaitKeyCallback(WaitKeyCallback callback, const void* arg) 
+void SdlInput::SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) 
 {
 	m_waitClbkArg = arg;
 	m_waitClbk = callback;
 }
 
 
-void SdlInput::SetResetKeyCallback(ResetKeyCallback callback, const void* arg) 
+void SdlInput::SetResetKeyCallback(const void* arg, ResetKeyCallback callback) 
 {
 	m_resetClbkArg = arg;
 	m_resetClbk = callback;
 }
 
 
-void SdlInput::SetEscapeKeyCallback(EscapeKeyCallback callback, const void* arg)
+void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback)
 {
 	m_escapeClbkArg = arg;
 	m_escapeClbk = callback;

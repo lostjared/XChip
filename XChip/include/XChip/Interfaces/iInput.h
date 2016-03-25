@@ -40,9 +40,9 @@ public:
 	virtual bool IsKeyPressed(const Key key) const = 0;
 	virtual bool UpdateKeys() = 0;
 	
-	virtual void SetWaitKeyCallback(WaitKeyCallback callback, const void* arg) = 0;
-	virtual void SetResetKeyCallback(ResetKeyCallback callback, const void* arg) = 0;
-	virtual void SetEscapeKeyCallback(EscapeKeyCallback callback, const void* arg) = 0;
+	virtual void SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) = 0;
+	virtual void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) = 0;
+	virtual void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) = 0;
 };
 
 

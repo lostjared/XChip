@@ -23,8 +23,8 @@ public:
 	void DrawBuffer() override;
 	bool UpdateEvents() override;
 
-	virtual void SetWinCloseCallback(WinCloseCallback callback, const void* arg) override;
-	virtual void SetWinResizeCallback(WinResizeCallback callback, const void* arg) override;
+	virtual void SetWinCloseCallback(const void* arg, WinCloseCallback callback) override;
+	virtual void SetWinResizeCallback(const void* arg, WinResizeCallback callback) override;
 private:
 	SDL_Window* m_window;
 	SDL_Renderer* m_rend;

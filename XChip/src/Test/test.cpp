@@ -24,7 +24,8 @@ int main(int argc, char** argv)
 		|| !manager->SetStack(16) 
 		|| !manager->SetGfx(64 * 32) )
 	{
-		utility::LOGerr("Could not allocate memory properly...");
+		LOGerr("Could not allocate memory properly...");
+		return 0;
 	}
 
 
@@ -36,7 +37,7 @@ int main(int argc, char** argv)
 
 	if( ! manager->LoadRom(argv[1]) )
 	{
-		utility::LOGerr("Failed to load game...");
+		LOGerr("Failed to load rom...");
 		return 0;
 	}
 
@@ -49,7 +50,7 @@ int main(int argc, char** argv)
 	
 	if( !manager->GetRender() || !manager->GetInput() )
 	{
-		utility::LOGerr("could not allocate Render/Input...");
+		LOGerr("could not allocate Render/Input...");
 		return 0;
 	}
 	
@@ -62,33 +63,19 @@ int main(int argc, char** argv)
 	}
 
 	chip->render->SetBuffer(chip->gfx);
-
-	chip->render->SetWinCloseCallback([](const void* exit) 
-	{ 
-		*(bool*)exit = true; 
-	}, &exit);
+	chip->render->SetWinCloseCallback(&exit, [](const void* exit){*(bool*)exit = true;});
 	
-	// [addr addr exit]-> [ addr exit ] - 8 bytes - [addr render]
-	void* exit_and_render[2] = { &exit, chip->render };
-
-	chip->input->SetWaitKeyCallback([](const void* exit_and_render)
-	{
-		auto exit = (bool*) *((void**)exit_and_render);
-		auto render = (SdlRender*) *(((void**)exit_and_render) + 1);
-		if(render->UpdateEvents()) { if(*exit) return false; }
-		render->DrawBuffer();
-		return true;
-	}, (void*) exit_and_render);
 
 
-	chip->input->SetEscapeKeyCallback([](const void* exit) 
+
+	chip->input->SetEscapeKeyCallback( &exit, [](const void* exit) 
 	{ 
 		
 		*(bool*)exit = true;
 
-	}, &exit);
+	});
 
-	chip->input->SetResetKeyCallback([](const void* manager)
+	chip->input->SetResetKeyCallback(manager, [](const void* manager)
 	{
 		((CpuManager*)manager)->GetCpu().pc = 0x200;
 		((CpuManager*)manager)->GetCpu().sp = 0;
@@ -96,12 +83,45 @@ int main(int argc, char** argv)
 		((CpuManager*)manager)->CleanStack();
 		((CpuManager*)manager)->CleanGfx();
 
-	}, manager);
+	});
 
 
 	Timer fps( 1_sec / 60 );
 	Timer instr( 680_hz );
 	Timer timers( 60_hz );
+
+
+	// [addr addr exit]-> [ addr exit ] - 8 bytes - [addr render]
+	static void* exit_and_render[4] = { &exit, chip->render, &fps, &instr };
+
+	chip->input->SetWaitKeyCallback((void*) exit_and_render, [](const void* args)
+	{
+		auto exit = (bool*) *((void**)args);
+		auto render = (SdlRender*) *(((void**)args) + 1);
+		auto fps = (Timer*) *(((void**)args) + 2);
+		auto instr = (Timer*) *(((void**)args) + 3);
+
+		do 
+		{
+			
+			if(render->UpdateEvents()) 
+			{ 
+				if(*exit) return false; 
+			}
+
+			if(fps->Finished()) 
+			{
+				render->DrawBuffer();
+				fps->Start();
+			}
+
+		}while(!instr->Finished());
+
+		instr->Start();
+		return true;
+	});
+
+
 
 	while (!exit)
 	{

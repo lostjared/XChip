@@ -29,9 +29,9 @@ public:
 	bool UpdateKeys() override;
 	Key WaitKeyPress() override;
 
-	void SetWaitKeyCallback(WaitKeyCallback callback, const void* arg) override;
-	void SetResetKeyCallback(ResetKeyCallback callback, const void* arg) override;
-	void SetEscapeKeyCallback(EscapeKeyCallback callback, const void* arg) override;
+	void SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) override;
+	void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) override;
+	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) override;
 
 private:
 	const unsigned char* m_keyboardState;

@@ -147,7 +147,7 @@ void SdlRender::DrawBuffer()
 
 
 
-void SdlRender::SetWinCloseCallback(WinCloseCallback callback, const void* arg)
+void SdlRender::SetWinCloseCallback(const void* arg, WinCloseCallback callback)
 {
 	m_closeClbkArg = arg;
 	m_closeClbk = callback;
@@ -156,7 +156,7 @@ void SdlRender::SetWinCloseCallback(WinCloseCallback callback, const void* arg)
 
 
 
-void SdlRender::SetWinResizeCallback(WinResizeCallback callback, const void* arg)
+void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback)
 {
 	m_resizeClbkArg = arg;
 	m_resizeClbk = callback;

@@ -18,8 +18,8 @@ public:
 	virtual void SetBuffer(const uint32_t* gfx) = 0;
 	virtual void DrawBuffer() = 0;
 
-	virtual void SetWinCloseCallback(WinCloseCallback callback, const void* arg) = 0;
-	virtual void SetWinResizeCallback(WinResizeCallback callack, const void* arg) = 0;
+	virtual void SetWinCloseCallback(const void* arg, WinCloseCallback callback) = 0;
+	virtual void SetWinResizeCallback(const void* arg, WinResizeCallback callack) = 0;
 };
 
 
