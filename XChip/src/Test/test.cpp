@@ -65,7 +65,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	static bool exit = false;
+	static bool running = false;
 
 	
 	
@@ -87,15 +87,15 @@ int main(int argc, char** argv)
 	}
 
 	chip->render->SetBuffer(chip->gfx);
-	chip->render->SetWinCloseCallback(&exit, [](const void* exit){*(bool*)exit = true;});
+	chip->render->SetWinCloseCallback(&running, [](const void* running){*(bool*)running = true;});
 	
 
 
 
-	chip->input->SetEscapeKeyCallback( &exit, [](const void* exit) 
+	chip->input->SetEscapeKeyCallback( &running, [](const void* running) 
 	{ 
 		
-		*(bool*)exit = true;
+		*(bool*)running = true;
 
 	});
 
@@ -115,22 +115,22 @@ int main(int argc, char** argv)
 	Timer timers( 60_hz );
 
 
-	// [addr addr exit]-> [ addr exit ] - 8 bytes - [addr render]
-	static void* exit_and_render[4] = { &exit, chip->render, &fps, &instr };
+	// [addr addr running]-> [ addr running ] - 8 bytes - [addr render]
+	static void* waitKeyArgs[4] = { &running, chip->render, &fps, &instr };
 
-	chip->input->SetWaitKeyCallback((void*) exit_and_render, [](const void* args)
+	chip->input->SetWaitKeyCallback((void*) waitKeyArgs, [](const void* args)
 	{
-		auto exit = (bool*) *((void**)args);
-		auto render = (SdlRender*) *(((void**)args) + 1);
-		auto fps = (Timer*) *(((void**)args) + 2);
-		auto instr = (Timer*) *(((void**)args) + 3);
+		auto running = (bool*)      *((void**)args);
+		auto render  = (SdlRender*) *(((void**)args) + 1);
+		auto fps     = (Timer*)     *(((void**)args) + 2);
+		auto instr   = (Timer*)     *(((void**)args) + 3);
 
-		do 
+		do
 		{
 			
 			if(render->UpdateEvents()) 
 			{ 
-				if(*exit) return false; 
+				if(*running) return false; 
 			}
 
 			if(fps->Finished()) 
@@ -147,7 +147,7 @@ int main(int argc, char** argv)
 
 
 
-	while (!exit)
+	while (!running)
 	{
 		chip->render->UpdateEvents();
 		chip->input->UpdateKeys();
