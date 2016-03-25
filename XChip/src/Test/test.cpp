@@ -5,6 +5,7 @@
 #include <XChip/SDL/SdlInput.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Timer.h>
+
 int main(int argc, char** argv)
 {
 	using namespace xchip;
@@ -16,72 +17,103 @@ int main(int argc, char** argv)
 	}
 	
 
-	CpuManager manager;
+	static CpuManager *manager = new(std::nothrow) CpuManager();
 
-	manager.SetMemory(0xFFFF);
-	manager.SetRegisters(16);
-	manager.SetStack(16);
-	manager.SetGfx(64 * 32);
-
-
-	std::cout << "size of Chip8-Cpu memory: " << manager.GetMemorySize() << std::endl;
-	std::cout << "size of Chip8-Cpu registers: " << manager.GetRegistersSize() << std::endl;
-	std::cout << "size of Chip8-Cpu stack: " << manager.GetStackSize() << std::endl;
-	std::cout << "size of Chip8-Cpu gfx: " << manager.GetGfxSize() << std::endl;
-
-
-	if( ! manager.LoadRom(argv[1]) )
+	if( !manager->SetMemory(0xFFFF) 
+		|| !manager->SetRegisters(16) 
+		|| !manager->SetStack(16) 
+		|| !manager->SetGfx(64 * 32) )
 	{
-		utility::LOGerr("Failed to load game");
+		utility::LOGerr("Could not allocate memory properly...");
+	}
+
+
+	std::cout << "size of Chip8-Cpu memory: "    << manager->GetMemorySize()    << std::endl;
+	std::cout << "size of Chip8-Cpu registers: " << manager->GetRegistersSize() << std::endl;
+	std::cout << "size of Chip8-Cpu stack: "     << manager->GetStackSize()     << std::endl;
+	std::cout << "size of Chip8-Cpu gfx: "       << manager->GetGfxSize()       << std::endl;
+
+
+	if( ! manager->LoadRom(argv[1]) )
+	{
+		utility::LOGerr("Failed to load game...");
 		return 0;
 	}
 
-	bool exit = false;
+	static bool exit = false;
 
-	auto render = new SdlRender();
-	auto input = new SdlInput();
-
-	render->Initialize(64, 32);
-	input->Initialize();
 	
-	manager.SetInput(input);
-	manager.SetRender(render);
+	
+	manager->SetRender(new(std::nothrow) SdlRender());
+	manager->SetInput(new(std::nothrow) SdlInput());
+	
+	if( !manager->GetRender() || !manager->GetInput() )
+	{
+		utility::LOGerr("could not allocate Render/Input...");
+		return 0;
+	}
+	
+	auto chip = &manager->GetCpu();	
 
+	if(!chip->render->Initialize(64, 32) 
+		|| !chip->input->Initialize() )
+	{
+		return 0;
+	}
 
-	render->SetWinCloseCallback([](const void* exit) { *(bool*)exit = true; }, &exit);
-	input->SetWaitKeyCallback([](const void* render) 
+	chip->render->SetBuffer(chip->gfx);
+
+	chip->render->SetWinCloseCallback([](const void* exit) 
 	{ 
-		if(((SdlRender*)render)->UpdateEvents()) 
-			return false; 
+		*(bool*)exit = true; 
+	}, &exit);
+	
+	// [addr addr exit]-> [ addr exit ] - 8 bytes - [addr render]
+	void* exit_and_render[2] = { &exit, chip->render };
 
+	chip->input->SetWaitKeyCallback([](const void* exit_and_render)
+	{
+		auto exit = *((bool**)exit_and_render);
+		auto render = (iRender*) * (((char**)exit_and_render) + sizeof(void*));
+		if(render->UpdateEvents()) { if(*exit) return false; }
+		render->DrawBuffer();
 		return true;
-	}, &render);
-	input->SetEscapeKeyCallback([](const void* exit) { *(bool*)exit = true; }, &exit);
-
-	auto& _cpu = manager.GetCpu();
-	
-	render->SetBuffer(_cpu.gfx);
+	}, (void*) exit_and_render);
 
 
+	chip->input->SetEscapeKeyCallback([](const void* exit) 
+	{ 
+		
+		*(bool*)exit = true;
+
+	}, &exit);
+
+	chip->input->SetResetKeyCallback([](const void* manager)
+	{
+		((CpuManager*)manager)->GetCpu().pc = 0x200;
+		((CpuManager*)manager)->GetCpu().sp = 0;
+		((CpuManager*)manager)->CleanRegisters();
+		((CpuManager*)manager)->CleanStack();
+		((CpuManager*)manager)->CleanGfx();
+
+	}, manager);
 
 
-	
 	Timer fps( 1_sec / 60 );
-	Timer instr( 358_hz );
+	Timer instr( 680_hz );
 	Timer timers( 60_hz );
 
 	while (!exit)
 	{
-		render->UpdateEvents();
-		input->UpdateKeys();
-
+		chip->render->UpdateEvents();
+		chip->input->UpdateKeys();
 
 		if(timers.Finished())
 		{
-			if(_cpu.delayTimer > 0)
-				-- _cpu.delayTimer;
-			if(_cpu.soundTimer > 0)
-				-- _cpu.soundTimer;
+			if(chip->delayTimer > 0)
+				-- chip->delayTimer;
+			if(chip->soundTimer > 0)
+				-- chip->soundTimer;
 
 			timers.Start();
 		}
@@ -89,27 +121,20 @@ int main(int argc, char** argv)
 
 		if(instr.Finished())
 		{
-			_cpu.opcode = ( _cpu.memory[_cpu.pc] << 8 ) | _cpu.memory[_cpu.pc + 1];
-			_cpu.pc += 2;
-			instructions::instrTable[ (_cpu.opcode & 0xf000) >> 12 ](&_cpu);
+			chip->opcode = ( chip->memory[chip->pc] << 8 )  | chip->memory[chip->pc + 1];
+			chip->pc += 2;
+			instructions::instrTable[ (chip->opcode & 0xf000) >> 12 ](chip);
 			instr.Start();
 		}
 
 		if(fps.Finished())
 		{
-			render->DrawBuffer();
+			chip->render->DrawBuffer();
 			fps.Start();
-		}
-
-	
+		}	
 	}
 
-
-
-
-
-
-
+	delete manager;
 
 
 	return 0;

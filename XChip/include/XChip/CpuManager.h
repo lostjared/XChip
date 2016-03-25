@@ -38,10 +38,10 @@ public:
 	void SetFont(const uint8_t* font, const size_t size);
 	bool LoadRom(const char* file);
 
-	void cleanMemory();
-	void cleanRegisters();
-	void cleanStack();
-	void cleanGfx();
+	void CleanMemory();
+	void CleanRegisters();
+	void CleanStack();
+	void CleanGfx();
 
 	Cpu& GetCpu() { return _cpu; }
 	iRender* GetRender() { return _cpu.render; }

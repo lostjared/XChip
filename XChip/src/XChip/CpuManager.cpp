@@ -40,6 +40,7 @@ CpuManager::CpuManager() noexcept
 
 CpuManager::~CpuManager()
 {
+	LOG("Freeing CpuManager");
 	free_arr(_cpu.gfx);
 	free_arr(_cpu.stack);
 	free_arr(_cpu.registers);
@@ -137,28 +138,28 @@ bool CpuManager::LoadRom(const char* fileName)
 
 
 
-void CpuManager::cleanMemory()
+void CpuManager::CleanMemory()
 {
 	clean_arr(_cpu.memory);
 }
 
 
 
-void CpuManager::cleanRegisters()
+void CpuManager::CleanRegisters()
 {
 	clean_arr(_cpu.registers);
 }
 
 
 
-void CpuManager::cleanStack()
+void CpuManager::CleanStack()
 {
 	clean_arr(_cpu.stack);
 }
 
 
 
-void CpuManager::cleanGfx()
+void CpuManager::CleanGfx()
 {
 	clean_arr(_cpu.gfx);
 }
