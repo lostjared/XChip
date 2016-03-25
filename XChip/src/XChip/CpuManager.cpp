@@ -6,7 +6,7 @@ namespace xchip {
 using namespace xchip::utility;
 
 template<class T>
-bool alloc_cpu_arr(T*& arr, size_t size)
+bool alloc_cpu_arr(T*& arr, const size_t size)
 {
 
 	if (size == get_arr_size(arr))

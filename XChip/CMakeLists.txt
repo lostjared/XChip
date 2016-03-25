@@ -4,18 +4,23 @@
 project(XChip.exe)
 cmake_minimum_required(VERSION 2.8)
 
+#media variables
+set(USING_SDL_MEDIA  "OFF" CACHE STRING "" )
+
 #additional libs, subdirectories libs can use this variable
 set(ADD_LIBS "" CACHE STRING "additional libs to link...")
 
 #sub libs
-add_subdirectory(src/SDL)
 add_subdirectory(src/XChip)
 
+if( ${USING_SDL_MEDIA} )
+	add_subdirectory(src/SDL)
+endif()
 
 
 # CXX_FLAGS
 set(CMAKE_CXX_COMPILER "clang++")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -Winline  -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -Winline -Werror  -std=c++11")
 
 #######################################################################################
 #######################################################################################
@@ -45,4 +50,4 @@ add_executable(${PROJECT_NAME} ${APP_HEADERS} ${APP_SRC})
 message(STATUS "Additional libs: " ${ADD_LIBS})
 
 # Link libs
-TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${ADD_LIBS} SDL_MEDIA XChip )
+TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${ADD_LIBS} XChip )
