@@ -73,8 +73,8 @@ int main(int argc, char** argv)
 
 	chip->input->SetWaitKeyCallback([](const void* exit_and_render)
 	{
-		auto exit = *((bool**)exit_and_render);
-		auto render = (iRender*) * (((char**)exit_and_render) + sizeof(void*));
+		auto exit = (bool*) *((void**)exit_and_render);
+		auto render = (SdlRender*) *(((void**)exit_and_render) + 1);
 		if(render->UpdateEvents()) { if(*exit) return false; }
 		render->DrawBuffer();
 		return true;
