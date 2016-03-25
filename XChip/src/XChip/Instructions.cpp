@@ -399,12 +399,10 @@ void op_FXx5(Cpu *const _cpu)
 
 
 	case 0x55: //FX55  Stores V0 to VX in memory starting at address I
-		//std::memcpy(_cpu->memory + _cpu->I, _cpu->registers, ((_cpu->opcode & 0x0f00) >> 8) + 1);
 		std::copy_n(_cpu->registers, ((_cpu->opcode & 0x0f00) >> 8) + 1, _cpu->memory + _cpu->I);
 		break;
 
 	case 0x65: //FX65  Fills V0 to VX with values from memory starting at address I.
-		//std::memcpy(_cpu->registers, _cpu->memory + _cpu->I, ((_cpu->opcode & 0x0f00) >> 8) + 1);
 		std::copy_n(_cpu->memory + _cpu->I, ((_cpu->opcode & 0x0f00) >> 8) + 1, _cpu->registers);
 		break;
 	}
