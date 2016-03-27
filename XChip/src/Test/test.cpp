@@ -65,7 +65,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	static bool running = false;
+	static bool running = true;
 
 	
 	
@@ -87,17 +87,12 @@ int main(int argc, char** argv)
 	}
 
 	chip->render->SetBuffer(chip->gfx);
-	chip->render->SetWinCloseCallback(&running, [](const void* running){*(bool*)running = true;});
+	chip->render->SetWinCloseCallback(&running, [](const void* running){*(bool*)running = false;});
 	
 
 
 
-	chip->input->SetEscapeKeyCallback( &running, [](const void* running) 
-	{ 
-		
-		*(bool*)running = true;
-
-	});
+	chip->input->SetEscapeKeyCallback( &running, [](const void* running){ *(bool*)running = false; });
 
 	chip->input->SetResetKeyCallback(manager, [](const void* manager)
 	{
@@ -130,7 +125,7 @@ int main(int argc, char** argv)
 			
 			if(render->UpdateEvents()) 
 			{ 
-				if(*running) return false; 
+				if(! *running) return false; 
 			}
 
 			if(fps->Finished()) 
@@ -147,7 +142,7 @@ int main(int argc, char** argv)
 
 
 
-	while (!running)
+	while (running)
 	{
 		chip->render->UpdateEvents();
 		chip->input->UpdateKeys();

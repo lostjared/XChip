@@ -2,17 +2,15 @@
 #define _XCHIP_SDLINPUT_H_
 
 #include <vector>
-#include <SDL2/SDL_scancode.h>
 #include <XChip/Interfaces/iInput.h>
-
 
 namespace xchip {
 
-
-
+	
 
 class SdlInput final : public iInput
 {
+	using SDL_Scancode = int;
 	using KeyPair = std::pair<Key, SDL_Scancode>;
 public:
 	SdlInput();
