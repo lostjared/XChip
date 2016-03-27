@@ -48,26 +48,13 @@ bool Emulator::Initialize(iRender *render, iInput *input) noexcept
 
 	_manager.SetFont(fonts::chip8_default_font, 80);
 
-
-	if (!render) utility::LOG("WARNING: Initializing Emulator with NULL iRender");
-	else
-	{
-		if(! this->InitRender(render) ) 
-			return false;
-	}
-
-	if(!input) utility::LOG("WARNING: Initializing Emulator with NULL iInput");
-	else
-	{
-		if (! this->InitInput(input))
-			return false;
-	}
 	
 
-	// check if we have ready render & input, if so, then unset exit flag
-	if(render && input) 
-		_exitf = false;
+	if (!this->InitRender(render) || ! this->InitInput(input))
+			return false;
+	
 
+	_exitf = false;
 	_initialized = true;
 	return true;
 }
@@ -192,7 +179,8 @@ void Emulator::SetFramesPerSec(unsigned short value)
 
 bool Emulator::InitRender(iRender* rend)
 {
-	if (!rend->Initialize(64, 32)) return false;
+	if (!rend) return false;
+	else if (!rend->Initialize(64, 32)) return false;
 
 	rend->SetBuffer(_manager.GetGfx());
 	rend->SetWinCloseCallback(&_exitf, [](const void*exitf) {*(bool*)exitf = true; });
@@ -207,7 +195,8 @@ bool Emulator::InitRender(iRender* rend)
 
 bool Emulator::InitInput(iInput* input)
 {
-	if (!input->Initialize()) return false;
+	if (!input) return false;
+	else if (!input->Initialize()) return false;
 
 	input->SetEscapeKeyCallback(&_exitf, [](const void*exitf) {*(bool*)exitf = true; });
 	input->SetResetKeyCallback(this, [](const void* _this)
