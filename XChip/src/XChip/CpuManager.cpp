@@ -26,32 +26,52 @@ bool alloc_cpu_arr(T*& arr, const size_t size)
 	return true;
 }
 
+template<class T>
+void free_cpu_arr(T*& arr)
+{
+	if (arr != nullptr)
+	{
+		free_arr(arr);
+		arr = nullptr;
+	}
+}
+
 
 
 CpuManager::CpuManager() noexcept
 {
 	_cpu.delayTimer = 0;
 	_cpu.soundTimer = 0;
-	_cpu.opcode = 0;
-	_cpu.I      = 0;
-	_cpu.sp     = 0;
-	_cpu.pc     = 0x200;
-	_cpu.memory    = nullptr;
-	_cpu.registers = nullptr;
-	_cpu.stack     = nullptr;
-	_cpu.gfx       = nullptr;
+	_cpu.opcode     = 0;
+	_cpu.I          = 0;
+	_cpu.sp         = 0;
+	_cpu.pc         = 0x200;
+	_cpu.memory     = nullptr;
+	_cpu.registers  = nullptr;
+	_cpu.stack      = nullptr;
+	_cpu.gfx        = nullptr;
+	_cpu.input      = nullptr;
+	_cpu.render     = nullptr;
 }
 
 CpuManager::~CpuManager()
 {
+	this->Dispose();
 	LOG("Freeing CpuManager");
-	free_arr(_cpu.gfx);
-	free_arr(_cpu.stack);
-	free_arr(_cpu.registers);
-	free_arr(_cpu.memory);
+
 }
 
-
+void CpuManager::Dispose() noexcept
+{
+	delete _cpu.render;
+	delete _cpu.input;
+	_cpu.render = nullptr;
+	_cpu.input = nullptr;
+	free_cpu_arr(_cpu.gfx);
+	free_cpu_arr(_cpu.stack);
+	free_cpu_arr(_cpu.registers);
+	free_cpu_arr(_cpu.memory);
+}
 
 
 bool CpuManager::SetMemory(const std::size_t size)
@@ -142,6 +162,8 @@ bool CpuManager::LoadRom(const char* fileName)
 
 
 
+
+
 void CpuManager::CleanMemory()
 {
 	clean_arr(_cpu.memory);
@@ -152,6 +174,7 @@ void CpuManager::CleanMemory()
 void CpuManager::CleanRegisters()
 {
 	clean_arr(_cpu.registers);
+	_cpu.I = 0;
 }
 
 
@@ -166,6 +189,20 @@ void CpuManager::CleanStack()
 void CpuManager::CleanGfx()
 {
 	clean_arr(_cpu.gfx);
+}
+
+
+
+void CpuManager::Reset()
+{
+	this->CleanGfx();
+	this->CleanStack();
+	this->CleanRegisters();
+	_cpu.opcode = 0;
+	_cpu.pc = 0x200;
+	_cpu.sp = 0;
+	_cpu.delayTimer = 0;
+	_cpu.soundTimer = 0;
 }
 
 

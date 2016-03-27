@@ -88,7 +88,7 @@
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Utility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Utility.lib;SDL_MEDIA.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)\;C:\cygwin64\home\Rafael\Git\github\experimental\XChip\XChip\dependencies\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -139,6 +139,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\XChip\Cpu.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\CpuManager.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Emulator.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Fonts.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Instructions.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iInput.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iRender.h" />
@@ -146,6 +148,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\Test\test.cpp" />
     <ClCompile Include="..\..\..\XChip\src\XChip\CpuManager.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\XChip\Emulator.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\XChip\Fonts.cpp" />
     <ClCompile Include="..\..\..\XChip\src\XChip\Instructions.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

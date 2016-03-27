@@ -33,6 +33,12 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iRender.h">
       <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Emulator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Fonts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\XChip\Instructions.cpp">
@@ -42,6 +48,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XChip\src\XChip\CpuManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XChip\src\XChip\Emulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XChip\src\XChip\Fonts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

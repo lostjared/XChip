@@ -14,6 +14,8 @@ public:
 	CpuManager() noexcept;
 	~CpuManager();
 
+	void Dispose() noexcept;
+
 	size_t GetMemorySize() const;
 	size_t GetRegistersSize() const;
 	size_t GetStackSize() const;
@@ -38,10 +40,12 @@ public:
 	void SetFont(const uint8_t* font, const size_t size);
 	bool LoadRom(const char* file);
 
+	
 	void CleanMemory();
 	void CleanRegisters();
 	void CleanStack();
 	void CleanGfx();
+	void Reset();
 
 	Cpu& GetCpu() { return _cpu; }
 	iRender* GetRender() { return _cpu.render; }

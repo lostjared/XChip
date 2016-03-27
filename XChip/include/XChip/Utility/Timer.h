@@ -34,7 +34,7 @@ public:
 	void SetTargetTime(Micro target) { m_target = target; }
 	void Start() { m_startPoint = std::chrono::steady_clock::now(); }
 
-	static void Halt(Nano nano);
+	static void Halt(const Nano& nano);
 private:
 	std::chrono::steady_clock::time_point m_startPoint = std::chrono::steady_clock::now();
 	Micro m_target;
