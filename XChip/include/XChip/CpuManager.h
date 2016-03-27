@@ -45,7 +45,6 @@ public:
 	void CleanRegisters();
 	void CleanStack();
 	void CleanGfx();
-	void Reset();
 
 	Cpu& GetCpu() { return _cpu; }
 	iRender* GetRender() { return _cpu.render; }

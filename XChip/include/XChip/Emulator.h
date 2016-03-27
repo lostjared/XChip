@@ -25,10 +25,11 @@ public:
 	void UpdateSystems();
 	void ExecuteInstr();
 	void Draw();
+	void Reset();
 
 	void SetInstrPerSec(unsigned short value);
 	void SetFramesPerSec(unsigned short value);
-	
+
 	bool LoadRom(const char* fname) { return _manager.LoadRom(fname); }
 	bool SetAndInitRender(iRender* rend) { return this->InitRender(rend); }
 	bool SetAndInitInput(iInput* input) { return this->InitInput(input); }

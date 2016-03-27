@@ -1,14 +1,17 @@
 #include <cstring>
 
 #include <XChip/CpuManager.h>
+#include <XChip/Interfaces/iRender.h>
+#include <XChip/Interfaces/iInput.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Alloc.h>
+
 
 namespace xchip {
 using namespace xchip::utility;
 
 template<class T>
-bool alloc_cpu_arr(T*& arr, const size_t size)
+static bool alloc_cpu_arr(T*& arr, const size_t size)
 {
 
 	if (size == get_arr_size(arr))
@@ -27,7 +30,7 @@ bool alloc_cpu_arr(T*& arr, const size_t size)
 }
 
 template<class T>
-void free_cpu_arr(T*& arr)
+static void free_cpu_arr(T*& arr)
 {
 	if (arr != nullptr)
 	{
@@ -40,8 +43,6 @@ void free_cpu_arr(T*& arr)
 
 CpuManager::CpuManager() noexcept
 {
-	_cpu.delayTimer = 0;
-	_cpu.soundTimer = 0;
 	_cpu.opcode     = 0;
 	_cpu.I          = 0;
 	_cpu.sp         = 0;
@@ -52,6 +53,8 @@ CpuManager::CpuManager() noexcept
 	_cpu.gfx        = nullptr;
 	_cpu.input      = nullptr;
 	_cpu.render     = nullptr;
+	_cpu.delayTimer = 0;
+	_cpu.soundTimer = 0;
 }
 
 CpuManager::~CpuManager()
@@ -63,10 +66,6 @@ CpuManager::~CpuManager()
 
 void CpuManager::Dispose() noexcept
 {
-	delete _cpu.render;
-	delete _cpu.input;
-	_cpu.render = nullptr;
-	_cpu.input = nullptr;
 	free_cpu_arr(_cpu.gfx);
 	free_cpu_arr(_cpu.stack);
 	free_cpu_arr(_cpu.registers);
@@ -191,19 +190,6 @@ void CpuManager::CleanGfx()
 	clean_arr(_cpu.gfx);
 }
 
-
-
-void CpuManager::Reset()
-{
-	this->CleanGfx();
-	this->CleanStack();
-	this->CleanRegisters();
-	_cpu.opcode = 0;
-	_cpu.pc = 0x200;
-	_cpu.sp = 0;
-	_cpu.delayTimer = 0;
-	_cpu.soundTimer = 0;
-}
 
 
 

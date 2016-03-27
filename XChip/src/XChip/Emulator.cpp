@@ -78,6 +78,10 @@ void Emulator::Dispose() noexcept
 {
 	if (_initialized)
 	{
+		auto rend = _manager.SwapRender(nullptr);
+		auto input = _manager.SwapInput(nullptr);
+		if (rend) delete rend;
+		if (input) delete input;
 		_manager.Dispose();
 		_instrf = false;
 		_drawf = false;
@@ -158,6 +162,17 @@ void Emulator::Draw()
 	_drawf = false;
 }
 
+void Emulator::Reset()
+{
+	_manager.CleanGfx();
+	_manager.CleanStack();
+	_manager.CleanRegisters();
+	_manager.GetCpu().pc = 0x200;
+	_manager.GetCpu().sp = 0;
+	_manager.GetCpu().delayTimer = 0;
+	_manager.GetCpu().soundTimer = 0;
+}
+
 
 
 void Emulator::SetInstrPerSec(unsigned short value)
@@ -182,7 +197,8 @@ bool Emulator::InitRender(iRender* rend)
 	rend->SetBuffer(_manager.GetGfx());
 	rend->SetWinCloseCallback(&_exitf, [](const void*exitf) {*(bool*)exitf = true; });
 	rend->SetWinResizeCallback(nullptr, [](const void*) {utility::LOG("Window Resized"); });
-	_manager.SetRender(rend);
+	auto oldrend = _manager.SwapRender(rend);
+	if (oldrend) delete oldrend;
 
 	return true;
 }
@@ -194,9 +210,9 @@ bool Emulator::InitInput(iInput* input)
 	if (!input->Initialize()) return false;
 
 	input->SetEscapeKeyCallback(&_exitf, [](const void*exitf) {*(bool*)exitf = true; });
-	input->SetResetKeyCallback(&_manager, [](const void* manag)
+	input->SetResetKeyCallback(this, [](const void* _this)
 	{
-		((CpuManager*)manag)->Reset();
+		((Emulator*)_this)->Reset();
 	});
 
 	input->SetWaitKeyCallback(this, [](const void* emu)
@@ -217,7 +233,8 @@ bool Emulator::InitInput(iInput* input)
 		return true;
 	});
 
-	_manager.SetInput(input);
+	auto oldinput = _manager.SwapInput(input);
+	if (oldinput) delete oldinput;
 
 	return true;
 }
