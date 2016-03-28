@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 	using namespace xchip;
 	using namespace utility;
 	
-	if (argc < 2) {
+	if (argc < 1) {
 		LOG("No game to load...");
 		return 0;
 	}
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 	if (!emulator.Initialize(new(std::nothrow) SdlRender(), new(std::nothrow) SdlInput()))
 		return 1;
 
-	if (!emulator.LoadRom(argv[1]))
+	if (!emulator.LoadRom("UFO"))
 		return 1;
 
 	while (! emulator.GetExitFlag())

@@ -54,6 +54,16 @@ bool Emulator::Initialize(iRender *const render, iInput *const input) noexcept
 
 	_exitf = false;
 	_initialized = true;
+
+	auto cpu_memory_exitf_offs = _manager.GetMemorySize() - sizeof(bool*) - 1;
+
+	/* add a ptr to _exitf in the end of XChip's Cpu's memory */
+	/* so in instructions we can have access to _exitf as an error flag */
+	(bool*&)_manager.GetCpu().memory[cpu_memory_exitf_offs] = &_exitf;
+
+	/* assign 0xFF value behind exitf in cpu's memory, saying that we added the ptr there */
+	_manager.GetCpu().memory[cpu_memory_exitf_offs - 1] = 0xFF;
+
 	return true;
 }
 
