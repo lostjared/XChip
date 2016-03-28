@@ -18,7 +18,8 @@ public:
 
 	bool Initialize(const int width, const int height) noexcept override;
 	void Dispose() noexcept override;
-
+	
+	bool IsInitialized() const override { return m_initialized; }
 	void SetBuffer(const uint32_t *gfx) override;
 	void DrawBuffer() override;
 	bool UpdateEvents() override;
@@ -35,6 +36,7 @@ private:
 	WinResizeCallback m_resizeClbk;
 	const void* m_closeClbkArg;
 	const void* m_resizeClbkArg;
+	bool m_initialized;
 
 
 

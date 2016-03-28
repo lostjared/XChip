@@ -48,8 +48,6 @@ bool Emulator::Initialize(iRender *render, iInput *input) noexcept
 
 	_manager.SetFont(fonts::chip8_default_font, 80);
 
-	
-
 	if (!this->InitRender(render) || ! this->InitInput(input))
 			return false;
 	
@@ -180,6 +178,7 @@ void Emulator::SetFramesPerSec(unsigned short value)
 bool Emulator::InitRender(iRender* rend)
 {
 	if (!rend) return false;
+	else if (rend->IsInitialized()) return true;
 	else if (!rend->Initialize(64, 32)) return false;
 
 	rend->SetBuffer(_manager.GetGfx());
@@ -196,6 +195,7 @@ bool Emulator::InitRender(iRender* rend)
 bool Emulator::InitInput(iInput* input)
 {
 	if (!input) return false;
+	else if (input->IsInitialized()) return true;
 	else if (!input->Initialize()) return false;
 
 	input->SetEscapeKeyCallback(&_exitf, [](const void*exitf) {*(bool*)exitf = true; });

@@ -16,7 +16,8 @@ SdlRender::SdlRender()
 	m_closeClbk(nullptr),
 	m_resizeClbk(nullptr),
 	m_closeClbkArg(nullptr),
-	m_resizeClbkArg(nullptr)
+	m_resizeClbkArg(nullptr),
+	m_initialized(false)
 
 {
 	LOG("Creating SdlRenderer object...");
@@ -32,21 +33,6 @@ SdlRender::~SdlRender()
 	SDL_Quit();
 }
 
-
-
-
-void SdlRender::Dispose() noexcept
-{
-	SDL_DestroyTexture(m_texture);
-	SDL_DestroyRenderer(m_rend);
-	SDL_DestroyWindow(m_window);
-	m_window = nullptr;
-	m_buffer = nullptr;
-	m_closeClbk = nullptr;
-	m_resizeClbk = nullptr;
-	m_closeClbkArg = nullptr;
-	m_resizeClbkArg = nullptr;
-}
 
 
 
@@ -102,8 +88,25 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	SDL_RenderClear(m_rend);
 	SDL_RenderPresent(m_rend);
 
+	m_initialized = true;
 	return true;
 }
+
+
+void SdlRender::Dispose() noexcept
+{
+	SDL_DestroyTexture(m_texture);
+	SDL_DestroyRenderer(m_rend);
+	SDL_DestroyWindow(m_window);
+	m_window = nullptr;
+	m_buffer = nullptr;
+	m_closeClbk = nullptr;
+	m_resizeClbk = nullptr;
+	m_closeClbkArg = nullptr;
+	m_resizeClbkArg = nullptr;
+	m_initialized = false;
+}
+
 
 
 
@@ -123,6 +126,7 @@ bool SdlRender::UpdateEvents()
 		return true;
 	}
 
+	
 	return false;
 }
 

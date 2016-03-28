@@ -28,7 +28,8 @@ SdlInput::SdlInput()
 	m_resetClbk(nullptr),
 	m_escapeClbk(nullptr),
 	m_resetClbkArg(nullptr),
-	m_escapeClbkArg(nullptr)
+	m_escapeClbkArg(nullptr),
+	m_initialized(false)
 {
 	LOG("Creating SdlInput object...");
 }
@@ -54,6 +55,7 @@ bool SdlInput::Initialize() noexcept
 		return false;
 	}
 
+	m_initialized = true;
 	return true;
 }
 
@@ -66,6 +68,7 @@ void SdlInput::Dispose() noexcept
 	m_escapeClbk = nullptr;
 	m_resetClbkArg = nullptr;
 	m_escapeClbkArg = nullptr;
+	m_initialized = false;
 }
 
 

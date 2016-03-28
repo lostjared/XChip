@@ -14,6 +14,8 @@ public:
 	virtual ~iRender() = default;
 	virtual bool Initialize(const int w, const int h) noexcept = 0;
 	virtual void Dispose() noexcept = 0;
+
+	virtual bool IsInitialized() const = 0;
 	virtual bool UpdateEvents() = 0;
 	virtual void SetBuffer(const uint32_t* gfx) = 0;
 	virtual void DrawBuffer() = 0;

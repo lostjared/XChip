@@ -21,6 +21,7 @@ public:
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
 
+	bool IsInitialized() const override { return m_initialized;  }
 	bool IsKeyPressed(const Key key) const override;
 	Key GetPressedKey() const override;
 
@@ -40,6 +41,7 @@ private:
 	const void* m_waitClbkArg;
 	const void* m_resetClbkArg;
 	const void* m_escapeClbkArg;
+	bool m_initialized;
 
 };
 
