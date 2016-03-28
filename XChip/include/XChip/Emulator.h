@@ -12,7 +12,7 @@ class Emulator
 public:
 	Emulator() noexcept;
 	~Emulator();
-	bool Initialize(iRender *render = nullptr, iInput *input = nullptr) noexcept;
+	bool Initialize(iRender *const render, iInput *const input) noexcept;
 	void Dispose() noexcept;
 	
 	
@@ -27,8 +27,8 @@ public:
 	void Draw();
 	void Reset();
 
-	void SetInstrPerSec(unsigned short value);
-	void SetFramesPerSec(unsigned short value);
+	void SetInstrPerSec(const unsigned short value);
+	void SetFramesPerSec(const unsigned short value);
 
 	bool LoadRom(const char* fname) { return _manager.LoadRom(fname); }
 	bool SetAndInitRender(iRender* rend) { return this->InitRender(rend); }
@@ -38,8 +38,8 @@ public:
 	iRender* SwapRender(iRender* rend) { return _manager.SwapRender(rend); }
 	iInput* SwapRender(iInput* input) { return _manager.SwapInput(input); }
 private:
-	bool InitRender(iRender* rend);
-	bool InitInput(iInput* input);
+	bool InitRender(iRender* const rend);
+	bool InitInput(iInput* const input);
 
 private:
 	CpuManager _manager;

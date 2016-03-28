@@ -32,7 +32,7 @@ Emulator::~Emulator()
 }
 
 
-bool Emulator::Initialize(iRender *render, iInput *input) noexcept
+bool Emulator::Initialize(iRender *const render, iInput *const input) noexcept
 {
 	if (_initialized)
 		this->Dispose();
@@ -81,8 +81,8 @@ void Emulator::HaltForNextFlag() const
 	using namespace utility;
 	if (!_instrf && !_drawf)
 	{
-		auto instrRemain = _instrTimer.GetRemain();
-		auto frameRemain = _frameTimer.GetRemain();
+		const auto instrRemain = _instrTimer.GetRemain();
+		const auto frameRemain = _frameTimer.GetRemain();
 		Timer::Halt((instrRemain < frameRemain) ? instrRemain : frameRemain);
 	}
 }
@@ -109,15 +109,16 @@ void Emulator::UpdateTimers()
 
 	if (chip8Timers.Finished())
 	{
-		if(_manager.GetCpu().delayTimer)
-			--_manager.GetCpu().delayTimer;
+		auto& _cpu = _manager.GetCpu();
+		if(_cpu.delayTimer)
+			--_cpu.delayTimer;
 
-		if (_manager.GetCpu().soundTimer)
+		if (_cpu.soundTimer)
 		{
 			// play beep...
 			// temporary
 			LOG("\a");
-			--_manager.GetCpu().soundTimer;
+			--_cpu.soundTimer;
 		}
 
 		chip8Timers.Start();
@@ -135,11 +136,12 @@ void Emulator::UpdateSystems()
 void Emulator::ExecuteInstr()
 {
 	auto& _cpu = _manager.GetCpu();
-	_cpu.opcode = (_cpu.memory[_cpu.pc] << 8) | _cpu.memory[_cpu.pc + 1];
+	_cpu.opcode = (_cpu.memory[_cpu.pc] << 8) | _cpu.memory[_cpu.pc+1];
 	_cpu.pc += 2;
 	instructions::instrTable[(_cpu.opcode & 0xf000) >> 12](&_cpu);
 	_instrf = false;
 }
+
 
 void Emulator::Draw()
 {
@@ -147,26 +149,28 @@ void Emulator::Draw()
 	_drawf = false;
 }
 
+
 void Emulator::Reset()
 {
 	_manager.CleanGfx();
 	_manager.CleanStack();
 	_manager.CleanRegisters();
-	_manager.GetCpu().pc = 0x200;
-	_manager.GetCpu().sp = 0;
-	_manager.GetCpu().delayTimer = 0;
-	_manager.GetCpu().soundTimer = 0;
+	auto& _cpu = _manager.GetCpu();
+	_cpu.pc = 0x200;
+	_cpu.sp = 0;
+	_cpu.delayTimer = 0;
+	_cpu.soundTimer = 0;
 }
 
 
 
-void Emulator::SetInstrPerSec(unsigned short value)
+void Emulator::SetInstrPerSec(const unsigned short value)
 {
 	using namespace utility;
 	_instrTimer.SetTargetTime(1_sec / value);
 }
 
-void Emulator::SetFramesPerSec(unsigned short value)
+void Emulator::SetFramesPerSec(const unsigned short value)
 {
 	using namespace utility;
 	_frameTimer.SetTargetTime(1_sec / value);
@@ -175,24 +179,23 @@ void Emulator::SetFramesPerSec(unsigned short value)
 
 
 
-bool Emulator::InitRender(iRender* rend)
+bool Emulator::InitRender(iRender* const rend)
 {
 	if (!rend) return false;
 	else if (rend->IsInitialized()) return true;
 	else if (!rend->Initialize(64, 32)) return false;
 
 	rend->SetBuffer(_manager.GetGfx());
-	rend->SetWinCloseCallback(&_exitf, [](const void*exitf) {*(bool*)exitf = true; });
-	rend->SetWinResizeCallback(nullptr, [](const void*) {utility::LOG("Window Resized"); });
+	rend->SetWinCloseCallback(&_exitf, [](const void* exitf) {*(bool*)exitf = true; });
+
 	auto oldrend = _manager.SwapRender(rend);
 	if (oldrend) delete oldrend;
-
 	return true;
 }
 
 
 
-bool Emulator::InitInput(iInput* input)
+bool Emulator::InitInput(iInput* const input)
 {
 	if (!input) return false;
 	else if (input->IsInitialized()) return true;
@@ -206,7 +209,7 @@ bool Emulator::InitInput(iInput* input)
 
 	input->SetWaitKeyCallback(this, [](const void* emu)
 	{
-		auto emulator = (Emulator*)emu;
+		auto emulator = (Emulator* const) emu;
 		do
 		{
 			emulator->UpdateSystems();
