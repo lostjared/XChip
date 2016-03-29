@@ -58,8 +58,8 @@ bool Emulator::Initialize(iRender* const render, iInput* const input) noexcept
 
 	// little trick:
 	// use the last  ( sizeof(bool*) + sizeof(uint8_t) ) bytes in _cpu's memory to store a pointer
-	// to our exit flag and the 0xFF value to say that we've insert the pointer there
-	// ( normaly 5 bytes in x86 and 9 bytes in x64)
+	// to our exit flag and the 0xFF value to say that the pointer is available
+	// ( normaly 5 bytes in x86 and 9 bytes in x64).
 	Cpu& _cpu = _manager.GetCpu();
 	std::size_t exitf_offs = utility::get_arr_size(static_cast<uint8_t*>(_cpu.memory)) - sizeof(bool*) - 1;
 	_cpu.memory[exitf_offs - 1] = 0xFF;

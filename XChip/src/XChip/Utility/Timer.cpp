@@ -33,6 +33,7 @@ bool Timer::Finished() const
 void Timer::Halt(const Timer::Nano& nano)
 {
 	using namespace std::chrono;
+	using namespace literals;
 	/* high precision sleep on linux */
 
 #ifdef __linux__

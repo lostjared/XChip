@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 	static xchip::Emulator emulator;
 
 	if (!emulator.Initialize(new(std::nothrow) xchip::SdlRender(),
-							 new(std::nothrow) xchip::SdlInput()) )
+							 new(std::nothrow) xchip::SdlInput()))
 	{
 		return 1;
 	}
