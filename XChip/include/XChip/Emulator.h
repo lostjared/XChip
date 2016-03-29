@@ -12,7 +12,7 @@ class Emulator
 public:
 	Emulator() noexcept;
 	~Emulator();
-	bool Initialize(iRender *const render, iInput *const input) noexcept;
+	bool Initialize(iRender* const render, iInput* const input) noexcept;
 	void Dispose() noexcept;
 	
 	
@@ -37,6 +37,7 @@ public:
 	iInput* GetInput() { return _manager.GetInput(); }
 	iRender* SwapRender(iRender* rend) { return _manager.SwapRender(rend); }
 	iInput* SwapRender(iInput* input) { return _manager.SwapInput(input); }
+	
 private:
 	bool InitRender(iRender* const rend);
 	bool InitInput(iInput* const input);

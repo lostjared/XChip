@@ -1,15 +1,14 @@
 #include <XChip/Emulator.h>
 #include <XChip/Fonts.h>
-#include <XChip/Utility/Log.h>
 #include <XChip/Interfaces/iRender.h>
 #include <XChip/Interfaces/iInput.h>
 #include <XChip/Instructions.h>
+#include <XChip/Utility/Log.h>
+#include <XChip/Utility/Alloc.h>
 
 namespace xchip {
 
-
-
-Emulator::Emulator() noexcept
+Emulator::Emulator() noexcept 
 	: _instrf(false),
 	_drawf(false),
 	_exitf(true),
@@ -32,7 +31,7 @@ Emulator::~Emulator()
 }
 
 
-bool Emulator::Initialize(iRender *const render, iInput *const input) noexcept
+bool Emulator::Initialize(iRender* const render, iInput* const input) noexcept
 {
 	if (_initialized)
 		this->Dispose();
@@ -55,14 +54,16 @@ bool Emulator::Initialize(iRender *const render, iInput *const input) noexcept
 	_exitf = false;
 	_initialized = true;
 
-	auto cpu_memory_exitf_offs = _manager.GetMemorySize() - sizeof(bool*) - 1;
+	auto& _cpu = _manager.GetCpu();
+
+	auto exitf_offs = utility::get_arr_size((uint8_t*)_cpu.memory) - sizeof(bool*) - 1;
 
 	/* add a ptr to _exitf in the end of XChip's Cpu's memory */
 	/* so in instructions we can have access to _exitf as an error flag */
-	(bool*&)_manager.GetCpu().memory[cpu_memory_exitf_offs] = &_exitf;
+	reinterpret_cast<bool*&>(_cpu.memory[exitf_offs]) = &_exitf;
 
 	/* assign 0xFF value behind exitf in cpu's memory, saying that we added the ptr there */
-	_manager.GetCpu().memory[cpu_memory_exitf_offs - 1] = 0xFF;
+	_cpu.memory[exitf_offs - 1] = 0xFF;
 
 	return true;
 }
@@ -211,7 +212,7 @@ bool Emulator::InitInput(iInput* const input)
 	else if (input->IsInitialized()) return true;
 	else if (!input->Initialize()) return false;
 
-	input->SetEscapeKeyCallback(&_exitf, [](const void*exitf) {*(bool*)exitf = true; });
+	input->SetEscapeKeyCallback(&_exitf, [](const void* exitf) {*(bool*)exitf = true; });
 	input->SetResetKeyCallback(this, [](const void* _this)
 	{
 		((Emulator*)_this)->Reset();

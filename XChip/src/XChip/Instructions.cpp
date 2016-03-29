@@ -23,10 +23,10 @@ void unknown_opcode(Cpu* const _cpu)
 {
 	using namespace utility;
 	LOGerr("Unknown opcode: "_s + _cpu->opcode);
-	auto offs = (get_arr_size(_cpu->memory) - sizeof(bool*)) - 1;
-	/* write true to our error flag, IF the element behind it is 255 */
-	if(_cpu->memory[offs - 1] == 255)
-		*((bool*&)_cpu->memory[offs]) = true;
+	auto offs = get_arr_size(static_cast<uint8_t*>(_cpu->memory))  - sizeof(bool*) - 1;
+	/* write true to our error flag, IF the element behind  is 0xFF */
+	if( _cpu->memory[offs - 1] == 0xFF)
+		*reinterpret_cast<bool*&>(_cpu->memory[offs]) = true;
 }
 
 
