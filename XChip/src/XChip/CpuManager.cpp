@@ -1,8 +1,6 @@
 #include <cstring>
 
 #include <XChip/CpuManager.h>
-#include <XChip/Interfaces/iRender.h>
-#include <XChip/Interfaces/iInput.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Alloc.h>
 
