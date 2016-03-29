@@ -21,7 +21,6 @@ template<>
 std::size_t get_arr_size<uint8_t>(const uint8_t* arr)
 {
 	if (arr == nullptr) return 0;
-
 	block = (std::size_t*) arr;
 	return *(block - 1);
 }

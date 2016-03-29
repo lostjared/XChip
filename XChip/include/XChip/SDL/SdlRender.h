@@ -20,7 +20,7 @@ public:
 	void Dispose() noexcept override;
 	
 	bool IsInitialized() const override { return m_initialized; }
-	void SetBuffer(const uint32_t *gfx) override;
+	void SetBuffer(const uint32_t* gfx) override { m_buffer = gfx; }
 	void DrawBuffer() override;
 	bool UpdateEvents() override;
 

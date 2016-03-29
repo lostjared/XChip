@@ -22,8 +22,9 @@ InstrTable instrTable[16] =
 void unknown_opcode(Cpu* const _cpu)
 {
 	using namespace utility;
-	LOGerr("Unknown opcode: "_s + _cpu->opcode);
-	auto offs = get_arr_size(static_cast<uint8_t*>(_cpu->memory))  - sizeof(bool*) - 1;
+	using namespace utility::literals;
+	utility::LOGerr("Unknown opcode: "_s + _cpu->opcode);
+	std::size_t offs = get_arr_size(static_cast<uint8_t*>(_cpu->memory)) - sizeof(bool*) - 1;
 	/* write true to our error flag, IF the element behind  is 0xFF */
 	if( _cpu->memory[offs - 1] == 0xFF)
 		*reinterpret_cast<bool*&>(_cpu->memory[offs]) = true;
@@ -43,17 +44,17 @@ void op_0xxx(Cpu* const _cpu)
 {
 	switch (_cpu->opcode)
 	{
-	default: // 0NNN " calls RCA 1802 program at address NNN. not necessary for most ROMs. "
-		unknown_opcode(_cpu);
-		break;
+		default: // 0NNN " calls RCA 1802 program at address NNN. not necessary for most ROMs. "
+			unknown_opcode(_cpu);
+			break;
 
-	case 0x00E0: // clear screen
-		std::fill_n(_cpu->gfx, utility::get_arr_size(_cpu->gfx), 0);
-		break;
+		case 0x00E0: // clear screen
+			std::fill_n(_cpu->gfx, utility::get_arr_size(_cpu->gfx), 0);
+			break;
 
-	case 0x00EE: // return from a subroutine ( unwind stack )
-		_cpu->pc = _cpu->stack[--_cpu->sp];
-		break;
+		case 0x00EE: // return from a subroutine ( unwind stack )
+			_cpu->pc = _cpu->stack[--_cpu->sp];
+			break;
 	}
 }
 

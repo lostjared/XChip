@@ -7,11 +7,10 @@ SDL_Event g_sdlEvent;
 void UpdateSdlEvents()
 {
 	using namespace xchip::utility;
-	/*
-	prevent both SdlRender/Input from update
-	at the same period of 256th of second
-	*/
-	static Timer eventTimer(1_sec / 256);
+	using namespace xchip::utility::literals;
+	// prevent both SdlRender/Input from update
+	// at the same period of 256th of second
+	static Timer eventTimer(256_hz);
 	if (eventTimer.Finished()) {
 		SDL_PollEvent(&g_sdlEvent);
 		eventTimer.Start();

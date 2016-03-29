@@ -39,12 +39,14 @@ SdlRender::~SdlRender()
 
 bool SdlRender::Initialize(const int width, const int height) noexcept
 {
-
+	using namespace utility::literals;
 
 	if (m_window != nullptr)
 		this->Dispose();
 
-	if (SDL_Init(SDL_INIT_VIDEO) != SDL_FALSE) {
+
+	if (SDL_Init(SDL_INIT_VIDEO) != SDL_FALSE) 
+	{
 		LOGerr("Couldn't start the application: "_s + SDL_GetError());
 		return false;
 	}
@@ -57,7 +59,8 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 		width * 4, height * 6, SDL_WINDOW_RESIZABLE);
 
 
-	if (m_window == nullptr) {
+	if (m_window == nullptr) 
+	{
 		LOGerr("Couldn't allocate SDL_Window. Error: "_s + SDL_GetError());
 		return false;
 	}
@@ -118,9 +121,19 @@ bool SdlRender::UpdateEvents()
 	{
 		switch (g_sdlEvent.window.event)
 		{
-			case SDL_WINDOWEVENT_RESIZED: /* fall */
-			case SDL_WINDOWEVENT_RESTORED: if (m_resizeClbk) m_resizeClbk(m_resizeClbkArg);  break;
-			case SDL_WINDOWEVENT_CLOSE: if (m_closeClbk) m_closeClbk(m_closeClbkArg); break;
+			case SDL_WINDOWEVENT_RESIZED: 
+				/* fall */
+			case SDL_WINDOWEVENT_RESTORED: 
+				if (m_resizeClbk) 
+					m_resizeClbk(m_resizeClbkArg);  
+				
+				break;
+			
+			case SDL_WINDOWEVENT_CLOSE: 
+				if (m_closeClbk) 
+					m_closeClbk(m_closeClbkArg); 
+				
+				break;
 		}
 
 		return true;
@@ -128,13 +141,6 @@ bool SdlRender::UpdateEvents()
 
 	
 	return false;
-}
-
-
-
-void SdlRender::SetBuffer(const uint32_t* gfx)
-{
-	m_buffer = gfx;
 }
 
 

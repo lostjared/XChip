@@ -15,7 +15,7 @@ Emulator::Emulator() noexcept
 	_initialized(false)
 	
 {
-	using namespace utility;
+	using namespace utility::literals;
 	_instrTimer.SetTargetTime(358_hz);
 	_frameTimer.SetTargetTime(60_hz);
 	utility::LOG("Creating Emulator...");
@@ -33,7 +33,7 @@ Emulator::~Emulator()
 
 bool Emulator::Initialize(iRender* const render, iInput* const input) noexcept
 {
-	if (_initialized)
+	if (_initialized) 
 		this->Dispose();
 
 	// Default Chip8 Mode
@@ -47,24 +47,24 @@ bool Emulator::Initialize(iRender* const render, iInput* const input) noexcept
 
 	_manager.SetFont(fonts::chip8_default_font, 80);
 
-	if (!this->InitRender(render) || ! this->InitInput(input))
+	if (! this->InitRender(render) 
+		|| ! this->InitInput(input))
 			return false;
 	
 
 	_exitf = false;
 	_initialized = true;
 
-	auto& _cpu = _manager.GetCpu();
 
-	auto exitf_offs = utility::get_arr_size((uint8_t*)_cpu.memory) - sizeof(bool*) - 1;
-
-	/* add a ptr to _exitf in the end of XChip's Cpu's memory */
-	/* so in instructions we can have access to _exitf as an error flag */
-	reinterpret_cast<bool*&>(_cpu.memory[exitf_offs]) = &_exitf;
-
-	/* assign 0xFF value behind exitf in cpu's memory, saying that we added the ptr there */
+	// little trick:
+	// use the last  ( sizeof(bool*) + sizeof(uint8_t) ) bytes in _cpu's memory to store a pointer
+	// to our exit flag and the 0xFF value to say that we've insert the pointer there
+	// ( normaly 5 bytes in x86 and 9 bytes in x64)
+	Cpu& _cpu = _manager.GetCpu();
+	std::size_t exitf_offs = utility::get_arr_size(static_cast<uint8_t*>(_cpu.memory)) - sizeof(bool*) - 1;
 	_cpu.memory[exitf_offs - 1] = 0xFF;
-
+	reinterpret_cast<bool*&>(_cpu.memory[exitf_offs]) = &_exitf;
+	
 	return true;
 }
 
@@ -76,8 +76,12 @@ void Emulator::Dispose() noexcept
 	{
 		auto rend = _manager.SwapRender(nullptr);
 		auto input = _manager.SwapInput(nullptr);
-		if (rend) delete rend;
-		if (input) delete input;
+		
+		if (rend) 
+			delete rend;
+		if (input) 
+			delete input;
+		
 		_manager.Dispose();
 		_instrf = false;
 		_drawf = false;
@@ -89,12 +93,11 @@ void Emulator::Dispose() noexcept
 
 void Emulator::HaltForNextFlag() const
 {
-	using namespace utility;
 	if (!_instrf && !_drawf)
 	{
 		const auto instrRemain = _instrTimer.GetRemain();
 		const auto frameRemain = _frameTimer.GetRemain();
-		Timer::Halt((instrRemain < frameRemain) ? instrRemain : frameRemain);
+		utility::Timer::Halt((instrRemain < frameRemain) ? instrRemain : frameRemain);
 	}
 }
 
@@ -102,7 +105,7 @@ void Emulator::HaltForNextFlag() const
 
 void Emulator::UpdateTimers()
 {
-	using namespace utility;
+	using namespace utility::literals;
 
 	if (!_instrf && _instrTimer.Finished())
 	{
@@ -116,21 +119,18 @@ void Emulator::UpdateTimers()
 		_frameTimer.Start();
 	}
 
-	static Timer chip8Timers{ 60_hz };
+	
+	static utility::Timer chip8Timers{ 60_hz };
 
 	if (chip8Timers.Finished())
 	{
-		auto& _cpu = _manager.GetCpu();
-		if(_cpu.delayTimer)
+		Cpu& _cpu = _manager.GetCpu();
+		
+		if (_cpu.delayTimer)
 			--_cpu.delayTimer;
 
 		if (_cpu.soundTimer)
-		{
-			// play beep...
-			// temporary
-			LOG("\a");
 			--_cpu.soundTimer;
-		}
 
 		chip8Timers.Start();
 	}
@@ -146,7 +146,7 @@ void Emulator::UpdateSystems()
 
 void Emulator::ExecuteInstr()
 {
-	auto& _cpu = _manager.GetCpu();
+	Cpu& _cpu = _manager.GetCpu();
 	_cpu.opcode = (_cpu.memory[_cpu.pc] << 8) | _cpu.memory[_cpu.pc+1];
 	_cpu.pc += 2;
 	instructions::instrTable[(_cpu.opcode & 0xf000) >> 12](&_cpu);
@@ -166,7 +166,7 @@ void Emulator::Reset()
 	_manager.CleanGfx();
 	_manager.CleanStack();
 	_manager.CleanRegisters();
-	auto& _cpu = _manager.GetCpu();
+	Cpu& _cpu = _manager.GetCpu();
 	_cpu.pc = 0x200;
 	_cpu.sp = 0;
 	_cpu.delayTimer = 0;
@@ -177,14 +177,14 @@ void Emulator::Reset()
 
 void Emulator::SetInstrPerSec(const unsigned short value)
 {
-	using namespace utility;
-	_instrTimer.SetTargetTime(1_sec / value);
+	using namespace utility::literals;
+	_instrTimer.SetTargetTime(operator""_hz(value));
 }
 
 void Emulator::SetFramesPerSec(const unsigned short value)
 {
-	using namespace utility;
-	_frameTimer.SetTargetTime(1_sec / value);
+	using namespace utility::literals;
+	_frameTimer.SetTargetTime(operator""_hz(value));
 }
 
 
@@ -192,9 +192,12 @@ void Emulator::SetFramesPerSec(const unsigned short value)
 
 bool Emulator::InitRender(iRender* const rend)
 {
-	if (!rend) return false;
-	else if (rend->IsInitialized()) return true;
-	else if (!rend->Initialize(64, 32)) return false;
+	if (!rend) 
+		return false;
+	else if (rend->IsInitialized()) 
+		return true;
+	else if (!rend->Initialize(64, 32)) 
+		return false;
 
 	rend->SetBuffer(_manager.GetGfx());
 	rend->SetWinCloseCallback(&_exitf, [](const void* exitf) {*(bool*)exitf = true; });
@@ -208,15 +211,19 @@ bool Emulator::InitRender(iRender* const rend)
 
 bool Emulator::InitInput(iInput* const input)
 {
-	if (!input) return false;
-	else if (input->IsInitialized()) return true;
-	else if (!input->Initialize()) return false;
+	if (!input) 
+		return false;
+	else if (input->IsInitialized()) 
+		return true;
+	else if (!input->Initialize()) 
+		return false;
 
 	input->SetEscapeKeyCallback(&_exitf, [](const void* exitf) {*(bool*)exitf = true; });
 	input->SetResetKeyCallback(this, [](const void* _this)
 	{
 		((Emulator*)_this)->Reset();
 	});
+
 
 	input->SetWaitKeyCallback(this, [](const void* emu)
 	{

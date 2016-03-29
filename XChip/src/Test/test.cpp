@@ -5,28 +5,34 @@
 
 int main(int argc, char** argv)
 {
-	using namespace xchip;
-	using namespace utility;
 	
-	if (argc < 1) {
-		LOG("No game to load...");
+	if (argc < 2) 
+	{
+		xchip::utility::LOG("No game to load...");
 		return 0;
 	}
 
 	static xchip::Emulator emulator;
 
-	if (!emulator.Initialize(new(std::nothrow) SdlRender(), new(std::nothrow) SdlInput()))
+	if (!emulator.Initialize(new(std::nothrow) xchip::SdlRender(),
+							 new(std::nothrow) xchip::SdlInput()) )
+	{
 		return 1;
+	}
 
-	if (!emulator.LoadRom("UFO"))
+	else if (!emulator.LoadRom(argv[1]))
+	{
 		return 1;
+	}
 
 	while (! emulator.GetExitFlag())
 	{
 		emulator.HaltForNextFlag();
 		emulator.UpdateSystems();
+		
 		if (emulator.GetInstrFlag())
 			emulator.ExecuteInstr();
+		
 		if (emulator.GetDrawFlag())
 			emulator.Draw();
 	}

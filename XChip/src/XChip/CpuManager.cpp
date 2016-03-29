@@ -8,33 +8,14 @@
 
 
 namespace xchip {
+
 using namespace xchip::utility;
+using namespace xchip::utility::literals;
 
 template<class T>
-static bool alloc_cpu_arr(T*& arr, const size_t size)
-{
-
-	if (size == get_arr_size(arr))
-		return true;
-
-	else if (arr != nullptr)
-		free_arr(arr);
-
-	arr = (T*)alloc_arr(size * sizeof(T));
-
-	if (arr == nullptr)
-		return false;
-
-	std::fill_n(arr, size, 0);
-	return true;
-}
-
+static bool alloc_cpu_arr(T*& arr, const size_t size);
 template<class T>
-static void free_cpu_arr(T*& arr)
-{
-	free_arr(arr);
-	arr = nullptr;
-}
+static void free_cpu_arr(T*& arr);
 
 
 
@@ -162,14 +143,14 @@ bool CpuManager::LoadRom(const char* fileName)
 
 void CpuManager::CleanMemory()
 {
-	clean_arr(_cpu.memory);
+	arr_zero(_cpu.memory);
 }
 
 
 
 void CpuManager::CleanRegisters()
 {
-	clean_arr(_cpu.registers);
+	arr_zero(_cpu.registers);
 	_cpu.I = 0;
 }
 
@@ -177,14 +158,14 @@ void CpuManager::CleanRegisters()
 
 void CpuManager::CleanStack()
 {
-	clean_arr(_cpu.stack);
+	arr_zero(_cpu.stack);
 }
 
 
 
 void CpuManager::CleanGfx()
 {
-	clean_arr(_cpu.gfx);
+	arr_zero(_cpu.gfx);
 }
 
 
@@ -233,6 +214,33 @@ size_t CpuManager::GetGfxSize() const
 
 
 
+
+
+template<class T>
+static bool alloc_cpu_arr(T*& arr, const size_t size)
+{
+
+	if (size == get_arr_size(arr))
+		return true;
+
+	else if (arr != nullptr)
+		free_arr(arr);
+
+	arr = (T*)alloc_arr(size * sizeof(T));
+
+	if (arr == nullptr)
+		return false;
+
+	std::fill_n(arr, size, 0);
+	return true;
+}
+
+template<class T>
+static void free_cpu_arr(T*& arr)
+{
+	free_arr(arr);
+	arr = nullptr;
+}
 
 
 }

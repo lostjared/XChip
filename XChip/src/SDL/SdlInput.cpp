@@ -50,7 +50,8 @@ bool SdlInput::Initialize() noexcept
 {
 	m_keyboardState = SDL_GetKeyboardState(NULL);
 
-	if (!m_keyboardState) {
+	if (!m_keyboardState) 
+	{
 		LOGerr("Cannot get Keyboard State");
 		return false;
 	}
@@ -79,13 +80,15 @@ bool SdlInput::UpdateKeys()
 	{
 		if (g_sdlEvent.key.keysym.sym == SDLK_RETURN) 
 		{
-			if (m_resetClbk) m_resetClbk(m_resetClbkArg);
+			if (m_resetClbk) 
+				m_resetClbk(m_resetClbkArg);
 		}
 
 
 		else if (g_sdlEvent.key.keysym.sym == SDLK_ESCAPE) 
 		{
-			if (m_escapeClbk) m_escapeClbk(m_escapeClbkArg);
+			if (m_escapeClbk) 
+				m_escapeClbk(m_escapeClbkArg);
 		}
 
 		return true;

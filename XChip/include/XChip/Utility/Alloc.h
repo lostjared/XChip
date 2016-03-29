@@ -36,7 +36,7 @@ template<>
 std::size_t get_arr_size<uint8_t>(const uint8_t* arr);
 
 template<class T>
-void clean_arr(T* arr)
+void arr_zero(T* arr)
 {
 	if (arr != nullptr)
 		std::fill_n(arr, get_arr_size(arr), 0);
