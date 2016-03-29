@@ -177,14 +177,12 @@ void Emulator::Reset()
 
 void Emulator::SetInstrPerSec(const unsigned short value)
 {
-	using namespace utility::literals;
-	_instrTimer.SetTargetTime(operator""_hz(value));
+	_instrTimer.SetTargetTime(utility::literals::operator""_hz(value));
 }
 
 void Emulator::SetFramesPerSec(const unsigned short value)
 {
-	using namespace utility::literals;
-	_frameTimer.SetTargetTime(operator""_hz(value));
+	_frameTimer.SetTargetTime(utility::literals::operator""_hz(value));
 }
 
 

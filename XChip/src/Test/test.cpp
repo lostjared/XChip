@@ -25,6 +25,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
+
 	while (! emulator.GetExitFlag())
 	{
 		emulator.HaltForNextFlag();
