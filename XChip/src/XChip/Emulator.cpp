@@ -120,7 +120,7 @@ void Emulator::UpdateTimers()
 	}
 
 	
-	static utility::Timer chip8Timers{ 60_hz };
+	static utility::Timer chip8Timers( 60_hz );
 
 	if (chip8Timers.Finished())
 	{
