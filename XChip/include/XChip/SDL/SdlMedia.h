@@ -14,7 +14,7 @@ protected:
 
 private:
 	System _sys;
-	static bool s_onDevices[3];
+	static int s_onSystems[3];
 };
 
 

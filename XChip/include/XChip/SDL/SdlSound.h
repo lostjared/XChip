@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <XChip/Interfaces/iSound.h>
 #include "SdlMedia.h"
+
 struct SDL_AudioSpec;
 typedef uint32_t SDL_AudioDeviceID;
 
@@ -8,17 +9,18 @@ namespace xchip {
 
 
 
-class SdlSound : private SdlMedia, public iSound
+class SdlSound final : private SdlMedia, public iSound
 {
 public:
 	SdlSound() noexcept;
 	~SdlSound();
-	virtual bool Initialize() noexcept override;
-	virtual void Dispose() noexcept override;
-	virtual bool IsInitialized() override;
-	virtual bool IsPlaying() override;
-	virtual void Play() override;
-	virtual void Stop() override;
+	bool Initialize() noexcept override;
+	void Dispose() noexcept override;
+
+	bool IsInitialized() override { return _initialized; }
+	bool IsPlaying() override { return _audioLen > 0;  };
+	void Play() override;
+	void Stop() override;
 
 private:
 	static void audio_callback(void* sdlSound, uint8_t* const stream, int len);

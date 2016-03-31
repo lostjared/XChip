@@ -138,13 +138,11 @@ void Emulator::UpdateTimers()
 			--_cpu.delayTimer;
 
 		if (_cpu.soundTimer) 
-		{
 			--_cpu.soundTimer;
-		}
+
 		else if (_cpu.sound->IsPlaying())
-		{
 			_cpu.sound->Stop();
-		}
+
 
 		chip8Timers.Start();
 	}

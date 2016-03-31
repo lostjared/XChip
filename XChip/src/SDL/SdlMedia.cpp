@@ -6,22 +6,23 @@
 namespace xchip {
 
 SDL_Event g_sdlEvent;
-bool SdlMedia::s_onDevices[3] = { false, false, false };
+int SdlMedia::s_onSystems[3] = { 0, 0, 0 };
 
 
 SdlMedia::SdlMedia(System sys)
 	: _sys(sys)
 {
-	s_onDevices[utility::toUType(_sys)] = true;
+	++s_onSystems[utility::toUType(_sys)];
 }
 
 SdlMedia::~SdlMedia()
 {
 	using namespace utility;
-	s_onDevices[toUType(_sys)] = false;
-	if (!s_onDevices[toUType(System::Render)]
-		&& !s_onDevices[toUType(System::Input)]
-		&& !s_onDevices[toUType(System::Sound)])
+	--s_onSystems[toUType(_sys)];
+
+	if (!s_onSystems[toUType(System::Render)]
+		&& !s_onSystems[toUType(System::Input)]
+		&& !s_onSystems[toUType(System::Sound)])
 	{
 		SDL_Quit();
 	}
