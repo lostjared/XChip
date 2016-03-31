@@ -1,0 +1,1 @@
+put your SDL2 folder from SDL library's 'include/SDL2' here
