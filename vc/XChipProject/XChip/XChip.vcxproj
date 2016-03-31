@@ -69,16 +69,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\XChip\XChip\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\XChip\XChip\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\XChip\XChip\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\cygwin64\home\Rafael\Git\github\experimental\XChip\XChip\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -89,7 +89,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>Utility.lib;SDL_MEDIA.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)\;C:\cygwin64\home\Rafael\Git\github\experimental\XChip\XChip\dependencies\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)\;C:\cygwin64\home\Rafael\Documents\Git\Github\XChip\XChip\dependencies\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

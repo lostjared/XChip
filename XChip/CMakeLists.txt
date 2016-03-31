@@ -1,8 +1,9 @@
 # xchip test
-
+set(CMAKE_LEGACY_CYGWIN_WIN32 0) 
 
 project(XChip.exe)
 cmake_minimum_required(VERSION 2.8)
+
 
 #media variables
 set(USING_SDL_MEDIA  "OFF" CACHE STRING "" )
@@ -19,7 +20,7 @@ endif()
 
 
 # CXX_FLAGS
-set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_CXX_COMPILER "g++")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -Winline  -std=c++11")
 
 #######################################################################################
