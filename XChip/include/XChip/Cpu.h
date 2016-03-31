@@ -10,6 +10,7 @@ namespace xchip {
 
 class iRender;
 class iInput;
+class iSound;
 
 struct Cpu
 {
@@ -24,7 +25,8 @@ struct Cpu
 	
 	iRender* render;
 	iInput* input;
-
+	iSound* sound;
+	
 	uint8_t delayTimer;
 	uint8_t soundTimer;
 };

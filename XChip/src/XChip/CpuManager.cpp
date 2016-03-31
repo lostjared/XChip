@@ -29,6 +29,7 @@ CpuManager::CpuManager() noexcept
 	_cpu.gfx        = nullptr;
 	_cpu.input      = nullptr;
 	_cpu.render     = nullptr;
+	_cpu.sound      = nullptr;
 	_cpu.delayTimer = 0;
 	_cpu.soundTimer = 0;
 }
@@ -183,7 +184,12 @@ iInput* CpuManager::SwapInput(iInput* input)
 	return ret;
 }
 
-
+iSound* CpuManager::SwapSound(iSound* sound)
+{
+	auto ret = _cpu.sound;
+	_cpu.sound = sound;
+	return ret;
+}
 
 
 

@@ -2,7 +2,7 @@
 #include <XChip/Utility/Log.h>
 #include <XChip/SDL/SdlRender.h>
 #include <XChip/SDL/SdlInput.h>
-
+#include <XChip/SDL/SdlSound.h>
 int main(int argc, char** argv)
 {
 	
@@ -15,7 +15,8 @@ int main(int argc, char** argv)
 	static xchip::Emulator emulator;
 
 	if (!emulator.Initialize(new(std::nothrow) xchip::SdlRender(),
-							 new(std::nothrow) xchip::SdlInput()))
+							 new(std::nothrow) xchip::SdlInput(),
+							 new(std::nothrow) xchip::SdlSound()))
 	{
 		return 1;
 	}

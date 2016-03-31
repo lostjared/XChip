@@ -12,7 +12,7 @@ class Emulator
 public:
 	Emulator() noexcept;
 	~Emulator();
-	bool Initialize(iRender* const render, iInput* const input) noexcept;
+	bool Initialize(iRender* const render, iInput* const input, iSound* const sound) noexcept;
 	void Dispose() noexcept;
 	
 	
@@ -41,6 +41,7 @@ public:
 private:
 	bool InitRender(iRender* const rend);
 	bool InitInput(iInput* const input);
+	bool InitSound(iSound* const sound);
 
 private:
 	CpuManager _manager;

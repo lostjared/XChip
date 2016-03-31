@@ -2,6 +2,7 @@
 #include <XChip/Fonts.h>
 #include <XChip/Interfaces/iRender.h>
 #include <XChip/Interfaces/iInput.h>
+#include <XChip/Interfaces/iSound.h>
 #include <XChip/Instructions.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Alloc.h>
@@ -31,7 +32,7 @@ Emulator::~Emulator()
 }
 
 
-bool Emulator::Initialize(iRender* const render, iInput* const input) noexcept
+bool Emulator::Initialize(iRender* const render, iInput* const input, iSound* const sound) noexcept
 {
 	if (_initialized) 
 		this->Dispose();
@@ -48,8 +49,12 @@ bool Emulator::Initialize(iRender* const render, iInput* const input) noexcept
 	_manager.SetFont(fonts::chip8_default_font, 80);
 
 	if (! this->InitRender(render) 
-		|| ! this->InitInput(input))
+		|| ! this->InitInput(input)
+		|| ! this->InitSound(sound))
+	{
+			this->Dispose();
 			return false;
+	}
 	
 
 	_exitf = false;
@@ -129,8 +134,12 @@ void Emulator::UpdateTimers()
 		if (_cpu.delayTimer)
 			--_cpu.delayTimer;
 
-		if (_cpu.soundTimer)
-			--_cpu.soundTimer;
+		if (_cpu.soundTimer) 
+		{
+			if(--_cpu.soundTimer == 0)
+				_cpu.sound->Stop();
+			
+		}
 
 		chip8Timers.Start();
 	}
@@ -201,7 +210,9 @@ bool Emulator::InitRender(iRender* const rend)
 	rend->SetWinCloseCallback(&_exitf, [](const void* exitf) {*(bool*)exitf = true; });
 
 	auto oldrend = _manager.SwapRender(rend);
-	if (oldrend) delete oldrend;
+	if (oldrend) 
+		delete oldrend;
+
 	return true;
 }
 
@@ -242,13 +253,28 @@ bool Emulator::InitInput(iInput* const input)
 	});
 
 	auto oldinput = _manager.SwapInput(input);
-	if (oldinput) delete oldinput;
+	if (oldinput) 
+		delete oldinput;
 
 	return true;
 }
 
 
+bool Emulator::InitSound(iSound* const sound)
+{
+	if(!sound)
+		return false;
+	else if(sound->IsInitialized())
+		return true;
+	else if(!sound->Initialize())
+		return false;
 
+	auto oldsound = _manager.SwapSound(sound);
+	if(oldsound)
+		delete oldsound;
+
+	return true;
+}
 
 
 

@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <XChip/Instructions.h>
 #include <XChip/Interfaces/iInput.h>
+#include <XChip/Interfaces/iSound.h>
 #include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Log.h>
 
@@ -421,6 +422,8 @@ void op_FXx5(Cpu *const _cpu)
 void op_FX18(Cpu *const _cpu)
 {
 	_cpu->soundTimer = VX;
+	if(_cpu->soundTimer)
+		_cpu->sound->Play();
 }
 
 

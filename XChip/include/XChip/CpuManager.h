@@ -51,6 +51,7 @@ public:
 	iInput* GetInput() { return _cpu.input; }
 	iRender* SwapRender(iRender* render);
 	iInput* SwapInput(iInput* input);
+	iSound* SwapSound(iSound* sound);
 
 private:
 	Cpu _cpu;
