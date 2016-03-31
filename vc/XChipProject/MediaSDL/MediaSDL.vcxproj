@@ -180,13 +180,16 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlEvents.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\SDL\SdlMedia.cpp" />
     <ClCompile Include="..\..\..\XChip\src\SDL\SdlInput.cpp" />
     <ClCompile Include="..\..\..\XChip\src\SDL\SdlRender.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\SDL\SdlSound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlInput.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlMedia.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlRender.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlSound.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -144,6 +144,7 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Instructions.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iInput.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iRender.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iSound.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\Test\test.cpp" />

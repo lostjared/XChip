@@ -39,6 +39,9 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Fonts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iSound.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\XChip\Instructions.cpp">

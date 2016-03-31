@@ -21,7 +21,10 @@
     <ClCompile Include="..\..\..\XChip\src\SDL\SdlRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlEvents.cpp">
+    <ClCompile Include="..\..\..\XChip\src\SDL\SdlSound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XChip\src\SDL\SdlMedia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -30,6 +33,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlRender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlSound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlMedia.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

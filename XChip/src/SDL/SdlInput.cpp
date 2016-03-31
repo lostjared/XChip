@@ -10,12 +10,12 @@ namespace xchip {
 	
 using namespace utility;
 extern SDL_Event g_sdlEvent;
-extern void UpdateSdlEvents();
 
 	
 
 SdlInput::SdlInput()
-	: m_keyboardState(nullptr),
+	: SdlMedia(System::Input),
+	m_keyboardState(nullptr),
 	m_keyPairs
 {
 	{ Key::KEY_0, SDL_SCANCODE_KP_0 },{ Key::KEY_1, SDL_SCANCODE_KP_7 },{ Key::KEY_2, SDL_SCANCODE_KP_8 },
@@ -75,7 +75,7 @@ void SdlInput::Dispose() noexcept
 
 bool SdlInput::UpdateKeys()
 {
-	UpdateSdlEvents();
+	SdlMedia::UpdateEvents();
 	if (g_sdlEvent.type == SDL_KEYDOWN)
 	{
 		if (g_sdlEvent.key.keysym.sym == SDLK_RETURN) 

@@ -1,7 +1,7 @@
 #ifndef _XCHIP_SDLRENDER_H_
 #define _XCHIP_SDLRENDER_H_
 #include <XChip/Interfaces/iRender.h>
-
+#include "SdlMedia.h"
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
@@ -9,7 +9,7 @@ struct SDL_Texture;
 
 namespace xchip {
 
-class SdlRender final : public iRender
+class SdlRender final : private SdlMedia, public iRender
 {
 
 public:

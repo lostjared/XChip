@@ -81,12 +81,15 @@ void Emulator::Dispose() noexcept
 	{
 		auto rend = _manager.SwapRender(nullptr);
 		auto input = _manager.SwapInput(nullptr);
-		
+		auto sound = _manager.SwapSound(nullptr);
+
 		if (rend) 
 			delete rend;
 		if (input) 
 			delete input;
-		
+		if (sound)
+			delete sound;
+
 		_manager.Dispose();
 		_instrf = false;
 		_drawf = false;
@@ -125,7 +128,7 @@ void Emulator::UpdateTimers()
 	}
 
 	
-	static utility::Timer chip8Timers( 60_hz );
+	static utility::Timer chip8Timers( 48_hz );
 
 	if (chip8Timers.Finished())
 	{
@@ -136,9 +139,11 @@ void Emulator::UpdateTimers()
 
 		if (_cpu.soundTimer) 
 		{
-			if(--_cpu.soundTimer == 0)
-				_cpu.sound->Stop();
-			
+			--_cpu.soundTimer;
+		}
+		else if (_cpu.sound->IsPlaying())
+		{
+			_cpu.sound->Stop();
 		}
 
 		chip8Timers.Start();

@@ -1,14 +1,14 @@
 #ifndef _XCHIP_SDLINPUT_H_
 #define _XCHIP_SDLINPUT_H_
-
 #include <vector>
 #include <XChip/Interfaces/iInput.h>
+#include "SdlMedia.h"
 
 namespace xchip {
 
 	
 
-class SdlInput final : public iInput
+class SdlInput final : private SdlMedia, public iInput
 {
 	using SDL_Scancode = int;
 	using KeyPair = std::pair<Key, SDL_Scancode>;

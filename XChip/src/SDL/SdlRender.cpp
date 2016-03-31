@@ -6,10 +6,10 @@ namespace xchip {
 
 using namespace utility;
 extern SDL_Event g_sdlEvent;
-extern void UpdateSdlEvents();
 
 SdlRender::SdlRender()
-	: m_window(nullptr),
+	: SdlMedia(System::Render),
+	m_window(nullptr),
 	m_rend(nullptr),
 	m_texture(nullptr),
 	m_buffer(nullptr),
@@ -29,8 +29,6 @@ SdlRender::~SdlRender()
 	LOG("Destroying SdlRenderer object...");
 	if (m_window != nullptr)
 		this->Dispose();
-
-	SDL_Quit();
 }
 
 
@@ -116,7 +114,7 @@ void SdlRender::Dispose() noexcept
 
 bool SdlRender::UpdateEvents()
 {
-	UpdateSdlEvents();
+	SdlMedia::UpdateEvents();
 	if (g_sdlEvent.type == SDL_WINDOWEVENT)
 	{
 		switch (g_sdlEvent.window.event)
