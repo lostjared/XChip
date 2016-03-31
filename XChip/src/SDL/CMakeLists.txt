@@ -6,8 +6,8 @@ cmake_minimum_required(VERSION 2.8)
 
 
 # CXX_FLAGS
-set(CMAKE_CXX_COMPILER "g++")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -Winline  -std=c++11")
+set(CMAKE_CXX_COMPILER "${CXX_COMPILER}")
+set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
 #######################################################################################
 #######################################################################################
@@ -24,13 +24,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -fno-omit-frame-pointer")
 endif()
 
 
-INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR} ../../include/ )
+INCLUDE_DIRECTORIES(${XCHIP_DEFAULT_INCLUDE_PATH})
 
-# ACHAR OS .CPP E .H
 file(GLOB_RECURSE SDL_MEDIA_SRC *.cpp)
-file(GLOB_RECURSE SDL_MEDIA_HEADERS /../../include/*.h)
+file(GLOB_RECURSE SDL_MEDIA_HEADERS SDL/*.h)
 
 
-set(ADD_LIBS "${ADD_LIBS}-lSDL2" "${ADD_LIBS}SDL_MEDIA" PARENT_SCOPE)
+set(SDL2LIB "-lSDL2")
+set(ADD_LIBS "${ADD_LIBS};${PROJECT_NAME};${SDL2LIB}" PARENT_SCOPE)
+
 add_library(${PROJECT_NAME} ${SDL_MEDIA_HEADERS} ${SDL_MEDIA_SRC})
 

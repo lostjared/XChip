@@ -1,7 +1,7 @@
 # xchip test
 set(CMAKE_LEGACY_CYGWIN_WIN32 0) 
 
-project(XChip.exe)
+project(XChipApp)
 cmake_minimum_required(VERSION 2.8)
 
 
@@ -10,6 +10,21 @@ set(USING_SDL_MEDIA  "OFF" CACHE STRING "" )
 
 #additional libs, subdirectories libs can use this variable
 set(ADD_LIBS "" CACHE STRING "additional libs to link...")
+
+
+
+
+#include paths
+set(XCHIP_DEFAULT_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/" CACHE STRING "")
+INCLUDE_DIRECTORIES(${XCHIP_DEFAULT_INCLUDE_PATH})
+
+
+
+#compiler
+set(CXX_COMPILER "clang++")
+set(CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -Winline  -std=c++11")
+
+
 
 #sub libs
 add_subdirectory(src/XChip)
@@ -20,8 +35,8 @@ endif()
 
 
 # CXX_FLAGS
-set(CMAKE_CXX_COMPILER "g++")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -Winline  -std=c++11")
+set(CMAKE_CXX_COMPILER "${CXX_COMPILER}")
+set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
 #######################################################################################
 #######################################################################################
@@ -38,7 +53,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -fno-omit-frame-pointer")
 endif()
 
 
-INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR} include/ )
 
 # ACHAR OS .CPP E .H
 file(GLOB_RECURSE APP_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/Test/*.cpp)
@@ -49,6 +63,7 @@ file(GLOB_RECURSE APP_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} include/*.h)
 add_executable(${PROJECT_NAME} ${APP_HEADERS} ${APP_SRC})
 
 message(STATUS "Additional libs: " ${ADD_LIBS})
+message(STATUS "XChip default include path: " ${XCHIP_DEFAULT_INCLUDE_PATH})
 
 # Link libs
-TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${ADD_LIBS} XChip )
+TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${ADD_LIBS} XChip)
