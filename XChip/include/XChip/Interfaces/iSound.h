@@ -13,7 +13,8 @@ public:
 	virtual bool IsInitialized() = 0;
 	virtual bool IsPlaying() = 0;
 
-	virtual void Play() = 0;
+
+	virtual void Play(unsigned soundTimer) = 0;
 	virtual void Stop() = 0;
 
 

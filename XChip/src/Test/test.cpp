@@ -26,6 +26,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
+	emulator.SetInstrPerSec(700);
 
 	while (! emulator.GetExitFlag())
 	{

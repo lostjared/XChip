@@ -77,25 +77,22 @@ bool Emulator::Initialize(iRender* const render, iInput* const input, iSound* co
 
 void Emulator::Dispose() noexcept
 {
-	if (_initialized)
-	{
-		auto rend = _manager.SwapRender(nullptr);
-		auto input = _manager.SwapInput(nullptr);
-		auto sound = _manager.SwapSound(nullptr);
+	auto rend = _manager.SwapRender(nullptr);
+	auto input = _manager.SwapInput(nullptr);
+	auto sound = _manager.SwapSound(nullptr);
 
-		if (rend) 
-			delete rend;
-		if (input) 
-			delete input;
-		if (sound)
-			delete sound;
+	if (rend) 
+		delete rend;
+	if (input) 
+		delete input;
+	if (sound)
+		delete sound;
 
-		_manager.Dispose();
-		_instrf = false;
-		_drawf = false;
-		_exitf = true;
-		_initialized = false;
-	}
+	_manager.Dispose();
+	_instrf = false;
+	_drawf = false;
+	_exitf = true;
+	_initialized = false;
 }
 
 
@@ -137,12 +134,11 @@ void Emulator::UpdateTimers()
 		if (_cpu.delayTimer)
 			--_cpu.delayTimer;
 
-		if (_cpu.soundTimer) 
-			--_cpu.soundTimer;
-
-		else if (_cpu.sound->IsPlaying())
-			_cpu.sound->Stop();
-
+		if (_cpu.soundTimer)
+		{
+			_cpu.sound->Play(_cpu.soundTimer);
+			_cpu.soundTimer = 0;
+		}
 
 		chip8Timers.Start();
 	}

@@ -19,7 +19,8 @@ public:
 
 	bool IsInitialized() override { return _initialized; }
 	bool IsPlaying() override { return _playing;  };
-	void Play() override;
+
+	void Play(unsigned soundTimer) override;
 	void Stop() override;
 
 private:
