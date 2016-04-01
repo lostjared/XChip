@@ -16,6 +16,13 @@ float _audioLen;
 
 SdlSound::SdlSound() noexcept
 	:  SdlMedia(System::Sound),
+	_want(nullptr),
+	_have(nullptr),
+	_dev(0),
+	_playing(false),
+	_audioPos(0),
+	_audioFreq(0),
+	_audioVol(0),
 	_initialized(false)
 {
 	utility::LOG("Creating SdlSound...");
