@@ -35,13 +35,14 @@ private:
 	SDL_AudioSpec* _want; 
 	SDL_AudioSpec* _have;
 	SDL_AudioDeviceID _dev;
-	bool _playing; 
 	unsigned int _audioPos;  // which sample we are up to 
 	float _audioLen;
 	float _audioFreq;        // audio frequency in cycles per sample
 	float _audioVol;         // audio volume, 0 - ~32000 */
 	float _cycleTime;
+	bool _playing;
 	bool _initialized;
+	
 
 };
 

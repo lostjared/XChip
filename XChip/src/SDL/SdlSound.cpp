@@ -162,15 +162,16 @@ void SdlSound::audio_callback(void* sdlSound, Uint8* const stream, int len)
 		return;
 	}
 
-	const auto freq = _this->_audioFreq;
-	const auto vol = _this->_audioVol;
-	
-	for (int i = 0; i < bufsize; ++i)
-	{
-		buf[i] = static_cast<T>(vol * sin(_2pi * freq * _this->_audioPos ));
-		++_this->_audioPos;
-	}
+	const float freq = _this->_audioFreq;
+	const float vol = _this->_audioVol;
+	unsigned int pos = _this->_audioPos;
 
+
+	for (int i = 0; i < bufsize; ++i, ++pos)
+		buf[i] = static_cast<T>(vol * sin( _2pi * freq * pos ));
+
+	
+	_this->_audioPos = pos;
 	_this->_audioLen -= bufsize;
 }
 
