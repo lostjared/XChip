@@ -119,9 +119,11 @@ void SdlSound::Play(unsigned soundTimer)
 
 	else
 	{
+		
 		SDL_LockAudioDevice(_dev);
 		s_audioLen += (_have->freq * soundTimer / 60.f);
 		SDL_UnlockAudioDevice(_dev);
+		_playing = true;
 	}
 
 	SDL_PauseAudioDevice(_dev, 0);
