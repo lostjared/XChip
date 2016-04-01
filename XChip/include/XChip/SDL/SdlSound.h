@@ -4,7 +4,7 @@
 
 struct SDL_AudioSpec;
 typedef uint32_t SDL_AudioDeviceID;
-
+typedef uint8_t Uint8;
 namespace xchip {
 
 
@@ -18,19 +18,20 @@ public:
 	void Dispose() noexcept override;
 
 	bool IsInitialized() override { return _initialized; }
-	bool IsPlaying() override { return _audioLen > 0;  };
+	bool IsPlaying() override { return _playing;  };
 	void Play() override;
 	void Stop() override;
 
 private:
-	static void audio_callback(void* sdlSound, uint8_t* const stream, int len);
+	template<class T>
+	static void audio_callback(void* sdlSound, Uint8* const stream, int len);
 
 private:
 	SDL_AudioSpec* _want; 
 	SDL_AudioSpec* _have;
 	SDL_AudioDeviceID _dev;
-	unsigned int _audioPos; /* which sample we are up to */
-	int _audioLen;          /* how many samples left to play, stops when <= 0 */
+	bool _playing; 
+	unsigned int _audioPos;  /* which sample we are up to */
 	float _audioFreq;       /* audio frequency in cycles per sample */
 	float _audioVol;        /* audio volume, 0 - ~32000 */
 	bool _initialized;
