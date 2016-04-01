@@ -268,6 +268,7 @@ bool Emulator::InitSound(iSound* const sound)
 	else if(!sound->Initialize())
 		return false;
 
+
 	auto oldsound = _manager.SwapSound(sound);
 	if(oldsound)
 		delete oldsound;

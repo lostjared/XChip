@@ -10,11 +10,11 @@ public:
 	virtual ~iSound() = default;
 	virtual bool Initialize() noexcept = 0;
 	virtual void Dispose() noexcept = 0;
-	virtual bool IsInitialized() = 0;
-	virtual bool IsPlaying() = 0;
+	virtual bool IsInitialized() const = 0;
+	virtual bool IsPlaying() const = 0;
 
-
-	virtual void Play(unsigned soundTimer) = 0;
+	virtual void SetCountdownFreq(const float hz) = 0;
+	virtual void Play(const uint8_t soundTimer) = 0;
 	virtual void Stop() = 0;
 
 

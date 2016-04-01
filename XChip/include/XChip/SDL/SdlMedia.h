@@ -10,8 +10,6 @@ protected:
 	SdlMedia(System sys);
 	virtual ~SdlMedia();
 	static void UpdateEvents();
-
-
 private:
 	System _sys;
 	static int s_onSystems[3];

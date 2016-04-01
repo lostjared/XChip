@@ -8,13 +8,12 @@
 
 
 
-#define FREQ ((float)350) // tone
+#define FREQ ((float)300) // tone
 
 
 
 namespace xchip {
 
-static float s_audioLen;
 
 
 SdlSound::SdlSound() noexcept
@@ -24,8 +23,10 @@ SdlSound::SdlSound() noexcept
 	_dev(0),
 	_playing(false),
 	_audioPos(0),
+	_audioLen(0),
 	_audioFreq(0),
 	_audioVol(0),
+	_cycleTime(0),
 	_initialized(false)
 {
 	utility::LOG("Creating SdlSound...");
@@ -38,6 +39,7 @@ SdlSound::~SdlSound()
 
 	utility::LOG("Destroying SdlSound...");
 }
+
 
 
 bool SdlSound::Initialize() noexcept
@@ -62,7 +64,6 @@ bool SdlSound::Initialize() noexcept
 		return false;
 	}
 
-
   	SDL_memset(_want, 0, sizeof(SDL_AudioSpec));
 	_want->freq = 44100;
 	_want->format = AUDIO_S16;
@@ -80,12 +81,8 @@ bool SdlSound::Initialize() noexcept
 		return false;
 	}
 
-
-	s_audioLen = 0;
-	_audioPos = 0;
-	_audioFreq = FREQ / _have->freq;
-	_audioVol = 8000; // ~1/5 max volume
-	
+	_audioVol = 6000;
+	_cycleTime = (_have->freq / 60.f);
 
 	_playing = false;
 	_initialized = true;
@@ -108,24 +105,32 @@ void SdlSound::Dispose() noexcept
 }
 
 
-void SdlSound::Play(unsigned soundTimer)
+void SdlSound::SetCountdownFreq(const float hz)
+{
+	if (_want == nullptr)
+		return;
+
+	_cycleTime = (_have->freq / hz);
+}
+
+
+void SdlSound::Play(const uint8_t soundTimer)
 {
 	if (!_playing)
 	{
-		_playing = true;
-		s_audioLen = (_have->freq / 60) * soundTimer;
-
+		_audioLen = _cycleTime * soundTimer;
+		_audioFreq = (FREQ + 2 * soundTimer) / _have->freq;
 	}
 
 	else
 	{
-		
 		SDL_LockAudioDevice(_dev);
-		s_audioLen += (_have->freq/60) * soundTimer;
+		_audioLen += _cycleTime * soundTimer;
+		_audioFreq = (FREQ + 2 * soundTimer) / _have->freq;
 		SDL_UnlockAudioDevice(_dev);
-		_playing = true;
 	}
 
+	_playing = true;
 	SDL_PauseAudioDevice(_dev, 0);
 }
 
@@ -142,28 +147,31 @@ template<class T>
 void SdlSound::audio_callback(void* sdlSound, Uint8* const stream, int len)
 {
 	auto _this = (SdlSound*)sdlSound;
+
+	constexpr auto _2pi = static_cast<float>(2 * M_PI);
+	const int bufsize = (len / sizeof(T));
+	T* buf = (T*) stream;
 	
-	if (s_audioLen < 0.0f)
+
+	if (_this->_audioLen <= 0.0f)
 	{
+		for (int i = 0; i < bufsize; ++i)
+			buf[i] = 0;
+
 		_this->Stop();
 		return;
 	}
 
-	constexpr auto _2pi = static_cast<float>(2 * M_PI);
-	T* buf = (T*)stream;
-	const int bufsize = len / sizeof(T);
-
+	const auto freq = _this->_audioFreq;
+	const auto vol = _this->_audioVol;
 	
 	for (int i = 0; i < bufsize; ++i)
 	{
-		buf[i] = static_cast<T>
-			(_this->_audioVol *
-				sin(_2pi * _this->_audioPos * _this->_audioFreq)  ) ;
-		
+		buf[i] = static_cast<T>(vol * sin(_2pi * freq * _this->_audioPos ));
 		++_this->_audioPos;
 	}
 
-	s_audioLen -= bufsize;
+	_this->_audioLen -= bufsize;
 }
 
 
