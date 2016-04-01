@@ -2,6 +2,9 @@
 #include <XChip/Interfaces/iSound.h>
 #include "SdlMedia.h"
 
+// TODO: stop the sound clipping if possible
+// TODO: precalculate the sin wave
+
 struct SDL_AudioSpec;
 typedef uint32_t SDL_AudioDeviceID;
 typedef uint8_t Uint8;
@@ -32,9 +35,9 @@ private:
 	SDL_AudioSpec* _have;
 	SDL_AudioDeviceID _dev;
 	bool _playing; 
-	unsigned int _audioPos;  /* which sample we are up to */
-	float _audioFreq;       /* audio frequency in cycles per sample */
-	float _audioVol;        /* audio volume, 0 - ~32000 */
+	unsigned int _audioPos;  // which sample we are up to 
+	float _audioFreq;        // audio frequency in cycles per sample
+	float _audioVol;         // audio volume, 0 - ~32000 */
 	bool _initialized;
 
 };

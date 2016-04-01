@@ -6,12 +6,15 @@
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Timer.h>
 
-#define FREQ ((float)350) /* the frequency we want */
+
+
+#define FREQ ((float)350) // tone
+
 
 
 namespace xchip {
 
-float _audioLen;
+static float s_audioLen;
 
 
 SdlSound::SdlSound() noexcept
@@ -78,7 +81,7 @@ bool SdlSound::Initialize() noexcept
 	}
 
 
-	_audioLen = 0;
+	s_audioLen = 0;
 	_audioPos = 0;
 	_audioFreq = FREQ / _have->freq;
 	_audioVol = 8000; // ~1/5 max volume
@@ -110,14 +113,14 @@ void SdlSound::Play(unsigned soundTimer)
 	if (!_playing)
 	{
 		_playing = true;
-		_audioLen = (_have->freq * soundTimer / 60.f);
+		s_audioLen = (_have->freq * soundTimer / 60.f);
 
 	}
 
 	else
 	{
 		SDL_LockAudioDevice(_dev);
-		_audioLen += (_have->freq * soundTimer / 60.f);
+		s_audioLen += (_have->freq * soundTimer / 60.f);
 		SDL_UnlockAudioDevice(_dev);
 	}
 
@@ -129,7 +132,6 @@ void SdlSound::Stop()
 {
 	_playing = false;
 	_audioPos = 0;
-	_audioLen = 0;
 	SDL_PauseAudioDevice(_dev, 1);
 }
 
@@ -138,31 +140,28 @@ template<class T>
 void SdlSound::audio_callback(void* sdlSound, Uint8* const stream, int len)
 {
 	auto _this = (SdlSound*)sdlSound;
+	
+	if (s_audioLen < 0.0f)
+	{
+		_this->Stop();
+		return;
+	}
 
 	constexpr auto _2pi = static_cast<float>(2 * M_PI);
 	T* buf = (T*)stream;
 	const int bufsize = len / sizeof(T);
 
-	if (_audioLen < 0.0f)
-	{
-		for (int i = 0; i < bufsize; ++i)
-			buf[i] = 0;
-
-		_this->Stop();
-		
-		return;
-	}
-
+	
 	for (int i = 0; i < bufsize; ++i)
 	{
 		buf[i] = static_cast<T>
 			(_this->_audioVol *
-				sin(_2pi * _this->_audioFreq * _this->_audioPos));
+				sin(_2pi * _this->_audioPos * _this->_audioFreq)  ) ;
 		
 		++_this->_audioPos;
 	}
 
-	_audioLen -= bufsize;
+	s_audioLen -= bufsize;
 }
 
 
