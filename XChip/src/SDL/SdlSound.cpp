@@ -67,7 +67,7 @@ bool SdlSound::Initialize() noexcept
 	_want->freq = 44100;
 	_want->format = AUDIO_S16;
 	_want->channels = 1;
-	_want->samples = static_cast<decltype(_want->samples)>(4096);
+	_want->samples = static_cast<decltype(_want->samples)>(1024 * 4);
 	_want->callback = SdlSound::audio_callback<Sint16>;
 	_want->userdata = this;
 	
@@ -113,7 +113,7 @@ void SdlSound::Play(unsigned soundTimer)
 	if (!_playing)
 	{
 		_playing = true;
-		s_audioLen = (_have->freq * soundTimer / 60.f);
+		s_audioLen = (_have->freq / 60) * soundTimer;
 
 	}
 
@@ -121,7 +121,7 @@ void SdlSound::Play(unsigned soundTimer)
 	{
 		
 		SDL_LockAudioDevice(_dev);
-		s_audioLen += (_have->freq * soundTimer / 60.f);
+		s_audioLen += (_have->freq/60) * soundTimer;
 		SDL_UnlockAudioDevice(_dev);
 		_playing = true;
 	}
