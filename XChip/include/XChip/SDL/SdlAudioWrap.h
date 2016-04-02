@@ -16,11 +16,12 @@ public:
 	~SdlAudioDevice();
 
 	bool Initialize(int wantedFreq,
-		            SDL_AudioFormat wantedFormat,
+                    SDL_AudioFormat wantedFormat,
                     Uint8 channels,
                     Uint16 samples,
                     AudioCallback callback,
                     void* userdata) noexcept;
+
 	void Dispose() noexcept;
 
 	bool IsInitialized() const { return _initialized;  }
