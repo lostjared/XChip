@@ -96,6 +96,8 @@ void Emulator::Dispose() noexcept
 }
 
 
+
+
 void Emulator::HaltForNextFlag() const
 {
 	if (!_instrf && !_drawf)
@@ -144,12 +146,16 @@ void Emulator::UpdateTimers()
 	}
 }
 
+
+
 void Emulator::UpdateSystems()
 {
 	_manager.GetRender()->UpdateEvents();
 	_manager.GetInput()->UpdateKeys();
 	this->UpdateTimers();
 }
+
+
 
 
 void Emulator::ExecuteInstr()
@@ -162,11 +168,17 @@ void Emulator::ExecuteInstr()
 }
 
 
+
+
+
 void Emulator::Draw()
 {
 	_manager.GetRender()->DrawBuffer();
 	_drawf = false;
 }
+
+
+
 
 
 void Emulator::Reset()
@@ -188,10 +200,13 @@ void Emulator::SetInstrPerSec(const unsigned short value)
 	_instrTimer.SetTargetTime(utility::literals::operator""_hz(value));
 }
 
+
+
 void Emulator::SetFramesPerSec(const unsigned short value)
 {
 	_frameTimer.SetTargetTime(utility::literals::operator""_hz(value));
 }
+
 
 
 
@@ -214,6 +229,7 @@ bool Emulator::InitRender(iRender* const rend)
 
 	return true;
 }
+
 
 
 
@@ -257,6 +273,7 @@ bool Emulator::InitInput(iInput* const input)
 
 	return true;
 }
+
 
 
 bool Emulator::InitSound(iSound* const sound)

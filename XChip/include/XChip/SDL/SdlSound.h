@@ -9,6 +9,7 @@
 struct SDL_AudioSpec;
 typedef uint32_t SDL_AudioDeviceID;
 typedef uint8_t Uint8;
+
 namespace xchip {
 
 
@@ -27,6 +28,7 @@ public:
 	void SetCountdownFreq(const float hz) override;
 	void Play(const uint8_t soundTimer) override;
 	void Stop() override;
+
 private:
 	template<class T>
 	static void audio_callback(void* sdlSound, Uint8* const stream, int len);
@@ -36,11 +38,12 @@ private:
 	SDL_AudioSpec* _have;
 	SDL_AudioDeviceID _dev;
 	unsigned int _audioPos;  // which sample we are up to 
-	float _audioLen;
+	float _tone;             // beep tone, default to 350hz
+	float _audioLen;         // timeleft ( calculated from soundTimer )
 	float _audioFreq;        // audio frequency in cycles per sample
 	float _audioVol;         // audio volume, 0 - ~32000 */
-	float _cycleTime;
-	bool _playing;
+	float _cycleTime;        // countdown freq, default to 60hz
+	bool _playing;           
 	bool _initialized;
 	
 

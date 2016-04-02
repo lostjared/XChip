@@ -49,6 +49,7 @@ public:
 	Cpu& GetCpu() { return _cpu; }
 	iRender* GetRender() { return _cpu.render; }
 	iInput* GetInput() { return _cpu.input; }
+	iSound* GetSound() { return _cpu.sound; }
 	iRender* SwapRender(iRender* render);
 	iInput* SwapInput(iInput* input);
 	iSound* SwapSound(iSound* sound);

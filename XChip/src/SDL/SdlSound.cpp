@@ -8,9 +8,6 @@
 
 
 
-#define FREQ ((float)300) // tone
-
-
 
 namespace xchip {
 
@@ -21,12 +18,13 @@ SdlSound::SdlSound() noexcept
 	_want(nullptr),
 	_have(nullptr),
 	_dev(0),
-	_playing(false),
 	_audioPos(0),
+	_tone(350),
 	_audioLen(0),
 	_audioFreq(0),
 	_audioVol(0),
 	_cycleTime(0),
+	_playing(false),
 	_initialized(false)
 {
 	utility::LOG("Creating SdlSound...");
@@ -60,9 +58,11 @@ bool SdlSound::Initialize() noexcept
 	
 	if (!_want)
 	{
+		this->Dispose();
 		utility::LOGerr("SdlSound unable to alloc SDL_AudioSpec");
 		return false;
 	}
+
 
   	SDL_memset(_want, 0, sizeof(SDL_AudioSpec));
 	_want->freq = 44100;
@@ -93,21 +93,21 @@ bool SdlSound::Initialize() noexcept
 
 void SdlSound::Dispose() noexcept
 {
-	if (this->IsPlaying())
-		this->Stop();
-	
-	SDL_CloseAudioDevice(_dev);
-
 	delete[] _want;
 	_want = nullptr;
 	_have = nullptr;
+	if(_dev != 0)
+		SDL_CloseAudioDevice(_dev);
+
+	_dev = 0;
+	_playing = false;
 	_initialized = false;
 }
 
 
 void SdlSound::SetCountdownFreq(const float hz)
 {
-	if (_want == nullptr)
+	if (_have == nullptr)
 		return;
 
 	_cycleTime = (_have->freq / hz);
@@ -119,14 +119,14 @@ void SdlSound::Play(const uint8_t soundTimer)
 	if (!_playing)
 	{
 		_audioLen = _cycleTime * soundTimer;
-		_audioFreq = (FREQ + 2 * soundTimer) / _have->freq;
+		_audioFreq = (_tone + 2 * soundTimer) / _have->freq;
 	}
 
 	else
 	{
 		SDL_LockAudioDevice(_dev);
 		_audioLen += _cycleTime * soundTimer;
-		_audioFreq = (FREQ + 2 * soundTimer) / _have->freq;
+		_audioFreq = (_tone + 2 * soundTimer) / _have->freq;
 		SDL_UnlockAudioDevice(_dev);
 	}
 
@@ -150,7 +150,7 @@ void SdlSound::audio_callback(void* sdlSound, Uint8* const stream, int len)
 
 	constexpr auto _2pi = static_cast<float>(2 * M_PI);
 	const int bufsize = (len / sizeof(T));
-	T* buf = (T*) stream;
+	T* const buf = (T*) stream;
 	
 
 	if (_this->_audioLen <= 0.0f)
