@@ -47,9 +47,6 @@
     <ClCompile Include="..\..\..\XChip\src\XChip\Instructions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XChip\src\Test\test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XChip\src\XChip\CpuManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

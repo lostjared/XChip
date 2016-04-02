@@ -25,13 +25,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -91,6 +91,9 @@
       <AdditionalDependencies>Utility.lib;SDL_MEDIA.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)\;C:\cygwin64\home\Rafael\Documents\Git\Github\XChip\XChip\dependencies\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -119,6 +122,9 @@
       <AdditionalDependencies>Utility.lib;SDL_MEDIA.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)\;C:\cygwin64\home\Rafael\Git\github\experimental\XChip\XChip\dependencies\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -147,7 +153,6 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iSound.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\XChip\src\Test\test.cpp" />
     <ClCompile Include="..\..\..\XChip\src\XChip\CpuManager.cpp" />
     <ClCompile Include="..\..\..\XChip\src\XChip\Emulator.cpp" />
     <ClCompile Include="..\..\..\XChip\src\XChip\Fonts.cpp" />

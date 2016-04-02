@@ -1,18 +1,13 @@
 #include <cstdint>
 #include <XChip/Interfaces/iSound.h>
+#include "XChip/SDL/SdlAudioWrap.h"
 #include "SdlMedia.h"
 
 // TODO: stop the sound clipping if possible
 // TODO: precalculate the sin wave
 // TODO: PLEASE ORGANIZE THIS CLASS
 
-struct SDL_AudioSpec;
-typedef uint32_t SDL_AudioDeviceID;
-typedef uint8_t Uint8;
-
 namespace xchip {
-
-
 
 class SdlSound final : private SdlMedia, public iSound
 {
@@ -23,7 +18,7 @@ public:
 	void Dispose() noexcept override;
 
 	bool IsInitialized() const override { return _initialized; }
-	bool IsPlaying() const override { return _playing;  };
+	bool IsPlaying() const override { return _device.IsRunning(); };
 
 	void SetCountdownFreq(const float hz) override;
 	void Play(const uint8_t soundTimer) override;
@@ -34,16 +29,13 @@ private:
 	static void audio_callback(void* sdlSound, Uint8* const stream, int len);
 
 private:
-	SDL_AudioSpec* _want; 
-	SDL_AudioSpec* _have;
-	SDL_AudioDeviceID _dev;
+	SdlAudioDevice _device;
 	unsigned int _audioPos;  // which sample we are up to 
 	float _tone;             // beep tone, default to 350hz
 	float _audioLen;         // timeleft ( calculated from soundTimer )
 	float _audioFreq;        // audio frequency in cycles per sample
 	float _audioVol;         // audio volume, 0 - ~32000 */
 	float _cycleTime;        // countdown freq, default to 60hz
-	bool _playing;           
 	bool _initialized;
 	
 
