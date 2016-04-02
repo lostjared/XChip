@@ -5,6 +5,8 @@
 namespace xchip
 {
 
+
+
 SdlAudioDevice::SdlAudioDevice() noexcept
 	: _dev(0),
 	_initialized(false)
@@ -12,18 +14,19 @@ SdlAudioDevice::SdlAudioDevice() noexcept
 
 }
 
+
+
 SdlAudioDevice::~SdlAudioDevice()
 {
 	if (_initialized)
 		this->Dispose();
 }
 
-bool SdlAudioDevice::Initialize(int wantedFreq, 
-	SDL_AudioFormat wantedFormat, 
-	Uint8 channels, 
-	Uint16 samples, 
-	AudioCallback callback, 
-	void* userdata) noexcept
+
+
+bool SdlAudioDevice::Initialize(const int wantedFreq, const SDL_AudioFormat wantedFormat, 
+		const Uint8 channels, const Uint16 samples,
+		const AudioCallback callback, void* userdata) noexcept
 {
 	using namespace utility::literals;
 	
@@ -50,6 +53,9 @@ bool SdlAudioDevice::Initialize(int wantedFreq,
 	_initialized = true;
 	return true;
 }
+
+
+
 
 
 void SdlAudioDevice::Dispose() noexcept

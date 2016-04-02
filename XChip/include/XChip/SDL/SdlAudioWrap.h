@@ -15,12 +15,9 @@ public:
 	SdlAudioDevice() noexcept;
 	~SdlAudioDevice();
 
-	bool Initialize(int wantedFreq,
-                        SDL_AudioFormat wantedFormat,
-                        Uint8 channels,
-                        Uint16 samples,
-                        AudioCallback callback,
-                        void* userdata) noexcept;
+	bool Initialize(int wantedFreq, const SDL_AudioFormat wantedFormat,
+		const Uint8 channels, const Uint16 samples,
+		const AudioCallback callback, void* userdata) noexcept;
 
 	void Dispose() noexcept;
 
