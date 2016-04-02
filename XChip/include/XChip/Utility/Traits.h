@@ -16,7 +16,7 @@ using underlying_type_t = typename std::underlying_type<T>::type;
 
 
 template<class T>
-underlying_type_t<T> toUType(T t)
+underlying_type_t<T> toUType(T t) noexcept
 {
 	return static_cast<underlying_type_t<T>>(t);
 }

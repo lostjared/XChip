@@ -42,13 +42,8 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	if (m_window != nullptr)
 		this->Dispose();
 
-
-	if (SDL_Init(SDL_INIT_VIDEO) != SDL_FALSE) 
-	{
-		LOGerr("Couldn't start the application: "_s + SDL_GetError());
+	else if (!this->InitSubsystem())
 		return false;
-	}
-
 
 	m_pitch = width * 4;
 

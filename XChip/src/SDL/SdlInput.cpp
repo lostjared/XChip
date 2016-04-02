@@ -48,6 +48,12 @@ SdlInput::~SdlInput()
 
 bool SdlInput::Initialize() noexcept
 {
+	if (m_initialized)
+		this->Dispose();
+
+	else if (!this->InitSubsystem())
+		return false;
+
 	m_keyboardState = SDL_GetKeyboardState(NULL);
 
 	if (!m_keyboardState) 

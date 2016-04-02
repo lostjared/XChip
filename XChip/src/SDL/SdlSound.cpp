@@ -40,13 +40,10 @@ bool SdlSound::Initialize() noexcept
 	if (_initialized)
 		this->Dispose();
 
-	if(SDL_Init(SDL_INIT_AUDIO)) 
-	{
-		utility::LOGerr("SdlSound Failed to initialize: "_s + SDL_GetError());
+	else if (!this->InitSubsystem())
 		return false;
-  	}
-	
 
+	
 	if(!_device.Initialize(44100, AUDIO_S16, 1, 4*1024,  
 		SdlSound::audio_callback<Sint16>, this))
 	{

@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv)
 {
-	
+	std::atexit([]() {std::cin.ignore(); });
 	if (argc < 2) 
 	{
 		xchip::utility::LOG("No game to load...");
@@ -17,10 +17,12 @@ int main(int argc, char** argv)
 	}
 
 	static xchip::Emulator emulator;
+	
+
 
 	if (!emulator.Initialize(new(std::nothrow) xchip::SdlRender(),
-							 new(std::nothrow) xchip::SdlInput(),
-							 new(std::nothrow) xchip::SdlSound()))
+                             new(std::nothrow) xchip::SdlInput(), 
+                             new(std::nothrow) xchip::SdlSound()))
 	{
 		return 1;
 	}
@@ -30,7 +32,8 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	
+	emulator.GetRender()->SetWinResizeCallback(nullptr, [](const void*) {std::cout << "RESIZED" << std::endl; });
+
 	while (! emulator.GetExitFlag())
 	{
 		emulator.HaltForNextFlag();
@@ -43,7 +46,7 @@ int main(int argc, char** argv)
 			emulator.Draw();
 	}
 
-
+	xchip::utility::LOG("PRESS ANY KEY TO EXIT");
 	return 0;
 
 
