@@ -9,7 +9,13 @@
 
 int main(int argc, char** argv)
 {
-	std::atexit([]() {std::cin.ignore(); });
+	std::atexit([]()
+	{ 
+		xchip::utility::LOG("PRESS ANY KEY TO EXIT");
+		std::cin.ignore();
+	});
+
+
 	if (argc < 2) 
 	{
 		xchip::utility::LOG("No game to load...");
@@ -18,8 +24,6 @@ int main(int argc, char** argv)
 
 	static xchip::Emulator emulator;
 	
-
-
 	if (!emulator.Initialize(new(std::nothrow) xchip::SdlRender(),
                              new(std::nothrow) xchip::SdlInput(), 
                              new(std::nothrow) xchip::SdlSound()))
@@ -46,7 +50,7 @@ int main(int argc, char** argv)
 			emulator.Draw();
 	}
 
-	xchip::utility::LOG("PRESS ANY KEY TO EXIT");
+
 	return 0;
 
 

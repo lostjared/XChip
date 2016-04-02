@@ -40,7 +40,7 @@ bool SdlSound::Initialize() noexcept
 	if (_initialized)
 		this->Dispose();
 
-	else if (!this->InitSubsystem())
+	else if (!this->InitSubSystem())
 		return false;
 
 	

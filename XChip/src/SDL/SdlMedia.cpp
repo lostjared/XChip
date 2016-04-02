@@ -31,15 +31,15 @@ SdlMedia::~SdlMedia()
 		{
 			case System::Render:
 				flags = SDL_INIT_VIDEO;
-				LOG("Closing SDL Video Subsystem...");
+				LOG("Closing SDL Video SubSystem...");
 				break;
 			case System::Input:
 				flags = SDL_INIT_EVENTS;
-				LOG("Closing SDL Input Subsystem...");
+				LOG("Closing SDL Input SubSystem...");
 				break;
 			case System::Sound:
 				flags = SDL_INIT_AUDIO;
-				LOG("Closing SDL Audio Subsystem...");
+				LOG("Closing SDL Audio SubSystem...");
 				break;
 		}
 
@@ -49,7 +49,7 @@ SdlMedia::~SdlMedia()
 }
 
 
-bool SdlMedia::InitSubsystem()
+bool SdlMedia::InitSubSystem()
 {
 	using namespace utility;
 	using namespace utility::literals;
@@ -63,21 +63,21 @@ bool SdlMedia::InitSubsystem()
 		{
 			case System::Render:
 				flags = SDL_INIT_VIDEO;
-				LOG("Initializing SDL Video Subsystem...");
+				LOG("Initializing SDL Video SubSystem...");
 				break;
 			case System::Input:
 				flags = SDL_INIT_EVENTS;
-				LOG("Initializing SDL Input Subsystem...");
+				LOG("Initializing SDL Input SubSystem...");
 				break;
 			case System::Sound:
 				flags = SDL_INIT_AUDIO;
-				LOG("Initializing SDL Audio Subsystem...");
+				LOG("Initializing SDL Audio SubSystem...");
 				break;
 		}
 		
 		if (SDL_InitSubSystem(flags) != SDL_FALSE)
 		{
-			LOGerr("Could not initialize SDL Subsystem: "_s + SDL_GetError());
+			LOGerr("Could not initialize SDL SubSystem: "_s + SDL_GetError());
 			return false;
 		}
 
@@ -89,16 +89,7 @@ bool SdlMedia::InitSubsystem()
 
 void SdlMedia::UpdateEvents()
 {
-	using namespace xchip::utility;
-	using namespace xchip::utility::literals;
-	// prevent both SdlRender/Input from update
-	// at the same period of 256th of second
-	static Timer eventTimer(256_hz);
-	if (eventTimer.Finished()) 
-	{
-		SDL_PollEvent(&g_sdlEvent);
-		eventTimer.Start();
-	}
+	SDL_PollEvent(&g_sdlEvent);		
 }
 
 

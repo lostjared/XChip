@@ -42,7 +42,7 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	if (m_window != nullptr)
 		this->Dispose();
 
-	else if (!this->InitSubsystem())
+	else if (!this->InitSubSystem())
 		return false;
 
 	m_pitch = width * 4;

@@ -8,7 +8,7 @@ class SdlMedia
 protected:
 	enum class System { Render, Input, Sound };
 	SdlMedia(System sys);
-	bool InitSubsystem();
+	bool InitSubSystem();
 	virtual ~SdlMedia();
 	static void UpdateEvents();
 
