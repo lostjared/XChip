@@ -45,8 +45,8 @@ bool SdlSound::Initialize() noexcept
 		return false;
 
 	
-	if(!_device.Initialize(44100, AUDIO_S16, 1, 4*1024,  
-		                   SdlSound::audio_callback<Sint16>, this))
+	if(!_device.Initialize(44100, AUDIO_S16, 1, 4*1024, 
+                               SdlSound::audio_callback<Sint16>, this))
 	{
 		this->Dispose();
 		return false;
