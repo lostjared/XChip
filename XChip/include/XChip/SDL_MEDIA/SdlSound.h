@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <XChip/Interfaces/iSound.h>
-#include "SdlAudioDevice.h"
 #include "SdlMedia.h"
 
 // TODO: stop the sound clipping if possible by smoothing the ( better volume controll )
@@ -11,6 +10,7 @@
 // TODO: PLEASE ORGANIZE THIS CLASS
 
 namespace xchip {
+class SdlAudioDevice;
 
 class SdlSound final : private SdlMedia, public iSound
 {
@@ -21,7 +21,7 @@ public:
 	void Dispose() noexcept override;
 
 	bool IsInitialized() const override { return _initialized; }
-	bool IsPlaying() const override { return _device.IsRunning(); };
+	bool IsPlaying() const override;
 
 	void SetCountdownFreq(const float hz) override;
 	void Play(const uint8_t soundTimer) override;
@@ -29,10 +29,10 @@ public:
 
 private:
 	template<class T>
-	static void audio_callback(void* sdlSound, Uint8* const stream, int len);
+	static void audio_callback(void* sdlSound, uint8_t* const stream, int len);
 
 private:
-	SdlAudioDevice _device;
+	SdlAudioDevice *_device;
 	unsigned int _audioPos;  // which sample we are up to 
 	float _tone;             // beep tone, default to 350hz
 	float _audioLen;         // timeleft ( calculated from soundTimer )

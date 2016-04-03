@@ -1,12 +1,14 @@
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_events.h>
+
 #include <XChip/SDL_MEDIA/SdlRender.h>
 #include <XChip/Utility/Log.h>
 
 namespace xchip {
-
 using namespace utility;
-extern SDL_Event s_events;
+
+
 
 SdlRender::SdlRender()
 	: SdlMedia(System::Render),

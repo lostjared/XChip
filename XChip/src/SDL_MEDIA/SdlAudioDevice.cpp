@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <XChip/SDL_MEDIA/SdlAudioDevice.h>
+#include <XChip/SDL_MEDIA/SdlAudioDevice.h>
 #include <XChip/Utility/Log.h>
 
 namespace xchip

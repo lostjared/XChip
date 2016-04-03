@@ -1,12 +1,7 @@
 #ifndef _XCHIP_SDLAUDIODEVICE_H_
 #define _XCHIP_SDLAUDIODEVICE_H_
 #include <cstdint>
-
-#ifdef _WIN32
-#include "EXTERN_HEADERS\WIN\SDL2\SDL_audio.h"
-#else
 #include <SDL2/SDL_audio.h>
-#endif
 
 
 namespace xchip {

@@ -251,7 +251,7 @@ bool Emulator::InitInput(iInput* const input)
 
 	input->SetWaitKeyCallback(this, [](const void* emu)
 	{
-		auto emulator = (Emulator* const) emu;
+		auto *emulator = (Emulator*) emu;
 		do
 		{
 			emulator->UpdateSystems();

@@ -4,6 +4,7 @@
 
 #include <SDL2/SDL.h>
 #include <XChip/SDL_MEDIA/SdlSound.h>
+#include <XChip/SDL_MEDIA/SdlAudioDevice.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Timer.h>
 
@@ -11,8 +12,10 @@ namespace xchip {
 
 
 
+
 SdlSound::SdlSound() noexcept
 	:  SdlMedia(System::Sound),
+	_device(nullptr),
 	_audioPos(0),
 	_tone(512),
 	_audioLen(0),
@@ -44,9 +47,16 @@ bool SdlSound::Initialize() noexcept
 	else if (!this->InitSubSystem())
 		return false;
 
+	_device = new(std::nothrow) SdlAudioDevice;
 	
-	if(!_device.Initialize(44100, AUDIO_S16, 1, 4*1024, 
-                               SdlSound::audio_callback<Sint16>, this))
+	if (!_device)
+	{
+		utility::LOGerr("Could not allocate SdlAudioDevice...");
+		return false;
+	}
+	
+	if(!_device->Initialize(44100, AUDIO_S16, 1, 4*1024, 
+                           SdlSound::audio_callback<Sint16>, this))
 	{
 		this->Dispose();
 		return false;
@@ -54,7 +64,7 @@ bool SdlSound::Initialize() noexcept
 
 
 	_audioVol = 6000;
-	_cycleTime = (_device.GetCurrentFreq() / 60.f);
+	_cycleTime = (_device->GetCurrentFreq() / 60.f);
 	_initialized = true;
 
 	return true;
@@ -64,53 +74,64 @@ bool SdlSound::Initialize() noexcept
 
 void SdlSound::Dispose() noexcept
 {
-	if (_device.IsInitialized())
-		_device.Dispose();
+	if (_device)
+	{
+		if (_device->IsInitialized())
+			_device->Dispose();
+
+		delete _device;
+		_device = nullptr;
+	}
 
 	_initialized = false;
 }
 
 
+bool SdlSound::IsPlaying() const
+{
+	return _device->IsRunning();
+}
+
 void SdlSound::SetCountdownFreq(const float hz)
 {
-	if (!_device.IsInitialized())
+	if (!_device->IsInitialized())
 		return;
 
-	_cycleTime = (_device.GetCurrentFreq() / hz);
+	_cycleTime = (_device->GetCurrentFreq() / hz);
 }
 
 
 void SdlSound::Play(const uint8_t soundTimer)
 {
-	if (!_device.IsRunning())
+	if (!_device->IsRunning())
 	{
 		_audioLen = _cycleTime * soundTimer;
-		_audioFreq = (_tone + 2 * soundTimer) / _device.GetCurrentFreq();
+		_audioFreq = (_tone + 2 * soundTimer) / _device->GetCurrentFreq();
 	}
 
 	else
 	{
-		_device.Lock();
+		_device->Lock();
 		_audioLen += _cycleTime * soundTimer;
-		_audioFreq = (_tone + 2 * soundTimer) / _device.GetCurrentFreq();
-		_device.Unlock();
+		_audioFreq = (_tone + 2 * soundTimer) / _device->GetCurrentFreq();
+		_device->Unlock();
 	}
 
-	_device.Run();
+	_device->Run();
 }
 
 
 void SdlSound::Stop()
 {
-	_device.Pause();
+	_device->Pause();
 	_audioPos = 0;
 }
 
 
 template<class T>
-void SdlSound::audio_callback(void* sdlSound, Uint8* const stream, int len)
+void SdlSound::audio_callback(void* sdlSound, uint8_t* const stream, int len)
 {
-	auto _this = (SdlSound*)sdlSound;
+	auto _this = static_cast<SdlSound*>(sdlSound);
 
 	constexpr auto _2pi = static_cast<float>(2 * M_PI);
 	const int bufsize = (len / sizeof(T));

@@ -115,7 +115,8 @@ void op_6XNN(Cpu *const _cpu)
 // 7XNN: add the value NN to register VX
 void op_7XNN(Cpu *const _cpu)
 {
-	VX = ((VX + NN) & 0xFF);
+	auto& vx = VX;
+	vx = ((vx + NN) & 0xFF);
 }
 
 
@@ -161,7 +162,8 @@ void op_8XY0(Cpu *const _cpu)
 // 8XY1: set VX to VX | VY
 void op_8XY1(Cpu *const _cpu)
 {
-	VX = (VY | VX);
+	auto& vx = VX;
+	vx = (VY | vx);
 }
 
 
@@ -173,7 +175,8 @@ void op_8XY1(Cpu *const _cpu)
 // 8XY2: sets VX to VX and VY
 void op_8XY2(Cpu *const _cpu)
 {
-	VX = (VY & VX);
+	auto& vx = VX;
+	vx = (VY & vx);
 }
 
 
@@ -184,7 +187,8 @@ void op_8XY2(Cpu *const _cpu)
 // 8XY3: sets VX to VX xor VY
 void op_8XY3(Cpu *const _cpu)
 {
-	VX = ((VY ^ VX) & 0xFF);
+	auto& vx = VX;
+	vx = ((VY ^ vx) & 0xFF);
 }
 
 
@@ -195,10 +199,10 @@ void op_8XY3(Cpu *const _cpu)
 // 8XY4: Adds VY to VX . VF is set to 1 when theres a carry, and to 0 when there isn't
 void op_8XY4(Cpu *const _cpu)
 {
-
-	uint16_t result = VX + VY; // compute sum
+	auto& vx = VX;
+	uint16_t result = vx + VY; // compute sum
 	_cpu->registers[0xF] = ((result & 0xff00) != 0) ? 1 : 0; // check carry
-	VX = (result & 0xff);
+	vx = (result & 0xff);
 }
 
 
@@ -210,9 +214,10 @@ void op_8XY4(Cpu *const _cpu)
 // 8XY5: VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
 void op_8XY5(Cpu *const _cpu)
 {
-
-	_cpu->registers[0xF] = (VX > VY); // checking if theres is a borrow
-	VX -= VY;
+	auto const vy = VY;
+	auto& vx = VX;
+	_cpu->registers[0xF] = (vx > vy); // checking if theres is a borrow
+	vx -= vy;
 }
 
 
@@ -225,8 +230,9 @@ void op_8XY5(Cpu *const _cpu)
 // 8XY6: Shifts VX right by one. VF is set to the value of the least significant bit of VX before the shift.
 void op_8XY6(Cpu *const _cpu)
 {
-	_cpu->registers[0xF] = (VX & 0x1); // check the least significant bit
-	VX >>= 1;
+	auto& vx = VX;
+	_cpu->registers[0xF] = (vx & 0x1); // check the least significant bit
+	vx >>= 1;
 }
 
 
@@ -238,8 +244,10 @@ void op_8XY6(Cpu *const _cpu)
 // 8XY7: Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
 void op_8XY7(Cpu *const _cpu)
 {
-	_cpu->registers[0xF] = (VY > VX); // check borrow ( VY > VX )
-	VX = (VY - VX);
+	const auto vy = VY;
+	auto &vx = VX; 
+	_cpu->registers[0xF] = (vy > vx); // check borrow ( VY > VX )
+	vx = vy - vx;
 }
 
 
@@ -251,8 +259,9 @@ void op_8XY7(Cpu *const _cpu)
 // 8XYE Shifts VX left by one. VF is set to the value of the most significant bit of VX before the shift.
 void op_8XYE(Cpu *const _cpu)
 {
-	_cpu->registers[0xF] = ((VX & 0x80) >> 7);  // check the most significant bit
-	VX = ((VX << 1) & 0xFF);
+	auto& vx = VX;
+	_cpu->registers[0xF] = ((vx & 0x80) >> 7);  // check the most significant bit
+	vx = ((vx << 1) & 0xFF);
 }
 
 
@@ -304,7 +313,7 @@ void op_DXYN(Cpu *const _cpu)
 
 	uint8_t Vx = VX, Vy = VY;
 	int height = N;
-	uint8_t *_8bitRow = &_cpu->memory[_cpu->I];
+	uint8_t* _8bitRow = _cpu->memory + _cpu->I;
 
 	for (int i = 0; i < height; ++i, ++_8bitRow)
 	{
@@ -334,18 +343,18 @@ void op_EXxx(Cpu *const _cpu)
 {
 	switch (_cpu->opcode & 0x000f)
 	{
-	default: unknown_opcode(_cpu); break;
+		default: unknown_opcode(_cpu); break;
 
-	case 0xE: // EX9E  Skips the next instruction if the key stored in VX is pressed.
-		if (_cpu->input->IsKeyPressed((Key)VX))
-			_cpu->pc += 2;
-		break;
+		case 0xE: // EX9E  Skips the next instruction if the key stored in VX is pressed.
+			if (_cpu->input->IsKeyPressed((Key)VX))
+				_cpu->pc += 2;
+			break;
 
 
-	case 0x1: // 0xEXA1  Skips the next instruction if the key stored in VX isn't pressed.
-		if (!_cpu->input->IsKeyPressed((Key)VX))
-			_cpu->pc += 2;
-		break;
+		case 0x1: // 0xEXA1  Skips the next instruction if the key stored in VX isn't pressed.
+			if (!_cpu->input->IsKeyPressed((Key)VX))
+				_cpu->pc += 2;
+			break;
 	}
 }
 

@@ -6,7 +6,7 @@
 
 namespace xchip {
 
-SDL_Event SdlMedia::s_events;
+SDL_Event s_events;
 int SdlMedia::s_nSystems[3] = { 0, 0, 0 };
 bool SdlMedia::s_SubSystems[3] = { false, false, false };
 
@@ -43,11 +43,18 @@ SdlMedia::~SdlMedia()
 				break;
 		}
 
-		SDL_Init(0);
+		
 		SDL_QuitSubSystem(flags);
 		s_SubSystems[toUType(_sys)] = false;
 	}
 }
+
+
+const SDL_Event& SdlMedia::GetEvent()
+{
+	return s_events;
+}
+
 
 
 bool SdlMedia::InitSubSystem()

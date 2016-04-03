@@ -1,14 +1,10 @@
+#include <SDL2/SDL_events.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Traits.h>
 #include <XChip/SDL_MEDIA/SdlInput.h>
 
-
 namespace xchip {
-
-	
-	
 using namespace utility;
-extern SDL_Event s_events;
 
 	
 
@@ -127,12 +123,14 @@ Key SdlInput::WaitKeyPress()
 {
 	if (m_waitClbk != nullptr)
 	{
+		const auto begin = m_keyPairs.crbegin();
+		const auto end = m_keyPairs.crend();
 		while (m_waitClbk(m_waitClbkArg))
 		{
 			if (UpdateKeys())
 			{
 				/*check for RESET & ESCAPE keys first */
-				for (auto itr = m_keyPairs.crbegin(); itr != m_keyPairs.crend(); ++itr)
+				for (auto itr = begin; itr != end; ++itr)
 				{
 					if (m_keyboardState[itr->second] == SDL_TRUE)
 						return itr->first;
