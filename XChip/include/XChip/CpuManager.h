@@ -56,6 +56,7 @@ public:
 	iSound* SwapSound(iSound* sound);
 private:
 	Cpu _cpu;
+
 };
 
 

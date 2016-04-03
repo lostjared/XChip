@@ -12,8 +12,11 @@ class Emulator
 public:
 	Emulator() noexcept;
 	~Emulator();
+	Emulator(const Emulator&) = delete;
+	Emulator& operator=(const Emulator&) = delete;
 	bool Initialize(iRender* const render, iInput* const input, iSound* const sound) noexcept;
 	void Dispose() noexcept;
+
 	
 	
 	bool GetInstrFlag() const { return _instrf; }
@@ -33,6 +36,7 @@ public:
 	bool LoadRom(const char* fname) { return _manager.LoadRom(fname); }
 	bool SetAndInitRender(iRender* rend) { return this->InitRender(rend); }
 	bool SetAndInitInput(iInput* input) { return this->InitInput(input); }
+	bool SetAndInitSound(iSound* sound) { return this->InitSound(sound); }
 	iRender* GetRender() { return _manager.GetRender(); }
 	iInput* GetInput() { return _manager.GetInput(); }
 	iRender* SwapRender(iRender* rend) { return _manager.SwapRender(rend); }
@@ -47,10 +51,10 @@ private:
 	CpuManager _manager;
 	utility::Timer _instrTimer;
 	utility::Timer _frameTimer;
-	bool _instrf;
-	bool _drawf;
-	bool _exitf;
-	bool _initialized;
+	bool _instrf = false;
+	bool _drawf  = false;
+	bool _exitf  = true;
+	bool _initialized = false;
 
 
 };

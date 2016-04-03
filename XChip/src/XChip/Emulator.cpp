@@ -9,12 +9,7 @@
 
 namespace xchip {
 
-Emulator::Emulator() noexcept 
-	: _instrf(false),
-	_drawf(false),
-	_exitf(true),
-	_initialized(false)
-	
+Emulator::Emulator() noexcept
 {
 	using namespace utility::literals;
 	_instrTimer.SetTargetTime(358_hz);

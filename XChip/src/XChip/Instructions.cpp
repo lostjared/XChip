@@ -201,7 +201,7 @@ void op_8XY4(Cpu *const _cpu)
 {
 	auto& vx = VX;
 	uint16_t result = vx + VY; // compute sum
-	_cpu->registers[0xF] = ((result & 0xff00) != 0) ? 1 : 0; // check carry
+	_cpu->registers[0xF] = (result & 0xff00) != 0 ? 1 : 0; // check carry
 	vx = (result & 0xff);
 }
 
@@ -216,7 +216,7 @@ void op_8XY5(Cpu *const _cpu)
 {
 	auto const vy = VY;
 	auto& vx = VX;
-	_cpu->registers[0xF] = (vx > vy); // checking if theres is a borrow
+	_cpu->registers[0xF] = vx > vy; // checking if theres is a borrow
 	vx -= vy;
 }
 
@@ -231,7 +231,7 @@ void op_8XY5(Cpu *const _cpu)
 void op_8XY6(Cpu *const _cpu)
 {
 	auto& vx = VX;
-	_cpu->registers[0xF] = (vx & 0x1); // check the least significant bit
+	_cpu->registers[0xF] = vx & 0x1; // check the least significant bit
 	vx >>= 1;
 }
 
@@ -246,7 +246,7 @@ void op_8XY7(Cpu *const _cpu)
 {
 	const auto vy = VY;
 	auto &vx = VX; 
-	_cpu->registers[0xF] = (vy > vx); // check borrow ( VY > VX )
+	_cpu->registers[0xF] = vy > vx; // check borrow ( VY > VX )
 	vx = vy - vx;
 }
 
@@ -260,8 +260,8 @@ void op_8XY7(Cpu *const _cpu)
 void op_8XYE(Cpu *const _cpu)
 {
 	auto& vx = VX;
-	_cpu->registers[0xF] = ((vx & 0x80) >> 7);  // check the most significant bit
-	vx = ((vx << 1) & 0xFF);
+	_cpu->registers[0xF] = (vx & 0x80) >> 7;  // check the most significant bit
+	vx = (vx << 1) & 0xFF;
 }
 
 

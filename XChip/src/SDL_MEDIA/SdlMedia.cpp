@@ -1,4 +1,3 @@
-#include <cassert>
 #include <SDL2/SDL.h>
 #include <XChip/SDL_MEDIA/SdlMedia.h>
 #include <XChip/Utility/Timer.h>

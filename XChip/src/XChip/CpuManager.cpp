@@ -124,7 +124,7 @@ bool CpuManager::LoadRom(const char* fileName)
 	std::fseek(file, 0, SEEK_SET);
 
 	// check if file size will not overflow emulated memory size
-	if (fileSize > get_arr_size(_cpu.memory))
+	if (fileSize > get_arr_size(_cpu.memory) - 0x200)
 	{
 		LOGerr("Error, ROM size not compatible, interrupting Chip8 instance.");
 		std::fclose(file);
