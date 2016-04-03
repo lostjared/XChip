@@ -1,4 +1,5 @@
-#include <SDL2/SDL.h>
+#include <SDL2/SDL_video.h>
+#include <SDL2/SDL_render.h>
 #include <XChip/SDL_MEDIA/SdlRender.h>
 #include <XChip/Utility/Log.h>
 

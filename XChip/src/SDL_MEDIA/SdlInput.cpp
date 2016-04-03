@@ -1,4 +1,3 @@
-#include <SDL2/SDL.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Traits.h>
 #include <XChip/SDL_MEDIA/SdlInput.h>

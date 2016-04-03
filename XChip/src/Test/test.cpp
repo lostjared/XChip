@@ -5,22 +5,20 @@
 #include <XChip/SDL_MEDIA/SdlSound.h>
 
 
-
-
 int main(int argc, char** argv)
 {
-	std::atexit([]()
-	{ 
-		xchip::utility::LOG("PRESS ANY KEY TO EXIT");
-		std::cin.ignore();
-	});
-
 
 	if (argc < 2) 
 	{
 		xchip::utility::LOG("No game to load...");
 		return 0;
 	}
+
+	std::atexit([]()
+	{
+		xchip::utility::LOG("PRESS ANY KEY TO EXIT");
+		std::cin.ignore();
+	});
 
 	static xchip::Emulator emulator;
 	
@@ -47,7 +45,6 @@ int main(int argc, char** argv)
 		
 		if (emulator.GetDrawFlag())
 			emulator.Draw();
-
 	}
 
 	return 0;

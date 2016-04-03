@@ -43,6 +43,7 @@ SdlMedia::~SdlMedia()
 				break;
 		}
 
+		SDL_Init(0);
 		SDL_QuitSubSystem(flags);
 		s_SubSystems[toUType(_sys)] = false;
 	}
