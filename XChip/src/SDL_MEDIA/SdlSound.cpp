@@ -14,15 +14,7 @@ namespace xchip {
 
 
 SdlSound::SdlSound() noexcept
-	:  SdlMedia(System::Sound),
-	_device(nullptr),
-	_audioPos(0),
-	_tone(512),
-	_audioLen(0),
-	_audioFreq(0),
-	_audioVol(0),
-	_cycleTime(0),
-	_initialized(false)
+	:  SdlMedia(System::Sound)
 {
 	utility::LOG("Creating SdlSound object...");
 }

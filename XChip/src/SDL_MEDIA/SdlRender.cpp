@@ -11,16 +11,7 @@ using namespace utility;
 
 
 SdlRender::SdlRender()
-	: SdlMedia(System::Render),
-	m_window(nullptr),
-	m_rend(nullptr),
-	m_texture(nullptr),
-	m_buffer(nullptr),
-	m_closeClbk(nullptr),
-	m_resizeClbk(nullptr),
-	m_closeClbkArg(nullptr),
-	m_resizeClbkArg(nullptr),
-	m_initialized(false)
+	: SdlMedia(System::Render)
 
 {
 	LOG("Creating SdlRenderer object...");
@@ -101,8 +92,6 @@ void SdlRender::Dispose() noexcept
 	m_buffer = nullptr;
 	m_closeClbk = nullptr;
 	m_resizeClbk = nullptr;
-	m_closeClbkArg = nullptr;
-	m_resizeClbkArg = nullptr;
 	m_initialized = false;
 }
 

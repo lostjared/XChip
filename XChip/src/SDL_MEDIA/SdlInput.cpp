@@ -19,12 +19,8 @@ SdlInput::SdlInput()
 	{ Key::KEY_9, SDL_SCANCODE_KP_3 },{ Key::KEY_A, SDL_SCANCODE_KP_DIVIDE },{ Key::KEY_B, SDL_SCANCODE_KP_MULTIPLY },
 	{ Key::KEY_C, SDL_SCANCODE_KP_MINUS },{ Key::KEY_D, SDL_SCANCODE_KP_PLUS },{ Key::KEY_E, SDL_SCANCODE_KP_PERIOD },
 	{ Key::KEY_F, SDL_SCANCODE_KP_ENTER },{ Key::RESET, SDL_SCANCODE_RETURN }, { Key::ESCAPE, SDL_SCANCODE_ESCAPE   }
-},
-	m_resetClbk(nullptr),
-	m_escapeClbk(nullptr),
-	m_resetClbkArg(nullptr),
-	m_escapeClbkArg(nullptr),
-	m_initialized(false)
+}
+
 {
 	LOG("Creating SdlInput object...");
 }
@@ -68,8 +64,7 @@ void SdlInput::Dispose() noexcept
 	m_keyboardState = nullptr;
 	m_resetClbk = nullptr;
 	m_escapeClbk = nullptr;
-	m_resetClbkArg = nullptr;
-	m_escapeClbkArg = nullptr;
+	m_waitClbk = nullptr;
 	m_initialized = false;
 }
 

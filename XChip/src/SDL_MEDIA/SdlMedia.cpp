@@ -1,3 +1,4 @@
+#include <cassert>
 #include <SDL2/SDL.h>
 #include <XChip/SDL_MEDIA/SdlMedia.h>
 #include <XChip/Utility/Timer.h>
@@ -20,29 +21,29 @@ SdlMedia::~SdlMedia()
 {
 	using namespace utility;
 	--s_nSystems[toUType(_sys)];
-
+	
 	// if this is the last instance of this System (_sys)
 	// and Sdl Subsystem of (_sys) is On, then Close it
 	if (!s_nSystems[toUType(_sys)]
 		&& s_SubSystems[toUType(_sys)])
 	{
-		Uint32 flags;
-		switch (_sys)
+		const Uint32 flags = [](const System sys) -> Uint32
 		{
-			case System::Render:
-				flags = SDL_INIT_VIDEO;
-				LOG("Closing SDL Video SubSystem...");
-				break;
-			case System::Input:
-				flags = SDL_INIT_EVENTS;
-				LOG("Closing SDL Input SubSystem...");
-				break;
-			case System::Sound:
-				flags = SDL_INIT_AUDIO;
-				LOG("Closing SDL Audio SubSystem...");
-				break;
-		}
-
+			switch (sys)
+			{
+				case System::Render:
+					LOG("Closing SDL Video SubSystem...");
+					return SDL_INIT_VIDEO;
+				case System::Input:
+					LOG("Closing SDL Input SubSystem...");
+					return SDL_INIT_EVENTS;
+				case System::Sound:
+					LOG("Closing SDL Audio SubSystem...");
+					return SDL_INIT_AUDIO;
+				default:
+					return 0;
+			}
+		}(_sys);
 		
 		SDL_QuitSubSystem(flags);
 		s_SubSystems[toUType(_sys)] = false;
@@ -62,27 +63,29 @@ bool SdlMedia::InitSubSystem()
 	using namespace utility;
 	using namespace utility::literals;
 
+
 	// if the SDL Subsystem of (_sys) is off
 	// then initialize it
 	if( !s_SubSystems[toUType(_sys)] )
 	{
-		Uint32 flags;
-		switch (_sys)
+		const Uint32 flags = [](const System sys)  -> Uint32
 		{
-			case System::Render:
-				flags = SDL_INIT_VIDEO;
-				LOG("Initializing SDL Video SubSystem...");
-				break;
-			case System::Input:
-				flags = SDL_INIT_EVENTS;
-				LOG("Initializing SDL Input SubSystem...");
-				break;
-			case System::Sound:
-				flags = SDL_INIT_AUDIO;
-				LOG("Initializing SDL Audio SubSystem...");
-				break;
-		}
-		
+			switch (sys)
+			{
+				case System::Render:
+					LOG("Initializing SDL Video SubSystem...");
+					return SDL_INIT_VIDEO;
+				case System::Input:
+					LOG("Initializing SDL Input SubSystem...");
+					return SDL_INIT_EVENTS;
+				case System::Sound:
+					LOG("Initializing SDL Audio SubSystem...");
+					return SDL_INIT_AUDIO;
+				default:
+					return 0;
+			}
+		}(_sys);
+
 		if (SDL_InitSubSystem(flags) != SDL_FALSE)
 		{
 			LOGerr("Could not initialize SDL SubSystem: "_s + SDL_GetError());

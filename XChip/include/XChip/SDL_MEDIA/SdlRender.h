@@ -28,19 +28,16 @@ public:
 	virtual void SetWinCloseCallback(const void* arg, WinCloseCallback callback) override;
 	virtual void SetWinResizeCallback(const void* arg, WinResizeCallback callback) override;
 private:
-	SDL_Window* m_window;
-	SDL_Renderer* m_rend;
-	SDL_Texture* m_texture;
-	const uint32_t* m_buffer;
+	SDL_Window* m_window = nullptr;
+	SDL_Renderer* m_rend = nullptr;
+	SDL_Texture* m_texture = nullptr;
+	const uint32_t* m_buffer = nullptr;
 	int m_pitch;
-	WinCloseCallback m_closeClbk;
-	WinResizeCallback m_resizeClbk;
+	WinCloseCallback m_closeClbk = nullptr;
+	WinResizeCallback m_resizeClbk = nullptr;
 	const void* m_closeClbkArg;
 	const void* m_resizeClbkArg;
-	bool m_initialized;
-
-
-
+	bool m_initialized = false;
 };
 
 

@@ -22,7 +22,11 @@ underlying_type_t<T> toUType(T t) noexcept
 }
 
 
-
+template<class T, size_t sz>
+size_t static_arr_size(const T(&)[sz])
+{
+	return sz;
+}
 
 
 

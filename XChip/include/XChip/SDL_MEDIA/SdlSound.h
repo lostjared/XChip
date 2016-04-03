@@ -32,14 +32,14 @@ private:
 	static void audio_callback(void* sdlSound, uint8_t* const stream, int len);
 
 private:
-	SdlAudioDevice *_device;
-	unsigned int _audioPos;  // which sample we are up to 
-	float _tone;             // beep tone, default to 350hz
-	float _audioLen;         // timeleft ( calculated from soundTimer )
-	float _audioFreq;        // audio frequency in cycles per sample
-	float _audioVol;         // audio volume, 0 - ~32000 */
-	float _cycleTime;        // countdown freq, default to 60hz
-	bool _initialized;
+	SdlAudioDevice *_device = nullptr;
+	unsigned int _audioPos = 0;   // which sample we are up to 
+	float _tone = 512;            // beep tone, default to 350hz
+	float _audioLen = 0;          // timeleft ( calculated from soundTimer )
+	float _audioFreq = 0;         // audio frequency in cycles per sample
+	float _audioVol = 0;          // audio volume, 0 - ~32000 */
+	float _cycleTime = 0;         // countdown freq, default to 60hz
+	bool _initialized = false;
 };
 
 

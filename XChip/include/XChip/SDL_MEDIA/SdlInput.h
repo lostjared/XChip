@@ -33,15 +33,15 @@ public:
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) override;
 
 private:
-	const unsigned char* m_keyboardState;
+	const unsigned char* m_keyboardState = nullptr;
 	std::vector<KeyPair> m_keyPairs;
-	WaitKeyCallback m_waitClbk;
-	ResetKeyCallback m_resetClbk;
-	EscapeKeyCallback m_escapeClbk;
+	WaitKeyCallback m_waitClbk = nullptr;
+	ResetKeyCallback m_resetClbk = nullptr;
+	EscapeKeyCallback m_escapeClbk = nullptr;
 	const void* m_waitClbkArg;
 	const void* m_resetClbkArg;
 	const void* m_escapeClbkArg;
-	bool m_initialized;
+	bool m_initialized = false;
 
 };
 
