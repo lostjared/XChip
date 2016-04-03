@@ -39,8 +39,8 @@ public:
 
 private:
 	SDL_AudioSpec _want, _have;
-	SDL_AudioDeviceID _dev;
-	bool _initialized;
+	SDL_AudioDeviceID _dev = 0;
+	bool _initialized = false;
 };
 
 

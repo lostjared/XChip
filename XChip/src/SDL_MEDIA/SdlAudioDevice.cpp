@@ -9,8 +9,6 @@ namespace xchip
 
 
 SdlAudioDevice::SdlAudioDevice() noexcept
-	: _dev(0),
-	_initialized(false)
 {
 
 }
