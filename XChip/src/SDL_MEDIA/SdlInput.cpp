@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Traits.h>
-#include <XChip/SDL/SdlInput.h>
+#include <XChip/SDL_MEDIA/SdlInput.h>
 
 
 namespace xchip {
@@ -9,7 +9,7 @@ namespace xchip {
 	
 	
 using namespace utility;
-extern SDL_Event g_sdlEvent;
+extern SDL_Event s_events;
 
 	
 
@@ -82,16 +82,16 @@ void SdlInput::Dispose() noexcept
 bool SdlInput::UpdateKeys()
 {
 	SdlMedia::UpdateEvents();
-	if (g_sdlEvent.type == SDL_KEYDOWN)
+	if (GetEvent().type == SDL_KEYDOWN)
 	{
-		if (g_sdlEvent.key.keysym.sym == SDLK_RETURN) 
+		if (GetEvent().key.keysym.sym == SDLK_RETURN)
 		{
 			if (m_resetClbk) 
 				m_resetClbk(m_resetClbkArg);
 		}
 
 
-		else if (g_sdlEvent.key.keysym.sym == SDLK_ESCAPE) 
+		else if (GetEvent().key.keysym.sym == SDLK_ESCAPE)
 		{
 			if (m_escapeClbk) 
 				m_escapeClbk(m_escapeClbkArg);

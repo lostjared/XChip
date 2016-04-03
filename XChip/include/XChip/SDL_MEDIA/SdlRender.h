@@ -2,6 +2,7 @@
 #define _XCHIP_SDLRENDER_H_
 #include <XChip/Interfaces/iRender.h>
 #include "SdlMedia.h"
+
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;

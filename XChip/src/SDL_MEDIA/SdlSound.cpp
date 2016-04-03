@@ -1,8 +1,9 @@
 #include <cstdio>
 #include <cmath>
 #include <new>
+
 #include <SDL2/SDL.h>
-#include <XChip/SDL/SdlSound.h>
+#include <XChip/SDL_MEDIA/SdlSound.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Timer.h>
 
@@ -13,14 +14,14 @@ namespace xchip {
 SdlSound::SdlSound() noexcept
 	:  SdlMedia(System::Sound),
 	_audioPos(0),
-	_tone(350),
+	_tone(512),
 	_audioLen(0),
 	_audioFreq(0),
 	_audioVol(0),
 	_cycleTime(0),
 	_initialized(false)
 {
-	utility::LOG("Creating SdlSound...");
+	utility::LOG("Creating SdlSound object...");
 }
 
 SdlSound::~SdlSound()
@@ -28,7 +29,7 @@ SdlSound::~SdlSound()
 	if(_initialized)
 		this->Dispose();
 
-	utility::LOG("Destroying SdlSound...");
+	utility::LOG("Destroying SdlSound object...");
 }
 
 
@@ -45,7 +46,7 @@ bool SdlSound::Initialize() noexcept
 
 	
 	if(!_device.Initialize(44100, AUDIO_S16, 1, 4*1024,  
-		SdlSound::audio_callback<Sint16>, this))
+		                   SdlSound::audio_callback<Sint16>, this))
 	{
 		this->Dispose();
 		return false;
@@ -116,18 +117,29 @@ void SdlSound::audio_callback(void* sdlSound, Uint8* const stream, int len)
 	T* const buf = (T*) stream;
 	
 
-	if (_this->_audioLen <= 0.0f)
-	{
-		for (int i = 0; i < bufsize; ++i)
-			buf[i] = 0;
-
-		_this->Stop();
-		return;
-	}
+	
 
 	const float freq = _this->_audioFreq;
 	const float vol = _this->_audioVol;
 	unsigned int pos = _this->_audioPos;
+
+	
+
+
+	if (_this->_audioLen <= 0.0f)
+	{
+		// pathetic temporary work around the clipping...
+		float downVol = vol;
+		for (int i = 0; i < bufsize; ++i, ++pos) 
+		{
+			buf[i] = static_cast<T>(downVol * sin(_2pi * freq * pos));
+			if (downVol > 100) 
+				downVol -= 44;
+		}
+
+		_this->Stop();
+		return;
+	}
 
 
 	for (int i = 0; i < bufsize; ++i, ++pos)

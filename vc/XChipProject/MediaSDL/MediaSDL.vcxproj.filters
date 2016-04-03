@@ -15,36 +15,36 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlInput.cpp">
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlRender.cpp">
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlMedia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlSound.cpp">
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlMedia.cpp">
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlSound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlAudioWrap.cpp">
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlAudioDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlInput.h">
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlRender.h">
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlMedia.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlSound.h">
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlRender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlMedia.h">
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlSound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlAudioWrap.h">
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlAudioDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

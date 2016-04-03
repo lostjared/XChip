@@ -1,11 +1,11 @@
 #include <SDL2/SDL.h>
-#include <XChip/SDL/SdlRender.h>
+#include <XChip/SDL_MEDIA/SdlRender.h>
 #include <XChip/Utility/Log.h>
 
 namespace xchip {
 
 using namespace utility;
-extern SDL_Event g_sdlEvent;
+extern SDL_Event s_events;
 
 SdlRender::SdlRender()
 	: SdlMedia(System::Render),
@@ -110,12 +110,12 @@ void SdlRender::Dispose() noexcept
 bool SdlRender::UpdateEvents()
 {
 	SdlMedia::UpdateEvents();
-	if (g_sdlEvent.type == SDL_WINDOWEVENT)
+	
+	if (GetEvent().type == SDL_WINDOWEVENT)
 	{
-		switch (g_sdlEvent.window.event)
+		switch (GetEvent().window.event)
 		{
-			case SDL_WINDOWEVENT_RESIZED: 
-				/* fall */
+			case SDL_WINDOWEVENT_RESIZED: /* fall */
 			case SDL_WINDOWEVENT_RESTORED: 
 				if (m_resizeClbk) 
 					m_resizeClbk(m_resizeClbkArg);  

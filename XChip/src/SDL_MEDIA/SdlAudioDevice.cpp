@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <XChip/SDL/SdlAudioWrap.h>
+#include <XChip/SDL_MEDIA/SdlAudioDevice.h>
 #include <XChip/Utility/Log.h>
 
 namespace xchip
@@ -65,6 +65,7 @@ void SdlAudioDevice::Dispose() noexcept
 		SDL_CloseAudioDevice(_dev);
 		_dev = 0;
 	}
+
 	_initialized = false;
 }
 

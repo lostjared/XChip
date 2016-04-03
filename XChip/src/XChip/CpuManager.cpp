@@ -19,6 +19,7 @@ static void free_cpu_arr(T*& arr);
 
 CpuManager::CpuManager() noexcept
 {
+	LOG("Creating CpuManager object...");
 	_cpu.opcode     = 0;
 	_cpu.I          = 0;
 	_cpu.sp         = 0;
@@ -37,7 +38,7 @@ CpuManager::CpuManager() noexcept
 CpuManager::~CpuManager()
 {
 	this->Dispose();
-	LOG("Freeing CpuManager");
+	LOG("Destroying CpuManager object...");
 
 }
 

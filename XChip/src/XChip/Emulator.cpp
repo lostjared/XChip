@@ -19,7 +19,7 @@ Emulator::Emulator() noexcept
 	using namespace utility::literals;
 	_instrTimer.SetTargetTime(358_hz);
 	_frameTimer.SetTargetTime(60_hz);
-	utility::LOG("Creating Emulator...");
+	utility::LOG("Creating Emulator object...");
 }
 
 
@@ -28,7 +28,7 @@ Emulator::~Emulator()
 	if(_initialized) 
 		this->Dispose();
 
-	utility::LOG("Destroying Emulator...");
+	utility::LOG("Destroying Emulator object...");
 }
 
 
@@ -66,7 +66,7 @@ bool Emulator::Initialize(iRender* const render, iInput* const input, iSound* co
 	// to our exit flag and the 0xFF value to say that the pointer is available
 	// ( normaly 5 bytes in x86 and 9 bytes in x64).
 	Cpu& _cpu = _manager.GetCpu();
-	std::size_t exitf_offs = utility::get_arr_size(static_cast<uint8_t*>(_cpu.memory)) - sizeof(bool*) - 1;
+	std::size_t exitf_offs = utility::get_arr_size((uint8_t*)_cpu.memory) - sizeof(bool*) - 1;
 	_cpu.memory[exitf_offs - 1] = 0xFF;
 	reinterpret_cast<bool*&>(_cpu.memory[exitf_offs]) = &_exitf;
 	

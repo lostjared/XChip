@@ -1,9 +1,12 @@
+#ifndef _XCHIP_SDLSOUND_H_
+#define _XCHIP_SDLSOUND_H_
+
 #include <cstdint>
 #include <XChip/Interfaces/iSound.h>
-#include "XChip/SDL/SdlAudioWrap.h"
+#include "SdlAudioDevice.h"
 #include "SdlMedia.h"
 
-// TODO: stop the sound clipping if possible
+// TODO: stop the sound clipping if possible by smoothing the ( better volume controll )
 // TODO: precalculate the sin wave
 // TODO: PLEASE ORGANIZE THIS CLASS
 
@@ -37,8 +40,6 @@ private:
 	float _audioVol;         // audio volume, 0 - ~32000 */
 	float _cycleTime;        // countdown freq, default to 60hz
 	bool _initialized;
-	
-
 };
 
 
@@ -57,3 +58,19 @@ private:
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

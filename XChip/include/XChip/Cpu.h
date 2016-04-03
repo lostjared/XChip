@@ -29,11 +29,6 @@ struct Cpu
 	uint16_t pc;
 	uint8_t delayTimer;
 	uint8_t soundTimer;
-
-
-	
-
-
 };
 
 

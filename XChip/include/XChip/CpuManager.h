@@ -23,6 +23,7 @@ public:
 
 	const iRender* GetRender() const { return _cpu.render; }
 	const iInput* GetInput() const { return _cpu.input; }
+	const iSound* GetSound() const { return _cpu.sound; }
 	const uint8_t* GetMemory() const { return _cpu.memory; }
 	const uint8_t* GetRegisters() const { return _cpu.registers; }
 	const uint16_t* GetStack() const { return _cpu.stack; }
@@ -53,7 +54,6 @@ public:
 	iRender* SwapRender(iRender* render);
 	iInput* SwapInput(iInput* input);
 	iSound* SwapSound(iSound* sound);
-
 private:
 	Cpu _cpu;
 };

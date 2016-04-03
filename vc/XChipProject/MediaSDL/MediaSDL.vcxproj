@@ -18,6 +18,20 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlAudioDevice.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlInput.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlMedia.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlRender.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlSound.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlAudioDevice.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlInput.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlMedia.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlRender.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlSound.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}</ProjectGuid>
     <RootNamespace>MediaSDL</RootNamespace>
@@ -70,16 +84,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\WIN_SDL2\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\include\XChip\SDL_MEDIA\EXTERN_HEADERS\WIN;$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\WIN_SDL2\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\include\XChip\SDL_MEDIA\EXTERN_HEADERS\WIN;$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\WIN_SDL2\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\include\XChip\SDL_MEDIA\EXTERN_HEADERS\WIN;$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\WIN_SDL2\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\include\XChip\SDL_MEDIA\EXTERN_HEADERS\WIN;$(IncludePath)</IncludePath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -100,7 +118,7 @@
       <AdditionalDependencies>SDL2.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\XChip\dependencies\WIN_SDL2\lib\x86\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\XChip\dependencies\SDL2_WIN\lib\x86\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -124,7 +142,7 @@
       <AdditionalDependencies>SDL2.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\XChip\dependencies\WIN_SDL2\lib\x64\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\XChip\dependencies\SDL2_WIN\lib\x64\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -150,7 +168,7 @@
       <AdditionalDependencies>SDL2.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\XChip\dependencies\WIN_SDL2\lib\x86\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\XChip\dependencies\SDL2_WIN\lib\x86\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -176,23 +194,9 @@
       <AdditionalDependencies>SDL2.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\XChip\dependencies\WIN_SDL2\lib\x64\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\XChip\dependencies\SDL2_WIN\lib\x64\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlAudioWrap.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlMedia.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlInput.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlRender.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\SDL\SdlSound.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlAudioWrap.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlInput.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlMedia.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlRender.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL\SdlSound.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 2.8)
 
 
 #media variables
-set(USING_SDL_MEDIA  "OFF" CACHE STRING "" )
+set(USING_SDL_MEDIA  "ON" CACHE STRING "" )
 
 #additional libs, subdirectories libs can use this variable
 set(ADD_LIBS "" CACHE STRING "additional libs to link...")
@@ -30,7 +30,7 @@ set(CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -Winline  -std=c++11 -fno-excep
 add_subdirectory(src/XChip)
 
 if( ${USING_SDL_MEDIA} )
-	add_subdirectory(src/SDL)
+	add_subdirectory(src/SDL_MEDIA)
 endif()
 
 

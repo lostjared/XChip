@@ -1,8 +1,8 @@
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Log.h>
-#include <XChip/SDL/SdlRender.h>
-#include <XChip/SDL/SdlInput.h>
-#include <XChip/SDL/SdlSound.h>
+#include <XChip/SDL_MEDIA/SdlRender.h>
+#include <XChip/SDL_MEDIA/SdlInput.h>
+#include <XChip/SDL_MEDIA/SdlSound.h>
 
 
 
@@ -24,6 +24,7 @@ int main(int argc, char** argv)
 
 	static xchip::Emulator emulator;
 	
+
 	if (!emulator.Initialize(new(std::nothrow) xchip::SdlRender(),
                              new(std::nothrow) xchip::SdlInput(), 
                              new(std::nothrow) xchip::SdlSound()))
@@ -36,8 +37,6 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	emulator.GetRender()->SetWinResizeCallback(nullptr, [](const void*) {std::cout << "RESIZED" << std::endl; });
-
 	while (! emulator.GetExitFlag())
 	{
 		emulator.HaltForNextFlag();
@@ -48,8 +47,8 @@ int main(int argc, char** argv)
 		
 		if (emulator.GetDrawFlag())
 			emulator.Draw();
-	}
 
+	}
 
 	return 0;
 

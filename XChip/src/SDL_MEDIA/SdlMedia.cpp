@@ -1,16 +1,16 @@
 #include <SDL2/SDL.h>
-#include <XChip/SDL/SdlMedia.h>
+#include <XChip/SDL_MEDIA/SdlMedia.h>
 #include <XChip/Utility/Timer.h>
 #include <XChip/Utility/Traits.h>
 #include <XChip/Utility/Log.h>
 
 namespace xchip {
 
-SDL_Event g_sdlEvent;
+SDL_Event SdlMedia::s_events;
 int SdlMedia::s_nSystems[3] = { 0, 0, 0 };
 bool SdlMedia::s_SubSystems[3] = { false, false, false };
 
-SdlMedia::SdlMedia(System sys)
+SdlMedia::SdlMedia(const System sys)
 	: _sys(sys)
 {
 	++s_nSystems[utility::toUType(_sys)];
@@ -87,9 +87,10 @@ bool SdlMedia::InitSubSystem()
 	return true;
 }
 
+
 void SdlMedia::UpdateEvents()
 {
-	SDL_PollEvent(&g_sdlEvent);		
+	SDL_PollEvent(&s_events);		
 }
 
 
