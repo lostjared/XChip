@@ -118,7 +118,7 @@ void Emulator::UpdateTimers()
 		if (_cpu.delayTimer)
 			--_cpu.delayTimer;
 
-		if (_cpu.soundTimer)
+		if (_cpu.soundTimer) 
 		{
 			_cpu.sound->Play(_cpu.soundTimer);
 			_cpu.soundTimer = 0;
@@ -192,16 +192,16 @@ bool Emulator::InitRender()
 {
 	auto rend = _manager.GetRender();
 
-	if (!rend)  
-	{
+	if (!rend)  {
 		utility::LOGerr("Cannot Initialize iRender: nullptr");
 		return false;
-	}
-
-	if (rend->IsInitialized()) 
+	} 
+	else if (rend->IsInitialized()) {
 		return true;
-	else if (!rend->Initialize(64, 32))
+	} 
+	else if (!rend->Initialize(64, 32)) {
 		return false;
+	}
 
 	rend->SetBuffer(_manager.GetGfx());
 	rend->SetWinCloseCallback(&_exitf, [](const void* exitf) {*(bool*)exitf = true; });
@@ -215,16 +215,16 @@ bool Emulator::InitInput()
 {
 	auto input = _manager.GetInput();
 
-	if (!input) 
-	{
+	if (!input) {
 		utility::LOGerr("ERROR: Cannot Initialize iInput: nullptr");
 		return false;
 	}
-
-	else if (input->IsInitialized()) 
+	else if (input->IsInitialized()) {
 		return true;
-	else if (!input->Initialize()) 
+	}
+	else if (!input->Initialize()) {
 		return false;
+	}
 
 	input->SetEscapeKeyCallback(&_exitf, [](const void* exitf) {*(bool*)exitf = true; });
 	input->SetResetKeyCallback(this, [](const void* _this)
@@ -239,10 +239,11 @@ bool Emulator::InitInput()
 		do
 		{
 			emulator->UpdateSystems();
+			emulator->HaltForNextFlag();
+
 			if (emulator->GetExitFlag()) 
 				return false;
 
-			emulator->HaltForNextFlag();
 			if (emulator->GetDrawFlag())
 				emulator->Draw();
 
@@ -259,17 +260,16 @@ bool Emulator::InitInput()
 bool Emulator::InitSound()
 {
 	auto sound = _manager.GetSound();
-	if (!sound) 
-	{
+	if (!sound)  {
 		utility::LOGerr("Cannot Initialize iSound: nullptr");
 		return false;
 	}
-
-	if(sound->IsInitialized())
+	else if (sound->IsInitialized()) {
 		return true;
-	else if(!sound->Initialize())
+	}
+	else if (!sound->Initialize()) {
 		return false;
-
+	}
 
 	return true;
 }

@@ -54,15 +54,15 @@ void CpuManager::Dispose() noexcept
 	free_cpu_arr(_cpu.registers);
 	free_cpu_arr(_cpu.memory);
 	
-	if(_cpu.render) {
+	if (_cpu.render) {
 		delete _cpu.render;
 		_cpu.render = nullptr;
 	}
-	if(_cpu.input) {
+	if (_cpu.input) {
 		delete _cpu.input;
 		_cpu.input = nullptr;
 	}
-	if(_cpu.sound) {
+	if (_cpu.sound) {
 		delete _cpu.sound;
 		_cpu.sound = nullptr;
 	}
@@ -84,7 +84,7 @@ bool CpuManager::SetMemory(const std::size_t size)
 
 bool CpuManager::SetRegisters(const std::size_t size)
 {
-	if ( !alloc_cpu_arr(_cpu.registers, size) )
+	if ( !alloc_cpu_arr(_cpu.registers, size) ) 
 	{
 		LOGerr("Cannot allocate Cpu registers size: "_s + size);
 		return false;
@@ -140,7 +140,7 @@ bool CpuManager::LoadRom(const char* fileName)
 
 	// get file size
 	std::fseek(file, 0, SEEK_END);
-	auto fileSize = static_cast<size_t>(std::ftell(file));
+	const auto fileSize = static_cast<size_t>(std::ftell(file));
 	std::fseek(file, 0, SEEK_SET);
 
 	// check if file size will not overflow emulated memory size

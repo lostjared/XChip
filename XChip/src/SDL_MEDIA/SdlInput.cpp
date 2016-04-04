@@ -122,11 +122,11 @@ Key SdlInput::WaitKeyPress()
 	{
 		const auto begin = _keyPairs.crbegin();
 		const auto end = _keyPairs.crend();
+		
 		while (_waitClbk(_waitClbkArg))
 		{
 			if (UpdateKeys())
 			{
-				/*check for RESET & ESCAPE keys first */
 				for (auto itr = begin; itr != end; ++itr)
 				{
 					if (_keyboardState[itr->second] == SDL_TRUE)
@@ -134,6 +134,7 @@ Key SdlInput::WaitKeyPress()
 				}
 			}
 		}
+
 	}
 
 	return Key::NO_KEY_PRESSED;

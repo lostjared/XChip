@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 	if (argc < 2) 
 	{
 		xchip::utility::LOG("No game to load...");
-		return 0;
+		return EXIT_FAILURE;
 	}
 
 	std::atexit([]()
@@ -28,14 +28,15 @@ int main(int argc, char** argv)
                              new(std::nothrow) xchip::SdlInput(),
                              new(std::nothrow) xchip::SdlSound()))
 	{
-		return 1;
+		return EXIT_FAILURE;
 	}
 
 	else if (!emulator.LoadRom(argv[1]))
 	{
-		return 1;
+		return EXIT_FAILURE;
 	}
 
+	// all good to run the main loop...
 	while (! emulator.GetExitFlag())
 	{
 		emulator.HaltForNextFlag();
@@ -48,9 +49,9 @@ int main(int argc, char** argv)
 			emulator.Draw();
 	}
 
-	return 0;
 
 
+	return EXIT_SUCCESS;
 }
 
 
