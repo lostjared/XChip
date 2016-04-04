@@ -14,10 +14,8 @@ class SdlInput final : private SdlMedia, public iInput
 	using KeyPair = std::pair<Key, SDL_Scancode>;
 public:
 	SdlInput();
-	SdlInput(const SdlInput&) = delete;
-	SdlInput& operator=(const SdlInput&) = delete;
 	~SdlInput();
-
+	
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
 

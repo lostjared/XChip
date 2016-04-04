@@ -12,8 +12,10 @@ class SdlAudioDevice
 public:
 	using AudioCallback = void(*)(void* userdata, Uint8* stream, int len);
 
-	SdlAudioDevice() noexcept;
+	SdlAudioDevice() noexcept = default;
 	~SdlAudioDevice();
+	SdlAudioDevice(const SdlAudioDevice&) = delete;
+	SdlAudioDevice& operator=(const SdlAudioDevice&) = delete;
 
 	bool Initialize(int wantedFreq, const SDL_AudioFormat wantedFormat,
 		const Uint8 channels, const Uint16 samples,

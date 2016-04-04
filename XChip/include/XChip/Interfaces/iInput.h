@@ -32,6 +32,8 @@ public:
 	using EscapeKeyCallback = void(*)(const void*);
 	
 	virtual ~iInput() = default;
+	iInput& operator=(const iInput&) = delete;
+
 	virtual bool Initialize() noexcept = 0;
 	virtual void Dispose() noexcept = 0;
 	

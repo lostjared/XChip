@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv)
 {
-
+	
 	if (argc < 2) 
 	{
 		xchip::utility::LOG("No game to load...");
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	});
 
 	static xchip::Emulator emulator;
-	
+
 	if (!emulator.Initialize(new(std::nothrow) xchip::SdlRender(), 
                              new(std::nothrow) xchip::SdlInput(),
                              new(std::nothrow) xchip::SdlSound()))

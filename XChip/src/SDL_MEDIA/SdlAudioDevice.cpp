@@ -7,14 +7,6 @@ namespace xchip
 {
 
 
-
-SdlAudioDevice::SdlAudioDevice() noexcept
-{
-
-}
-
-
-
 SdlAudioDevice::~SdlAudioDevice()
 {
 	if (_initialized)
@@ -32,6 +24,11 @@ bool SdlAudioDevice::Initialize(const int wantedFreq, const SDL_AudioFormat want
 	if (_initialized)
 		this->Dispose();
 
+	const auto cleanup = utility::make_scope_exit([this] { 
+		if (!this->IsInitialized()) 
+			this->Dispose(); 
+	});
+
 	SDL_zero(_want);
 	_want.freq = wantedFreq;
 	_want.format = wantedFormat;
@@ -44,7 +41,6 @@ bool SdlAudioDevice::Initialize(const int wantedFreq, const SDL_AudioFormat want
 
 	if (_dev < 2)
 	{
-		this->Dispose();
 		utility::LOGerr("SdlSound: no valid audio device. SDL: "_s + SDL_GetError());
 		return false;
 	}

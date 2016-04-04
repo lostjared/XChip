@@ -14,11 +14,10 @@ public:
 	~Emulator();
 	Emulator(const Emulator&) = delete;
 	Emulator& operator=(const Emulator&) = delete;
+
 	bool Initialize(iRender* const render, iInput* const input, iSound* const sound) noexcept;
 	void Dispose() noexcept;
 
-	
-	
 	bool GetInstrFlag() const { return _instrf; }
 	bool GetDrawFlag() const { return _drawf; }
 	bool GetExitFlag() const { return _exitf; }

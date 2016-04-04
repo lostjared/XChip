@@ -12,6 +12,8 @@ public:
 	using WinResizeCallback = void(*)(const void*);
 
 	virtual ~iRender() = default;
+	iRender& operator=(const iRender&) = delete;
+
 	virtual bool Initialize(const int w, const int h) noexcept = 0;
 	virtual void Dispose() noexcept = 0;
 

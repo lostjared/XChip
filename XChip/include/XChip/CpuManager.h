@@ -13,6 +13,8 @@ class CpuManager
 public:
 	CpuManager() noexcept;
 	~CpuManager();
+	CpuManager(const CpuManager&) = delete;
+	CpuManager& operator=(const CpuManager&) = delete;
 
 	void Dispose() noexcept;
 

@@ -8,6 +8,8 @@ class iSound
 {
 public:
 	virtual ~iSound() = default;
+	iSound& operator=(const iSound&) = delete;
+
 	virtual bool Initialize() noexcept = 0;
 	virtual void Dispose() noexcept = 0;
 	virtual bool IsInitialized() const = 0;

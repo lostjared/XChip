@@ -54,7 +54,6 @@ bool SdlSound::Initialize() noexcept
 		return false;
 	}
 
-
 	_audioVol = 6000;
 	_cycleTime = (_device->GetCurrentFreq() / 60.f);
 	_initialized = true;
@@ -130,15 +129,11 @@ void SdlSound::audio_callback(void* sdlSound, uint8_t* const stream, int len)
 	T* const buf = (T*) stream;
 	
 
-	
-
 	const float freq = _this->_audioFreq;
 	const float vol = _this->_audioVol;
 	unsigned int pos = _this->_audioPos;
 
 	
-
-
 	if (_this->_audioLen <= 0.0f)
 	{
 		// pathetic temporary work around the clipping...

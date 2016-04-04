@@ -8,6 +8,10 @@ namespace xchip {
 
 class SdlMedia
 {
+public:
+	SdlMedia(const SdlMedia&) = delete;
+	SdlMedia& operator=(const SdlMedia&) = delete;
+
 protected:
 	enum class System { Render, Input, Sound };
 	SdlMedia(const System sys);
