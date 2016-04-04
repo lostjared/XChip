@@ -9,20 +9,6 @@ cmake_minimum_required(VERSION 2.8)
 set(CMAKE_CXX_COMPILER "${CXX_COMPILER}")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
-#######################################################################################
-#######################################################################################
-
-# BUILD TYPES
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-
-elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -fno-omit-frame-pointer")
-
-endif()
-
 
 INCLUDE_DIRECTORIES(${XCHIP_DEFAULT_INCLUDE_PATH})
 

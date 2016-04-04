@@ -3,8 +3,9 @@
 #include <XChip/SDL_MEDIA/SdlAudioDevice.h>
 #include <XChip/Utility/Log.h>
 
-namespace xchip
-{
+
+
+namespace xchip {
 
 
 SdlAudioDevice::~SdlAudioDevice()
@@ -24,8 +25,8 @@ bool SdlAudioDevice::Initialize(const int wantedFreq, const SDL_AudioFormat want
 	if (_initialized)
 		this->Dispose();
 
-	const auto cleanup = utility::make_scope_exit([this] { 
-		if (!this->IsInitialized()) 
+	const auto cleanup = utility::make_scope_exit([this]() { 
+		if (!this->_initialized) 
 			this->Dispose(); 
 	});
 
@@ -55,12 +56,7 @@ bool SdlAudioDevice::Initialize(const int wantedFreq, const SDL_AudioFormat want
 
 void SdlAudioDevice::Dispose() noexcept
 {
-	if (_dev > 2) 
-	{
-		SDL_CloseAudioDevice(_dev);
-		_dev = 0;
-	}
-
+	SDL_CloseAudioDevice(_dev);
 	_initialized = false;
 }
 

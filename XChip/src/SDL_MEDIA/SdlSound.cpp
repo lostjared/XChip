@@ -1,8 +1,8 @@
 #include <cstdio>
 #include <cmath>
 #include <new>
-
 #include <SDL2/SDL.h>
+
 #include <XChip/SDL_MEDIA/SdlSound.h>
 #include <XChip/SDL_MEDIA/SdlAudioDevice.h>
 #include <XChip/Utility/Log.h>
@@ -67,9 +67,7 @@ void SdlSound::Dispose() noexcept
 {
 	if (_device)
 	{
-		if (_device->IsInitialized())
-			_device->Dispose();
-
+		_device->Dispose();
 		delete _device;
 		_device = nullptr;
 	}

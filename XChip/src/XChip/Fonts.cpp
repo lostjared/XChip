@@ -1,7 +1,10 @@
 #include <XChip/Fonts.h>
 
 
+
 namespace xchip { namespace fonts {
+
+
 
 uint8_t chip8_default_font[80] =
 {

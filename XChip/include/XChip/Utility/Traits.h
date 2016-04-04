@@ -2,10 +2,9 @@
 #define _XCHIP_TRAITS_H_
 #include <type_traits>
 #include <utility>
+
+
 namespace xchip { namespace utility {
-
-
-
 
 
 template<bool cond, class T>
@@ -23,7 +22,7 @@ underlying_type_t<T> toUType(T t) noexcept
 
 
 
-template<class T, size_t sz>
+template<class T, const size_t sz>
 size_t static_arr_size(const T(&)[sz])
 {
 	return sz;
@@ -32,20 +31,21 @@ size_t static_arr_size(const T(&)[sz])
 
 
 template<class F>
-struct Scope_Exit
+struct ScopeExit
 {
-	Scope_Exit(F fun) noexcept : _fun(std::move(fun)) {}
-	~Scope_Exit() { _fun(); }
-	Scope_Exit(Scope_Exit&&) = default;
-	Scope_Exit(const Scope_Exit&) = delete;
-	Scope_Exit& operator=(const Scope_Exit&) = delete;
+	ScopeExit(F fun) noexcept : _fun(std::move(fun)) {}
+	~ScopeExit() { _fun(); }
+	ScopeExit(ScopeExit&&) = default;
+	ScopeExit(const ScopeExit&) = delete;
+	ScopeExit& operator=(const ScopeExit&) = delete;
 private:
 	F _fun;
 };
 
+
 template<class T>
-Scope_Exit<T> make_scope_exit(T&& t) {
-	return Scope_Exit<T>(std::forward<T>(t));
+ScopeExit<T> make_scope_exit(T&& t) {
+	return ScopeExit<T>(std::forward<T>(t));
 }
 
 

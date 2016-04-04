@@ -7,6 +7,7 @@
 
 
 
+
 namespace xchip { namespace instructions {
 
 
@@ -33,12 +34,16 @@ void unknown_opcode(Cpu* const _cpu)
 }
 
 
-#define VF  (_cpu->registers [0xF])
-#define VX  (_cpu->registers [ ( (_cpu->opcode & 0x0f00 ) >> 8)  ])
-#define VY  (_cpu->registers [ ( (_cpu->opcode & 0x00f0 ) >> 4)  ])
+#define X   ((_cpu->opcode & 0x0f00) >> 8)
+#define Y   ((_cpu->opcode & 0x00f0) >> 4)
 #define NNN (_cpu->opcode & 0x0fff)
 #define NN  (_cpu->opcode & 0x00ff)
 #define N   (_cpu->opcode & 0x000f)
+
+#define VF  (_cpu->registers [0xF])
+#define VX  (_cpu->registers [X])
+#define VY  (_cpu->registers [Y])
+
 
 
 
@@ -341,7 +346,7 @@ void op_DXYN(Cpu *const _cpu)
 // 2 instruction EX9E, EXA1
 void op_EXxx(Cpu *const _cpu)
 {
-	switch (_cpu->opcode & 0x000f)
+	switch (N)
 	{
 		default: unknown_opcode(_cpu); break;
 
@@ -378,7 +383,7 @@ static InstrTable op_FXxx_Table[] =
 void op_FXxx(Cpu *const _cpu) // 9 instructions.
 {
 	// call it
-	op_FXxx_Table[_cpu->opcode & 0x000f](_cpu);
+	op_FXxx_Table[N](_cpu);
 }
 
 
@@ -415,11 +420,11 @@ void op_FXx5(Cpu *const _cpu)
 
 
 	case 0x55: //FX55  Stores V0 to VX in memory starting at address I
-		std::copy_n(_cpu->registers, ((_cpu->opcode & 0x0f00) >> 8) + 1, _cpu->memory + _cpu->I);
+		std::copy_n(_cpu->registers, X + 1, _cpu->memory + _cpu->I);
 		break;
 
 	case 0x65: //FX65  Fills V0 to VX with values from memory starting at address I.
-		std::copy_n(_cpu->memory + _cpu->I, ((_cpu->opcode & 0x0f00) >> 8) + 1, _cpu->registers);
+		std::copy_n(_cpu->memory + _cpu->I, X + 1, _cpu->registers);
 		break;
 	}
 }

@@ -3,10 +3,9 @@
 #include <cstddef>
 #include "Cpu.h"
 
+
+
 namespace xchip {
-
-
-
 
 class CpuManager
 {
@@ -31,10 +30,15 @@ public:
 	const uint16_t* GetStack() const { return _cpu.stack; }
 	const uint32_t* GetGfx() const { return _cpu.gfx; }
 	const Cpu& GetCpu() const { return _cpu; }
-	
 
-	void SetRender(iRender* render) { _cpu.render = render; };
-	void SetInput(iInput* input) { _cpu.input = input; }
+	Cpu& GetCpu() { return _cpu; }
+	iRender* GetRender() { return _cpu.render; }
+	iInput* GetInput() { return _cpu.input; }
+	iSound* GetSound() { return _cpu.sound; }
+	
+	void SetRender(iRender* render);
+	void SetInput(iInput* input);
+	void SetSound(iSound* sound);
 
 	bool SetMemory(const size_t size);
 	bool SetRegisters(const size_t size);
@@ -44,18 +48,15 @@ public:
 	bool LoadRom(const char* file);
 
 	
+	iRender* SwapRender(iRender* render);
+	iInput* SwapInput(iInput* input);
+	iSound* SwapSound(iSound* sound);
+
+
 	void CleanMemory();
 	void CleanRegisters();
 	void CleanStack();
 	void CleanGfx();
-
-	Cpu& GetCpu() { return _cpu; }
-	iRender* GetRender() { return _cpu.render; }
-	iInput* GetInput() { return _cpu.input; }
-	iSound* GetSound() { return _cpu.sound; }
-	iRender* SwapRender(iRender* render);
-	iInput* SwapInput(iInput* input);
-	iSound* SwapSound(iSound* sound);
 private:
 	Cpu _cpu;
 

@@ -1,11 +1,16 @@
 #include <cstring>
 
 #include <XChip/CpuManager.h>
+#include <XChip/Interfaces/iRender.h>
+#include <XChip/Interfaces/iInput.h>
+#include <XChip/Interfaces/iSound.h>
+
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Alloc.h>
 
 
 namespace xchip {
+
 
 using namespace xchip::utility;
 using namespace xchip::utility::literals;
@@ -48,6 +53,19 @@ void CpuManager::Dispose() noexcept
 	free_cpu_arr(_cpu.stack);
 	free_cpu_arr(_cpu.registers);
 	free_cpu_arr(_cpu.memory);
+	
+	if(_cpu.render) {
+		delete _cpu.render;
+		_cpu.render = nullptr;
+	}
+	if(_cpu.input) {
+		delete _cpu.input;
+		_cpu.input = nullptr;
+	}
+	if(_cpu.sound) {
+		delete _cpu.sound;
+		_cpu.sound = nullptr;
+	}
 }
 
 
@@ -101,7 +119,7 @@ bool CpuManager::SetGfx(const std::size_t size)
 
 void CpuManager::SetFont(const uint8_t* font, const size_t size)
 {
-	if(_cpu.memory != nullptr)
+	if(_cpu.memory)
 		std::copy_n(font, size, _cpu.memory);
 }
 
@@ -112,11 +130,13 @@ bool CpuManager::LoadRom(const char* fileName)
 	LOG("Loading "_s + fileName);
 	std::FILE *file = std::fopen(fileName, "rb");
 
-	if (file == nullptr) 
+	if (!file) 
 	{
 		LOGerr("Error at opening ROM file, interrupting Chip8 instance.");
 		return false;
 	}
+
+	const auto fileClose = make_scope_exit([file]() { std::fclose(file); });
 
 	// get file size
 	std::fseek(file, 0, SEEK_END);
@@ -124,15 +144,13 @@ bool CpuManager::LoadRom(const char* fileName)
 	std::fseek(file, 0, SEEK_SET);
 
 	// check if file size will not overflow emulated memory size
-	if (fileSize > get_arr_size(_cpu.memory) - 0x200)
+	if (fileSize > get_arr_size(_cpu.memory) - 0x200) 
 	{
 		LOGerr("Error, ROM size not compatible, interrupting Chip8 instance.");
-		std::fclose(file);
 		return false;
 	}
 
 	std::fread(_cpu.memory + 0x200, 1, fileSize, file);
-	std::fclose(file);
 	LOG("Load Done!");
 	return true;
 }
@@ -147,13 +165,11 @@ void CpuManager::CleanMemory()
 }
 
 
-
 void CpuManager::CleanRegisters()
 {
 	arr_zero(_cpu.registers);
 	_cpu.I = 0;
 }
-
 
 
 void CpuManager::CleanStack()
@@ -162,12 +178,33 @@ void CpuManager::CleanStack()
 }
 
 
-
 void CpuManager::CleanGfx()
 {
 	arr_zero(_cpu.gfx);
 }
 
+
+void CpuManager::SetRender(iRender* render) 
+{
+	auto oldRend = SwapRender(render);
+	if(oldRend)
+		delete oldRend;
+}
+
+void CpuManager::SetInput(iInput* input)
+{
+	auto oldInput = SwapInput(input);
+	if(oldInput)
+		delete oldInput;
+}
+
+
+void CpuManager::SetSound(iSound* sound)
+{
+	auto oldSound = SwapSound(sound);
+	if(oldSound)
+		delete oldSound;
+}
 
 
 

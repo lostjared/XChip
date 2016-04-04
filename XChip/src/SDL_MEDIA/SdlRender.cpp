@@ -6,22 +6,20 @@
 #include <XChip/Utility/Log.h>
 
 namespace xchip {
-using namespace utility;
-
 
 
 SdlRender::SdlRender()
 	: SdlMedia(System::Render)
 
 {
-	LOG("Creating SdlRenderer object...");
+	utility::LOG("Creating SdlRenderer object...");
 }
 
 
 SdlRender::~SdlRender()
 {
-	LOG("Destroying SdlRenderer object...");
-	if (m_window != nullptr)
+	utility::LOG("Destroying SdlRenderer object...");
+	if (_initialized)
 		this->Dispose();
 }
 
@@ -29,58 +27,56 @@ SdlRender::~SdlRender()
 
 bool SdlRender::Initialize(const int width, const int height) noexcept
 {
-	using namespace utility::literals;
-
-	if (m_initialized)
+	if (_initialized)
 		this->Dispose();
 
 	else if (!this->InitSubSystem())
 		return false;
 
 	const auto scope = utility::make_scope_exit([this]() {
-		if (!this->IsInitialized()) {
-			LOGerr("Couldn't initialize SdlRender. SDL ERROR MSG: "_s + SDL_GetError());
+		using namespace xchip::utility::literals;
+		if (!this->_initialized) {
+			utility::LOGerr("Couldn't initialize SdlRender. SDL ERROR MSG: "_s + SDL_GetError());
 			this->Dispose();
 		}
 	});
 
-	m_pitch = width * 4;
-	m_window = SDL_CreateWindow("Chip8 Emulator", SDL_WINDOWPOS_CENTERED,
-		                        SDL_WINDOWPOS_CENTERED, width * 4, height * 6, 
-                                SDL_WINDOW_RESIZABLE);
+	_pitch = width * 4;
+	_window = SDL_CreateWindow("Chip8 Emulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+                                   width * 4, height * 6, SDL_WINDOW_RESIZABLE);
 
-	if (!m_window) 
+	if (!_window) 
 		return false;
 
-	m_rend = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
+	_rend = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
 
-	if (!m_rend)
+	if (!_rend)
 		return false;
 
-	m_texture = SDL_CreateTexture(m_rend, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+	_texture = SDL_CreateTexture(_rend, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
 
-	if (!m_texture)
+	if (!_texture)
 		return false;
 
-	SDL_SetRenderDrawColor(m_rend, 0, 0, 0, 255);
-	SDL_RenderClear(m_rend);
-	SDL_RenderPresent(m_rend);
+	SDL_SetRenderDrawColor(_rend, 0, 0, 0, 255);
+	SDL_RenderClear(_rend);
+	SDL_RenderPresent(_rend);
 
-	m_initialized = true;
+	_initialized = true;
 	return true;
 }
 
 
 void SdlRender::Dispose() noexcept
 {
-	SDL_DestroyTexture(m_texture);
-	SDL_DestroyRenderer(m_rend);
-	SDL_DestroyWindow(m_window);
-	m_window = nullptr;
-	m_buffer = nullptr;
-	m_closeClbk = nullptr;
-	m_resizeClbk = nullptr;
-	m_initialized = false;
+	SDL_DestroyTexture(_texture);
+	SDL_DestroyRenderer(_rend);
+	SDL_DestroyWindow(_window);
+	_window = nullptr;
+	_buffer = nullptr;
+	_closeClbk = nullptr;
+	_resizeClbk = nullptr;
+	_initialized = false;
 }
 
 
@@ -97,14 +93,14 @@ bool SdlRender::UpdateEvents()
 		{
 			case SDL_WINDOWEVENT_RESIZED: /* fall */
 			case SDL_WINDOWEVENT_RESTORED: 
-				if (m_resizeClbk) 
-					m_resizeClbk(m_resizeClbkArg);  
+				if (_resizeClbk) 
+					_resizeClbk(_resizeClbkArg);  
 				
 				break;
 			
 			case SDL_WINDOWEVENT_CLOSE: 
-				if (m_closeClbk) 
-					m_closeClbk(m_closeClbkArg); 
+				if (_closeClbk) 
+					_closeClbk(_closeClbkArg); 
 				
 				break;
 		}
@@ -121,9 +117,9 @@ bool SdlRender::UpdateEvents()
 
 void SdlRender::DrawBuffer()
 {
-	SDL_UpdateTexture(m_texture, nullptr, m_buffer, m_pitch);
-	SDL_RenderCopy(m_rend, m_texture, nullptr, nullptr);
-	SDL_RenderPresent(m_rend);
+	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
+	SDL_RenderCopy(_rend, _texture, nullptr, nullptr);
+	SDL_RenderPresent(_rend);
 }
 
 
@@ -132,8 +128,8 @@ void SdlRender::DrawBuffer()
 
 void SdlRender::SetWinCloseCallback(const void* arg, WinCloseCallback callback)
 {
-	m_closeClbkArg = arg;
-	m_closeClbk = callback;
+	_closeClbkArg = arg;
+	_closeClbk = callback;
 }
 
 
@@ -141,8 +137,8 @@ void SdlRender::SetWinCloseCallback(const void* arg, WinCloseCallback callback)
 
 void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback)
 {
-	m_resizeClbkArg = arg;
-	m_resizeClbk = callback;
+	_resizeClbkArg = arg;
+	_resizeClbk = callback;
 }
 
 

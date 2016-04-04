@@ -4,6 +4,7 @@
 #include "Utility/Timer.h"
 
 
+
 namespace xchip {
 
 
@@ -29,24 +30,27 @@ public:
 	void Draw();
 	void Reset();
 
-	void SetInstrPerSec(const unsigned short value);
-	void SetFramesPerSec(const unsigned short value);
+	void SetInstrPerSec(const unsigned short value) {
+		_instrTimer.SetTargetTime(utility::literals::operator""_hz(value));
+	}
+	void SetFramesPerSec(const unsigned short value) {
+		_frameTimer.SetTargetTime(utility::literals::operator""_hz(value));
+	}
 
 	bool LoadRom(const char* fname) { return _manager.LoadRom(fname); }
-	bool SetAndInitRender(iRender* rend) { return this->InitRender(rend); }
-	bool SetAndInitInput(iInput* input) { return this->InitInput(input); }
-	bool SetAndInitSound(iSound* sound) { return this->InitSound(sound); }
 	iRender* GetRender() { return _manager.GetRender(); }
 	iInput* GetInput() { return _manager.GetInput(); }
+	iSound* GetSound() { return _manager.GetSound(); }
 	iRender* SwapRender(iRender* rend) { return _manager.SwapRender(rend); }
 	iInput* SwapRender(iInput* input) { return _manager.SwapInput(input); }
-	
-private:
-	bool InitRender(iRender* const rend);
-	bool InitInput(iInput* const input);
-	bool InitSound(iSound* const sound);
+	iSound* SwapSound(iSound* sound) { return _manager.SwapSound(sound); }
 
 private:
+	bool InitMedia(iRender* rend, iInput* input, iSound* sound);
+	bool InitRender();
+	bool InitInput();
+	bool InitSound();
+
 	CpuManager _manager;
 	utility::Timer _instrTimer;
 	utility::Timer _frameTimer;
@@ -54,7 +58,6 @@ private:
 	bool _drawf  = false;
 	bool _exitf  = true;
 	bool _initialized = false;
-
 
 };
 

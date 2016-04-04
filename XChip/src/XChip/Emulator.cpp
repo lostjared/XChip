@@ -9,6 +9,7 @@
 
 namespace xchip {
 
+
 Emulator::Emulator() noexcept
 {
 	using namespace utility::literals;
@@ -32,6 +33,11 @@ bool Emulator::Initialize(iRender* const render, iInput* const input, iSound* co
 	if (_initialized) 
 		this->Dispose();
 
+	const auto scope = utility::make_scope_exit([this]() {
+		if (!this->_initialized)
+			this->Dispose();
+	});
+
 	// Default Chip8 Mode
 	if (!_manager.SetMemory(0xFFFF)
 		|| !_manager.SetRegisters(0x10)
@@ -43,18 +49,8 @@ bool Emulator::Initialize(iRender* const render, iInput* const input, iSound* co
 
 	_manager.SetFont(fonts::chip8_default_font, 80);
 
-	if (! this->InitRender(render) 
-		|| ! this->InitInput(input)
-		|| ! this->InitSound(sound))
-	{
-			this->Dispose();
-			return false;
-	}
-	
-
-	_exitf = false;
-	_initialized = true;
-
+	if (!InitMedia(render, input, sound))
+		return false;
 
 	// little trick:
 	// use the last  ( sizeof(bool*) + sizeof(uint8_t) ) bytes in _cpu's memory to store a pointer
@@ -65,6 +61,8 @@ bool Emulator::Initialize(iRender* const render, iInput* const input, iSound* co
 	_cpu.memory[exitf_offs - 1] = 0xFF;
 	reinterpret_cast<bool*&>(_cpu.memory[exitf_offs]) = &_exitf;
 	
+	_exitf = false;
+	_initialized = true;
 	return true;
 }
 
@@ -72,17 +70,6 @@ bool Emulator::Initialize(iRender* const render, iInput* const input, iSound* co
 
 void Emulator::Dispose() noexcept
 {
-	auto rend = _manager.SwapRender(nullptr);
-	auto input = _manager.SwapInput(nullptr);
-	auto sound = _manager.SwapSound(nullptr);
-
-	if (rend) 
-		delete rend;
-	if (input) 
-		delete input;
-	if (sound)
-		delete sound;
-
 	_manager.Dispose();
 	_instrf = false;
 	_drawf = false;
@@ -190,48 +177,50 @@ void Emulator::Reset()
 
 
 
-void Emulator::SetInstrPerSec(const unsigned short value)
+
+inline 
+bool Emulator::InitMedia(iRender* rend, iInput* input, iSound* sound)
 {
-	_instrTimer.SetTargetTime(utility::literals::operator""_hz(value));
+	_manager.SetRender(rend);
+	_manager.SetInput(input);
+	_manager.SetSound(sound);
+	return InitRender() && InitInput() && InitSound();
 }
 
 
-
-void Emulator::SetFramesPerSec(const unsigned short value)
+bool Emulator::InitRender()
 {
-	_frameTimer.SetTargetTime(utility::literals::operator""_hz(value));
-}
+	auto rend = _manager.GetRender();
 
-
-
-
-
-bool Emulator::InitRender(iRender* const rend)
-{
-	if (!rend) 
+	if (!rend)  
+	{
+		utility::LOGerr("Cannot Initialize iRender: nullptr");
 		return false;
-	else if (rend->IsInitialized()) 
+	}
+
+	if (rend->IsInitialized()) 
 		return true;
-	else if (!rend->Initialize(64, 32)) 
+	else if (!rend->Initialize(64, 32))
 		return false;
 
 	rend->SetBuffer(_manager.GetGfx());
 	rend->SetWinCloseCallback(&_exitf, [](const void* exitf) {*(bool*)exitf = true; });
-
-	auto oldrend = _manager.SwapRender(rend);
-	if (oldrend) 
-		delete oldrend;
-
 	return true;
 }
 
 
 
 
-bool Emulator::InitInput(iInput* const input)
+bool Emulator::InitInput()
 {
+	auto input = _manager.GetInput();
+
 	if (!input) 
+	{
+		utility::LOGerr("ERROR: Cannot Initialize iInput: nullptr");
 		return false;
+	}
+
 	else if (input->IsInitialized()) 
 		return true;
 	else if (!input->Initialize()) 
@@ -262,28 +251,25 @@ bool Emulator::InitInput(iInput* const input)
 		return true;
 	});
 
-	auto oldinput = _manager.SwapInput(input);
-	if (oldinput) 
-		delete oldinput;
-
 	return true;
 }
 
 
 
-bool Emulator::InitSound(iSound* const sound)
+bool Emulator::InitSound()
 {
-	if(!sound)
+	auto sound = _manager.GetSound();
+	if (!sound) 
+	{
+		utility::LOGerr("Cannot Initialize iSound: nullptr");
 		return false;
-	else if(sound->IsInitialized())
+	}
+
+	if(sound->IsInitialized())
 		return true;
 	else if(!sound->Initialize())
 		return false;
 
-
-	auto oldsound = _manager.SwapSound(sound);
-	if(oldsound)
-		delete oldsound;
 
 	return true;
 }

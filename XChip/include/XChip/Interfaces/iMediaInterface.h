@@ -2,8 +2,8 @@
 #define _XCHIP_IMEDIAINTERFACE_H_
 
 
-namespace xchip {
 
+namespace xchip {
 
 
 class iMediaInterface
@@ -14,7 +14,6 @@ public:
 	virtual void Dispose() noexcept = 0;
 	virtual bool IsInitialized() const = 0;
 };
-
 
 
 

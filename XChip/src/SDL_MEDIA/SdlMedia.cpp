@@ -4,6 +4,7 @@
 #include <XChip/Utility/Traits.h>
 #include <XChip/Utility/Log.h>
 
+
 namespace xchip {
 
 SDL_Event s_events;

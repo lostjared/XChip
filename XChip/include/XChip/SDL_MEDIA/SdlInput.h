@@ -4,10 +4,10 @@
 #include <XChip/Interfaces/iInput.h>
 #include "SdlMedia.h"
 
+
 namespace xchip {
 
 	
-
 class SdlInput final : private SdlMedia, public iInput
 {
 	using SDL_Scancode = int;
@@ -19,7 +19,7 @@ public:
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
 
-	bool IsInitialized() const override { return m_initialized;  }
+	bool IsInitialized() const override { return _initialized;  }
 	bool IsKeyPressed(const Key key) const override;
 	Key GetPressedKey() const override;
 
@@ -31,15 +31,15 @@ public:
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) override;
 
 private:
-	const unsigned char* m_keyboardState = nullptr;
-	std::vector<KeyPair> m_keyPairs;
-	WaitKeyCallback m_waitClbk = nullptr;
-	ResetKeyCallback m_resetClbk = nullptr;
-	EscapeKeyCallback m_escapeClbk = nullptr;
-	const void* m_waitClbkArg;
-	const void* m_resetClbkArg;
-	const void* m_escapeClbkArg;
-	bool m_initialized = false;
+	const unsigned char* _keyboardState = nullptr;
+	std::vector<KeyPair> _keyPairs;
+	WaitKeyCallback _waitClbk = nullptr;
+	ResetKeyCallback _resetClbk = nullptr;
+	EscapeKeyCallback _escapeClbk = nullptr;
+	const void* _waitClbkArg;
+	const void* _resetClbkArg;
+	const void* _escapeClbkArg;
+	bool _initialized = false;
 
 };
 

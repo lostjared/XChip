@@ -9,8 +9,10 @@
 // TODO: precalculate the sin wave
 // TODO: PLEASE ORGANIZE THIS CLASS
 
+
 namespace xchip {
 class SdlAudioDevice;
+
 
 class SdlSound final : private SdlMedia, public iSound
 {
