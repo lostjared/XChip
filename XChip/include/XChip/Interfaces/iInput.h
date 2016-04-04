@@ -1,6 +1,7 @@
 #ifndef _XCHIP_IINPUT_H_
 #define _XCHIP_IINPUT_H_
 #include <cstdint>
+#include "iMediaInterface.h"
 
 namespace xchip {
 
@@ -24,20 +25,14 @@ enum class Key : uint8_t
 };
 
 
-class iInput
+class iInput : public iMediaInterface
 {
 public:
 	using WaitKeyCallback = bool(*)(const void*);
 	using ResetKeyCallback = void(*)(const void*);
 	using EscapeKeyCallback = void(*)(const void*);
-	
-	virtual ~iInput() = default;
-	iInput& operator=(const iInput&) = delete;
 
 	virtual bool Initialize() noexcept = 0;
-	virtual void Dispose() noexcept = 0;
-	
-	virtual bool IsInitialized() const = 0;
 	virtual Key GetPressedKey() const = 0;
 	virtual bool IsKeyPressed(const Key key) const = 0;
 	virtual bool UpdateKeys() = 0;
