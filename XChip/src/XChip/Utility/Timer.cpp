@@ -5,7 +5,7 @@
 
 #include <ctime>
 
-#elif _WIN32
+#elif _WIN32 | __CYGWIN32__
 
 #include <Windows.h>
 
@@ -41,7 +41,7 @@ void Timer::Halt(const Timer::Nano& nano)
 	_sleep.tv_nsec = (nano - 65000_nano).count();
 	nanosleep(&_sleep, NULL);
 
-#elif _WIN32
+#elif _WIN32 | __CYGWIN32__
 	Sleep(static_cast<DWORD>(duration_cast<milliseconds>(nano).count()));
 
 #endif

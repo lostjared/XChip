@@ -226,9 +226,8 @@ bool Emulator::InitInput()
 		return false;
 	}
 
-	input->SetEscapeKeyCallback(&_exitf, [](const void* exitf) {*(bool*)exitf = true; });
-	input->SetResetKeyCallback(this, [](const void* _this)
-	{
+	input->SetEscapeKeyCallback(&_exitf, [](const void* exitf) { *(bool*)exitf = true; });
+	input->SetResetKeyCallback(this, [](const void* _this) {
 		((Emulator*)_this)->Reset();
 	});
 

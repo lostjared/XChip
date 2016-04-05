@@ -16,12 +16,12 @@ public:
 	Emulator(const Emulator&) = delete;
 	Emulator& operator=(const Emulator&) = delete;
 
-	bool Initialize(iRender* const render, iInput* const input, iSound* const sound) noexcept;
+	bool Initialize(iRender* render, iInput* input, iSound* sound) noexcept;
 	void Dispose() noexcept;
 
-	bool GetInstrFlag() const { return _instrf; }
-	bool GetDrawFlag() const { return _drawf; }
-	bool GetExitFlag() const { return _exitf; }
+	bool GetInstrFlag() const;
+	bool GetDrawFlag() const;
+	bool GetExitFlag() const;
 	void HaltForNextFlag() const;
 
 	void UpdateTimers();
@@ -30,20 +30,15 @@ public:
 	void Draw();
 	void Reset();
 
-	void SetInstrPerSec(const unsigned short value) {
-		_instrTimer.SetTargetTime(utility::literals::operator""_hz(value));
-	}
-	void SetFramesPerSec(const unsigned short value) {
-		_frameTimer.SetTargetTime(utility::literals::operator""_hz(value));
-	}
-
-	bool LoadRom(const char* fname) { return _manager.LoadRom(fname); }
-	iRender* GetRender() { return _manager.GetRender(); }
-	iInput* GetInput() { return _manager.GetInput(); }
-	iSound* GetSound() { return _manager.GetSound(); }
-	iRender* SwapRender(iRender* rend) { return _manager.SwapRender(rend); }
-	iInput* SwapRender(iInput* input) { return _manager.SwapInput(input); }
-	iSound* SwapSound(iSound* sound) { return _manager.SwapSound(sound); }
+	void SetInstrPerSec(const unsigned short value);
+	void SetFramesPerSec(const unsigned short value);
+	bool LoadRom(const char* fname);
+	iRender* GetRender();
+	iInput* GetInput();
+	iSound* GetSound();
+	iRender* SwapRender(iRender* rend);
+	iInput* SwapRender(iInput* input);
+	iSound* SwapSound(iSound* sound);
 
 private:
 	bool InitMedia(iRender* rend, iInput* input, iSound* sound);
@@ -62,6 +57,24 @@ private:
 };
 
 
+inline bool Emulator::GetInstrFlag() const { return _instrf; }
+inline bool Emulator::GetDrawFlag() const { return _drawf; }
+inline bool Emulator::GetExitFlag() const { return _exitf; }
+
+inline void Emulator::SetInstrPerSec(const unsigned short value) { 
+	_instrTimer.SetTargetTime(utility::literals::operator""_hz(value));
+}
+inline void Emulator::SetFramesPerSec(const unsigned short value) { 
+	_frameTimer.SetTargetTime(utility::literals::operator""_hz(value));
+}
+
+inline bool Emulator::LoadRom(const char* fname) { return _manager.LoadRom(fname); }
+inline iRender* Emulator::GetRender() { return _manager.GetRender(); }
+inline iInput* Emulator::GetInput() { return _manager.GetInput(); }
+inline iSound* Emulator::GetSound() { return _manager.GetSound(); }
+inline iRender* Emulator::SwapRender(iRender* rend) { return _manager.SwapRender(rend); }
+inline iInput* Emulator::SwapRender(iInput* input) { return _manager.SwapInput(input); }
+inline iSound* Emulator::SwapSound(iSound* sound) { return _manager.SwapSound(sound); }
 
 
 }

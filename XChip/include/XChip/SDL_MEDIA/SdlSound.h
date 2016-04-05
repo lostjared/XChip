@@ -34,7 +34,7 @@ private:
 	static void audio_callback(void* sdlSound, uint8_t* const stream, int len);
 
 private:
-	SdlAudioDevice *_device = nullptr;
+	SdlAudioDevice* _device = nullptr;
 	unsigned int _audioPos = 0;   // which sample we are up to 
 	float _tone = 512;            // beep tone, default to 350hz
 	float _audioLen = 0;          // timeleft ( calculated from soundTimer )

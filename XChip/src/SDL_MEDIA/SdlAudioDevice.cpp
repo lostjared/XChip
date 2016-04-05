@@ -42,7 +42,7 @@ bool SdlAudioDevice::Initialize(const int wantedFreq, const SDL_AudioFormat want
 
 	if (_dev < 2)
 	{
-		utility::LOGerr("SdlSound: no valid audio device. SDL: "_s + SDL_GetError());
+		utility::LOGerr("SdlSound: no valid audio device. SDL MSG: "_s + SDL_GetError());
 		return false;
 	}
 

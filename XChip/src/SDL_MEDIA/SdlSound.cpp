@@ -12,7 +12,6 @@ namespace xchip {
 
 
 
-
 SdlSound::SdlSound() noexcept
 	:  SdlMedia(System::Sound)
 {
@@ -134,7 +133,8 @@ void SdlSound::audio_callback(void* sdlSound, uint8_t* const stream, int len)
 	
 	if (_this->_audioLen <= 0.0f)
 	{
-		// pathetic temporary work around the clipping...
+		// pathetic temporary work around the clipping:
+		// we turn down the sound as we are leaving this function
 		float downVol = vol;
 		for (int i = 0; i < bufsize; ++i, ++pos) 
 		{
