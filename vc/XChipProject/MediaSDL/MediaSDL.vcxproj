@@ -19,14 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlAudioDevice.cpp" />
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlInput.cpp" />
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlMedia.cpp" />
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlRender.cpp" />
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlSound.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlAudioDevice.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlInput.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlMedia.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlRender.h" />

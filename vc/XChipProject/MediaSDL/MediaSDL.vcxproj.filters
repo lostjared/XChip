@@ -27,9 +27,6 @@
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlSound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlAudioDevice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlInput.h">
@@ -42,9 +39,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlSound.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlAudioDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

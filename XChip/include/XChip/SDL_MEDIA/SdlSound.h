@@ -5,13 +5,10 @@
 #include <XChip/Interfaces/iSound.h>
 #include "SdlMedia.h"
 
-// TODO: stop the sound clipping if possible by smoothing the ( better volume controll )
-// TODO: precalculate the sin wave
-// TODO: PLEASE ORGANIZE THIS CLASS
-
+struct SDL_AudioSpec;
+typedef uint32_t SDL_AudioDeviceID;
 
 namespace xchip {
-class SdlAudioDevice;
 
 
 class SdlSound final : private SdlMedia, public iSound
@@ -20,6 +17,7 @@ class SdlSound final : private SdlMedia, public iSound
 public:
 	SdlSound() noexcept;
 	~SdlSound();
+
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
 
@@ -30,12 +28,29 @@ public:
 	void Play(const uint8_t soundTimer) override;
 	void Stop() override;
 
+
+
 private:
-	SdlAudioDevice* _device = nullptr;
+	bool InitDevice();
+	float GetFreq() const;
+	void SetFreq(const float hz);
+	void SetCycleTime(const float hz);
+	void SetLenght(const unsigned int len);
+
+
+	template<class T>
+	static void audio_callback(void* userdata, uint8_t* stream, int len);
+
+	SDL_AudioSpec* _specs;
+	SDL_AudioDeviceID _dev;
+	float _cycleTime;
+	float _freq;
+	float _len;
+	unsigned int _pos;
+	int _amplitude;
 	bool _initialized = false;
+	enum SpecsID { Want, Have };
 };
-
-
 
 
 inline bool SdlSound::IsInitialized() const { return _initialized; }
@@ -48,20 +63,19 @@ inline bool SdlSound::IsInitialized() const { return _initialized; }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif

@@ -23,7 +23,7 @@ namespace literals {
 inline void CLS()
 {
 	#ifdef _WIN32
-			std::system("cls");
+		//	std::system("cls");
 	#elif __linux__
 			std::system("clear");
 	#endif

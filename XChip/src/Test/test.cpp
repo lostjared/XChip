@@ -29,11 +29,6 @@ int main()
 
 
 
-
-
-
-
-
 #if 1
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Log.h>
