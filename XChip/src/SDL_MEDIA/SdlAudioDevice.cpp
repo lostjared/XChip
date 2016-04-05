@@ -125,10 +125,12 @@ void SdlAudioDevice::audio_callback(void* userdata, Uint8* const stream, const i
 		_this->Pause();
 		return;
 	}
-
-	for (size_t i = 0; i < bufflen; ++i, ++pos)
-		buff[i] = static_cast<T>(ampl * std::sin(_2pi * freq * pos));
-
+	
+	else 
+	{
+		for (size_t i = 0; i < bufflen; ++i, ++pos)
+			buff[i] = static_cast<T>(ampl * std::sin(_2pi * freq * pos));
+	}
 	_this->_pos = pos;
 	_this->_len -= bufflen;
 	
