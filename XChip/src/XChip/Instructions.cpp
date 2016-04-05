@@ -437,8 +437,10 @@ void op_FXx5(Cpu *const _cpu)
 void op_FX18(Cpu *const _cpu)
 {
 	_cpu->soundTimer = VX;
-	if (_cpu->soundTimer == 0) 
-	{
+	if (_cpu->soundTimer > 0) {
+		_cpu->sound->Play(_cpu->soundTimer);
+	}
+	else {
 		if (_cpu->sound->IsPlaying())
 			_cpu->sound->Stop();
 	}

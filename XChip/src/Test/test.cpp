@@ -1,3 +1,40 @@
+
+#if 0
+#include <iostream>
+#include <SDL2/SDL.h>
+#undef main
+#include <XChip/SDL_MEDIA/SdlSound.h>
+
+
+int main()
+{
+	using namespace xchip;
+	SdlSound sound;
+
+	if (!sound.Initialize()) {
+		std::cout << "could not initialize sound";
+		return EXIT_FAILURE;
+	}
+
+	sound.Play(10);
+
+	SDL_Delay(1000 * 11);
+
+	return 0;
+}
+
+#endif
+
+
+
+
+
+
+
+
+
+
+#if 1
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/SDL_MEDIA/SdlRender.h>
@@ -59,3 +96,4 @@ int main(int argc, char** argv)
 }
 
 
+#endif

@@ -10,8 +10,7 @@ set(USING_SDL_MEDIA  "ON" CACHE STRING "" )
 
 #additional libs, subdirectories libs can use this variable
 set(ADD_LIBS "" CACHE STRING "additional libs to link...")
-
-
+set(ADD_CXX_FLAGS "" CACHE STRING "additional compiler flags")
 
 
 #include paths
@@ -22,7 +21,7 @@ INCLUDE_DIRECTORIES(${XCHIP_DEFAULT_INCLUDE_PATH})
 
 #compiler
 set(CXX_COMPILER "g++")
-set(CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -Winline  -std=c++11 -fno-exceptions")
+set(CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -std=c++11 -fno-exceptions")
 
 # BUILD TYPES
 if (CMAKE_BUILD_TYPE STREQUAL "Release")

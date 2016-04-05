@@ -109,22 +109,15 @@ void Emulator::UpdateTimers()
 	}
 
 	
-	static utility::Timer chip8Timers( 60_hz );
+	static utility::Timer chip8Delay( 60_hz );
 
-	if (chip8Timers.Finished())
+	if (chip8Delay.Finished())
 	{
-		Cpu& _cpu = _manager.GetCpu();
-		
-		if (_cpu.delayTimer)
-			--_cpu.delayTimer;
+		auto& delayTimer = _manager.GetCpu().delayTimer;
+		if (delayTimer)
+			--delayTimer;
 
-		if (_cpu.soundTimer) 
-		{
-			_cpu.sound->Play(_cpu.soundTimer);
-			_cpu.soundTimer = 0;
-		}
-
-		chip8Timers.Start();
+		chip8Delay.Start();
 	}
 }
 
@@ -270,6 +263,7 @@ bool Emulator::InitSound()
 		return false;
 	}
 
+	sound->SetCountdownFreq(60);
 	return true;
 }
 

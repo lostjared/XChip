@@ -11,34 +11,36 @@ namespace xchip {
 class SdlAudioDevice
 {
 public:
-	using AudioCallback = void(*)(void* userdata, Uint8* stream, int len);
-
 	SdlAudioDevice() noexcept = default;
 	~SdlAudioDevice();
 	SdlAudioDevice(const SdlAudioDevice&) = delete;
 	SdlAudioDevice& operator=(const SdlAudioDevice&) = delete;
 
-	bool Initialize(int wantedFreq, const SDL_AudioFormat wantedFormat,
-		const Uint8 channels, const Uint16 samples,
-		const AudioCallback callback, void* userdata) noexcept;
+	bool Initialize() noexcept;
 	void Dispose() noexcept;
 
 	bool IsInitialized() const;
-	int GetCurrentFreq() const;
+	float GetFreq() const;
 	bool IsRunning() const;
-	const SDL_AudioSpec& GetWantedSpec() const;
-	const SDL_AudioSpec& GetCurrentSpec() const;
-	SDL_AudioSpec& GetWantedSpec();
-	SDL_AudioSpec& GetCurrentSpec();
 	
-	void Lock();
-	void Unlock();
+	void SetFreq(const float hz);
+	void SetCycleTime(const float hz);
+	void SetLenght(const unsigned int len);
 	void Run();
 	void Pause();
 
+
 private:
+	template<class T>
+	static void audio_callback(void* userdata, Uint8* stream, int len);
+
 	SDL_AudioSpec _want, _have;
-	SDL_AudioDeviceID _dev = 0;
+	SDL_AudioDeviceID _dev;
+	float _cycleTime;
+	float _freq;
+	float _len;
+	unsigned int _pos;
+	int _amplitude;
 	bool _initialized = false;
 };
 
@@ -50,21 +52,14 @@ private:
 
 
 inline bool SdlAudioDevice::IsInitialized() const { return _initialized;  }
-inline int SdlAudioDevice::GetCurrentFreq() const { return _have.freq; };
+inline float SdlAudioDevice::GetFreq() const { return _freq * _have.freq; }
 inline bool SdlAudioDevice::IsRunning() const {
 	return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING; 
 }
 
-inline const SDL_AudioSpec& SdlAudioDevice::GetWantedSpec() const { return _want; }
-inline const SDL_AudioSpec& SdlAudioDevice::GetCurrentSpec() const { return _have; }
-inline SDL_AudioSpec& SdlAudioDevice::GetWantedSpec() { return _want; }
-inline SDL_AudioSpec& SdlAudioDevice::GetCurrentSpec() { return _have; }
-
-
-inline void SdlAudioDevice::Lock() { SDL_LockAudioDevice(_dev); }
-inline void SdlAudioDevice::Unlock() { SDL_UnlockAudioDevice(_dev); }
+inline void SdlAudioDevice::SetCycleTime(const float hz) { _cycleTime = _have.freq / hz; }
 inline void SdlAudioDevice::Run() { SDL_PauseAudioDevice(_dev, 0); }
-inline void SdlAudioDevice::Pause() { SDL_PauseAudioDevice(_dev, 1); }
+inline void SdlAudioDevice::Pause() { SDL_PauseAudioDevice(_dev, 1); _pos = 0; }
 
 
 

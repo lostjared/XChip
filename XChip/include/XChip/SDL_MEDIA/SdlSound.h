@@ -16,6 +16,7 @@ class SdlAudioDevice;
 
 class SdlSound final : private SdlMedia, public iSound
 {
+	static constexpr float defaultFreq = 450;
 public:
 	SdlSound() noexcept;
 	~SdlSound();
@@ -25,22 +26,12 @@ public:
 	bool IsInitialized() const override;
 	bool IsPlaying() const override;
 
-	void SetCountdownFreq(const float hz) override;
+	void SetCountdownFreq(const float hertz) override;
 	void Play(const uint8_t soundTimer) override;
 	void Stop() override;
 
 private:
-	template<class T>
-	static void audio_callback(void* sdlSound, uint8_t* const stream, int len);
-
-
 	SdlAudioDevice* _device = nullptr;
-	unsigned int _audioPos = 0;   // which sample we are up to 
-	float _tone = 512;            // beep tone, default to 350hz
-	float _audioLen = 0;          // timeleft ( calculated from soundTimer )
-	float _audioFreq = 0;         // audio frequency in cycles per sample
-	float _audioVol = 0;          // audio volume, 0 - ~32000 */
-	float _cycleTime = 0;         // countdown freq, default to 60hz
 	bool _initialized = false;
 };
 
