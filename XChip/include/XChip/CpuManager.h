@@ -22,19 +22,19 @@ public:
 	size_t GetStackSize() const;
 	size_t GetGfxSize() const;
 
-	const iRender* GetRender() const { return _cpu.render; }
-	const iInput* GetInput() const { return _cpu.input; }
-	const iSound* GetSound() const { return _cpu.sound; }
-	const uint8_t* GetMemory() const { return _cpu.memory; }
-	const uint8_t* GetRegisters() const { return _cpu.registers; }
-	const uint16_t* GetStack() const { return _cpu.stack; }
-	const uint32_t* GetGfx() const { return _cpu.gfx; }
-	const Cpu& GetCpu() const { return _cpu; }
+	const iRender* GetRender() const;
+	const iInput* GetInput() const;
+	const iSound* GetSound() const;
+	const uint8_t* GetMemory() const;
+	const uint8_t* GetRegisters() const;
+	const uint16_t* GetStack() const;
+	const uint32_t* GetGfx() const;
+	const Cpu& GetCpu() const;
 
-	Cpu& GetCpu() { return _cpu; }
-	iRender* GetRender() { return _cpu.render; }
-	iInput* GetInput() { return _cpu.input; }
-	iSound* GetSound() { return _cpu.sound; }
+	Cpu& GetCpu();
+	iRender* GetRender();
+	iInput* GetInput();
+	iSound* GetSound();
 	
 	void SetRender(iRender* render);
 	void SetInput(iInput* input);
@@ -65,8 +65,19 @@ private:
 
 
 
+inline const iRender* CpuManager::GetRender() const { return _cpu.render; }
+inline const iInput* CpuManager::GetInput() const { return _cpu.input; }
+inline const iSound* CpuManager::GetSound() const { return _cpu.sound; }
+inline const uint8_t* CpuManager::GetMemory() const { return _cpu.memory; }
+inline const uint8_t* CpuManager::GetRegisters() const { return _cpu.registers; }
+inline const uint16_t* CpuManager::GetStack() const { return _cpu.stack; }
+inline const uint32_t* CpuManager::GetGfx() const { return _cpu.gfx; }
+inline const Cpu& CpuManager::GetCpu() const { return _cpu; }
 
-
+inline Cpu& CpuManager::GetCpu() { return _cpu; }
+inline iRender* CpuManager::GetRender() { return _cpu.render; }
+inline iInput* CpuManager::GetInput() { return _cpu.input; }
+inline iSound* CpuManager::GetSound() { return _cpu.sound; }
 
 
 

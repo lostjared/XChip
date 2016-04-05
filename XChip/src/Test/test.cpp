@@ -6,9 +6,14 @@
 
 
 
-
 int main(int argc, char** argv)
 {
+	using std::nothrow;
+	using xchip::Emulator;
+	using xchip::SdlRender;
+	using xchip::SdlInput;
+	using xchip::SdlSound;
+	
 	if (argc < 2) 
 	{
 		xchip::utility::LOG("No game to load...");
@@ -21,11 +26,11 @@ int main(int argc, char** argv)
 		std::cin.ignore();
 	});
 
-	static xchip::Emulator emulator;
+	static Emulator emulator;
 
-	if (!emulator.Initialize(new(std::nothrow) xchip::SdlRender(), 
-                             new(std::nothrow) xchip::SdlInput(),
-                             new(std::nothrow) xchip::SdlSound()))
+	if (!emulator.Initialize(new(nothrow) SdlRender(), 
+                             new(nothrow) SdlInput(),
+                             new(nothrow) SdlSound()))
 	{
 		return EXIT_FAILURE;
 	}

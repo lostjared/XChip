@@ -121,16 +121,16 @@ void SdlSound::audio_callback(void* sdlSound, uint8_t* const stream, int len)
 {
 	auto _this = static_cast<SdlSound*>(sdlSound);
 
-	constexpr auto _2pi = static_cast<float>(2 * M_PI);
+	
 	const int bufsize = (len / sizeof(T));
 	T* const buf = (T*) stream;
 	
-
+	constexpr auto _2pi = static_cast<float>(2 * M_PI);
 	const float freq = _this->_audioFreq;
 	const float vol = _this->_audioVol;
 	unsigned int pos = _this->_audioPos;
-
 	
+
 	if (_this->_audioLen <= 0.0f)
 	{
 		// pathetic temporary work around the clipping:

@@ -22,7 +22,7 @@ public:
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
 
-	bool IsInitialized() const override { return _initialized; }
+	bool IsInitialized() const override;
 	bool IsPlaying() const override;
 
 	void SetCountdownFreq(const float hz) override;
@@ -33,7 +33,7 @@ private:
 	template<class T>
 	static void audio_callback(void* sdlSound, uint8_t* const stream, int len);
 
-private:
+
 	SdlAudioDevice* _device = nullptr;
 	unsigned int _audioPos = 0;   // which sample we are up to 
 	float _tone = 512;            // beep tone, default to 350hz
@@ -47,9 +47,7 @@ private:
 
 
 
-
-
-
+inline bool SdlSound::IsInitialized() const { return _initialized; }
 
 
 

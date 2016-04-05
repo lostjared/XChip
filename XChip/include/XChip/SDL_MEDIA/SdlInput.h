@@ -19,7 +19,7 @@ public:
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
 
-	bool IsInitialized() const override { return _initialized;  }
+	bool IsInitialized() const override;
 	bool IsKeyPressed(const Key key) const override;
 	Key GetPressedKey() const override;
 
@@ -31,8 +31,8 @@ public:
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) override;
 
 private:
-	const unsigned char* _keyboardState = nullptr;
 	std::vector<KeyPair> _keyPairs;
+	const unsigned char* _keyboardState = nullptr;
 	WaitKeyCallback _waitClbk = nullptr;
 	ResetKeyCallback _resetClbk = nullptr;
 	EscapeKeyCallback _escapeClbk = nullptr;
@@ -48,7 +48,7 @@ private:
 
 
 
-
+inline bool SdlInput::IsInitialized() const { return _initialized; }
 
 
 }

@@ -12,7 +12,6 @@ using namespace utility;
 
 SdlInput::SdlInput()
 	: SdlMedia(System::Input),
-	_keyboardState(nullptr),
 	_keyPairs
 	{
 		{ Key::KEY_0, SDL_SCANCODE_KP_0 },{ Key::KEY_1, SDL_SCANCODE_KP_7 },{ Key::KEY_2, SDL_SCANCODE_KP_8 },
