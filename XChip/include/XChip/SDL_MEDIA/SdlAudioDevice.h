@@ -29,7 +29,6 @@ public:
 	void Run();
 	void Pause();
 
-
 private:
 	template<class T>
 	static void audio_callback(void* userdata, Uint8* stream, int len);
@@ -59,20 +58,24 @@ inline bool SdlAudioDevice::IsRunning() const {
 
 inline void SdlAudioDevice::SetCycleTime(const float hz) { _cycleTime = _have.freq / hz; }
 inline void SdlAudioDevice::Run() { SDL_PauseAudioDevice(_dev, 0); }
-inline void SdlAudioDevice::Pause() { SDL_PauseAudioDevice(_dev, 1); _pos = 0; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
 #endif

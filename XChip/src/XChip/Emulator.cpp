@@ -158,10 +158,13 @@ void Emulator::Draw()
 
 void Emulator::Reset()
 {
+	Cpu& _cpu = _manager.GetCpu();
+	if(_cpu.sound->IsPlaying())
+		_cpu.sound->Stop();
+
 	_manager.CleanGfx();
 	_manager.CleanStack();
 	_manager.CleanRegisters();
-	Cpu& _cpu = _manager.GetCpu();
 	_cpu.pc = 0x200;
 	_cpu.sp = 0;
 	_cpu.delayTimer = 0;

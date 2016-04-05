@@ -24,12 +24,6 @@ bool SdlAudioDevice::Initialize() noexcept
 	if (_initialized)
 		this->Dispose();
 
-	const auto cleanup = utility::make_scope_exit([this]() { 
-		if (!this->_initialized) 
-			this->Dispose(); 
-	});
-
-
 	SDL_zero(_want);
 	_want.freq = 44100;
 	_want.format = AUDIO_S16;
@@ -42,6 +36,7 @@ bool SdlAudioDevice::Initialize() noexcept
 
 	if (_dev < 2)
 	{
+		this->Dispose();
 		utility::LOGerr("SdlSound: no valid audio device. SDL MSG: "_s + SDL_GetError());
 		return false;
 	}
@@ -98,6 +93,16 @@ void SdlAudioDevice::SetLenght(const unsigned int len)
 }
 
 
+void SdlAudioDevice::Pause()
+{
+	if(this->IsRunning()) 
+	{
+		SDL_LockAudioDevice(_dev);
+		_len = 0;
+		SDL_UnlockAudioDevice(_dev);
+	}
+}
+
 template<class T>
 void SdlAudioDevice::audio_callback(void* userdata, Uint8* const stream, const int len)
 {
@@ -111,9 +116,17 @@ void SdlAudioDevice::audio_callback(void* userdata, Uint8* const stream, const i
 	auto pos = _this->_pos;
 
 
-	if (_this->_len <= 0) 
+	if (_this->_len > 0) 
 	{
-		// need a better workaround to stop clipping.
+		for (size_t i = 0; i < bufflen; ++i, ++pos)
+			buff[i] = static_cast<T>(ampl * std::sin(_2pi * freq * pos));
+		
+		_this->_pos = pos;
+		_this->_len -= bufflen;
+	}
+
+	else 
+	{	// need a better workaround to stop clipping.
 		auto downAmpl = ampl;
 		for (size_t i = 0; i < bufflen; ++i, ++pos) 
 		{
@@ -122,16 +135,10 @@ void SdlAudioDevice::audio_callback(void* userdata, Uint8* const stream, const i
 				downAmpl -= 60;
 		}
 
-		_this->Pause();
-	}
-	
-	else 
-	{
-		for (size_t i = 0; i < bufflen; ++i, ++pos)
-			buff[i] = static_cast<T>(ampl * std::sin(_2pi * freq * pos));
-		
-		_this->_pos = pos;
-		_this->_len -= bufflen;
+		// pause the device from the callback function.
+		// is this ok ?
+		SDL_PauseAudioDevice(_this->_dev, 1);
+		_this->_pos = 0;
 	}
 	
 }
