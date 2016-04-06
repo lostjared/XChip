@@ -67,10 +67,21 @@ int main(int argc, char** argv)
 	// smart pointer take care of it.
 
 
+	// you can set it back if u want... moving the unique pointer
+	emulator.SetRender(move(oldRend));
+	
+	
+	// and even if you swap without catching it
+	// the smart pointer will take care of it and delete it
+	emulator.SwapRender(nullptr);
 
 
+	// by here the oldRend is now nullptr, lets reset it
+	oldRend.reset(new(nothrow) SdlRender);
+
+	
 	// if the the new Render we inserted didn't initialized well or you seted a nullptr
-	// the emulator's exitflag is set
+	// the emulator's exitflag is set 
 	if (emulator.GetExitFlag())
 	{
 		utility::LOGerr("new render not initialized trying again..");

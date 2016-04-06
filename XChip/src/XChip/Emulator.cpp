@@ -141,7 +141,7 @@ void Emulator::UpdateTimers()
 }
 
 
-
+ 
 void Emulator::UpdateSystems()
 {
 	_manager.GetRender()->UpdateEvents();

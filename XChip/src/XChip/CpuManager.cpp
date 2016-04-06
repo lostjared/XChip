@@ -19,7 +19,7 @@ static bool alloc_cpu_arr(T*& arr, const size_t size);
 template<class T>
 static void free_cpu_arr(T*& arr);
 
-
+ 
 
 CpuManager::CpuManager() noexcept
 {

@@ -91,7 +91,7 @@ inline void CpuManager::SetSound(iSound* sound) { _cpu.sound = sound; }
 
 inline void CpuManager::InsertByte(const uint8_t val, const size_t offset) { _cpu.memory[offset] = val; }
 inline void CpuManager::InsertAddress(const void* addr, const size_t offset) 
-{ 
+{  
 	reinterpret_cast<const void*&>(_cpu.memory[offset]) = addr; 
 }
 

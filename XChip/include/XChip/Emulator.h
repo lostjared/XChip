@@ -56,7 +56,7 @@ public:
 	UniqueInput SwapInput(UniqueInput input = nullptr);
 	UniqueSound SwapSound(UniqueSound sound = nullptr);
 
-private:
+private: 
 	bool InitRender();
 	bool InitInput();
 	bool InitSound();
