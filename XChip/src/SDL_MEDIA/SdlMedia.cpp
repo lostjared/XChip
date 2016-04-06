@@ -101,7 +101,13 @@ bool SdlMedia::InitSubSystem()
 
 void SdlMedia::UpdateEvents()
 {
-	SDL_PollEvent(&s_events);		
+	using namespace utility;
+	using namespace utility::literals;
+	static Timer eventTimer (30_milli);
+	if (eventTimer.Finished()) {
+		SDL_PollEvent(&s_events);
+		eventTimer.Start();
+	}
 }
 
 

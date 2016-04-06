@@ -4,7 +4,6 @@
 #include <XChip/Interfaces/iRender.h>
 #include <XChip/Interfaces/iInput.h>
 #include <XChip/Interfaces/iSound.h>
-
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Alloc.h>
 
@@ -166,6 +165,7 @@ void CpuManager::CleanRegisters()
 void CpuManager::CleanStack()
 {
 	arr_zero(_cpu.stack);
+	_cpu.sp = 0;
 }
 
 
@@ -175,6 +175,8 @@ void CpuManager::CleanGfx()
 }
 
 
+
+
 void CpuManager::SetRender(iRender* render) 
 {
 	const auto oldRend = SwapRender(render);
@@ -182,12 +184,15 @@ void CpuManager::SetRender(iRender* render)
 		delete oldRend;
 }
 
+
+
 void CpuManager::SetInput(iInput* input)
 {
 	const auto oldInput = SwapInput(input);
 	if(oldInput)
 		delete oldInput;
 }
+
 
 
 void CpuManager::SetSound(iSound* sound)
@@ -206,12 +211,16 @@ iRender* CpuManager::SwapRender(iRender* render)
 	return ret;
 }
 
+
+
 iInput* CpuManager::SwapInput(iInput* input)
 {
 	const auto ret = _cpu.input;
 	_cpu.input = input;
 	return ret;
 }
+
+
 
 iSound* CpuManager::SwapSound(iSound* sound)
 {
@@ -222,10 +231,12 @@ iSound* CpuManager::SwapSound(iSound* sound)
 
 
 
+
 size_t CpuManager::GetMemorySize() const
 {
 	return get_arr_size(_cpu.memory);
 }
+
 
 
 size_t CpuManager::GetRegistersSize() const
@@ -274,6 +285,11 @@ static void free_cpu_arr(T*& arr)
 	free_arr(arr);
 	arr = nullptr;
 }
+
+
+
+
+
 
 
 }

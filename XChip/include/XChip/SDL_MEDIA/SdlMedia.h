@@ -1,6 +1,5 @@
 #ifndef _XCHIP_SDLMEDIA_H_
 #define _XCHIP_SDLMEDIA_H_
-
 union SDL_Event;
 
 namespace xchip {

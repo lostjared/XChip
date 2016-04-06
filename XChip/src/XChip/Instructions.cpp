@@ -316,20 +316,21 @@ void op_DXYN(Cpu *const _cpu)
 {
 	_cpu->registers[0xF] = 0;
 
-	uint8_t Vx = VX, Vy = VY;
-	int height = N;
-	uint8_t* _8bitRow = _cpu->memory + _cpu->I;
+	const auto vx = VX;
+	const auto vy = VY;
+	const int height = N;
+	const uint8_t* _8bitRow = _cpu->memory + _cpu->I;
 
 	for (int i = 0; i < height; ++i, ++_8bitRow)
 	{
 		for (int j = 0; j < 8; ++j)
 		{
-			int px = ((Vx + j) & 63);
-			int py = ((Vy + i) & 31);
+			const int px = ((vx + j) & 63);
+			const int py = ((vy + i) & 31);
 
-			int pixelPos = (64 * py) + px;
+			const int pixelPos = (64 * py) + px;
 
-			bool pixel = (*_8bitRow & (1 << (7 - j))) != 0;
+			const bool pixel = (*_8bitRow & (1 << (7 - j))) != 0;
 
 			_cpu->registers[0xF] |= ((_cpu->gfx[pixelPos] > 0) & pixel);
 
@@ -474,10 +475,10 @@ void op_FX29(Cpu *const _cpu)
 //  the tens digit at location I+1, and the ones digit at location I+2.)
 void op_FX33(Cpu *const _cpu)
 {
-	uint8_t Vx = VX;
-	_cpu->memory[_cpu->I + 2] = Vx % 10;
-	_cpu->memory[_cpu->I + 1] = (Vx / 10) % 10;
-	_cpu->memory[_cpu->I] = (Vx / 100);
+	const uint8_t vx = VX;
+	_cpu->memory[_cpu->I + 2] = vx % 10;
+	_cpu->memory[_cpu->I + 1] = (vx / 10) % 10;
+	_cpu->memory[_cpu->I] = (vx / 100);
 }
 
 

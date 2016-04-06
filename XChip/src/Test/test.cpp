@@ -1,4 +1,95 @@
 
+#if 1
+#include <XChip/Emulator.h>
+#include <XChip/Utility/Log.h>
+#include <XChip/SDL_MEDIA/SdlRender.h>
+#include <XChip/SDL_MEDIA/SdlInput.h>
+#include <XChip/SDL_MEDIA/SdlSound.h>
+
+
+
+
+
+
+int main(int argc, char** argv)
+{
+	using namespace xchip;
+	using std::move;
+	using std::nothrow;
+	using std::unique_ptr;
+	using std::shared_ptr;
+
+	if (argc < 2)
+	{
+		utility::LOGerr("No games");
+		return EXIT_FAILURE;
+	}
+
+
+	// pause at exit to output read in WINDOWS
+	// cuz we might not be using cmd to call the program
+#ifdef _WIN32 
+	std::atexit([]()
+	{
+		xchip::utility::LOG("PRESS ANY KEY TO EXIT");
+		std::cin.ignore();
+	});
+#endif
+
+	static Emulator emulator;
+
+
+	if (!emulator.Initialize(UniqueRender(new(nothrow) SdlRender()),
+                             UniqueInput(new(nothrow) SdlInput()),
+                             UniqueSound(new(nothrow) SdlSound())))
+	{
+		return EXIT_FAILURE;
+	}
+
+	else if (!emulator.LoadRom(argv[1]))
+	{
+		return EXIT_FAILURE;
+	}
+
+	while (!emulator.GetExitFlag())
+	{
+		emulator.HaltForNextFlag();
+		emulator.UpdateSystems();
+
+		if (emulator.GetInstrFlag())
+			emulator.ExecuteInstr();
+		if (emulator.GetDrawFlag())
+			emulator.Draw();
+	}
+
+
+
+	return EXIT_SUCCESS;
+}
+
+
+
+
+
+
+
+
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #if 0
 #include <iostream>
 #include <SDL2/SDL.h>
@@ -116,86 +207,3 @@ int main(int argc, char** argv)
 
 
 
-
-#if 1
-#include <XChip/Emulator.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/SDL_MEDIA/SdlRender.h>
-#include <XChip/SDL_MEDIA/SdlInput.h>
-#include <XChip/SDL_MEDIA/SdlSound.h>
-
-
-
-
-
-
-int main(int argc, char** argv)
-{
-	using namespace xchip;
-	using std::move;
-	using std::nothrow;
-	using std::unique_ptr;
-	using std::shared_ptr;
-
-	if (argc < 2) 
-	{
-		utility::LOGerr("No games");
-		return EXIT_FAILURE;
-	}
-
-
-	// pause at exit to output read in WINDOWS
-	// cuz we might not be using cmd to call the program
-#ifdef _WIN32 
-	std::atexit([]()
-	{
-		xchip::utility::LOG("PRESS ANY KEY TO EXIT");
-		std::cin.ignore();
-	});
-#endif
-	
-
-
-	static Emulator emulator;
-
-
-	// using C++14 make_unique
-	using std::make_unique;
-
-	if (!emulator.Initialize(make_unique<SdlRender>(), 
-		                     make_unique<SdlInput>(), 
-		                     make_unique<SdlSound>()))
-	{
-		return EXIT_FAILURE;
-	}
-
-	else if (!emulator.LoadRom(argv[1]))
-	{
-		return EXIT_FAILURE;
-	}
-
-	while(!emulator.GetExitFlag())
-	{
-		emulator.HaltForNextFlag();
-		emulator.UpdateSystems();
-		
-		if (emulator.GetInstrFlag())
-			emulator.ExecuteInstr();
-		if (emulator.GetDrawFlag())
-			emulator.Draw();
-	}
-
-
-
-	return EXIT_SUCCESS;
-}
-
-
-
-
-
-
-
-
-
-#endif

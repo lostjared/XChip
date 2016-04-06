@@ -161,8 +161,7 @@ void Emulator::Reset()
 	_manager.CleanGfx();
 	_manager.CleanStack();
 	_manager.CleanRegisters();
-	_manager.SetPC(0);
-	_manager.SetSP(0);
+	_manager.SetPC(0x200);
 }
 
 
@@ -194,7 +193,7 @@ bool Emulator::InitRender()
 	}
 
 	rend->SetBuffer(_manager.GetGfx());
-	rend->SetWinCloseCallback(&_exitf, [](const void* exitf) {*(bool*)exitf = true; });
+	rend->SetWinCloseCallback(&_exitf, [](const void* exitf) { *(bool*)exitf = true; });
 	return true;
 }
 
@@ -228,10 +227,11 @@ bool Emulator::InitInput()
 		do
 		{
 			emulator->UpdateSystems();
-			emulator->HaltForNextFlag();
-
-			if (emulator->GetExitFlag()) 
+			
+			if (emulator->GetExitFlag())
 				return false;
+
+			emulator->HaltForNextFlag();
 
 			if (emulator->GetDrawFlag())
 				emulator->Draw();
@@ -266,9 +266,68 @@ bool Emulator::InitSound()
 
 
 
+UniqueRender Emulator::SwapRender(UniqueRender rend) 
+{ 
+	if (rend != nullptr)
+	{
+		const auto oldRend = _manager.SwapRender(rend.release());
+		
+		if (!InitRender()) 
+		{
+			utility::LOGerr("Could not initialize the new render properly...");
+			_exitf = true;
+		}
+
+		return UniqueRender(oldRend);
+	}
+	
+	utility::LOGerr("Setting iRender to nullptr...");
+	const auto oldRend = _manager.SwapRender(nullptr);
+	return UniqueRender(oldRend);
+}
 
 
 
+UniqueInput Emulator::SwapInput(UniqueInput input) 
+{ 
+	if (input != nullptr)
+	{
+		const auto oldInput = _manager.SwapInput(input.release());
+
+		if (!InitInput())
+		{
+			utility::LOGerr("Could not initialize the new render properly...");
+			_exitf = true;
+		}
+
+		return UniqueInput(oldInput);
+	}
+
+	utility::LOGerr("Setting iInput to nullptr...");
+	const auto oldInput = _manager.SwapInput(nullptr);
+	return UniqueInput(oldInput);
+}
+
+
+UniqueSound Emulator::SwapSound(UniqueSound sound) 
+{ 
+	if (sound != nullptr)
+	{
+		const auto oldSound = _manager.SwapSound(sound.release());
+
+		if (!InitInput())
+		{
+			utility::LOGerr("Could not initialize the new render properly...");
+			_exitf = true;
+		}
+
+		return UniqueSound(oldSound);
+	}
+
+	utility::LOGerr("Setting iInput to nullptr...");
+	const auto oldSound = _manager.SwapSound(nullptr);
+	return UniqueSound(oldSound);
+}
 
 
 

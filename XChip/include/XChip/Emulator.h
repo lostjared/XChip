@@ -100,11 +100,6 @@ inline const SharedInput Emulator::GetInput() { return SharedInput(_manager.GetI
 inline const SharedSound Emulator::GetSound() { return SharedSound(_manager.GetSound(), [](void*) {}); }
 
 
-inline UniqueRender Emulator::SwapRender(UniqueRender rend) { return UniqueRender(_manager.SwapRender(rend.release())); }
-inline UniqueInput Emulator::SwapInput(UniqueInput input) { return UniqueInput(_manager.SwapInput(input.release())); }
-inline UniqueSound Emulator::SwapSound(UniqueSound sound) { return UniqueSound(_manager.SwapSound(sound.release())); }
-
-
 
 
 
