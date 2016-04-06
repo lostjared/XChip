@@ -42,19 +42,6 @@ void CpuManager::Dispose() noexcept
 	free_cpu_arr(_cpu.stack);
 	free_cpu_arr(_cpu.registers);
 	free_cpu_arr(_cpu.memory);
-	
-	if (_cpu.render) {
-		delete _cpu.render;
-		_cpu.render = nullptr;
-	}
-	if (_cpu.input) {
-		delete _cpu.input;
-		_cpu.input = nullptr;
-	}
-	if (_cpu.sound) {
-		delete _cpu.sound;
-		_cpu.sound = nullptr;
-	}
 }
 
 
@@ -174,33 +161,6 @@ void CpuManager::CleanGfx()
 	arr_zero(_cpu.gfx);
 }
 
-
-
-
-void CpuManager::SetRender(iRender* render) 
-{
-	const auto* oldRend = SwapRender(render);
-	if(oldRend)
-		delete oldRend;
-}
-
-
-
-void CpuManager::SetInput(iInput* input)
-{
-	const auto* oldInput = SwapInput(input);
-	if(oldInput)
-		delete oldInput;
-}
-
-
-
-void CpuManager::SetSound(iSound* sound)
-{
-	const auto* oldSound = SwapSound(sound);
-	if(oldSound)
-		delete oldSound;
-}
 
 
 

@@ -35,10 +35,6 @@ public:
 	iRender* GetRender();
 	iInput* GetInput();
 	iSound* GetSound();
-	
-	void SetRender(iRender* render);
-	void SetInput(iInput* input);
-	void SetSound(iSound* sound);
 
 	bool SetMemory(const size_t size);
 	bool SetRegisters(const size_t size);
@@ -48,11 +44,13 @@ public:
 	void SetSP(const uint16_t offset);
 	void SetFont(const uint8_t* font, const size_t size);
 	bool LoadRom(const char* file, const size_t at);
-	
+	void InsertByte(const uint8_t val, const size_t offset);
 	void InsertAddress(const void* addr, const size_t offset);
-	template<class T>
-	void InsertValue(const T val, const size_t offset);
 	
+	void SetRender(iRender* render);
+	void SetInput(iInput* render);
+	void SetSound(iSound* render);
+
 	iRender* SwapRender(iRender* render);
 	iInput* SwapInput(iInput* input);
 	iSound* SwapSound(iSound* sound);
@@ -86,18 +84,19 @@ inline iRender* CpuManager::GetRender() { return _cpu.render; }
 inline iInput* CpuManager::GetInput() { return _cpu.input; }
 inline iSound* CpuManager::GetSound() { return _cpu.sound; }
 
+inline void CpuManager::SetRender(iRender* render) { _cpu.render = render; }
+inline void CpuManager::SetInput(iInput* input) { _cpu.input = input; }
+inline void CpuManager::SetSound(iSound* sound) { _cpu.sound = sound; }
 
+
+inline void CpuManager::InsertByte(const uint8_t val, const size_t offset) { _cpu.memory[offset] = val; }
 inline void CpuManager::InsertAddress(const void* addr, const size_t offset) 
 { 
 	reinterpret_cast<const void*&>(_cpu.memory[offset]) = addr; 
 }
 
 
-template<class T>
-inline void CpuManager::InsertValue(const T val, const size_t offset)
-{
-	*reinterpret_cast<T*>(_cpu.memory+offset) = val;
-}
+
 
 
 

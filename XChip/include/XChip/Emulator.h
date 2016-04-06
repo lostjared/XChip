@@ -57,7 +57,6 @@ public:
 	UniqueSound SwapSound(UniqueSound sound = nullptr);
 
 private:
-	bool InitMedia(iRender* rend, iInput* input, iSound* sound);
 	bool InitRender();
 	bool InitInput();
 	bool InitSound();
@@ -89,9 +88,6 @@ inline void Emulator::SetFramesPerSec(const unsigned short value) {
 }
 
 inline bool Emulator::LoadRom(const std::string& fname) { return _manager.LoadRom(fname.c_str(), 0x200); }
-inline bool Emulator::SetRender(UniqueRender rend) { _manager.SetRender(rend.release()); return InitRender(); }
-inline bool Emulator::SetInput(UniqueInput input) { _manager.SetInput(input.release()); return InitInput(); }
-inline bool Emulator::SetSound(UniqueSound sound) { _manager.SetSound(sound.release()); return InitSound(); }
 inline iRender* Emulator::GetRender() { return _manager.GetRender(); }
 inline iInput* Emulator::GetInput() { return _manager.GetInput(); }
 inline iSound* Emulator::GetSound() { return _manager.GetSound(); }

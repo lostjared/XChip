@@ -51,9 +51,11 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 
 	_manager.SetPC(0x200);
 	_manager.SetFont(fonts::chip8_default_font, 80);
-
-
-	if (!InitMedia(render.release(), input.release(), sound.release()))
+	_manager.SetRender(render.release());
+	_manager.SetInput(input.release());
+	_manager.SetSound(sound.release());
+	
+	if (!(InitRender() & InitInput() & InitSound()))
 		return false;
 
 	// little trick:
@@ -62,7 +64,8 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	// ( normaly 5 bytes in x86 and 9 bytes in x64).
 	const auto flagOffset = (_manager.GetMemorySize() - sizeof(bool*)) - 1;
 	_manager.InsertAddress(&_exitf, flagOffset);
-	_manager.InsertValue(uint8_t(0xFF), flagOffset - sizeof(uint8_t));
+	_manager.InsertByte(uint8_t(0xFF), flagOffset - sizeof(uint8_t));
+	
 	_exitf = false;
 	_initialized = true;
 	return true;
@@ -77,6 +80,21 @@ void Emulator::Dispose() noexcept
 	_drawf = false;
 	_exitf = true;
 	_initialized = false;
+
+	Cpu& chip = _manager.GetCpu();
+
+	if (chip.render) {
+		delete chip.render;
+		chip.render = nullptr;
+	}
+	if (chip.input) {
+		delete chip.input;
+		chip.input = nullptr;
+	}
+	if (chip.sound) {
+		delete chip.sound;
+		chip.sound = nullptr;
+	}
 }
 
 
@@ -177,18 +195,6 @@ void Emulator::Reset()
 
 
 
-
-inline 
-bool Emulator::InitMedia(iRender* rend, iInput* input, iSound* sound)
-{
-	_manager.SetRender(rend);
-	_manager.SetInput(input);
-	_manager.SetSound(sound);
-	return InitRender() && InitInput() && InitSound();
-}
-
-
-
 bool Emulator::InitRender()
 {
 	auto rend = _manager.GetRender();
@@ -275,6 +281,55 @@ bool Emulator::InitSound()
 	sound->SetCountdownFreq(60);
 	return true;
 }
+
+
+bool Emulator::SetRender(UniqueRender rend) 
+{ 
+	const auto* oldRend = _manager.SwapRender(rend.release()); 
+	if (oldRend)
+		delete oldRend;
+
+	if (!InitRender()) 
+	{
+		_exitf = true;
+		return false;
+	}
+
+	return true;
+
+}
+
+bool Emulator::SetInput(UniqueInput input) 
+{ 
+	const auto* oldInput = _manager.SwapInput(input.release()); 
+	if (oldInput)
+		delete oldInput;
+
+	if (!InitInput())
+	{
+		_exitf = true;
+		return false;
+	}
+
+	return true;
+	
+}
+
+bool Emulator::SetSound(UniqueSound sound) 
+{ 
+	const auto* oldSound = _manager.SwapSound(sound.release()); 
+	if (oldSound)
+		delete oldSound;
+
+	if (!InitSound())
+	{
+		_exitf = true;
+		return false;
+	}
+
+	return true;
+}
+
 
 
 
