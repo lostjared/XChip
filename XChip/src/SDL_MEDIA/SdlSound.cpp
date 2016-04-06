@@ -9,15 +9,14 @@
 
 
 
-
 namespace xchip {
 
 inline float SdlSound::GetFreq() const { return _freq * _specs[Have].freq; }
 inline bool SdlSound::IsPlaying() const { return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING; }
-
 inline void SdlSound::SetCountdownFreq(const float hertz) { _cycleTime = _specs[Have].freq / hertz; }
 inline void SdlSound::SetCycleTime(const float hz) { _cycleTime = _specs[Have].freq / hz; }
-
+inline void SdlSound::SetFreq(const float hz) { _freq = hz / _specs[Have].freq; }
+inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * len; }
 
 
 
@@ -89,8 +88,20 @@ void SdlSound::Dispose() noexcept
 
 void SdlSound::Play(const uint8_t soundTimer)
 {
-	SetFreq(defaultFreq + 2 * soundTimer);
-	SetLenght(soundTimer);
+	if (!this->IsPlaying()) 
+	{
+		SetFreq(defaultFreq + 2 * soundTimer);
+		SetLenght(soundTimer);
+	}
+	
+	else
+	{
+		SDL_LockAudioDevice(_dev);
+		SetFreq(defaultFreq + 2 * soundTimer);
+		SetLenght(soundTimer);
+		SDL_UnlockAudioDevice(_dev);
+	}
+
 	SDL_PauseAudioDevice(_dev, 0);
 }
 
@@ -156,32 +167,6 @@ bool SdlSound::InitDevice()
 
 
 
-void SdlSound::SetFreq(const float hz)
-{
-	if (!this->IsPlaying()) {
-		_freq = hz / _specs[Have].freq;
-	}
-	else {
-		SDL_LockAudioDevice(_dev);
-		_freq = hz / _specs[Have].freq;
-		SDL_UnlockAudioDevice(_dev);
-	}
-}
-
-
-
-void SdlSound::SetLenght(const unsigned int len)
-{
-	if (!this->IsPlaying()) {
-		_len = _cycleTime * len;
-	}
-	else {
-		SDL_LockAudioDevice(_dev);
-		_len = _cycleTime * len;
-		SDL_UnlockAudioDevice(_dev);
-	}
-}
-
 
 
 
@@ -193,7 +178,7 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 	const size_t bufflen = len / sizeof(T);
 
 
-	constexpr float _2pi = 2 * M_PI;
+	constexpr auto _2pi = static_cast<float>(2 * M_PI);
 	const auto ampl = _this->_amplitude;
 	const auto freq = _this->_freq;
 	auto pos = _this->_pos;
@@ -220,8 +205,9 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 
 		// pause the device from the callback function.
 		// is this ok ?
-		SDL_PauseAudioDevice(_this->_dev, 1);
 		_this->_pos = 0;
+		SDL_PauseAudioDevice(_this->_dev, 1);
+		
 	}
 
 }

@@ -36,10 +36,9 @@ private:
 	void SetFreq(const float hz);
 	void SetCycleTime(const float hz);
 	void SetLenght(const unsigned int len);
-
-
 	template<class T>
 	static void audio_callback(void* userdata, uint8_t* stream, int len);
+
 
 	SDL_AudioSpec* _specs;
 	SDL_AudioDeviceID _dev;
