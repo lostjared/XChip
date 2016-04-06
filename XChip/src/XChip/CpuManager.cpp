@@ -25,27 +25,17 @@ static void free_cpu_arr(T*& arr);
 CpuManager::CpuManager() noexcept
 {
 	LOG("Creating CpuManager object...");
-	_cpu.opcode     = 0;
-	_cpu.I          = 0;
-	_cpu.sp         = 0;
-	_cpu.pc         = 0x200;
-	_cpu.memory     = nullptr;
-	_cpu.registers  = nullptr;
-	_cpu.stack      = nullptr;
-	_cpu.gfx        = nullptr;
-	_cpu.input      = nullptr;
-	_cpu.render     = nullptr;
-	_cpu.sound      = nullptr;
-	_cpu.delayTimer = 0;
-	_cpu.soundTimer = 0;
+	// init all members to 0
+	memset(&_cpu, 0, sizeof(Cpu)); 
 }
+
 
 CpuManager::~CpuManager()
 {
 	this->Dispose();
 	LOG("Destroying CpuManager object...");
-
 }
+
 
 void CpuManager::Dispose() noexcept
 {
@@ -125,10 +115,10 @@ void CpuManager::SetFont(const uint8_t* font, const size_t size)
 
 
 
-bool CpuManager::LoadRom(const char* fileName)
+bool CpuManager::LoadRom(const char* fileName, const size_t at)
 {
 	LOG("Loading "_s + fileName);
-	std::FILE *file = std::fopen(fileName, "rb");
+	std::FILE *const file = std::fopen(fileName, "rb");
 
 	if (!file) 
 	{
@@ -144,17 +134,16 @@ bool CpuManager::LoadRom(const char* fileName)
 	std::fseek(file, 0, SEEK_SET);
 
 	// check if file size will not overflow emulated memory size
-	if (fileSize > get_arr_size(_cpu.memory) - 0x200) 
+	if (fileSize > get_arr_size(_cpu.memory) - at) 
 	{
 		LOGerr("Error, ROM size not compatible, interrupting Chip8 instance.");
 		return false;
 	}
 
-	std::fread(_cpu.memory + 0x200, 1, fileSize, file);
+	std::fread(_cpu.memory + at, 1, fileSize, file);
 	LOG("Load Done!");
 	return true;
 }
-
 
 
 
@@ -169,6 +158,8 @@ void CpuManager::CleanRegisters()
 {
 	arr_zero(_cpu.registers);
 	_cpu.I = 0;
+	_cpu.delayTimer = 0;
+	_cpu.soundTimer = 0;
 }
 
 
@@ -186,14 +177,14 @@ void CpuManager::CleanGfx()
 
 void CpuManager::SetRender(iRender* render) 
 {
-	auto oldRend = SwapRender(render);
+	const auto oldRend = SwapRender(render);
 	if(oldRend)
 		delete oldRend;
 }
 
 void CpuManager::SetInput(iInput* input)
 {
-	auto oldInput = SwapInput(input);
+	const auto oldInput = SwapInput(input);
 	if(oldInput)
 		delete oldInput;
 }
@@ -201,7 +192,7 @@ void CpuManager::SetInput(iInput* input)
 
 void CpuManager::SetSound(iSound* sound)
 {
-	auto oldSound = SwapSound(sound);
+	const auto oldSound = SwapSound(sound);
 	if(oldSound)
 		delete oldSound;
 }
@@ -210,21 +201,21 @@ void CpuManager::SetSound(iSound* sound)
 
 iRender* CpuManager::SwapRender(iRender* render)
 {
-	auto ret = _cpu.render;
+	const auto ret = _cpu.render;
 	_cpu.render = render;
 	return ret;
 }
 
 iInput* CpuManager::SwapInput(iInput* input)
 {
-	auto ret = _cpu.input;
+	const auto ret = _cpu.input;
 	_cpu.input = input;
 	return ret;
 }
 
 iSound* CpuManager::SwapSound(iSound* sound)
 {
-	auto ret = _cpu.sound;
+	const auto ret = _cpu.sound;
 	_cpu.sound = sound;
 	return ret;
 }
@@ -261,7 +252,6 @@ size_t CpuManager::GetGfxSize() const
 template<class T>
 static bool alloc_cpu_arr(T*& arr, const size_t size)
 {
-
 	if (size == get_arr_size(arr))
 		return true;
 
@@ -276,6 +266,7 @@ static bool alloc_cpu_arr(T*& arr, const size_t size)
 	std::fill_n(arr, size, 0);
 	return true;
 }
+
 
 template<class T>
 static void free_cpu_arr(T*& arr)

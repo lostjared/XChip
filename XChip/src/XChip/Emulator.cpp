@@ -9,7 +9,6 @@
 
 namespace xchip {
 
-
 Emulator::Emulator() noexcept
 {
 	using namespace utility::literals;
@@ -28,7 +27,7 @@ Emulator::~Emulator()
 }
 
 
-bool Emulator::Initialize(iRender* const render, iInput* const input, iSound* const sound) noexcept
+bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound sound) noexcept
 {
 	if (_initialized) 
 		this->Dispose();
@@ -49,18 +48,16 @@ bool Emulator::Initialize(iRender* const render, iInput* const input, iSound* co
 
 	_manager.SetFont(fonts::chip8_default_font, 80);
 
-	if (!InitMedia(render, input, sound))
+	if (!InitMedia(render.release(), input.release(), sound.release()))
 		return false;
 
 	// little trick:
-	// use the last  ( sizeof(bool*) + sizeof(uint8_t) ) bytes in _cpu's memory to store a pointer
+	// use the last  ( sizeof(bool*) + sizeof(uint8_t) ) bytes in chip's memory to store a pointer
 	// to our exit flag and the 0xFF value to say that the pointer is available
 	// ( normaly 5 bytes in x86 and 9 bytes in x64).
-	Cpu& _cpu = _manager.GetCpu();
-	std::size_t exitf_offs = utility::get_arr_size((uint8_t*)_cpu.memory) - sizeof(bool*) - 1;
-	_cpu.memory[exitf_offs - 1] = 0xFF;
-	reinterpret_cast<bool*&>(_cpu.memory[exitf_offs]) = &_exitf;
-	
+	const auto flagOffset = (_manager.GetMemorySize() - sizeof(bool*)) - 1;
+	_manager.InsertAddress(&_exitf, flagOffset);
+	_manager.InsertValue(uint8_t(0xFF), flagOffset - sizeof(uint8_t));
 	_exitf = false;
 	_initialized = true;
 	return true;
@@ -135,10 +132,10 @@ void Emulator::UpdateSystems()
 
 void Emulator::ExecuteInstr()
 {
-	Cpu& _cpu = _manager.GetCpu();
-	_cpu.opcode = (_cpu.memory[_cpu.pc] << 8) | _cpu.memory[_cpu.pc+1];
-	_cpu.pc += 2;
-	instructions::instrTable[(_cpu.opcode & 0xf000) >> 12](&_cpu);
+	Cpu& chip = _manager.GetCpu();
+	chip.opcode = (chip.memory[chip.pc] << 8) | chip.memory[chip.pc+1];
+	chip.pc += 2;
+	instructions::instrTable[(chip.opcode & 0xf000) >> 12](&chip);
 	_instrf = false;
 }
 
@@ -158,17 +155,14 @@ void Emulator::Draw()
 
 void Emulator::Reset()
 {
-	Cpu& _cpu = _manager.GetCpu();
-	if(_cpu.sound->IsPlaying())
-		_cpu.sound->Stop();
+	if(_manager.GetSound()->IsPlaying())
+		_manager.GetSound()->Stop();
 
 	_manager.CleanGfx();
 	_manager.CleanStack();
 	_manager.CleanRegisters();
-	_cpu.pc = 0x200;
-	_cpu.sp = 0;
-	_cpu.delayTimer = 0;
-	_cpu.soundTimer = 0;
+	_manager.SetPC(0);
+	_manager.SetSP(0);
 }
 
 

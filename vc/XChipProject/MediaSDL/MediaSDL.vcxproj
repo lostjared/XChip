@@ -82,19 +82,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\include\XChip\SDL_MEDIA\EXTERN_HEADERS\WIN;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\SDL2_WIN\include\;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\include\XChip\SDL_MEDIA\EXTERN_HEADERS\WIN;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\SDL2_WIN\include\;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\include\XChip\SDL_MEDIA\EXTERN_HEADERS\WIN;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\SDL2_WIN\include\;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\include\XChip\SDL_MEDIA\EXTERN_HEADERS\WIN;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\SDL2_WIN\include\;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

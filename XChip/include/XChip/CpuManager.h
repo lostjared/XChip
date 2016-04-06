@@ -44,9 +44,15 @@ public:
 	bool SetRegisters(const size_t size);
 	bool SetStack(const size_t size);
 	bool SetGfx(const size_t size);
+	void SetPC(const uint16_t offset);
+	void SetSP(const uint16_t offset);
 	void SetFont(const uint8_t* font, const size_t size);
-	bool LoadRom(const char* file);
-
+	bool LoadRom(const char* file, const size_t at);
+	
+	template<class T>
+	void InsertAddress(const T* addr, const size_t offset);
+	template<class T>
+	void InsertValue(const T val, const size_t offset);
 	
 	iRender* SwapRender(iRender* render);
 	iInput* SwapInput(iInput* input);
@@ -74,10 +80,31 @@ inline const uint16_t* CpuManager::GetStack() const { return _cpu.stack; }
 inline const uint32_t* CpuManager::GetGfx() const { return _cpu.gfx; }
 inline const Cpu& CpuManager::GetCpu() const { return _cpu; }
 
+inline void CpuManager::SetPC(const uint16_t offset) { _cpu.pc = offset; }
+inline void CpuManager::SetSP(const uint16_t offset) { _cpu.sp = offset; }
 inline Cpu& CpuManager::GetCpu() { return _cpu; }
 inline iRender* CpuManager::GetRender() { return _cpu.render; }
 inline iInput* CpuManager::GetInput() { return _cpu.input; }
 inline iSound* CpuManager::GetSound() { return _cpu.sound; }
+
+template<class T>
+inline void CpuManager::InsertAddress(const T* addr, const size_t offset) 
+{ 
+	reinterpret_cast<const void*&>(_cpu.memory[offset]) = addr; 
+}
+
+template<class T>
+inline void CpuManager::InsertValue(const T val, const size_t offset)
+{
+	reinterpret_cast<T&>(_cpu.memory[offset]) = val;
+}
+
+
+
+
+
+
+
 
 
 

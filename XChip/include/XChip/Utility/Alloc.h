@@ -15,7 +15,7 @@ extern void* alloc_arr(const std::size_t size);
 
 inline void free_arr(void* block)
 {
-	if(block != nullptr)
+	if (block != nullptr)
 		std::free(((std::size_t*)block) - 1);
 }
 
