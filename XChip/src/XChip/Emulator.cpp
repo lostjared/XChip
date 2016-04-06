@@ -27,6 +27,7 @@ Emulator::~Emulator()
 }
 
 
+
 bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound sound) noexcept
 {
 	if (_initialized) 
@@ -46,7 +47,9 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 		return false;
 	}
 
+	_manager.SetPC(0x200);
 	_manager.SetFont(fonts::chip8_default_font, 80);
+
 
 	if (!InitMedia(render.release(), input.release(), sound.release()))
 		return false;
@@ -177,6 +180,7 @@ bool Emulator::InitMedia(iRender* rend, iInput* input, iSound* sound)
 }
 
 
+
 bool Emulator::InitRender()
 {
 	auto rend = _manager.GetRender();
@@ -288,6 +292,7 @@ UniqueRender Emulator::SwapRender(UniqueRender rend)
 
 
 
+
 UniqueInput Emulator::SwapInput(UniqueInput input) 
 { 
 	if (input != nullptr)
@@ -309,6 +314,8 @@ UniqueInput Emulator::SwapInput(UniqueInput input)
 }
 
 
+
+
 UniqueSound Emulator::SwapSound(UniqueSound sound) 
 { 
 	if (sound != nullptr)
@@ -328,6 +335,8 @@ UniqueSound Emulator::SwapSound(UniqueSound sound)
 	const auto oldSound = _manager.SwapSound(nullptr);
 	return UniqueSound(oldSound);
 }
+
+
 
 
 

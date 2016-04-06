@@ -179,7 +179,7 @@ void CpuManager::CleanGfx()
 
 void CpuManager::SetRender(iRender* render) 
 {
-	const auto oldRend = SwapRender(render);
+	const auto* oldRend = SwapRender(render);
 	if(oldRend)
 		delete oldRend;
 }
@@ -188,7 +188,7 @@ void CpuManager::SetRender(iRender* render)
 
 void CpuManager::SetInput(iInput* input)
 {
-	const auto oldInput = SwapInput(input);
+	const auto* oldInput = SwapInput(input);
 	if(oldInput)
 		delete oldInput;
 }
@@ -197,7 +197,7 @@ void CpuManager::SetInput(iInput* input)
 
 void CpuManager::SetSound(iSound* sound)
 {
-	const auto oldSound = SwapSound(sound);
+	const auto* oldSound = SwapSound(sound);
 	if(oldSound)
 		delete oldSound;
 }
@@ -206,7 +206,7 @@ void CpuManager::SetSound(iSound* sound)
 
 iRender* CpuManager::SwapRender(iRender* render)
 {
-	const auto ret = _cpu.render;
+	auto* const ret = _cpu.render;
 	_cpu.render = render;
 	return ret;
 }
@@ -215,7 +215,7 @@ iRender* CpuManager::SwapRender(iRender* render)
 
 iInput* CpuManager::SwapInput(iInput* input)
 {
-	const auto ret = _cpu.input;
+	auto* const ret = _cpu.input;
 	_cpu.input = input;
 	return ret;
 }
@@ -224,7 +224,7 @@ iInput* CpuManager::SwapInput(iInput* input)
 
 iSound* CpuManager::SwapSound(iSound* sound)
 {
-	const auto ret = _cpu.sound;
+	auto* const ret = _cpu.sound;
 	_cpu.sound = sound;
 	return ret;
 }

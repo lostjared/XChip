@@ -7,12 +7,13 @@
 
 
 namespace xchip {
+
 using UniqueRender = std::unique_ptr<iRender>;
 using UniqueInput = std::unique_ptr<iInput>;
 using UniqueSound = std::unique_ptr<iSound>;
-using SharedRender = std::shared_ptr<iRender>;
-using SharedInput = std::shared_ptr<iInput>;
-using SharedSound = std::shared_ptr<iSound>;
+
+
+
 
 class Emulator
 {
@@ -41,13 +42,13 @@ public:
 	void SetFramesPerSec(const unsigned short value);
 	bool LoadRom(const char* fname);
 
-	bool SetRender(iRender* rend);
-	bool SetInput(iInput* input);
-	bool SetSound(iSound* sound);
+	bool SetRender(UniqueRender rend);
+	bool SetInput(UniqueInput input);
+	bool SetSound(UniqueSound sound);
 
-	const SharedRender GetRender();
-	const SharedInput GetInput();
-	const SharedSound GetSound();
+	iRender* GetRender();
+	iInput* GetInput();
+	iSound* GetSound();
 	
 	UniqueRender SwapRender(UniqueRender rend = nullptr);
 	UniqueInput SwapInput(UniqueInput input = nullptr);
@@ -73,11 +74,6 @@ private:
 
 
 
-
-
-
-
-
 inline bool Emulator::GetInstrFlag() const { return _instrf; }
 inline bool Emulator::GetDrawFlag() const { return _drawf; }
 inline bool Emulator::GetExitFlag() const { return _exitf; }
@@ -89,15 +85,17 @@ inline void Emulator::SetFramesPerSec(const unsigned short value) {
 	_frameTimer.SetTargetTime(utility::literals::operator""_hz(value));
 }
 
+inline bool Emulator::LoadRom(const char* fname) { return _manager.LoadRom(fname, 0x200); }
+inline bool Emulator::SetRender(UniqueRender rend) { _manager.SetRender(rend.release()); return InitRender(); }
+inline bool Emulator::SetInput(UniqueInput input) { _manager.SetInput(input.release()); return InitInput(); }
+inline bool Emulator::SetSound(UniqueSound sound) { _manager.SetSound(sound.release()); return InitSound(); }
 
-inline bool Emulator::LoadRom(const char* fname) { _manager.SetPC(0x200); return _manager.LoadRom(fname, 0x200); }
-inline bool Emulator::SetRender(iRender* rend) { _manager.SetRender(rend); return InitRender(); }
-inline bool Emulator::SetInput(iInput* input) { _manager.SetInput(input); return InitInput(); }
-inline bool Emulator::SetSound(iSound* sound) { _manager.SetSound(sound); return InitSound(); }
+inline iRender* Emulator::GetRender() { return _manager.GetRender(); }
+inline iInput* Emulator::GetInput() { return _manager.GetInput(); }
+inline iSound* Emulator::GetSound() { return _manager.GetSound(); }
 
-inline const SharedRender Emulator::GetRender() { return SharedRender(_manager.GetRender(), [](void*) {}); }
-inline const SharedInput Emulator::GetInput() { return SharedInput(_manager.GetInput(), [](void*) {}); }
-inline const SharedSound Emulator::GetSound() { return SharedSound(_manager.GetSound(), [](void*) {}); }
+
+
 
 
 

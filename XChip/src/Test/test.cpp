@@ -36,8 +36,8 @@ int main(int argc, char** argv)
 	});
 #endif
 
-	static Emulator emulator;
 
+	Emulator emulator;
 
 	if (!emulator.Initialize(UniqueRender(new(nothrow) SdlRender()),
                              UniqueInput(new(nothrow) SdlInput()),
@@ -50,6 +50,8 @@ int main(int argc, char** argv)
 	{
 		return EXIT_FAILURE;
 	}
+	
+
 
 	while (!emulator.GetExitFlag())
 	{
