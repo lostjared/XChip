@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	});
 #endif
 
-	UniqueRender render(new(nothrow) SdlRender);
+	UniqueRender render(new(nothrow) SdlRender());
 	UniqueInput input(new(nothrow) SdlInput());
 	UniqueSound sound(new(nothrow) SdlSound());
 
