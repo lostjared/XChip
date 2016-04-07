@@ -34,17 +34,18 @@ template<class F>
 struct ScopeExit
 {
 	ScopeExit(F fun) noexcept : _fun(std::move(fun)) {}
-	~ScopeExit() { _fun(); }
+	~ScopeExit() noexcept { _fun(); }
+
 	ScopeExit(ScopeExit&&) = default;
 	ScopeExit(const ScopeExit&) = delete;
 	ScopeExit& operator=(const ScopeExit&) = delete;
 private:
-	F _fun;
+	const F _fun;
 };
 
 
 template<class T>
-ScopeExit<T> make_scope_exit(T&& t) noexcept {
+ScopeExit<T> make_scope_exit(T && t) noexcept {
 	return ScopeExit<T>(std::forward<T>(t));
 }
 
