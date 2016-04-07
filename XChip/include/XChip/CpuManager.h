@@ -49,8 +49,7 @@ public:
 	void SetFont(const uint8_t* font, const size_t size);
 	bool LoadRom(const char* file, const size_t at);
 	
-	template<class T>
-	void InsertAddress(const T* addr, const size_t offset);
+	void InsertAddress(const void* addr, const size_t offset);
 	template<class T>
 	void InsertValue(const T val, const size_t offset);
 	
@@ -87,16 +86,17 @@ inline iRender* CpuManager::GetRender() { return _cpu.render; }
 inline iInput* CpuManager::GetInput() { return _cpu.input; }
 inline iSound* CpuManager::GetSound() { return _cpu.sound; }
 
-template<class T>
-inline void CpuManager::InsertAddress(const T* addr, const size_t offset) 
+
+inline void CpuManager::InsertAddress(const void* addr, const size_t offset) 
 { 
 	reinterpret_cast<const void*&>(_cpu.memory[offset]) = addr; 
 }
 
+
 template<class T>
 inline void CpuManager::InsertValue(const T val, const size_t offset)
 {
-	reinterpret_cast<T&>(_cpu.memory[offset]) = val;
+	*reinterpret_cast<T*>(_cpu.memory+offset) = val;
 }
 
 

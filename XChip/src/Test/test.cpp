@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	using std::unique_ptr;
 	using std::shared_ptr;
 
-	if (argc < 2)
+	if (argc < 1)
 	{
 		utility::LOGerr("No games");
 		return EXIT_FAILURE;
@@ -36,21 +36,64 @@ int main(int argc, char** argv)
 	});
 #endif
 
+	using std::move;
+
+	UniqueRender render(new(nothrow) SdlRender);
+	UniqueInput input(new(nothrow) SdlInput());
+	UniqueSound sound(new(nothrow) SdlSound());
 
 	Emulator emulator;
 
-	if (!emulator.Initialize(UniqueRender(new(nothrow) SdlRender()),
-                             UniqueInput(new(nothrow) SdlInput()),
-                             UniqueSound(new(nothrow) SdlSound())))
+
+	// you must give the ownerty of the media interfaces
+	// to the emulator, it won't accept raw pointers
+
+	if (!emulator.Initialize(move(render), move(input), move(sound)))
 	{
 		return EXIT_FAILURE;
 	}
 
-	else if (!emulator.LoadRom(argv[1]))
+
+	// we can use our media interfaces from the emulator
+	auto rend = emulator.GetRender();
+	rend->IsInitialized(); // ... 
+	// do whatever you whish from the interface
+
+	// wan't to do something specific to the child class ? dynamic cast it
+	auto sdlRender = dynamic_cast<SdlRender*>(rend);
+	//sdlRender->whatever...
+
+	// but do not delete raw pointers from emulator
+	// delete rend; <-- NOO
+
+	
+	// if you want to own the object again, recover it by
+	// Swap
+	auto oldRend = emulator.SwapRender(nullptr);
+	auto del = oldRend.release();
+	delete del; // now It's ok, but you don't want to do this stupid thing...
+
+	// if the the new Render we inserted didn't initialized well
+	// or you seted a nullptr
+	// the emulator's exitflag is set
+	
+	if (emulator.GetExitFlag())
+	{
+		utility::LOGerr("new render not initialized trying again..");
+		oldRend.reset(new(nothrow) SdlRender());
+		
+		if (!emulator.SetRender(move(oldRend))) {
+			return EXIT_SUCCESS;
+		}
+		else
+			emulator.CleanFlags();
+	}
+
+
+	if (!emulator.LoadRom(argv[1]))
 	{
 		return EXIT_FAILURE;
 	}
-	
 
 
 	while (!emulator.GetExitFlag())

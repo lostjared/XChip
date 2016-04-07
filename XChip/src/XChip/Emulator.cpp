@@ -8,12 +8,14 @@
 #include <XChip/Utility/Alloc.h>
 
 namespace xchip {
+using utility::literals::operator""_hz;
+
 
 Emulator::Emulator() noexcept
+	: _instrTimer(358_hz),
+	_frameTimer(60_hz),
+	_chDelayTimer(60_hz)
 {
-	using namespace utility::literals;
-	_instrTimer.SetTargetTime(358_hz);
-	_frameTimer.SetTargetTime(60_hz);
 	utility::LOG("Creating Emulator object...");
 }
 
@@ -109,15 +111,14 @@ void Emulator::UpdateTimers()
 	}
 
 	
-	static utility::Timer chip8Delay( 60_hz );
 
-	if (chip8Delay.Finished())
+	if (_chDelayTimer.Finished())
 	{
 		auto& delayTimer = _manager.GetCpu().delayTimer;
 		if (delayTimer)
 			--delayTimer;
 
-		chip8Delay.Start();
+		_chDelayTimer.Start();
 	}
 }
 
@@ -153,6 +154,13 @@ void Emulator::Draw()
 }
 
 
+
+void Emulator::CleanFlags()
+{
+	_instrf = false;
+	_drawf = false;
+	_exitf = false;
+}
 
 
 
@@ -275,18 +283,15 @@ UniqueRender Emulator::SwapRender(UniqueRender rend)
 	if (rend != nullptr)
 	{
 		const auto oldRend = _manager.SwapRender(rend.release());
-		
-		if (!InitRender()) 
-		{
-			utility::LOGerr("Could not initialize the new render properly...");
+		if (!InitRender())
 			_exitf = true;
-		}
 
 		return UniqueRender(oldRend);
 	}
 	
 	utility::LOGerr("Setting iRender to nullptr...");
 	const auto oldRend = _manager.SwapRender(nullptr);
+	_exitf = true;
 	return UniqueRender(oldRend);
 }
 
@@ -300,16 +305,14 @@ UniqueInput Emulator::SwapInput(UniqueInput input)
 		const auto oldInput = _manager.SwapInput(input.release());
 
 		if (!InitInput())
-		{
-			utility::LOGerr("Could not initialize the new render properly...");
 			_exitf = true;
-		}
 
 		return UniqueInput(oldInput);
 	}
 
 	utility::LOGerr("Setting iInput to nullptr...");
 	const auto oldInput = _manager.SwapInput(nullptr);
+	_exitf = true;
 	return UniqueInput(oldInput);
 }
 
@@ -323,16 +326,14 @@ UniqueSound Emulator::SwapSound(UniqueSound sound)
 		const auto oldSound = _manager.SwapSound(sound.release());
 
 		if (!InitInput())
-		{
-			utility::LOGerr("Could not initialize the new render properly...");
 			_exitf = true;
-		}
 
 		return UniqueSound(oldSound);
 	}
 
-	utility::LOGerr("Setting iInput to nullptr...");
+	utility::LOGerr("Setting iSound to nullptr...");
 	const auto oldSound = _manager.SwapSound(nullptr);
+	_exitf = true;
 	return UniqueSound(oldSound);
 }
 

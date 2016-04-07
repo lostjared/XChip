@@ -37,6 +37,7 @@ public:
 	void UpdateSystems();
 	void ExecuteInstr();
 	void Draw();
+	void CleanFlags();
 	void Reset();
 
 	void SetInstrPerSec(const unsigned short value);
@@ -64,6 +65,7 @@ private:
 	CpuManager _manager;
 	utility::Timer _instrTimer;
 	utility::Timer _frameTimer;
+	utility::Timer _chDelayTimer;
 	bool _instrf = false;
 	bool _drawf  = false;
 	bool _exitf  = true;
