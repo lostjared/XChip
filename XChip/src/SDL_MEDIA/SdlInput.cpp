@@ -6,8 +6,8 @@
 
 
 namespace xchip {
-using namespace utility;
 
+using namespace utility;
 extern SDL_Event g_sdlEvent;
 
 SdlInput::SdlInput()

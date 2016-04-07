@@ -15,6 +15,7 @@
 
 namespace xchip { namespace utility {
 
+
 namespace literals {
 	inline std::chrono::microseconds operator""_sec(unsigned long long x) { return std::chrono::seconds(x); }
 	inline std::chrono::microseconds operator""_milli(unsigned long long x) { return std::chrono::milliseconds(x); }

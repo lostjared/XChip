@@ -29,11 +29,14 @@ CpuManager::CpuManager() noexcept
 }
 
 
+
 CpuManager::~CpuManager()
 {
 	this->Dispose();
 	LOG("Destroying CpuManager object...");
 }
+
+
 
 
 void CpuManager::Dispose() noexcept

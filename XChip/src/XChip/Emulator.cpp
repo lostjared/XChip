@@ -21,6 +21,7 @@ Emulator::Emulator() noexcept
 }
 
 
+
 Emulator::~Emulator()
 {
 	if(_initialized) 
@@ -28,6 +29,8 @@ Emulator::~Emulator()
 
 	utility::LOG("Destroying Emulator object...");
 }
+
+
 
 
 
@@ -77,6 +80,8 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 
 
 
+
+
 void Emulator::Dispose() noexcept
 {
 	Cpu& chip = _manager.GetCpu();
@@ -100,6 +105,7 @@ void Emulator::Dispose() noexcept
 	_exitf = true;
 	_initialized = false;
 }
+
 
 
 

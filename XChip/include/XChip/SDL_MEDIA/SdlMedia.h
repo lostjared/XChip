@@ -4,6 +4,7 @@ union SDL_Event;
 
 namespace xchip {
 
+
 class SdlMedia
 {
 public:

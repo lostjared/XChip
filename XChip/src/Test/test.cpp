@@ -5,8 +5,12 @@
 #include <XChip/SDL_MEDIA/SdlInput.h>
 #include <XChip/SDL_MEDIA/SdlSound.h>
 
+
+
+
 int main(int argc, char** argv)
 {
+
 	using namespace xchip;
 	using std::move;
 	using std::nothrow;
@@ -14,11 +18,12 @@ int main(int argc, char** argv)
 	using std::shared_ptr;
 	using xchip::utility::make_unique; // xchip nothrow version of make_unique
 
-	if (argc < 1)
+	if (argc < 2)
 	{
 		utility::LOGerr("No games");
 		return EXIT_FAILURE;
 	}
+
 
 
 	// pause at exit to output read in WINDOWS

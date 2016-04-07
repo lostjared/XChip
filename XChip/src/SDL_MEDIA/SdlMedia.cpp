@@ -17,6 +17,8 @@ SdlMedia::SdlMedia(const System sys)
 	++s_nSystems[utility::toUType(_sys)];
 }
 
+
+
 SdlMedia::~SdlMedia()
 {
 	using namespace utility;

@@ -4,12 +4,11 @@
 
 
 namespace xchip {
-
-
-
 class iRender;
 class iInput;
 class iSound;
+
+
 
 struct Cpu
 {

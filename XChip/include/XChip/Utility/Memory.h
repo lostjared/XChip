@@ -5,6 +5,7 @@
 
 namespace xchip { namespace utility {
 
+
 template<class T, class... Args> 
 inline enable_if_t<!std::is_array<T>::value,
 	std::unique_ptr<T>> make_unique(Args&&... args) noexcept
@@ -24,6 +25,8 @@ inline enable_if_t<std::is_array<T>::value && std::extent<T>::value == 0,
 template<class T, class... Args>
 	enable_if_t<std::extent<T>::value != 0,
 	void> make_unique(Args&&...) noexcept = delete;
+
+
 
 
 }}

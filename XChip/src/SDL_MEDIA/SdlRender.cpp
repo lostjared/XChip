@@ -26,6 +26,8 @@ SdlRender::~SdlRender()
 
 
 
+
+
 bool SdlRender::Initialize(const int width, const int height) noexcept
 {
 	if (_initialized)
