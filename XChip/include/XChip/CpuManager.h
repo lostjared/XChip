@@ -10,11 +10,6 @@ namespace xchip {
 
 
 
-
-
-
-
-
 class CpuManager
 {
 public:

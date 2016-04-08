@@ -369,7 +369,7 @@ UniqueRender Emulator::SwapRender(UniqueRender rend)
 
 	utility::LOGerr("Setting iRender to nullptr...");
 	_exitf = true;
-	return UniqueRender(_manager.SwapRender(rend.release()));
+	return UniqueRender(_manager.SwapRender(nullptr));
 }
 
 

@@ -31,7 +31,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(CXX_FLAGS "${CXX_FLAGS} -O0 -g -ggdb -fno-omit-frame-pointer -fsanitize=address")
 
 elseif(CMAKE_BUILD_TYPE STREQUAL "OPTDebug")
-	set(CXX_FLAGS "${CXX_FLAGS} -O3 -g -ggdb -fno-omit-frame-pointer -Os")
+	set(CXX_FLAGS "${CXX_FLAGS} -O2 -g -ggdb -fno-omit-frame-pointer")
 
 endif()
 

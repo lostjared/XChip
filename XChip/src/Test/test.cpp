@@ -42,9 +42,9 @@ int main(int argc, char** argv)
 
 	
 
-	UniqueRender render = make_unique<SdlRender>();
-	UniqueInput input = make_unique<SdlInput>();
-	UniqueSound sound = make_unique<SdlSound>();
+	auto render = make_unique<SdlRender>();
+	auto input = make_unique<SdlInput>();
+	auto sound = make_unique<SdlSound>();
 
 	Emulator emulator;
 
