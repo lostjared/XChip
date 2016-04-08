@@ -2,7 +2,7 @@
 #define _XCHIP_UTILITY_MEMORY_H_
 #include <memory>
 #include "Traits.h"
-
+ 
 namespace xchip { namespace utility {
 
 

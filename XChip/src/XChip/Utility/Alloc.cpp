@@ -2,7 +2,7 @@
 #include <XChip/Utility/Alloc.h>
 
 
-
+ 
 namespace xchip { namespace utility {
 
 static std::size_t* block;

@@ -7,7 +7,7 @@
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Timer.h>
 
-
+ 
 
 namespace xchip {
 
@@ -59,6 +59,7 @@ bool SdlSound::Initialize() noexcept
 	
 	if (!_specs)
 		return false;
+
 	else if (!InitDevice(_specs[Want], _specs[Have]))
 		return false;
 

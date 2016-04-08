@@ -4,7 +4,7 @@
 
 #include <XChip/SDL_MEDIA/SdlRender.h>
 #include <XChip/Utility/Log.h>
-
+ 
 namespace xchip {
 
 extern SDL_Event g_sdlEvent;

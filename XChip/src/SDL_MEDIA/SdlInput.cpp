@@ -4,7 +4,7 @@
 #include <XChip/SDL_MEDIA/SdlInput.h>
 
 
-
+ 
 namespace xchip {
 
 using namespace utility;

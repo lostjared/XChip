@@ -2,7 +2,7 @@
 #define __XCHIP_CPU_H__
 #include <cstdint>
 
-
+ 
 namespace xchip {
 class iRender;
 class iInput;

@@ -1,6 +1,6 @@
 #ifndef _XCHIP_SDLSOUND_H_
 #define _XCHIP_SDLSOUND_H_
-
+ 
 #include <cstdint>
 #include <XChip/Interfaces/iSound.h>
 #include "SdlMedia.h"

@@ -8,7 +8,7 @@
 
 
 
-
+ 
 int main(int argc, char** argv)
 {
 
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-
+   
 
 	// pause at exit to output read in WINDOWS
 	// cuz we might not be using cmd to call the program

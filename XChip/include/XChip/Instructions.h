@@ -2,7 +2,7 @@
 #define __XCHIP_INSTRUCTIONS_H__
 #include "Cpu.h"
 
-
+ 
 namespace xchip { namespace instructions {
 
 

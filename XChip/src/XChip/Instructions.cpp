@@ -8,7 +8,7 @@
 
 #define _XCHIP_INSTRUCTIONS_STACK_CHECK 1
 
-
+ 
 namespace xchip { namespace instructions {
 
 

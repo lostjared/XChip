@@ -4,7 +4,7 @@
 #include <string>
 #include "Traits.h"
 
-
+ 
 namespace xchip { namespace utility {
 	
 namespace literals {

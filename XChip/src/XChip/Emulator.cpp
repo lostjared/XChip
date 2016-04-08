@@ -6,7 +6,7 @@
 #include <XChip/Instructions.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Alloc.h>
-
+ 
 namespace xchip {
 using utility::literals::operator""_hz;
 
