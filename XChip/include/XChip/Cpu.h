@@ -22,7 +22,7 @@ struct Cpu
 	iInput* input;
 	iSound* sound;
 
-	size_t opcode;
+	uint16_t opcode;
 	size_t I;
 	size_t sp;
 	size_t pc;
