@@ -77,13 +77,13 @@ inline const size_t* CpuManager::GetStack() const { return _cpu.stack; }
 inline const uint32_t* CpuManager::GetGfx() const { return _cpu.gfx; }
 inline const Cpu& CpuManager::GetCpu() const { return _cpu; }
 
-inline void CpuManager::SetPC(const size_t offset) { _cpu.pc = offset; }
-inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
+
 inline Cpu& CpuManager::GetCpu() { return _cpu; }
 inline iRender* CpuManager::GetRender() { return _cpu.render; }
 inline iInput* CpuManager::GetInput() { return _cpu.input; }
 inline iSound* CpuManager::GetSound() { return _cpu.sound; }
-
+inline void CpuManager::SetPC(const size_t offset) { _cpu.pc = offset; }
+inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
 inline void CpuManager::SetRender(iRender* render) { _cpu.render = render; }
 inline void CpuManager::SetInput(iInput* input) { _cpu.input = input; }
 inline void CpuManager::SetSound(iSound* sound) { _cpu.sound = sound; }

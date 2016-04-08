@@ -101,12 +101,13 @@ void CpuManager::SetFont(const uint8_t* font, const size_t size)
 
 
 
+
 bool CpuManager::LoadRom(const char* fileName, const size_t at)
 {
 	LOG("Loading "_s + fileName);
-	std::FILE *const file = std::fopen(fileName, "rb");
+	auto *const file = std::fopen(fileName, "rb");
 
-	if (!file) 
+	if (!file)
 	{
 		LOGerr("Error at opening ROM file, interrupting Chip8 instance.");
 		return false;
