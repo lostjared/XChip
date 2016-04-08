@@ -21,16 +21,17 @@ INCLUDE_DIRECTORIES(${XCHIP_DEFAULT_INCLUDE_PATH})
 
 #compiler
 set(CXX_COMPILER "g++")
-set(CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -std=c++11 -fno-exceptions")
+set(CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -std=c++11 -pedantic -fno-exceptions")
 
 # BUILD TYPES
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-
-set(CXX_FLAGS "${CXX_FLAGS} -O3")
+	set(CXX_FLAGS "${CXX_FLAGS} -O3")
 
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set(CXX_FLAGS "${CXX_FLAGS} -O0 -g -ggdb -fno-omit-frame-pointer -fsanitize=address")
 
-set(CXX_FLAGS "${CXX_FLAGS} -O0 -g -ggdb -fno-omit-frame-pointer -fsanitize=address")
+elseif(CMAKE_BUILD_TYPE STREQUAL "OPTDebug")
+	set(CXX_FLAGS "${CXX_FLAGS} -O3 -g -ggdb -fno-omit-frame-pointer -Os")
 
 endif()
 

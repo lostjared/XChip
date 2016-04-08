@@ -26,10 +26,10 @@ public:
 	Timer() noexcept = default;
 	Timer(const Micro& target) noexcept;
 
-	const Micro GetTarget() const;
+	const Micro& GetTarget() const;
 	Duration GetRemain() const;
 	bool Finished() const;
-	void SetTargetTime(Micro target);
+	void SetTargetTime(const Micro& target);
 	void Start();
 	static void Halt(const Nano& nano);
 private:
@@ -41,8 +41,8 @@ private:
 inline Timer::Timer(const Micro& target) noexcept : 
 	m_target(target) {}
 
-inline const Timer::Micro Timer::GetTarget() const { return m_target; }
-inline void Timer::SetTargetTime(Micro target) { m_target = target; }
+inline const Timer::Micro& Timer::GetTarget() const { return m_target; }
+inline void Timer::SetTargetTime(const Micro& target) { m_target = target; }
 inline void Timer::Start() { m_startPoint = std::chrono::steady_clock::now(); }
 
 

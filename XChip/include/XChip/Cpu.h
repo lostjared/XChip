@@ -15,17 +15,17 @@ struct Cpu
 {
 	uint8_t* memory;
 	uint8_t* registers;
-	uint16_t* stack;
+	size_t*  stack;
 	uint32_t* gfx;
 
 	iRender* render;
 	iInput* input;
 	iSound* sound;
 
-	uint16_t opcode;
-	uint16_t I;
-	uint16_t sp;
-	uint16_t pc;
+	size_t opcode;
+	size_t I;
+	size_t sp;
+	size_t pc;
 	uint8_t delayTimer;
 	uint8_t soundTimer;
 };

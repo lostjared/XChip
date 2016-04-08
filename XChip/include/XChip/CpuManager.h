@@ -27,7 +27,7 @@ public:
 	const iSound* GetSound() const;
 	const uint8_t* GetMemory() const;
 	const uint8_t* GetRegisters() const;
-	const uint16_t* GetStack() const;
+	const size_t* GetStack() const;
 	const uint32_t* GetGfx() const;
 	const Cpu& GetCpu() const;
 
@@ -40,8 +40,8 @@ public:
 	bool SetRegisters(const size_t size);
 	bool SetStack(const size_t size);
 	bool SetGfx(const size_t size);
-	void SetPC(const uint16_t offset);
-	void SetSP(const uint16_t offset);
+	void SetPC(const size_t offset);
+	void SetSP(const size_t offset);
 	void SetFont(const uint8_t* font, const size_t size);
 	bool LoadRom(const char* file, const size_t at);
 	void InsertByte(const uint8_t val, const size_t offset);
@@ -73,12 +73,12 @@ inline const iInput* CpuManager::GetInput() const { return _cpu.input; }
 inline const iSound* CpuManager::GetSound() const { return _cpu.sound; }
 inline const uint8_t* CpuManager::GetMemory() const { return _cpu.memory; }
 inline const uint8_t* CpuManager::GetRegisters() const { return _cpu.registers; }
-inline const uint16_t* CpuManager::GetStack() const { return _cpu.stack; }
+inline const size_t* CpuManager::GetStack() const { return _cpu.stack; }
 inline const uint32_t* CpuManager::GetGfx() const { return _cpu.gfx; }
 inline const Cpu& CpuManager::GetCpu() const { return _cpu; }
 
-inline void CpuManager::SetPC(const uint16_t offset) { _cpu.pc = offset; }
-inline void CpuManager::SetSP(const uint16_t offset) { _cpu.sp = offset; }
+inline void CpuManager::SetPC(const size_t offset) { _cpu.pc = offset; }
+inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
 inline Cpu& CpuManager::GetCpu() { return _cpu; }
 inline iRender* CpuManager::GetRender() { return _cpu.render; }
 inline iInput* CpuManager::GetInput() { return _cpu.input; }
