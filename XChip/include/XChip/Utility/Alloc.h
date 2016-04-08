@@ -12,6 +12,7 @@ namespace xchip { namespace utility {
 extern void* alloc_arr(const std::size_t size) noexcept;
 
 
+extern void* realloc_arr(void* from, const std::size_t size) noexcept;
 
 
 inline void free_arr(const void* block) noexcept

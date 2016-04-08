@@ -15,9 +15,11 @@ using namespace xchip::utility;
 using namespace xchip::utility::literals;
 
 template<class T>
-static bool alloc_cpu_arr(T*& arr, const size_t size);
+static bool alloc_cpu_arr(T*& arr, const size_t size) noexcept;
 template<class T>
-static void free_cpu_arr(T*& arr);
+static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept;
+template<class T>
+static void free_cpu_arr(T*& arr) noexcept;
 
  
 
@@ -78,6 +80,19 @@ bool CpuManager::SetStack(const std::size_t size)
 	if ( !alloc_cpu_arr(_cpu.stack, size) )
 	{
 		LOGerr("Cannot allocate Cpu stack size: "_s + size);
+		return false;
+	}
+
+	return true;
+}
+
+
+
+bool CpuManager::ResizeMemory(const std::size_t size)
+{
+	if ( !realloc_cpu_arr(_cpu.memory, size)) 
+	{
+		LOGerr("Cannot reallocate Cpu memory to size: "_s + size);
 		return false;
 	}
 
@@ -224,8 +239,26 @@ size_t CpuManager::GetGfxSize() const
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 template<class T>
-static bool alloc_cpu_arr(T*& arr, const size_t size)
+static bool __alloc_arr(T*& arr, const size_t size) noexcept;
+template<class T>
+static bool __realloc_arr(T*& arr, const size_t size) noexcept;
+
+
+template<class T>
+static bool alloc_cpu_arr(T*& arr, const size_t size) noexcept
 {
 	if (size == get_arr_size(arr))
 		return true;
@@ -233,18 +266,28 @@ static bool alloc_cpu_arr(T*& arr, const size_t size)
 	else if (arr != nullptr)
 		free_arr(arr);
 
-	arr = (T*)alloc_arr(size * sizeof(T));
+	
+	return __alloc_arr(arr, size);
 
-	if (arr == nullptr)
-		return false;
-
-	std::fill_n(arr, size, 0);
-	return true;
 }
 
 
 template<class T>
-static void free_cpu_arr(T*& arr)
+static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept
+{
+	if(size == get_arr_size(arr))
+		return true;
+
+	else if(arr == nullptr)
+		return __alloc_arr(arr, size);
+	
+	return __realloc_arr(arr, size);
+}
+
+
+
+template<class T>
+static void free_cpu_arr(T*& arr) noexcept
 {
 	free_arr(arr);
 	arr = nullptr;
@@ -254,6 +297,29 @@ static void free_cpu_arr(T*& arr)
 
 
 
+
+
+
+template<class T>
+static bool __alloc_arr(T*& arr, const size_t size) noexcept
+{
+	arr = (T*)alloc_arr(sizeof(T) * size);
+	
+	if (!arr)
+		return false;
+
+	std::fill_n(arr, size, 0);
+	return true;
+}
+
+
+
+template<class T>
+static bool __realloc_arr(T*& arr, const size_t size) noexcept
+{
+	arr = (T*) realloc_arr(arr, sizeof(T) * size);
+	return arr != nullptr;
+}
 
 
 }

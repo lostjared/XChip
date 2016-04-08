@@ -8,7 +8,6 @@ namespace xchip { namespace utility {
 static std::size_t* block;
 
 
-
 void* alloc_arr(const std::size_t size) noexcept
 {
 	block = (std::size_t*) std::malloc(size + sizeof(std::size_t));
@@ -20,6 +19,17 @@ void* alloc_arr(const std::size_t size) noexcept
 }
 
 
+
+void* realloc_arr(void* from, const std::size_t size) noexcept
+{
+	from = std::realloc(from, size + sizeof(std::size_t));
+	if(from == nullptr)
+		return nullptr;
+
+	*((size_t*)from) = size;
+	return ((size_t*)block) + 1;
+
+}
 
 
 

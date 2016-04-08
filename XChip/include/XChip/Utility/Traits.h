@@ -15,7 +15,7 @@ using underlying_type_t = typename std::underlying_type<T>::type;
 
 
 template<class T>
-underlying_type_t<T> toUType(T t) noexcept
+constexpr underlying_type_t<T> toUType(T t) noexcept
 {
 	return static_cast<underlying_type_t<T>>(t);
 }
@@ -23,7 +23,7 @@ underlying_type_t<T> toUType(T t) noexcept
 
 
 template<class T, const size_t sz>
-size_t static_arr_size(const T(&)[sz]) noexcept
+constexpr size_t static_arr_size(const T(&)[sz]) noexcept
 {
 	return sz;
 }
@@ -33,10 +33,9 @@ size_t static_arr_size(const T(&)[sz]) noexcept
 template<class F>
 struct ScopeExit
 {
-	ScopeExit(F fun) noexcept : _fun(std::move(fun)) {}
+	constexpr ScopeExit(F fun) noexcept : _fun(std::move(fun)) {}
 	~ScopeExit() noexcept { _fun(); }
-
-	ScopeExit(ScopeExit&&) = default;
+	ScopeExit(ScopeExit&&) noexcept = default;
 	ScopeExit(const ScopeExit&) = delete;
 	ScopeExit& operator=(const ScopeExit&) = delete;
 private:
@@ -45,7 +44,7 @@ private:
 
 
 template<class T>
-ScopeExit<T> make_scope_exit(T && t) noexcept {
+constexpr ScopeExit<T> make_scope_exit(T&& t) noexcept {
 	return ScopeExit<T>(std::forward<T>(t));
 }
 

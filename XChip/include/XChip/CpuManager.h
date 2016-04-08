@@ -43,6 +43,7 @@ public:
 	bool SetRegisters(const size_t size);
 	bool SetStack(const size_t size);
 	bool SetGfx(const size_t size);
+	bool ResizeMemory(const size_t size);
 	void SetPC(const size_t offset);
 	void SetSP(const size_t offset);
 	void SetFont(const uint8_t* font, const size_t size);
