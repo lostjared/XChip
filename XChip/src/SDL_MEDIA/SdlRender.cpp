@@ -36,7 +36,8 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	else if (!this->InitSubSystem())
 		return false;
 
-	const auto scope = utility::make_scope_exit([this]() {
+	const auto scope = utility::make_scope_exit([this]() noexcept 
+	{
 		using namespace xchip::utility::literals;
 		if (!this->_initialized) {
 			utility::LOGerr("Couldn't initialize SdlRender. SDL ERROR MSG: "_s + SDL_GetError());

@@ -1,3 +1,4 @@
+#include <sstream>
 #include <algorithm>
 #include <XChip/Instructions.h>
 #include <XChip/Interfaces/iInput.h>
@@ -5,10 +6,21 @@
 #include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Log.h>
 
-
+#define _XCHIP_INSTRUCTIONS_STACK_CHECK 1
 
 
 namespace xchip { namespace instructions {
+
+
+
+#define X   ((_cpu->opcode & 0x0f00) >> 8)
+#define Y   ((_cpu->opcode & 0x00f0) >> 4)
+#define N   (_cpu->opcode & 0x000f)
+#define NN  (_cpu->opcode & 0x00ff)
+#define NNN (_cpu->opcode & 0x0fff)
+#define VF  (_cpu->registers [0xF])
+#define VX  (_cpu->registers [X])
+#define VY  (_cpu->registers [Y])
 
 
 
@@ -21,28 +33,28 @@ InstrTable instrTable[16] =
 };
 
 
-void unknown_opcode(Cpu* const _cpu)
+void set_cpu_error_flag(Cpu* const _cpu)
 {
-	using namespace utility;
-	using namespace utility::literals;
-	
-	utility::LOGerr("Unknown opcode: "_s + _cpu->opcode);
-	const std::size_t offs = get_arr_size(reinterpret_cast<uint8_t*>(_cpu->memory)) - sizeof(bool*) - 1;
+	using utility::get_arr_size;
 	/* write true to our error flag, IF the element behind  is 0xFF */
-	if( _cpu->memory[offs - sizeof(uint8_t)] == 0xFF)
+	const size_t offs =
+		get_arr_size(reinterpret_cast<uint8_t*>(_cpu->memory)) - sizeof(bool*) - 1;
+	if (_cpu->memory[offs - sizeof(uint8_t)] == 0xFF)
 		*reinterpret_cast<bool*&>(_cpu->memory[offs]) = true;
 }
 
 
-#define X   ((_cpu->opcode & 0x0f00) >> 8)
-#define Y   ((_cpu->opcode & 0x00f0) >> 4)
-#define NNN (_cpu->opcode & 0x0fff)
-#define NN  (_cpu->opcode & 0x00ff)
-#define N   (_cpu->opcode & 0x000f)
 
-#define VF  (_cpu->registers [0xF])
-#define VX  (_cpu->registers [X])
-#define VY  (_cpu->registers [Y])
+void unknown_opcode(Cpu* const _cpu)
+{
+	using namespace utility::literals;
+	using utility::LOGerr;
+	std::stringstream x;
+	x << std::hex << _cpu->opcode;
+	LOGerr("Unkown Opcode: $"_s + x.str());
+	set_cpu_error_flag(_cpu);
+}
+
 
 
 
@@ -60,6 +72,16 @@ void op_0xxx(Cpu* const _cpu)
 			break;
 
 		case 0x00EE: // return from a subroutine ( unwind stack )
+
+#if _XCHIP_INSTRUCTIONS_STACK_CHECK
+			if ((_cpu->sp - 1) > utility::get_arr_size(_cpu->stack)) 
+			{
+				utility::LOGerr("op_0xxx: Stack Underflow");
+				set_cpu_error_flag(_cpu);
+				return;
+			}
+#endif
+
 			_cpu->pc = _cpu->stack[--_cpu->sp];
 			break;
 	}
@@ -79,6 +101,15 @@ void op_1NNN(Cpu *const _cpu)
 // 2NNN: Calls subroutine at address NNN
 void op_2NNN(Cpu *const _cpu)
 {
+#if _XCHIP_INSTRUCTIONS_STACK_CHECK
+	if (_cpu->sp >= utility::get_arr_size(_cpu->stack)) 
+	{
+		utility::LOGerr("op_2NNN: Stack Overflow");
+		set_cpu_error_flag(_cpu);
+		return;
+	}
+#endif
+
 	_cpu->stack[_cpu->sp++] = _cpu->pc;
 	_cpu->pc = NNN;
 }
@@ -146,7 +177,7 @@ static InstrTable op_8XYx_Table[16] =
 void op_8XYx(Cpu* const _cpu)
 {
 	// call it
-	op_8XYx_Table[_cpu->opcode & 0x000f](_cpu);
+	op_8XYx_Table[N](_cpu);
 
 }
 
@@ -206,7 +237,7 @@ void op_8XY4(Cpu *const _cpu)
 {
 	auto& vx = VX;
 	uint16_t result = vx + VY; // compute sum
-	_cpu->registers[0xF] = (result & 0xff00) != 0 ? 1 : 0; // check carry
+	VF = (result & 0xff00) != 0 ? 1 : 0; // check carry
 	vx = (result & 0xff);
 }
 
@@ -221,7 +252,7 @@ void op_8XY5(Cpu *const _cpu)
 {
 	auto const vy = VY;
 	auto& vx = VX;
-	_cpu->registers[0xF] = vx > vy; // checking if theres is a borrow
+	VF = vx > vy; // checking if theres is a borrow
 	vx -= vy;
 }
 
@@ -236,7 +267,7 @@ void op_8XY5(Cpu *const _cpu)
 void op_8XY6(Cpu *const _cpu)
 {
 	auto& vx = VX;
-	_cpu->registers[0xF] = vx & 0x1; // check the least significant bit
+	VF = vx & 0x1; // check the least significant bit
 	vx >>= 1;
 }
 
@@ -251,7 +282,7 @@ void op_8XY7(Cpu *const _cpu)
 {
 	const auto vy = VY;
 	auto &vx = VX; 
-	_cpu->registers[0xF] = vy > vx; // check borrow ( VY > VX )
+	VF = vy > vx; // check borrow ( VY > VX )
 	vx = vy - vx;
 }
 
@@ -265,7 +296,7 @@ void op_8XY7(Cpu *const _cpu)
 void op_8XYE(Cpu *const _cpu)
 {
 	auto& vx = VX;
-	_cpu->registers[0xF] = (vx & 0x80) >> 7;  // check the most significant bit
+	VF = (vx & 0x80) >> 7;  // check the most significant bit
 	vx = (vx << 1) & 0xFF;
 }
 
@@ -314,7 +345,7 @@ void op_CXNN(Cpu *const _cpu)
 // DXYN: DRAW INSTRUCTION
 void op_DXYN(Cpu *const _cpu)
 {
-	_cpu->registers[0xF] = 0;
+	VF = 0;
 
 	const auto vx = VX;
 	const auto vy = VY;
@@ -332,7 +363,7 @@ void op_DXYN(Cpu *const _cpu)
 
 			const bool pixel = (*_8bitRow & (1 << (7 - j))) != 0;
 
-			_cpu->registers[0xF] |= ((_cpu->gfx[pixelPos] > 0) & pixel);
+			VF |= ((_cpu->gfx[pixelPos] > 0) & pixel);
 
 			_cpu->gfx[pixelPos] ^= (pixel) ? ~0 : 0;
 		}

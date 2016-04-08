@@ -31,7 +31,7 @@ public:
 
 
 private:
-	bool InitDevice();
+	bool InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have);
 	float GetFreq() const;
 	void SetFreq(const float hz);
 	void SetCycleTime(const float hz);
@@ -40,8 +40,8 @@ private:
 	static void audio_callback(void* userdata, uint8_t* stream, int len);
 
 
-	SDL_AudioSpec* _specs;
-	SDL_AudioDeviceID _dev;
+	SDL_AudioSpec* _specs = nullptr;
+	SDL_AudioDeviceID _dev = 0;
 	float _cycleTime;
 	float _freq;
 	float _len;

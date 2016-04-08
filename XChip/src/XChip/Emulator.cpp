@@ -41,10 +41,12 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	if (_initialized) 
 		this->Dispose();
 
-	const auto scope = utility::make_scope_exit([this]() {
+	const auto scope = utility::make_scope_exit([this]() noexcept 
+	{
 		if (!this->_initialized)
 			this->Dispose();
 	});
+
 
 	// Default Chip8 Mode
 	if (!_manager.SetMemory(0xFFFF)
@@ -248,8 +250,6 @@ bool Emulator::InitInput()
 
 	input->SetEscapeKeyCallback(&_exitf, [](const void* exitf) { *(bool*)exitf = true; });
 	input->SetResetKeyCallback(this, [](const void* _this) { ((Emulator*)_this)->Reset(); });
-
-
 	input->SetWaitKeyCallback(this, [](const void* emu)
 	{
 		auto* const emulator = (Emulator*) emu;

@@ -30,18 +30,18 @@ inline void CLS() noexcept
 	#endif
 }
 
-
-inline void LOG(const std::string& msg)
+template<class T>
+void LOG(const T& msg)
 {
 	std::cout << msg << std::endl;
 }
 
 
-inline void LOGerr(const std::string& msg)
+template<class T>
+void LOGerr(const T& msg)
 {
 	std::cerr << msg << std::endl;
 }
-
 
 
 }}

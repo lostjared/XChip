@@ -21,9 +21,7 @@ inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * le
 
 
 SdlSound::SdlSound() noexcept
-	:  SdlMedia(System::Sound),
-	_specs(nullptr),
-	_dev(0)
+	:  SdlMedia(System::Sound)
 {
 	utility::LOG("Creating SdlSound object...");
 }
@@ -47,17 +45,29 @@ bool SdlSound::Initialize() noexcept
 	if (_initialized)
 		this->Dispose();
 
-	const auto cleanup = utility::make_scope_exit([this]() {
+	else if (!this->InitSubSystem())
+		return false;
+	
+	const auto cleanup = utility::make_scope_exit([this]() noexcept {
 		if (!this->_initialized)
 			this->Dispose();
 	});
 
 
-	if (!this->InitSubSystem())
+	_specs = new(std::nothrow) SDL_AudioSpec[2];
+
+	
+	if (!_specs)
+		return false;
+	else if (!InitDevice(_specs[Want], _specs[Have]))
 		return false;
 
-	else if (!this->InitDevice())
-		return false;
+
+	_len = 0.f;
+	_pos = 0u;
+	_amplitude = 16000;
+	_cycleTime = _specs[Have].freq / 60.f;
+	this->SetFreq(defaultFreq);
 
 	_initialized = true;
 	return true;
@@ -124,41 +134,25 @@ void SdlSound::Stop()
 
 
 
-bool SdlSound::InitDevice()
+bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 {
 	using namespace utility::literals;
-	constexpr auto specsSize = sizeof(SDL_AudioSpec) * 2;
 
-	_specs = static_cast<SDL_AudioSpec*>(malloc(specsSize));
-	
-	if(!_specs)
-	{
-		utility::LOGerr("SdlSound: Could not allocate SDL_AudioSpecs...");
-		return false;
-	}
+	memset(&want, 0, sizeof(SDL_AudioSpec));
+	want.freq = 44100;
+	want.format = AUDIO_S16;
+	want.channels = 1;
+	want.samples = 1024;
+	want.callback = SdlSound::audio_callback<Sint16>;
+	want.userdata = this;
 
-
-	memset(_specs, 0, specsSize);
-	_specs[Want].freq = 44100;
-	_specs[Want].format = AUDIO_S16;
-	_specs[Want].channels = 1;
-	_specs[Want].samples = 1024;
-	_specs[Want].callback = SdlSound::audio_callback<Sint16>;
-	_specs[Want].userdata = this;
-
-	_dev = SDL_OpenAudioDevice(NULL, 0, &_specs[Want], &_specs[Have], 0);
+	_dev = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);
 
 	if (_dev < 2) 
 	{
 		utility::LOGerr("SdlSound: Failed to open audio device: "_s + SDL_GetError());
 		return false;
 	}
-
-	_len = 0.f;
-	_pos = 0u;
-	_amplitude = 16000;
-	_cycleTime = _specs[Have].freq / 60.f;
-	this->SetFreq(defaultFreq);
 
 	return true;
 }
