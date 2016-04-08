@@ -12,6 +12,8 @@ using utility::literals::operator""_hz;
 
 
 
+
+
 Emulator::Emulator() noexcept
 	: _instrTimer(358_hz),
 	_frameTimer(60_hz),
@@ -71,7 +73,7 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	// ( normaly 5 bytes in x86 and 9 bytes in x64).
 	const auto flagOffset = (_manager.GetMemorySize() - sizeof(bool*)) - 1;
 	_manager.InsertAddress(&_exitf, flagOffset);
-	_manager.InsertByte(uint8_t(0xFF), flagOffset - sizeof(uint8_t));
+	_manager.InsertByte(0xFF, flagOffset - sizeof(uint8_t));
 	
 	_exitf = false;
 	_initialized = true;
@@ -273,6 +275,8 @@ bool Emulator::InitInput()
 
 
 
+
+
 bool Emulator::InitSound()
 {
 	iSound* const sound = _manager.GetSound();
@@ -295,6 +299,7 @@ bool Emulator::InitSound()
 
 
 
+
 bool Emulator::SetRender(UniqueRender rend) 
 { 
 	const iRender* oldRend = _manager.SwapRender(rend.release()); 
@@ -311,6 +316,9 @@ bool Emulator::SetRender(UniqueRender rend)
 
 }
 
+
+
+
 bool Emulator::SetInput(UniqueInput input) 
 { 
 	const iInput* oldInput = _manager.SwapInput(input.release()); 
@@ -326,6 +334,9 @@ bool Emulator::SetInput(UniqueInput input)
 	return true;
 	
 }
+
+
+
 
 bool Emulator::SetSound(UniqueSound sound) 
 { 
@@ -347,18 +358,18 @@ bool Emulator::SetSound(UniqueSound sound)
 
 UniqueRender Emulator::SwapRender(UniqueRender rend) 
 { 
-	if (rend != nullptr)
+	if (rend) 
 	{
-		UniqueRender oldRend ( _manager.SwapRender(rend.release()) );
+		auto* const oldRend = _manager.SwapRender(rend.release());
 		if (!InitRender())
 			_exitf = true;
 
-		return oldRend;
+		return UniqueRender(oldRend);
 	}
 
 	utility::LOGerr("Setting iRender to nullptr...");
 	_exitf = true;
-	return UniqueRender(_manager.SwapRender(nullptr));
+	return UniqueRender(_manager.SwapRender(rend.release()));
 }
 
 
@@ -366,13 +377,13 @@ UniqueRender Emulator::SwapRender(UniqueRender rend)
 
 UniqueInput Emulator::SwapInput(UniqueInput input) 
 { 
-	if (input != nullptr)
+	if (input)
 	{
-		UniqueInput oldInput( _manager.SwapInput(input.release()) );
+		auto* const oldInput =  _manager.SwapInput(input.release());
 		if (!InitInput())
 			_exitf = true;
 
-		return oldInput;
+		return UniqueInput(oldInput);
 	}
 
 	utility::LOGerr("Setting iInput to nullptr...");
@@ -385,13 +396,13 @@ UniqueInput Emulator::SwapInput(UniqueInput input)
 
 UniqueSound Emulator::SwapSound(UniqueSound sound) 
 { 
-	if (sound != nullptr)
+	if (sound)
 	{
-		UniqueSound oldSound(_manager.SwapSound(sound.release()));
+		auto* const oldSound(_manager.SwapSound(sound.release()));
 		if (!InitInput())
 			_exitf = true;
 
-		return oldSound;
+		return UniqueSound(oldSound);
 	}
 
 	utility::LOGerr("Setting iSound to nullptr...");

@@ -1,3 +1,4 @@
+
 #if 1
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Log.h>
@@ -16,7 +17,9 @@ int main(int argc, char** argv)
 	using std::nothrow;
 	using std::unique_ptr;
 	using std::shared_ptr;
-	using xchip::utility::make_unique; // xchip nothrow version of make_unique
+	// xchip nothrow version of make_unique
+	using xchip::utility::make_unique;
+	
 
 	if (argc < 2)
 	{
@@ -68,7 +71,6 @@ int main(int argc, char** argv)
 	// but do not delete raw pointers from emulator
 	// delete rend; <- don't do it
 
-	
 	// if you want to own the object again
 	// recover it by swap
 	auto oldRend = emulator.SwapRender(nullptr);

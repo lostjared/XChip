@@ -31,13 +31,13 @@ inline void CLS() noexcept
 }
 
 
-static void LOG(const std::string& msg)
+inline void LOG(const std::string& msg)
 {
 	std::cout << msg << std::endl;
 }
 
 
-static void LOGerr(const std::string& msg)
+inline void LOGerr(const std::string& msg)
 {
 	std::cerr << msg << std::endl;
 }
