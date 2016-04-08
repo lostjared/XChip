@@ -85,7 +85,7 @@ void SdlSound::Dispose() noexcept
 
 	if (_specs)
 	{
-		free(_specs);
+		delete[] _specs;
 		_specs = nullptr;
 	}
 
