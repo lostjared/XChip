@@ -8,7 +8,7 @@
 namespace xchip {
 using namespace utility;
 
-	
+extern SDL_Event g_sdlEvent;
 
 SdlInput::SdlInput()
 	: SdlMedia(System::Input),
@@ -73,16 +73,16 @@ void SdlInput::Dispose() noexcept
 bool SdlInput::UpdateKeys()
 {
 	SdlMedia::UpdateEvents();
-	if (GetEvent().type == SDL_KEYDOWN)
+	if (g_sdlEvent.type == SDL_KEYDOWN)
 	{
-		if (GetEvent().key.keysym.sym == SDLK_RETURN)
+		if (g_sdlEvent.key.keysym.scancode == SDL_SCANCODE_RETURN)
 		{
 			if (_resetClbk) 
 				_resetClbk(_resetClbkArg);
 		}
 
 
-		else if (GetEvent().key.keysym.sym == SDLK_ESCAPE)
+		else if (g_sdlEvent.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
 		{
 			if (_escapeClbk) 
 				_escapeClbk(_escapeClbkArg);
@@ -106,7 +106,7 @@ Key SdlInput::GetPressedKey() const
 {
 	for (const auto& keyPair : _keyPairs)
 	{
-		if (_keyboardState[keyPair.second] == SDL_TRUE)
+		if (_keyboardState[keyPair.second])
 			return keyPair.first;
 	}
 
@@ -128,7 +128,7 @@ Key SdlInput::WaitKeyPress()
 			{
 				for (auto itr = begin; itr != end; ++itr)
 				{
-					if (_keyboardState[itr->second] == SDL_TRUE)
+					if (_keyboardState[itr->second])
 						return itr->first;
 				}
 			}

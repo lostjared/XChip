@@ -1,4 +1,3 @@
-
 #if 1
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Log.h>
@@ -13,8 +12,9 @@ int main(int argc, char** argv)
 	using std::nothrow;
 	using std::unique_ptr;
 	using std::shared_ptr;
+	using xchip::utility::make_unique; // xchip nothrow version of make_unique
 
-	if (argc < 2)
+	if (argc < 1)
 	{
 		utility::LOGerr("No games");
 		return EXIT_FAILURE;
@@ -31,12 +31,14 @@ int main(int argc, char** argv)
 	});
 #endif
 
-	UniqueRender render(new(nothrow) SdlRender());
-	UniqueInput input(new(nothrow) SdlInput());
-	UniqueSound sound(new(nothrow) SdlSound());
+
+	
+
+	UniqueRender render = make_unique<SdlRender>();
+	UniqueInput input = make_unique<SdlInput>();
+	UniqueSound sound = make_unique<SdlSound>();
 
 	Emulator emulator;
-
 
 	// you must give the ownerty of the media interfaces
 	// to the emulator, it won't accept raw pointers
@@ -49,15 +51,17 @@ int main(int argc, char** argv)
 
 	// we can use our media interfaces from the emulator
 	auto rend = emulator.GetRender();
-	rend->IsInitialized(); // ... 
+	if(rend->IsInitialized()) { /*... */  }
 	// do whatever you whish from the interface
 
 	// wan't to do something specific to the child class ? dynamic cast it
 	auto sdlRender = dynamic_cast<SdlRender*>(rend);
-	//sdlRender->whatever...
+	if (sdlRender != nullptr) {
+		//sdlRender->whatever...
+	}
 
 	// but do not delete raw pointers from emulator
-	// delete rend; <-- NOO
+	// delete rend; <- don't do it
 
 	
 	// if you want to own the object again
@@ -77,7 +81,7 @@ int main(int argc, char** argv)
 
 
 	// by here the oldRend is now nullptr, lets reset it
-	oldRend.reset(new(nothrow) SdlRender);
+	oldRend = make_unique<SdlRender>();
 
 	
 	// if the the new Render we inserted didn't initialized well or you seted a nullptr

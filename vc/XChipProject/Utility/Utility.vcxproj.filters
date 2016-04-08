@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Assert.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -30,12 +27,12 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Alloc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\XChip\Utility\Alloc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XChip\src\XChip\Utility\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

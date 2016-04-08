@@ -4,8 +4,6 @@ union SDL_Event;
 
 namespace xchip {
 
-
-
 class SdlMedia
 {
 public:
@@ -17,7 +15,6 @@ protected:
 	SdlMedia(const System sys);
 	virtual ~SdlMedia();
 
-	static const SDL_Event& GetEvent();
 	bool InitSubSystem();
 	static void UpdateEvents();
 

@@ -1,5 +1,5 @@
-#ifndef LOG_H
-#define LOG_H
+#ifndef _XCHIP_UTILITY_LOG_H
+#define _XCHIP_UTILITY_LOG_H
 #include <iostream>
 #include <string>
 #include "Traits.h"
@@ -11,7 +11,7 @@ namespace literals {
 		inline std::string operator"" _s(const char* str, std::size_t) { return std::string(str); }
 		template<class N>
 		enable_if_t<std::is_arithmetic<N>::value, std::string>
-			operator+(std::string&& str, N val)
+			operator+(std::string&& str, const N val) noexcept 
 		{
 			return std::move(str += std::to_string(val));
 		}
@@ -20,23 +20,23 @@ namespace literals {
 
 
 
-inline void CLS()
+inline void CLS() noexcept
 {
 	#ifdef _WIN32
-		//	std::system("cls");
-	#elif __linux__
+			std::system("cls");
+	#elif __linux__ | __CYGWIN32__
 			std::system("clear");
 	#endif
 }
 
 
-inline void LOG(const std::string& msg)
+static void LOG(const std::string& msg)
 {
 	std::cout << msg << std::endl;
 }
 
 
-inline void LOGerr(const std::string& msg)
+static void LOGerr(const std::string& msg)
 {
 	std::cerr << msg << std::endl;
 }

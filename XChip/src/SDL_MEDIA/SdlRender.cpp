@@ -7,6 +7,7 @@
 
 namespace xchip {
 
+extern SDL_Event g_sdlEvent;
 
 SdlRender::SdlRender()
 	: SdlMedia(System::Render)
@@ -87,9 +88,9 @@ bool SdlRender::UpdateEvents()
 {
 	SdlMedia::UpdateEvents();
 	
-	if (GetEvent().type == SDL_WINDOWEVENT)
+	if (g_sdlEvent.type == SDL_WINDOWEVENT)
 	{
-		switch (GetEvent().window.event)
+		switch (g_sdlEvent.window.event)
 		{
 			case SDL_WINDOWEVENT_RESIZED: /* fall */
 			case SDL_WINDOWEVENT_RESTORED: 

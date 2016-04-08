@@ -1,5 +1,5 @@
-#ifndef _XCHIP_TRAITS_H_
-#define _XCHIP_TRAITS_H_
+#ifndef _XCHIP_UTILITY_TRAITS_H_
+#define _XCHIP_UTILITY_TRAITS_H_
 #include <type_traits>
 #include <utility>
 
@@ -23,7 +23,7 @@ underlying_type_t<T> toUType(T t) noexcept
 
 
 template<class T, const size_t sz>
-size_t static_arr_size(const T(&)[sz])
+size_t static_arr_size(const T(&)[sz]) noexcept
 {
 	return sz;
 }
@@ -44,10 +44,9 @@ private:
 
 
 template<class T>
-ScopeExit<T> make_scope_exit(T&& t) {
+ScopeExit<T> make_scope_exit(T&& t) noexcept {
 	return ScopeExit<T>(std::forward<T>(t));
 }
-
 
 
 }}

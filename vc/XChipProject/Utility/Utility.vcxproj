@@ -130,14 +130,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Alloc.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Assert.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Log.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Memory.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Timer.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Traits.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\XChip\Utility\Alloc.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\XChip\Utility\Timer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

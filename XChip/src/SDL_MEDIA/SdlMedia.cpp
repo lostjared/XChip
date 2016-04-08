@@ -7,7 +7,7 @@
 
 namespace xchip {
 
-SDL_Event s_events;
+SDL_Event g_sdlEvent;
 int SdlMedia::s_nSystems[3] = { 0, 0, 0 };
 bool SdlMedia::s_SubSystems[3] = { false, false, false };
 
@@ -48,12 +48,6 @@ SdlMedia::~SdlMedia()
 		SDL_QuitSubSystem(flags);
 		s_SubSystems[toUType(_sys)] = false;
 	}
-}
-
-
-const SDL_Event& SdlMedia::GetEvent()
-{
-	return s_events;
 }
 
 
@@ -103,9 +97,9 @@ void SdlMedia::UpdateEvents()
 {
 	using namespace utility;
 	using namespace utility::literals;
-	static Timer eventTimer (30_milli);
+	static Timer eventTimer (450_hz);
 	if (eventTimer.Finished()) {
-		SDL_PollEvent(&s_events);
+		SDL_PollEvent(&g_sdlEvent);
 		eventTimer.Start();
 	}
 }

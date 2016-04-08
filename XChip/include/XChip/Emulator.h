@@ -1,9 +1,10 @@
 #ifndef _XCHIP_EMULATOR_H_
 #define _XCHIP_EMULATOR_H_
-#include <memory>
 #include <string>
+#include <XChip/Utility/Memory.h>
 #include "CpuManager.h"
 #include "Utility/Timer.h"
+
 
 
 
