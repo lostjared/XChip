@@ -1,5 +1,4 @@
 #include <cstring>
-#include <algorithm>
 #include <XChip/CpuManager.h>
 #include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Log.h>
@@ -136,8 +135,8 @@ bool CpuManager::SetGfx(const std::size_t size)
 
 void CpuManager::SetFont(const uint8_t* font, const size_t size)
 {
-	if(_cpu.memory)
-		std::copy_n(font, size, _cpu.memory);
+	if (_cpu.memory)
+		memcpy(_cpu.memory, font, size);
 }
 
 
@@ -340,7 +339,7 @@ static bool __alloc_arr(T*& arr, const size_t size) noexcept
 	if (!arr)
 		return false;
 
-	std::fill_n(arr, size, 0);
+	arr_zero(arr);
 	return true;
 }
 

@@ -20,15 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlInput.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlMedia.cpp" />
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlRender.cpp" />
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlSound.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlInput.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlMedia.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlRender.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlSound.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlSystem.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}</ProjectGuid>

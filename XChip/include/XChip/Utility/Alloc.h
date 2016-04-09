@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <cstddef>
 #include <cstring>
-#include <cstdlib>
 #include "BaseTraits.h"
 
 
@@ -12,17 +11,13 @@ namespace xchip { namespace utility {
 
 
 
-extern void* alloc_arr(const std::size_t bytes) noexcept;
+extern void* alloc_arr(const size_t bytes) noexcept;
 
 
-extern void* realloc_arr(void* from, const std::size_t bytes) noexcept;
+extern void* realloc_arr(void* from, const size_t bytes) noexcept;
 
 
-inline void free_arr(const void* block) noexcept
-{
-	if (block != nullptr)
-		std::free(((std::size_t*)block) - 1);
-}
+extern void free_arr(const void* block) noexcept;
  
 
 
@@ -62,10 +57,9 @@ constexpr std::size_t arr_size(const T(&)[sz]) noexcept
 
 
 
-template<class T>
-void arr_zero(T* arr) noexcept
+inline void arr_zero(void* arr) noexcept
 {
-	memset(arr, 0, arr_size((uint8_t*)arr));
+	memset(arr, 0, arr_size(reinterpret_cast<uint8_t*>(arr)));
 }
 
 

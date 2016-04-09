@@ -18,13 +18,13 @@
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlMedia.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlSound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XChip\src\SDL_MEDIA\SdlSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,13 +32,13 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlMedia.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlRender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlSound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\SDL_MEDIA\SdlSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
