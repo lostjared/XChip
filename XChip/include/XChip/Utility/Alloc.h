@@ -2,11 +2,13 @@
 #define _XCHIP_UTILITY_ALLOC_H_
 #include <cstdint>
 #include <cstddef>
+#include <cstdlib>
 #include <algorithm>
 
 
  
 namespace xchip { namespace utility {
+
 
 
 extern void* alloc_arr(const std::size_t size) noexcept;
@@ -54,7 +56,6 @@ void arr_zero(T* arr) noexcept
 	if (arr != nullptr)
 		std::fill_n(arr, get_arr_size(arr), 0);
 }
-
 
 
 

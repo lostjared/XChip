@@ -88,6 +88,8 @@ bool CpuManager::SetStack(const std::size_t size)
 
 
 
+
+
 bool CpuManager::ResizeMemory(const std::size_t size)
 {
 	if ( !realloc_cpu_arr(_cpu.memory, size)) 
@@ -100,6 +102,11 @@ bool CpuManager::ResizeMemory(const std::size_t size)
 }
 
 
+
+
+
+
+
 bool CpuManager::SetGfx(const std::size_t size)
 {
 	if ( !alloc_cpu_arr(_cpu.gfx, size) )
@@ -110,6 +117,8 @@ bool CpuManager::SetGfx(const std::size_t size)
 
 	return true;
 }
+
+
 
 void CpuManager::SetFont(const uint8_t* font, const size_t size)
 {

@@ -166,26 +166,6 @@ void Emulator::UpdateSystems()
 
 
 
-void Emulator::ExecuteInstr()
-{
-	Cpu& chip = _manager.GetCpu();
-	chip.opcode = (chip.memory[chip.pc] << 8) | chip.memory[chip.pc+1];
-	chip.pc += 2;
-	instructions::instrTable[(chip.opcode & 0xf000) >> 12](&chip);
-	_instrf = false;
-}
-
-
-
-
-
-void Emulator::Draw()
-{
-	_manager.GetRender()->DrawBuffer();
-	_drawf = false;
-}
-
-
 
 void Emulator::CleanFlags()
 {

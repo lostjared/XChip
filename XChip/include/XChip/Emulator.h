@@ -1,6 +1,7 @@
 #ifndef _XCHIP_EMULATOR_H_
 #define _XCHIP_EMULATOR_H_
 #include <string>
+#include <XChip/Interfaces/iRender.h>
 #include <XChip/Utility/Memory.h>
 #include "CpuManager.h"
 #include "Utility/Timer.h"
@@ -9,7 +10,7 @@
 
  
 namespace xchip {
-
+namespace instructions { extern void execute_instruction(Cpu*); }
 using UniqueRender = std::unique_ptr<iRender>;
 using UniqueInput = std::unique_ptr<iInput>;
 using UniqueSound = std::unique_ptr<iSound>;
@@ -95,8 +96,17 @@ inline iInput* Emulator::GetInput() { return _manager.GetInput(); }
 inline iSound* Emulator::GetSound() { return _manager.GetSound(); }
 
 
+inline void Emulator::ExecuteInstr()  
+{ 
+	instructions::execute_instruction(&_manager.GetCpu()); 
+	_instrf = false; 
+}
 
-
+inline void Emulator::Draw() 
+{
+	_manager.GetRender()->DrawBuffer();
+	_drawf = false;
+}
 
 
 

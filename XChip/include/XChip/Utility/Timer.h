@@ -68,10 +68,9 @@ inline bool Timer::Finished() const
 }
 
 
-
-
 inline void Timer::SetTargetTime(const Micro& target) { m_target = target; }
 inline void Timer::Start() { m_startPoint = std::chrono::steady_clock::now(); }
+
 
 inline void Timer::Halt(const Timer::Nano& nano)
 {

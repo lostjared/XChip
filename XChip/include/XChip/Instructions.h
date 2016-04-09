@@ -9,6 +9,7 @@ namespace xchip { namespace instructions {
 using InstrTable = void(*)(Cpu*);
 extern InstrTable instrTable[16];
 
+extern void execute_instruction(Cpu*);
 extern void op_0xxx(Cpu*); // 3 instructions switch
 extern void op_1NNN(Cpu*); // jumps to address NNN
 extern void op_2NNN(Cpu*); // calls subroutine at NNN

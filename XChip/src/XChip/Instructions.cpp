@@ -7,12 +7,14 @@
 #include <XChip/Utility/Log.h>
 
 #define _XCHIP_INSTRUCTIONS_STACK_CHECK 1
-
+#define _XCHIP_CHECK_TABLES_OFFSET 1
  
+
+
 namespace xchip { namespace instructions {
 
 
-
+#define OPMSN ((_cpu->opcode & 0xf000) >> 12)
 #define X   ((_cpu->opcode & 0x0f00) >> 8)
 #define Y   ((_cpu->opcode & 0x00f0) >> 4)
 #define N   (_cpu->opcode & 0x000f)
@@ -21,7 +23,6 @@ namespace xchip { namespace instructions {
 #define VF  (_cpu->registers [0xF])
 #define VX  (_cpu->registers [X])
 #define VY  (_cpu->registers [Y])
-
 
 
 InstrTable instrTable[16] =
@@ -55,6 +56,24 @@ void unknown_opcode(Cpu* const _cpu)
 	set_cpu_error_flag(_cpu);
 }
 
+
+
+
+void execute_instruction(Cpu* const _cpu)
+{
+	_cpu->opcode = (_cpu->memory[_cpu->pc] << 8) | _cpu->memory[_cpu->pc + 1];
+
+#if _XCHIP_CHECK_TABLES_OFFSET
+	if (OPMSN >= utility::static_arr_size(instrTable)) {
+		utility::LOGerr("Instruction Table overflow...");
+		set_cpu_error_flag(_cpu);
+		return;
+	}
+#endif
+
+	_cpu->pc += 2;
+	instrTable[OPMSN](_cpu);
+}
 
 
 
@@ -176,6 +195,15 @@ static InstrTable op_8XYx_Table[16] =
 
 void op_8XYx(Cpu* const _cpu)
 {
+#if _XCHIP_CHECK_TABLES_OFFSET
+	if (static_cast<size_t>(N) >= utility::static_arr_size(op_8XYx_Table)) {
+		utility::LOGerr("table op_8XYx_Table overflow!");
+		set_cpu_error_flag(_cpu);
+		return;
+	}
+#endif
+
+
 	// call it
 	op_8XYx_Table[N](_cpu);
 
@@ -308,6 +336,10 @@ void op_8XYE(Cpu *const _cpu)
 
 
 
+
+
+
+
 // 9XY0: skips the next instruction if VX doesn't equal VY
 void op_9XY0(Cpu *const _cpu)
 {
@@ -398,6 +430,10 @@ void op_EXxx(Cpu *const _cpu)
 
 
 
+
+
+
+
 /******** OP_FXxx START *********/
 
 // FXxxx subtable start
@@ -414,6 +450,15 @@ static InstrTable op_FXxx_Table[] =
 
 void op_FXxx(Cpu *const _cpu) // 9 instructions.
 {
+#if _XCHIP_CHECK_TABLES_OFFSET
+	if (static_cast<size_t>(N) >= utility::static_arr_size(op_FXxx_Table)) {
+		utility::LOGerr("Table op_FXxx_Table overflow...");
+		set_cpu_error_flag(_cpu);
+		return;
+	}
+#endif
+
+
 	// call it
 	op_FXxx_Table[N](_cpu);
 }
@@ -520,6 +565,6 @@ void op_FX33(Cpu *const _cpu)
 
 
 
-/******** OP_FXxx START *********/
+/******** OP_FXxx END *********/
 
 }}
