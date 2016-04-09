@@ -1,7 +1,6 @@
 #ifndef _XCHIP_UTILITY_ALLOC_H_
 #define _XCHIP_UTILITY_ALLOC_H_
-#include <cstdint>
-#include <cstddef>
+#include "StdintDef.h"
 #include <cstring>
 #include "BaseTraits.h"
 
@@ -24,10 +23,10 @@ extern void free_arr(const void* block) noexcept;
 
 template<class T>
 enable_if_t<is_pointer<T>::value && !is_same<T,uint8_t*>::value,
-std::size_t> arr_size(const T arr) noexcept
+size_t> arr_size(const T arr) noexcept
 {
 	if (arr == nullptr) return 0;
-	const std::size_t* const size = (std::size_t*) arr;
+	const size_t* const size = (size_t*) arr;
 	return *(size - 1) / sizeof(T);
 }
 
@@ -36,10 +35,10 @@ std::size_t> arr_size(const T arr) noexcept
 
 template<class T>
 enable_if_t<is_pointer<T>::value && is_same<T,uint8_t*>::value,
-std::size_t> arr_size(const T arr) noexcept
+size_t> arr_size(const T arr) noexcept
 {
 	if (arr == nullptr) return 0;
-	const std::size_t* const size = (std::size_t*) arr;
+	const size_t* const size = (size_t*) arr;
 	return *(size - 1);
 }
 
@@ -47,8 +46,8 @@ std::size_t> arr_size(const T arr) noexcept
 
 
 
-template<class T, const std::size_t sz>
-constexpr std::size_t arr_size(const T(&)[sz]) noexcept
+template<class T, const size_t sz>
+constexpr size_t arr_size(const T(&)[sz]) noexcept
 {
 	return sz;
 }

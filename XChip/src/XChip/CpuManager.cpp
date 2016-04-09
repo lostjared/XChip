@@ -16,9 +16,10 @@ template<class T>
 static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept;
 template<class T>
 static void free_cpu_arr(T*& arr) noexcept;
-
- 
-
+template<class T>
+static size_t get_error_flag_offs(const T*const memory) noexcept;
+template<class T>
+void* get_error_flag_addr(T*const memory) noexcept;
 
 
 
@@ -95,11 +96,7 @@ bool CpuManager::SetStack(const std::size_t size)
 
 bool CpuManager::ResizeMemory(const std::size_t size)
 {
-	const auto errorFlagOffs = arr_size(_cpu.memory) - sizeof(void*) - 1;
-	const void* errorFlag = nullptr;
-	if(_cpu.memory[errorFlagOffs-sizeof(uint8_t)] == 0xFF)
-		errorFlag = reinterpret_cast<void*&>(_cpu.memory[errorFlagOffs]);
-	
+	void* const errorFlag = get_error_flag_addr(_cpu.memory);
 
 	if ( !realloc_cpu_arr(_cpu.memory, size)) 
 	{
@@ -116,6 +113,43 @@ bool CpuManager::ResizeMemory(const std::size_t size)
 
 
 
+bool CpuManager::ResizeRegisters(const size_t size)
+{
+	if (!realloc_cpu_arr(_cpu.registers, size))
+	{
+		LOGerr("Cannot reallocate Cpu registers to size: "_s + std::to_string(size));
+		return false;
+	}
+
+	return true;
+}
+
+
+
+
+bool CpuManager::ResizeStack(const size_t size)
+{
+	if (!realloc_cpu_arr(_cpu.stack, size))
+	{
+		LOGerr("Cannot reallocate Cpu stack to size: "_s + std::to_string(size));
+		return false;
+	}
+
+	return true;
+}
+
+
+
+bool CpuManager::ResizeGfx(const size_t size)
+{
+	if (!realloc_cpu_arr(_cpu.gfx, size))
+	{
+		LOGerr("Cannot reallocate Cpu GFX to size: "_s + std::to_string(size));
+		return false;
+	}
+
+	return true;
+}
 
 
 
@@ -171,6 +205,28 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 	LOG("Load Done!");
 	return true;
 }
+
+
+
+
+
+
+
+void CpuManager::PlaceErrorFlag(void* addr)
+{
+	if (!_cpu.memory)
+		return;
+
+	const auto flagOffs = get_error_flag_offs(_cpu.memory);
+	InsertByte(0xFF, flagOffs - sizeof(uint8_t));
+	InsertAddress(addr, flagOffs);
+}
+
+
+
+
+
+
 
 
 
@@ -266,17 +322,19 @@ size_t CpuManager::GetGfxSize() const
 
 
 
-void CpuManager::PlaceErrorFlag(const void* addr)
+
+
+
+
+void CpuManager::SetErrorFlag(Cpu& _cpu, const bool val)
 {
-	const auto offs =  arr_size(_cpu.memory) - sizeof(void*) - 1; 
-	InsertAddress(addr, offs);
-	InsertByte(0xFF, offs-sizeof(uint8_t));
+	if (!_cpu.memory)
+		return;
+
+	const auto flagOffs = get_error_flag_offs(_cpu.memory);
+	if (_cpu.memory[flagOffs - sizeof(uint8_t)] == 0xFF)
+		*reinterpret_cast<bool*&>(_cpu.memory[flagOffs]) = val;
 }
-
-
-
-
-
 
 
 
@@ -354,6 +412,24 @@ static bool __realloc_arr(T*& arr, const size_t size) noexcept
 
 
 
+
+template<class T>
+static size_t get_error_flag_offs(const T*const memory) noexcept
+{
+	return arr_size(memory) - sizeof(uintptr_t) - 1;
+}
+
+
+
+template<class T>
+void* get_error_flag_addr(T*const memory) noexcept
+{
+	const auto flagOffs = get_error_flag_offs(memory);
+	if (memory[flagOffs - sizeof(uint8_t)] == 0xFF)
+		return reinterpret_cast<void*&>(memory[flagOffs]);
+
+	return nullptr;
+}
 
 
 

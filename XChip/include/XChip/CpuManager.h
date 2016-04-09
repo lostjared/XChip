@@ -1,12 +1,10 @@
 #ifndef _XCHIP_CPU_MANAGER_H_
 #define _XCHIP_CPU_MANAGER_H_
-#include <cstddef>
 #include "Cpu.h"
 
 
  
 namespace xchip {
-
 
 
 
@@ -44,13 +42,17 @@ public:
 	bool SetStack(const size_t size);
 	bool SetGfx(const size_t size);
 	bool ResizeMemory(const size_t size);
+	bool ResizeRegisters(const size_t size);
+	bool ResizeStack(const size_t size);
+	bool ResizeGfx(const size_t size);
 	void SetPC(const size_t offset);
 	void SetSP(const size_t offset);
 	void SetFont(const uint8_t* font, const size_t size);
 	bool LoadRom(const char* file, const size_t at);
 	void InsertByte(const uint8_t val, const size_t offset);
-	void InsertAddress(const void* addr, const size_t offset);
-	
+	void InsertAddress(void* addr, const size_t offset);
+	void PlaceErrorFlag(void* addr);
+	void SetErrorFlag(const bool val);
 	void SetRender(iRender* render);
 	void SetInput(iInput* render);
 	void SetSound(iSound* render);
@@ -66,7 +68,7 @@ public:
 	void CleanGfx();
 
 
-	void PlaceErrorFlag(const void* addr);
+	static void SetErrorFlag(Cpu& _cpu, const bool val);
 private:
 	Cpu _cpu;
 
@@ -94,13 +96,19 @@ inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
 inline void CpuManager::SetRender(iRender* render) { _cpu.render = render; }
 inline void CpuManager::SetInput(iInput* input) { _cpu.input = input; }
 inline void CpuManager::SetSound(iSound* sound) { _cpu.sound = sound; }
+inline void CpuManager::SetErrorFlag(const bool val) { SetErrorFlag(_cpu, val); }
 
-
-inline void CpuManager::InsertByte(const uint8_t val, const size_t offset) { _cpu.memory[offset] = val; }
-inline void CpuManager::InsertAddress(const void* addr, const size_t offset) 
-{  
-	reinterpret_cast<const void*&>(_cpu.memory[offset]) = addr; 
+inline void CpuManager::InsertByte(const uint8_t val, const size_t offset) 
+{ 
+	_cpu.memory[offset] = val; 
 }
+
+inline void CpuManager::InsertAddress(void* addr, const size_t offset)  
+{   
+	reinterpret_cast<void*&>(_cpu.memory[offset]) = addr; 
+}
+
+
 
 
 

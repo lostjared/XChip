@@ -36,6 +36,9 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\ScopeExit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\StdintDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\XChip\Utility\Alloc.cpp">

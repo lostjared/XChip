@@ -71,7 +71,7 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	_manager.PlaceErrorFlag(&_exitf);
 
 
-	_manager.ResizeMemory(0x0FFF);
+	_manager.ResizeMemory(0x1FFFF);
 
 	_exitf = false;
 	_initialized = true;

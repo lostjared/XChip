@@ -1,5 +1,5 @@
-#include <sstream>
 #include <algorithm>
+#include <XChip/CpuManager.h>
 #include <XChip/Instructions.h>
 #include <XChip/Interfaces/iInput.h>
 #include <XChip/Interfaces/iSound.h>
@@ -31,15 +31,6 @@ InstrTable instrTable[16] =
 };
 
 
-void set_cpu_error_flag(Cpu* const _cpu)
-{
-	/* write true to our error flag, IF the element behind  is 0xFF */
-	const size_t offs =
-		arr_size((uint8_t*)_cpu->memory) - sizeof(bool*) - 1;
-	if (_cpu->memory[offs - sizeof(uint8_t)] == 0xFF)
-		*reinterpret_cast<bool*&>(_cpu->memory[offs]) = true;
-}
-
 
 
 void unknown_opcode(Cpu* const _cpu)
@@ -48,7 +39,7 @@ void unknown_opcode(Cpu* const _cpu)
 	using namespace utility::literals;
 	LOGerr("Unknown Opcode: ", Endl::No);
 	LOGerr(_cpu->opcode, Fmt::Hex);
-	set_cpu_error_flag(_cpu);
+	CpuManager::SetErrorFlag(*_cpu, true);
 }
 
 
@@ -59,10 +50,10 @@ void execute_instruction(Cpu* const _cpu)
 	_cpu->opcode =  (_cpu->memory[_cpu->pc] << 8) | _cpu->memory[_cpu->pc + 1];
 
 #if _XCHIP_INSTR_DEBUG_
-		if (static_cast<size_t>(OPMSN) >= arr_size(instrTable)) {
+		if (static_cast<std::size_t>(OPMSN) >= arr_size(instrTable)) {
 			std::printf("aa\n");
 			utility::LOGerr("Instruction Table Overflow!");
-			set_cpu_error_flag(_cpu);
+			CpuManager::SetErrorFlag(*_cpu, true);
 			return;
 		};
 #endif
@@ -92,7 +83,7 @@ void op_0xxx(Cpu* const _cpu)
 			if ((_cpu->sp - 1) > arr_size(_cpu->stack)) 
 			{
 				utility::LOGerr("op_0xxx: Stack Underflow");
-				set_cpu_error_flag(_cpu);
+				CpuManager::SetErrorFlag(*_cpu, true);
 				return;
 			}
 #endif
@@ -116,11 +107,11 @@ void op_1NNN(Cpu *const _cpu)
 // 2NNN: Calls subroutine at address NNN
 void op_2NNN(Cpu *const _cpu)
 {
-#if _XCHIP_INSTR_DEBUG
+#if _XCHIP_INSTR_DEBUG_
 	if (_cpu->sp >= arr_size(_cpu->stack)) 
 	{
 		utility::LOGerr("op_2NNN: Stack Overflow");
-		set_cpu_error_flag(_cpu);
+		CpuManager::SetErrorFlag(*_cpu, true);
 		return;
 	}
 #endif
@@ -191,10 +182,11 @@ static InstrTable op_8XYx_Table[16] =
 
 void op_8XYx(Cpu* const _cpu)
 {
+
 #if _XCHIP_INSTR_DEBUG_
-	if (static_cast<size_t>(N) >= arr_size(op_8XYx_Table)) {
+	if (static_cast<std::size_t>(N) >= arr_size(op_8XYx_Table)) {
 		utility::LOGerr("table op_8XYx_Table overflow!");
-		set_cpu_error_flag(_cpu);
+		CpuManager::SetErrorFlag(*_cpu, true);
 		return;
 	}
 #endif
@@ -447,11 +439,11 @@ static InstrTable op_FXxx_Table[] =
 void op_FXxx(Cpu *const _cpu) // 9 instructions.
 {
 #if _XCHIP_INSTR_DEBUG_
-	if (static_cast<size_t>(N) >= arr_size(op_FXxx_Table) ) {
+	if (static_cast<std::size_t>(N) >= arr_size(op_FXxx_Table)) {
 		utility::LOGerr("Table op_FXxx_Table overflow...");
-		set_cpu_error_flag(_cpu);
+		CpuManager::SetErrorFlag(*_cpu, true);
 		return;
-	}
+	};
 #endif
 
 
