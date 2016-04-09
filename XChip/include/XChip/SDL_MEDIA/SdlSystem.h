@@ -1,23 +1,23 @@
-#ifndef _XCHIP_SDLMEDIA_H_
-#define _XCHIP_SDLMEDIA_H_
+#ifndef _XCHIP_SDLSYSTEM_H_
+#define _XCHIP_SDLSYSTEM_H_
 union SDL_Event;
  
 namespace xchip {
 
 
-class SdlMedia
+class SdlSystem
 {
 public:
-	SdlMedia(const SdlMedia&) = delete;
-	SdlMedia& operator=(const SdlMedia&) = delete;
+	SdlSystem(const SdlSystem&) = delete;
+	SdlSystem& operator=(const SdlSystem&) = delete;
 
 protected:
 	enum class System { Render, Input, Sound };
-	SdlMedia(const System sys);
-	virtual ~SdlMedia();
+	SdlSystem(const System sys);
+	virtual ~SdlSystem();
 
 	bool InitSubSystem();
-	static void UpdateEvents();
+	static void PollEvent();
 
 private:
 	const System _sys;

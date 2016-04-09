@@ -80,7 +80,7 @@ inline void Timer::Halt(const Timer::Nano& nano)
 
 #if __linux__ | __CYGWIN32__
 	static timespec _sleep{ 0, 0 };
-	_sleep.tv_nsec = (nano - 65000_nano).count();
+	_sleep.tv_nsec = nano.count();
 	nanosleep(&_sleep, NULL);
 #elif _WIN32 
 	Sleep(static_cast<DWORD>(duration_cast<milliseconds>(nano).count()));

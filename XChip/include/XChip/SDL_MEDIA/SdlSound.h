@@ -3,7 +3,7 @@
  
 #include <cstdint>
 #include <XChip/Interfaces/iSound.h>
-#include "SdlMedia.h"
+#include "SdlSystem.h"
 
 struct SDL_AudioSpec;
 typedef uint32_t SDL_AudioDeviceID;
@@ -11,7 +11,7 @@ typedef uint32_t SDL_AudioDeviceID;
 namespace xchip {
 
 
-class SdlSound final : private SdlMedia, public iSound
+class SdlSound final : private SdlSystem, public iSound
 {
 	static constexpr float defaultFreq = 450;
 public:

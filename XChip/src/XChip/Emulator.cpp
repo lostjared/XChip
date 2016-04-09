@@ -3,9 +3,8 @@
 #include <XChip/Interfaces/iRender.h>
 #include <XChip/Interfaces/iInput.h>
 #include <XChip/Interfaces/iSound.h>
-#include <XChip/Instructions.h>
 #include <XChip/Utility/Log.h>
-#include <XChip/Utility/Alloc.h>
+#include <XChip/Utility/ScopeExit.h>
  
 namespace xchip {
 using utility::literals::operator""_hz;
@@ -68,15 +67,12 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 		return false;
 	}
 
+	// place a error flag addr at the end of cpu's memory
+	_manager.PlaceErrorFlag(&_exitf);
 
-	// little trick:
-	// use the last  ( sizeof(bool*) + sizeof(uint8_t) ) bytes in chip's memory to store a pointer
-	// to our exit flag and the 0xFF value to say that the pointer is available
-	// ( normaly 5 bytes in x86 and 9 bytes in x64).
-	const auto flagOffset = (_manager.GetMemorySize() - sizeof(bool*)) - 1;
-	_manager.InsertAddress(&_exitf, flagOffset);
-	_manager.InsertByte(0xFF, flagOffset - sizeof(uint8_t));
-	
+
+	_manager.ResizeMemory(0x0FFF);
+
 	_exitf = false;
 	_initialized = true;
 	return true;

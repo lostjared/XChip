@@ -1,12 +1,10 @@
 #ifndef _XCHIP_EMULATOR_H_
 #define _XCHIP_EMULATOR_H_
 #include <string>
-#include <XChip/Interfaces/iRender.h>
-#include <XChip/Utility/Memory.h>
 #include "CpuManager.h"
+#include "Interfaces/iRender.h"
+#include "Utility/Memory.h"
 #include "Utility/Timer.h"
-
-
 
  
 namespace xchip {
@@ -39,8 +37,8 @@ public:
 	void UpdateTimers();
 	void UpdateSystems();
 	void ExecuteInstr();
-	void Draw();
 	void CleanFlags();
+	void Draw();
 	void Reset();
 
 	void SetInstrPerSec(const unsigned short value);

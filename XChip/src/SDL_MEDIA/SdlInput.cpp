@@ -1,8 +1,7 @@
 #include <SDL2/SDL_events.h>
 #include <XChip/Utility/Log.h>
-#include <XChip/Utility/Traits.h>
 #include <XChip/SDL_MEDIA/SdlInput.h>
-
+#include <XChip/Utility/ScopeExit.h>
 
  
 namespace xchip {
@@ -11,7 +10,7 @@ using namespace utility;
 extern SDL_Event g_sdlEvent;
 
 SdlInput::SdlInput()
-	: SdlMedia(System::Input),
+	: SdlSystem(System::Input),
 	_keyPairs
 	{
 		{ Key::KEY_0, SDL_SCANCODE_KP_0 },{ Key::KEY_1, SDL_SCANCODE_KP_7 },{ Key::KEY_2, SDL_SCANCODE_KP_8 },
@@ -72,7 +71,7 @@ void SdlInput::Dispose() noexcept
 
 bool SdlInput::UpdateKeys()
 {
-	SdlMedia::UpdateEvents();
+	PollEvent();
 	if (g_sdlEvent.type == SDL_KEYDOWN)
 	{
 		if (g_sdlEvent.key.keysym.scancode == SDL_SCANCODE_RETURN)
@@ -98,7 +97,7 @@ bool SdlInput::UpdateKeys()
 
 bool SdlInput::IsKeyPressed(const Key key) const
 {
-	return _keyboardState[_keyPairs[toUType(key)].second] == SDL_TRUE;
+	return _keyboardState[_keyPairs[static_cast<size_t>(key)].second] == SDL_TRUE;
 }
 
 

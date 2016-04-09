@@ -64,6 +64,9 @@ public:
 	void CleanRegisters();
 	void CleanStack();
 	void CleanGfx();
+
+
+	void PlaceErrorFlag(const void* addr);
 private:
 	Cpu _cpu;
 
@@ -98,10 +101,6 @@ inline void CpuManager::InsertAddress(const void* addr, const size_t offset)
 {  
 	reinterpret_cast<const void*&>(_cpu.memory[offset]) = addr; 
 }
-
-
-
-
 
 
 

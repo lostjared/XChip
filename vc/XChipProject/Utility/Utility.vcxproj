@@ -130,8 +130,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Alloc.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\BaseTraits.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Log.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Memory.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\ScopeExit.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Timer.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Traits.h" />
   </ItemGroup>

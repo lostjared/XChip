@@ -1,23 +1,14 @@
 #ifndef _XCHIP_UTILITY_LOG_H
 #define _XCHIP_UTILITY_LOG_H
 #include <iostream>
+#include <iomanip>
 #include <string>
-#include "Traits.h"
 
- 
 namespace xchip { namespace utility {
 	
 namespace literals {
-		
-	inline std::string operator"" _s(const char* str, std::size_t) { return std::string(str); }
-	template<class N>
-	constexpr enable_if_t<std::is_arithmetic<N>::value, std::string>
-		operator+(std::string&& str, const N val) noexcept 
-	{
-		return std::move(str += std::to_string(val));
-	}
+	inline std::string operator"" _s(const char* str, std::size_t) noexcept { return std::string(str); }
 }
-
 
 
 
@@ -30,18 +21,87 @@ inline void CLS() noexcept
 	#endif
 }
 
-template<class T>
-void LOG(const T& msg)
+
+enum class Endl { Yes, No };
+enum class Fmt { Dec, Hex, Oct };
+
+inline void LOG(const std::string& out) noexcept
 {
-	std::cout << msg << std::endl;
+	std::cout << out << std::endl;
 }
 
 
-template<class T>
-void LOGerr(const T& msg)
+
+inline void LOGerr(const std::string& out) noexcept
 {
-	std::cerr << msg << std::endl;
+	std::cerr << out << std::endl;
 }
+
+
+
+inline void LOG(const std::string& out, Endl endl) noexcept
+{
+	std::cout << out;
+	if (endl == Endl::Yes)
+		std::cout << std::endl;
+}
+
+
+inline void LOGerr(const std::string& out, Endl endl) noexcept
+{
+	std::cerr << out;
+	if (endl == Endl::Yes)
+		std::cerr << std::endl;
+}
+
+
+
+template<class N>
+inline  void LOG(const N number, Fmt ofmt = Fmt::Dec, Endl endl = Endl::Yes) noexcept
+{
+
+	if (ofmt != Fmt::Dec) {
+		const auto oldf = std::cout.setf((ofmt == Fmt::Hex) ? std::ios::hex : std::ios::oct,
+			                             std::ios::basefield);
+
+		std::cout << std::showbase << number;
+		std::cout.setf(oldf);
+	}
+	else {
+		std::cout << number;
+	}
+
+	if (endl == Endl::Yes)
+		std::cout << std::endl;
+}
+
+
+
+
+
+template<class N>
+inline  void LOGerr(const N number, Fmt ofmt = Fmt::Dec, Endl endl = Endl::Yes) noexcept
+{
+	
+	if (ofmt != Fmt::Dec) {
+		const auto oldf = std::cerr.setf((ofmt==Fmt::Hex) ? std::ios::hex : std::ios::oct, 
+			                            std::ios::basefield);
+
+		std::cerr << std::showbase << number;
+		std::cerr.setf(oldf);
+	}
+	else {
+		std::cerr << number;
+	}
+
+	if (endl == Endl::Yes)
+		std::cerr << std::endl;
+}
+
+
+
+
+
 
 
 }}

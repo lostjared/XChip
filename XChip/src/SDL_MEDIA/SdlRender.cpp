@@ -4,13 +4,14 @@
 
 #include <XChip/SDL_MEDIA/SdlRender.h>
 #include <XChip/Utility/Log.h>
- 
+#include <XChip/Utility/ScopeExit.h>
+
 namespace xchip {
 
 extern SDL_Event g_sdlEvent;
 
 SdlRender::SdlRender()
-	: SdlMedia(System::Render)
+	: SdlSystem(System::Render)
 
 {
 	utility::LOG("Creating SdlRenderer object...");
@@ -89,7 +90,7 @@ void SdlRender::Dispose() noexcept
 
 bool SdlRender::UpdateEvents()
 {
-	SdlMedia::UpdateEvents();
+	PollEvent();
 	
 	if (g_sdlEvent.type == SDL_WINDOWEVENT)
 	{

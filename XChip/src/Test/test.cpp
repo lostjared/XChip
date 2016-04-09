@@ -17,9 +17,9 @@ int main(int argc, char** argv)
 	using std::nothrow;
 	using std::unique_ptr;
 	using std::shared_ptr;
-	// xchip nothrow version of make_unique
-	using xchip::utility::make_unique;
+	using xchip::utility::make_unique; // xchip nothrow version of make_unique
 	
+
 
 	if (argc < 2)
 	{
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-   
+
 
 	// pause at exit to output read in WINDOWS
 	// cuz we might not be using cmd to call the program
@@ -129,8 +129,7 @@ int main(int argc, char** argv)
 		if (emulator.GetDrawFlag())
 			emulator.Draw();
 	}
-
-
+	
 
 	return EXIT_SUCCESS;
 }
@@ -148,7 +147,16 @@ int main(int argc, char** argv)
 
 
 
+#if 1
+#include <XChip/Emulator.h>
+#include <XChip/Interfaces.h>
 
+
+
+
+
+
+#endif
 
 
 

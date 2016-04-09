@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <XChip/SDL_MEDIA/SdlMedia.h>
+#include <XChip/SDL_MEDIA/SdlSystem.h>
 #include <XChip/Utility/Timer.h>
 #include <XChip/Utility/Traits.h>
 #include <XChip/Utility/Log.h>
@@ -7,27 +7,35 @@
  
 namespace xchip {
 
-SDL_Event g_sdlEvent;
-int SdlMedia::s_nSystems[3] = { 0, 0, 0 };
-bool SdlMedia::s_SubSystems[3] = { false, false, false };
+template<class T>
+constexpr size_t toSizeT(const T x) noexcept {
+	return static_cast<size_t>(x);
+}
 
-SdlMedia::SdlMedia(const System sys)
+
+SDL_Event g_sdlEvent;
+int SdlSystem::s_nSystems[3] = { 0, 0, 0 };
+bool SdlSystem::s_SubSystems[3] = { false, false, false };
+
+
+
+SdlSystem::SdlSystem(const System sys)
 	: _sys(sys)
 {
-	++s_nSystems[utility::toUType(_sys)];
+	++s_nSystems[toSizeT(_sys)];
 }
 
 
 
-SdlMedia::~SdlMedia()
+SdlSystem::~SdlSystem()
 {
 	using namespace utility;
-	--s_nSystems[toUType(_sys)];
+	--s_nSystems[toSizeT(_sys)];
 	
 	// if this is the last instance of this System (_sys)
 	// and Sdl Subsystem of (_sys) is On, then Close it
-	if (!s_nSystems[toUType(_sys)]
-		&& s_SubSystems[toUType(_sys)])
+	if (!s_nSystems[toSizeT(_sys)]
+		&& s_SubSystems[toSizeT(_sys)])
 	{
 		const Uint32 flags = [](const System sys) -> Uint32
 		{
@@ -48,13 +56,13 @@ SdlMedia::~SdlMedia()
 		}(_sys);
 		
 		SDL_QuitSubSystem(flags);
-		s_SubSystems[toUType(_sys)] = false;
+		s_SubSystems[toSizeT(_sys)] = false;
 	}
 }
 
 
 
-bool SdlMedia::InitSubSystem()
+bool SdlSystem::InitSubSystem()
 {
 	using namespace utility;
 	using namespace utility::literals;
@@ -62,7 +70,7 @@ bool SdlMedia::InitSubSystem()
 
 	// if the SDL Subsystem of (_sys) is off
 	// then initialize it
-	if( !s_SubSystems[toUType(_sys)] )
+	if( !s_SubSystems[toSizeT(_sys)] )
 	{
 		const Uint32 flags = [](const System sys)  -> Uint32
 		{
@@ -88,14 +96,14 @@ bool SdlMedia::InitSubSystem()
 			return false;
 		}
 
-		s_SubSystems[toUType(_sys)] = true;
+		s_SubSystems[toSizeT(_sys)] = true;
 	}
 	
 	return true;
 }
 
 
-void SdlMedia::UpdateEvents()
+void SdlSystem::PollEvent()
 {
 	using namespace utility;
 	using namespace utility::literals;

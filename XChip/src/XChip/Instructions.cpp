@@ -6,15 +6,12 @@
 #include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Log.h>
 
-#define _XCHIP_INSTRUCTIONS_STACK_CHECK 1
-#define _XCHIP_CHECK_TABLES_OFFSET 1
- 
-
+#define _XCHIP_INSTR_DEBUG_ 1
 
 namespace xchip { namespace instructions {
+using utility::arr_size;
 
-
-#define OPMSN ((_cpu->opcode & 0xf000) >> 12)
+#define OPMSN ((_cpu->opcode & 0xf000) >> 12) // opcode most significant nibble
 #define X   ((_cpu->opcode & 0x0f00) >> 8)
 #define Y   ((_cpu->opcode & 0x00f0) >> 4)
 #define N   (_cpu->opcode & 0x000f)
@@ -36,10 +33,9 @@ InstrTable instrTable[16] =
 
 void set_cpu_error_flag(Cpu* const _cpu)
 {
-	using utility::get_arr_size;
 	/* write true to our error flag, IF the element behind  is 0xFF */
 	const size_t offs =
-		get_arr_size(reinterpret_cast<uint8_t*>(_cpu->memory)) - sizeof(bool*) - 1;
+		arr_size((uint8_t*)_cpu->memory) - sizeof(bool*) - 1;
 	if (_cpu->memory[offs - sizeof(uint8_t)] == 0xFF)
 		*reinterpret_cast<bool*&>(_cpu->memory[offs]) = true;
 }
@@ -48,11 +44,10 @@ void set_cpu_error_flag(Cpu* const _cpu)
 
 void unknown_opcode(Cpu* const _cpu)
 {
+	using namespace utility;
 	using namespace utility::literals;
-	using utility::LOGerr;
-	std::stringstream x;
-	x << std::hex << _cpu->opcode;
-	LOGerr("Unkown Opcode: $"_s + x.str());
+	LOGerr("Unknown Opcode: ", Endl::No);
+	LOGerr(_cpu->opcode, Fmt::Hex);
 	set_cpu_error_flag(_cpu);
 }
 
@@ -61,14 +56,15 @@ void unknown_opcode(Cpu* const _cpu)
 
 void execute_instruction(Cpu* const _cpu)
 {
-	_cpu->opcode = (_cpu->memory[_cpu->pc] << 8) | _cpu->memory[_cpu->pc + 1];
+	_cpu->opcode =  (_cpu->memory[_cpu->pc] << 8) | _cpu->memory[_cpu->pc + 1];
 
-#if _XCHIP_CHECK_TABLES_OFFSET
-	if (OPMSN >= utility::static_arr_size(instrTable)) {
-		utility::LOGerr("Instruction Table overflow...");
-		set_cpu_error_flag(_cpu);
-		return;
-	}
+#if _XCHIP_INSTR_DEBUG_
+		if (static_cast<size_t>(OPMSN) >= arr_size(instrTable)) {
+			std::printf("aa\n");
+			utility::LOGerr("Instruction Table Overflow!");
+			set_cpu_error_flag(_cpu);
+			return;
+		};
 #endif
 
 	_cpu->pc += 2;
@@ -87,13 +83,13 @@ void op_0xxx(Cpu* const _cpu)
 			break;
 
 		case 0x00E0: // clear screen
-			std::fill_n(_cpu->gfx, utility::get_arr_size(_cpu->gfx), 0);
+			std::fill_n(_cpu->gfx, arr_size(_cpu->gfx), 0);
 			break;
 
 		case 0x00EE: // return from a subroutine ( unwind stack )
 
-#if _XCHIP_INSTRUCTIONS_STACK_CHECK
-			if ((_cpu->sp - 1) > utility::get_arr_size(_cpu->stack)) 
+#if _XCHIP_INSTR_DEBUG_
+			if ((_cpu->sp - 1) > arr_size(_cpu->stack)) 
 			{
 				utility::LOGerr("op_0xxx: Stack Underflow");
 				set_cpu_error_flag(_cpu);
@@ -120,8 +116,8 @@ void op_1NNN(Cpu *const _cpu)
 // 2NNN: Calls subroutine at address NNN
 void op_2NNN(Cpu *const _cpu)
 {
-#if _XCHIP_INSTRUCTIONS_STACK_CHECK
-	if (_cpu->sp >= utility::get_arr_size(_cpu->stack)) 
+#if _XCHIP_INSTR_DEBUG
+	if (_cpu->sp >= arr_size(_cpu->stack)) 
 	{
 		utility::LOGerr("op_2NNN: Stack Overflow");
 		set_cpu_error_flag(_cpu);
@@ -195,8 +191,8 @@ static InstrTable op_8XYx_Table[16] =
 
 void op_8XYx(Cpu* const _cpu)
 {
-#if _XCHIP_CHECK_TABLES_OFFSET
-	if (static_cast<size_t>(N) >= utility::static_arr_size(op_8XYx_Table)) {
+#if _XCHIP_INSTR_DEBUG_
+	if (static_cast<size_t>(N) >= arr_size(op_8XYx_Table)) {
 		utility::LOGerr("table op_8XYx_Table overflow!");
 		set_cpu_error_flag(_cpu);
 		return;
@@ -450,8 +446,8 @@ static InstrTable op_FXxx_Table[] =
 
 void op_FXxx(Cpu *const _cpu) // 9 instructions.
 {
-#if _XCHIP_CHECK_TABLES_OFFSET
-	if (static_cast<size_t>(N) >= utility::static_arr_size(op_FXxx_Table)) {
+#if _XCHIP_INSTR_DEBUG_
+	if (static_cast<size_t>(N) >= arr_size(op_FXxx_Table) ) {
 		utility::LOGerr("Table op_FXxx_Table overflow...");
 		set_cpu_error_flag(_cpu);
 		return;

@@ -6,7 +6,7 @@
 #include <XChip/SDL_MEDIA/SdlSound.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Timer.h>
-
+#include <XChip/Utility/ScopeExit.h>
  
 
 namespace xchip {
@@ -21,7 +21,7 @@ inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * le
 
 
 SdlSound::SdlSound() noexcept
-	:  SdlMedia(System::Sound)
+	:  SdlSystem(System::Sound)
 {
 	utility::LOG("Creating SdlSound object...");
 }
