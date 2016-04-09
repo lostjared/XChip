@@ -1,11 +1,11 @@
 #include <XChip/Emulator.h>
+#include <XChip/Interfaces.h>
 #include <XChip/Fonts.h>
-#include <XChip/Interfaces/iRender.h>
-#include <XChip/Interfaces/iInput.h>
-#include <XChip/Interfaces/iSound.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
- 
+#include <XChip/Utility/Assert.h>
+
+
 namespace xchip {
 using utility::literals::operator""_hz;
 
@@ -154,6 +154,11 @@ void Emulator::UpdateTimers()
  
 void Emulator::UpdateSystems()
 {
+	ASSERT_MSG(_manager.GetRender() != nullptr,
+		"Emulator::UpdateSystems: null render");
+	ASSERT_MSG(_manager.GetInput() != nullptr,
+		"Emulator::UpdateSystems: null input");
+
 	_manager.GetRender()->UpdateEvents();
 	_manager.GetInput()->UpdateKeys();
 	this->UpdateTimers();
@@ -174,6 +179,9 @@ void Emulator::CleanFlags()
 
 void Emulator::Reset()
 {
+	ASSERT_MSG(_manager.GetSound() != nullptr,
+		"Emulator::Reset: null sound");
+
 	if(_manager.GetSound()->IsPlaying())
 		_manager.GetSound()->Stop();
 

@@ -54,8 +54,8 @@ public:
 	void PlaceErrorFlag(void* addr);
 	void SetErrorFlag(const bool val);
 	void SetRender(iRender* render);
-	void SetInput(iInput* render);
-	void SetSound(iSound* render);
+	void SetInput(iInput* input);
+	void SetSound(iSound* sound);
 
 	iRender* SwapRender(iRender* render);
 	iInput* SwapInput(iInput* input);

@@ -5,8 +5,7 @@
 #include <XChip/Interfaces/iSound.h>
 #include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Log.h>
-
-#define _XCHIP_INSTR_DEBUG_ 1
+#include <XChip/Utility/Assert.h>
 
 namespace xchip { namespace instructions {
 using utility::arr_size;
@@ -45,21 +44,14 @@ void unknown_opcode(Cpu* const _cpu)
 
 
 
-void execute_instruction(Cpu* const _cpu)
+void execute_instruction(Cpu& _cpu)
 {
-	_cpu->opcode =  (_cpu->memory[_cpu->pc] << 8) | _cpu->memory[_cpu->pc + 1];
-
-#if _XCHIP_INSTR_DEBUG_
-		if (static_cast<std::size_t>(OPMSN) >= arr_size(instrTable)) {
-			std::printf("aa\n");
-			utility::LOGerr("Instruction Table Overflow!");
-			CpuManager::SetErrorFlag(*_cpu, true);
-			return;
-		};
-#endif
-
-	_cpu->pc += 2;
-	instrTable[OPMSN](_cpu);
+	_cpu.opcode =  (_cpu.memory[_cpu.pc] << 8) | _cpu.memory[_cpu.pc + 1];
+	_cpu.pc += 2;
+	const auto opmsn = static_cast<size_t>((_cpu.opcode & 0xf000) >> 12);
+	ASSERT_MSG(opmsn < arr_size(instrTable), "Instruction Table Overflow!");
+	
+	instrTable[opmsn](&_cpu);
 }
 
 
@@ -78,15 +70,8 @@ void op_0xxx(Cpu* const _cpu)
 			break;
 
 		case 0x00EE: // return from a subroutine ( unwind stack )
-
-#if _XCHIP_INSTR_DEBUG_
-			if ((_cpu->sp - 1) > arr_size(_cpu->stack)) 
-			{
-				utility::LOGerr("op_0xxx: Stack Underflow");
-				CpuManager::SetErrorFlag(*_cpu, true);
-				return;
-			}
-#endif
+			ASSERT_MSG((_cpu->sp - 1) < arr_size(_cpu->stack),
+				"op_00EE: Stack Underflow");
 
 			_cpu->pc = _cpu->stack[--_cpu->sp];
 			break;
@@ -107,15 +92,10 @@ void op_1NNN(Cpu *const _cpu)
 // 2NNN: Calls subroutine at address NNN
 void op_2NNN(Cpu *const _cpu)
 {
-#if _XCHIP_INSTR_DEBUG_
-	if (_cpu->sp >= arr_size(_cpu->stack)) 
-	{
-		utility::LOGerr("op_2NNN: Stack Overflow");
-		CpuManager::SetErrorFlag(*_cpu, true);
-		return;
-	}
-#endif
 
+	ASSERT_MSG(_cpu->sp < arr_size(_cpu->stack),
+		"op_2NNN: Stack Overflow");
+	
 	_cpu->stack[_cpu->sp++] = _cpu->pc;
 	_cpu->pc = NNN;
 }
@@ -182,15 +162,8 @@ static InstrTable op_8XYx_Table[16] =
 
 void op_8XYx(Cpu* const _cpu)
 {
-
-#if _XCHIP_INSTR_DEBUG_
-	if (static_cast<std::size_t>(N) >= arr_size(op_8XYx_Table)) {
-		utility::LOGerr("table op_8XYx_Table overflow!");
-		CpuManager::SetErrorFlag(*_cpu, true);
-		return;
-	}
-#endif
-
+	ASSERT_MSG(static_cast<std::size_t>(N) < arr_size(op_8XYx_Table),
+		"op_8XYx_Table Overflow!");
 
 	// call it
 	op_8XYx_Table[N](_cpu);
@@ -438,16 +411,9 @@ static InstrTable op_FXxx_Table[] =
 
 void op_FXxx(Cpu *const _cpu) // 9 instructions.
 {
-#if _XCHIP_INSTR_DEBUG_
-	if (static_cast<std::size_t>(N) >= arr_size(op_FXxx_Table)) {
-		utility::LOGerr("Table op_FXxx_Table overflow...");
-		CpuManager::SetErrorFlag(*_cpu, true);
-		return;
-	};
-#endif
+	ASSERT_MSG(static_cast<std::size_t>(N) < arr_size(op_FXxx_Table),
+		"Table op_FXxx_Table overflow...");
 
-
-	// call it
 	op_FXxx_Table[N](_cpu);
 }
 

@@ -3,6 +3,7 @@
 #include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
+#include <XChip/Utility/Assert.h>
  
 namespace xchip {
 
@@ -169,8 +170,12 @@ bool CpuManager::SetGfx(const std::size_t size)
 
 void CpuManager::SetFont(const uint8_t* font, const size_t size)
 {
-	if (_cpu.memory)
-		memcpy(_cpu.memory, font, size);
+	ASSERT_MSG(_cpu.memory != nullptr,
+		"CpuManager::SetFont: null _cpu.memory");
+	ASSERT_MSG(arr_size(_cpu.memory) > size,
+		"CpuManager::SetFont: font size too big");
+
+	memcpy(_cpu.memory, font, size);
 }
 
 
@@ -214,8 +219,8 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 void CpuManager::PlaceErrorFlag(void* addr)
 {
-	if (!_cpu.memory)
-		return;
+	ASSERT_MSG(_cpu.memory != nullptr,
+		"CpuManager::PlaceErrorFlag: null cpu.memory");
 
 	const auto flagOffs = get_error_flag_offs(_cpu.memory);
 	InsertByte(0xFF, flagOffs - sizeof(uint8_t));
@@ -328,8 +333,8 @@ size_t CpuManager::GetGfxSize() const
 
 void CpuManager::SetErrorFlag(Cpu& _cpu, const bool val)
 {
-	if (!_cpu.memory)
-		return;
+	ASSERT_MSG(_cpu.memory != nullptr,
+		"CpuManager::SetErrorFlag: null _cpu.memory");
 
 	const auto flagOffs = get_error_flag_offs(_cpu.memory);
 	if (_cpu.memory[flagOffs - sizeof(uint8_t)] == 0xFF)
