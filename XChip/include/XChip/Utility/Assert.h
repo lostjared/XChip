@@ -3,17 +3,11 @@
 // #define NDEBUG
 #include <cassert>
 
-namespace xchip { namespace utility {
-
-
 #ifndef NDEBUG
 #define ASSERT_MSG(cond, msg) { if(!(cond)) {xchip::utility::LOGerr(msg); assert(false); } }
 #else
 #define ASSERT_MSG()
 #endif
-
-
-}}
 
 
 
