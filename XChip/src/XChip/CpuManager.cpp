@@ -19,8 +19,9 @@ static void free_cpu_arr(T*& arr) noexcept;
 template<class T>
 static size_t get_error_flag_offs(const T*const memory) noexcept;
 template<class T>
-void* get_error_flag_addr(T*const memory) noexcept;
-
+static int* get_error_flag_addr(T*const memory) noexcept;
+template<class T>
+static void erase_error_flag(T*const memory) noexcept;
 
 
 
@@ -92,11 +93,30 @@ bool CpuManager::SetStack(const std::size_t size)
 
 
 
+bool CpuManager::SetGfx(const std::size_t size)
+{
+	if ( !alloc_cpu_arr(_cpu.gfx, size) )
+	{
+		LOGerr("Cannot allocate Cpu memory size: "_s + std::to_string(size));
+		return false;
+	}
+
+	return true;
+}
+
+
+
+
 
 
 bool CpuManager::ResizeMemory(const std::size_t size)
 {
-	void* const errorFlag = get_error_flag_addr(_cpu.memory);
+	auto* const errorFlag = get_error_flag_addr(_cpu.memory);
+
+	// erase the old flag location that is going to be realloc
+	if(errorFlag)
+		erase_error_flag(_cpu.memory);
+
 
 	if ( !realloc_cpu_arr(_cpu.memory, size)) 
 	{
@@ -104,8 +124,10 @@ bool CpuManager::ResizeMemory(const std::size_t size)
 		return false;
 	}
 
-	if(errorFlag != nullptr)
-		PlaceErrorFlag(errorFlag);
+
+	// replace the flag in new memory location
+	if(errorFlag)
+		this->PlaceErrorFlag(errorFlag);
 
 
 	return true;
@@ -145,20 +167,6 @@ bool CpuManager::ResizeGfx(const size_t size)
 	if (!realloc_cpu_arr(_cpu.gfx, size))
 	{
 		LOGerr("Cannot reallocate Cpu GFX to size: "_s + std::to_string(size));
-		return false;
-	}
-
-	return true;
-}
-
-
-
-
-bool CpuManager::SetGfx(const std::size_t size)
-{
-	if ( !alloc_cpu_arr(_cpu.gfx, size) )
-	{
-		LOGerr("Cannot allocate Cpu memory size: "_s + std::to_string(size));
 		return false;
 	}
 
@@ -287,57 +295,22 @@ iSound* CpuManager::SwapSound(iSound* sound)
 
 
 
-size_t CpuManager::GetMemorySize() const
-{
-	return arr_size(_cpu.memory);
-}
-
-
-
-
-size_t CpuManager::GetRegistersSize() const
-{
-	return arr_size(_cpu.registers);
-}
-
-
-
-size_t CpuManager::GetStackSize() const 
-{
-	return arr_size(_cpu.stack);
-}
-
-
-
-size_t CpuManager::GetGfxSize() const 
-{
-	return arr_size(_cpu.gfx);
-}
-
-
-
-
 
 void CpuManager::PlaceErrorFlag(void* addr)
 {
-	ASSERT_MSG(_cpu.memory != nullptr,
-		"CpuManager::PlaceErrorFlag: null Cpu::memory");
-
 	const auto flagOffs = get_error_flag_offs(_cpu.memory);
 	InsertByte(0xFF, flagOffs - sizeof(uint8_t));
 	InsertAddress(addr, flagOffs);
 }
 
 
-// static
-void CpuManager::SetErrorFlag(Cpu& _cpu, const bool val)
-{
-	ASSERT_MSG(_cpu.memory != nullptr,
-		"CpuManager::SetErrorFlag: null Cpu::memory");
 
-	const auto flagOffs = get_error_flag_offs(_cpu.memory);
-	if (_cpu.memory[flagOffs - sizeof(uint8_t)] == 0xFF)
-		*reinterpret_cast<bool*&>(_cpu.memory[flagOffs]) = val;
+// static
+void CpuManager::SetErrorFlag(Cpu& _cpu, const int val)
+{
+	const auto errorFlag = static_cast<int*>(get_error_flag_addr(_cpu.memory));
+	if(errorFlag != nullptr)
+		*errorFlag = val;
 }
 
 
@@ -420,22 +393,33 @@ static bool __realloc_arr(T*& arr, const size_t size) noexcept
 template<class T>
 static size_t get_error_flag_offs(const T*const memory) noexcept
 {
+	ASSERT_MSG(memory != nullptr && 
+	arr_size(memory) > sizeof(uintptr_t),
+	"get_error_flag_offs: null memory | size is too low");
+
 	return arr_size(memory) - sizeof(uintptr_t) - 1;
 }
 
 
 
 template<class T>
-void* get_error_flag_addr(T*const memory) noexcept
+static int* get_error_flag_addr(T*const memory) noexcept
 {
 	const auto flagOffs = get_error_flag_offs(memory);
 	if (memory[flagOffs - sizeof(uint8_t)] == 0xFF)
-		return reinterpret_cast<void*&>(memory[flagOffs]);
+		return reinterpret_cast<int*&>(memory[flagOffs]);
 
 	return nullptr;
 }
 
 
+template<class T>
+static void erase_error_flag(T*const memory) noexcept
+{
+	const auto flagOffs = get_error_flag_offs(memory);
+	memory[flagOffs-sizeof(uint8_t)] = 0;
+	memset(memory+flagOffs, 0, sizeof(uintptr_t));
+}
 
 
 

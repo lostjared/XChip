@@ -69,7 +69,7 @@ public:
 	void CleanGfx();
 
 
-	static void SetErrorFlag(Cpu& _cpu, const bool val);
+	static void SetErrorFlag(Cpu& _cpu, const int val);
 private:
 	Cpu _cpu;
 
@@ -78,6 +78,12 @@ private:
 
 
 
+
+
+inline size_t CpuManager::GetMemorySize() const { return utility::arr_size(_cpu.memory); }
+inline size_t CpuManager::GetRegistersSize() const { return utility::arr_size(_cpu.registers); }
+inline size_t CpuManager::GetStackSize() const { return utility::arr_size(_cpu.stack); }
+inline size_t CpuManager::GetGfxSize() const { return utility::arr_size(_cpu.gfx); }
 inline const iRender* CpuManager::GetRender() const { return _cpu.render; }
 inline const iInput* CpuManager::GetInput() const { return _cpu.input; }
 inline const iSound* CpuManager::GetSound() const { return _cpu.sound; }
@@ -116,8 +122,6 @@ inline void CpuManager::InsertAddress(void* addr, const size_t offset)
 		"CpuManager::InsertAddress: offset greater than Cpu::memory size!");
 	reinterpret_cast<void*&>(_cpu.memory[offset]) = addr; 
 }
-
-
 
 
 
