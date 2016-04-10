@@ -9,14 +9,13 @@ namespace xchip {
 class SdlSystem
 {
 public:
+	virtual ~SdlSystem();
 	SdlSystem(const SdlSystem&) = delete;
 	SdlSystem& operator=(const SdlSystem&) = delete;
+	enum class System { Render, Input, Sound };
 
 protected:
-	enum class System { Render, Input, Sound };
 	SdlSystem(const System sys);
-	virtual ~SdlSystem();
-
 	bool InitSubSystem();
 	static void PollEvent();
 

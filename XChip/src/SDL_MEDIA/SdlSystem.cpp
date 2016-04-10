@@ -1,17 +1,22 @@
+#include <utility>
+
 #include <SDL2/SDL.h>
 #include <XChip/SDL_MEDIA/SdlSystem.h>
 #include <XChip/Utility/Timer.h>
-#include <XChip/Utility/Traits.h>
 #include <XChip/Utility/Log.h>
-
+#include <XChip/Utility/Assert.h>
+#include <XChip/Utility/Alloc.h>
  
 
 namespace xchip {
 
-template<class T>
-constexpr size_t toSizeT(const T x) noexcept {
-	return static_cast<size_t>(x);
-}
+// subsystem flag and name
+using FlagAndName = std::pair<Uint32, const char*>;
+constexpr FlagAndName get_sdl_subsystem(const SdlSystem::System sys) noexcept;
+constexpr size_t toSizeT(SdlSystem::System sys) noexcept;
+
+
+
 
 
 SDL_Event g_sdlEvent;
@@ -20,9 +25,15 @@ bool SdlSystem::s_SubSystems[3] = { false, false, false };
 
 
 
+
 SdlSystem::SdlSystem(const System sys)
 	: _sys(sys)
 {
+	using utility::arr_size;
+	ASSERT_MSG(toSizeT(sys) < arr_size(s_nSystems)
+		&& toSizeT(sys) < arr_size(s_SubSystems),
+		"SdlSystem::SdlSystem: sys greater than systems/subsystems array counter");
+
 	++s_nSystems[toSizeT(_sys)];
 }
 
@@ -31,6 +42,8 @@ SdlSystem::SdlSystem(const System sys)
 SdlSystem::~SdlSystem()
 {
 	using namespace utility;
+	using namespace utility::literals;
+
 	--s_nSystems[toSizeT(_sys)];
 	
 	// if this is the last instance of this System (_sys)
@@ -38,25 +51,10 @@ SdlSystem::~SdlSystem()
 	if (!s_nSystems[toSizeT(_sys)]
 		&& s_SubSystems[toSizeT(_sys)])
 	{
-		const Uint32 flags = [](const System sys) -> Uint32
-		{
-			switch (sys)
-			{
-				case System::Render:
-					LOG("Closing SDL Video SubSystem...");
-					return SDL_INIT_VIDEO;
-				case System::Input:
-					LOG("Closing SDL Input SubSystem...");
-					return SDL_INIT_EVENTS;
-				case System::Sound:
-					LOG("Closing SDL Audio SubSystem...");
-					return SDL_INIT_AUDIO;
-				default:
-					return 0;
-			}
-		}(_sys);
-		
-		SDL_QuitSubSystem(flags);
+		const auto flagAndName = get_sdl_subsystem(_sys);
+		LOG("Closing "_s + flagAndName.second);
+
+		SDL_QuitSubSystem(flagAndName.first);
 		s_SubSystems[toSizeT(_sys)] = false;
 	}
 }
@@ -73,27 +71,12 @@ bool SdlSystem::InitSubSystem()
 	// then initialize it
 	if( !s_SubSystems[toSizeT(_sys)] )
 	{
-		const Uint32 flags = [](const System sys)  -> Uint32
-		{
-			switch (sys)
-			{
-				case System::Render:
-					LOG("Initializing SDL Video SubSystem...");
-					return SDL_INIT_VIDEO;
-				case System::Input:
-					LOG("Initializing SDL Input SubSystem...");
-					return SDL_INIT_EVENTS;
-				case System::Sound:
-					LOG("Initializing SDL Audio SubSystem...");
-					return SDL_INIT_AUDIO;
-				default:
-					return 0;
-			}
-		}(_sys);
+		const auto flagAndName = get_sdl_subsystem(_sys);
+		LOG("Initializing "_s + flagAndName.second);
 
-		if (SDL_InitSubSystem(flags) != SDL_FALSE)
+		if (SDL_InitSubSystem(flagAndName.first) != SDL_FALSE)
 		{
-			LOGerr("Could not initialize SDL SubSystem: "_s + SDL_GetError());
+			LOGerr("Could not initialize "_s + flagAndName.second + " " + SDL_GetError());
 			return false;
 		}
 
@@ -121,9 +104,24 @@ void SdlSystem::PollEvent()
 
 
 
+constexpr FlagAndName get_sdl_subsystem(const SdlSystem::System sys) noexcept
+{
+	using System = SdlSystem::System;
+
+	return (sys == System::Render)
+		? FlagAndName{ SDL_INIT_VIDEO, "SDL Video Subsystem..." }
+		: (sys == System::Input)
+		? FlagAndName{ SDL_INIT_EVENTS, "SDL Input Subsystem..." }
+		: (sys == System::Sound)
+		? FlagAndName{ SDL_INIT_AUDIO, "SDL Audio Subsystem..." }
+		: FlagAndName{ 0, "Unknown SDL Subsystem!" };
+}
 
 
 
+constexpr size_t toSizeT(SdlSystem::System sys) noexcept {
+	return static_cast<size_t>(sys);
+}
 
 
 
