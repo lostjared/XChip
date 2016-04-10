@@ -5,6 +5,7 @@
 #include <XChip/Utility/Log.h>
 
  
+
 namespace xchip {
 
 template<class T>

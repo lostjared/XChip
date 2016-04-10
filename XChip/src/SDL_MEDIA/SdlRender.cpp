@@ -8,6 +8,7 @@
 #include <XChip/Utility/Assert.h>
 
 
+
 namespace xchip {
 
 extern SDL_Event g_sdlEvent;

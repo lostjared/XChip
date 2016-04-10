@@ -5,6 +5,7 @@ union SDL_Event;
 namespace xchip {
 
 
+
 class SdlSystem
 {
 public:

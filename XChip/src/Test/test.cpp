@@ -1,8 +1,10 @@
+
+// assert test
 #if 0
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Alloc.h>
 
-int main(int argc, char** argv)
+int main(void)
 {
 	using xchip::CpuManager;
 	CpuManager man;
@@ -10,6 +12,64 @@ int main(int argc, char** argv)
 
 }
 
+#endif
+
+
+
+
+// normal run:
+#if 1
+#include <iostream>
+#include <XChip/Emulator.h>
+#include <XChip/SDL_MEDIA/SdlRender.h>
+#include <XChip/SDL_MEDIA/SdlInput.h>
+#include <XChip/SDL_MEDIA/SdlSound.h>
+#include <XChip/Utility/Memory.h>
+
+int main(int argc, char** argv)
+{
+	using xchip::utility::make_unique;
+	using std::move;
+	using xchip::Emulator;
+	using xchip::SdlRender;
+	using xchip::SdlInput;
+	using xchip::SdlSound;
+	
+	if(argc < 2)
+	{
+		std::cout << "No game to load..." << std::endl;
+		return EXIT_SUCCESS;
+	}
+
+
+	auto render = make_unique<SdlRender>();
+	auto input = make_unique<SdlInput>();
+	auto sound = make_unique<SdlSound>();
+
+
+	Emulator emulator;
+	if(!emulator.Initialize(move(render), move(input), move(sound)))
+		return EXIT_FAILURE;
+	
+	if(!emulator.LoadRom(argv[1]))
+		return EXIT_FAILURE;
+
+
+
+	while(!emulator.GetExitFlag())
+	{
+		emulator.HaltForNextFlag();
+		emulator.UpdateSystems();
+		if(emulator.GetInstrFlag())
+			emulator.ExecuteInstr();
+		if(emulator.GetDrawFlag())
+			emulator.Draw();
+	}
+
+
+
+	return EXIT_SUCCESS;
+}
 
 
 
@@ -24,9 +84,8 @@ int main(int argc, char** argv)
 
 
 
-
-
-#if 1
+// DEMO:
+#if 0
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/SDL_MEDIA/SdlRender.h>

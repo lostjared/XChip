@@ -15,14 +15,12 @@
 
 
 namespace xchip { namespace utility {
-
 // save space on binary
 static void print_assert(const char* msg)
 {
-	static const char* ASSERT_MSG_STR = "ASSERT_MSG";
-	static const char* ASSERT_MSG_NEWLINE = "\n";
-	std::fprintf(stderr, "%s %s %s", ASSERT_MSG_STR, msg, ASSERT_MSG_NEWLINE);
-};
+	static const char* ASSERT_FMT_STRING = "ASSERT_MSG: %s!\n";
+	std::fprintf(stderr, ASSERT_FMT_STRING, msg);
+}
 
 }}
 

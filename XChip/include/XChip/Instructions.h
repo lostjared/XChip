@@ -6,6 +6,7 @@
 namespace xchip { namespace instructions {
 
 
+
 using InstrTable = void(*)(Cpu*);
 extern InstrTable instrTable[16];
 

@@ -9,6 +9,7 @@
 #include <XChip/Utility/ScopeExit.h>
  
 
+
 namespace xchip {
 
 inline float SdlSound::GetFreq() const { return _freq * _specs[Have].freq; }

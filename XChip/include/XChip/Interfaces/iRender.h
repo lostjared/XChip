@@ -7,6 +7,7 @@
 namespace xchip {
 
 
+
 class iRender : public iMediaInterface
 {
 public:

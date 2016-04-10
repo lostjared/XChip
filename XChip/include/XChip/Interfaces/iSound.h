@@ -1,9 +1,11 @@
 #ifndef _XCHIP_ISOUND_H_
 #define _XCHIP_ISOUND_H_
 #include "iMediaInterface.h"
+#include "../Utility/StdintDef.h"
 
  
 namespace xchip {
+
 
 
 class iSound : public iMediaInterface
