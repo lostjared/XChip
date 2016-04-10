@@ -234,37 +234,6 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 
 
-void CpuManager::CleanMemory()
-{
-	arr_zero(_cpu.memory);
-}
-
-
-
-void CpuManager::CleanRegisters()
-{
-	arr_zero(_cpu.registers);
-	_cpu.I = 0;
-	_cpu.delayTimer = 0;
-	_cpu.soundTimer = 0;
-}
-
-
-
-void CpuManager::CleanStack()
-{
-	arr_zero(_cpu.stack);
-	_cpu.sp = 0;
-}
-
-
-
-void CpuManager::CleanGfx()
-{
-	arr_zero(_cpu.gfx);
-}
-
-
 
 
 iRender* CpuManager::SwapRender(iRender* render)
@@ -308,10 +277,14 @@ void CpuManager::PlaceErrorFlag(void* addr)
 // static
 void CpuManager::SetErrorFlag(Cpu& _cpu, const int val)
 {
-	const auto errorFlag = static_cast<int*>(get_error_flag_addr(_cpu.memory));
+	int* const errorFlag = get_error_flag_addr(_cpu.memory);
 	if(errorFlag != nullptr)
 		*errorFlag = val;
 }
+
+
+
+
 
 
 
@@ -390,12 +363,17 @@ static bool __realloc_arr(T*& arr, const size_t size) noexcept
 
 
 
+
+
+
+
+
 template<class T>
 static size_t get_error_flag_offs(const T*const memory) noexcept
 {
 	ASSERT_MSG(memory != nullptr && 
-	arr_size(memory) > sizeof(uintptr_t),
-	"get_error_flag_offs: null memory | size is too low");
+	arr_size(memory) > sizeof(uintptr_t) + sizeof(uint8_t),
+	"get_error_flag_offs: null memory or size is too low");
 
 	return arr_size(memory) - sizeof(uintptr_t) - 1;
 }
@@ -420,6 +398,23 @@ static void erase_error_flag(T*const memory) noexcept
 	memory[flagOffs-sizeof(uint8_t)] = 0;
 	memset(memory+flagOffs, 0, sizeof(uintptr_t));
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

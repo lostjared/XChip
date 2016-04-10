@@ -10,6 +10,9 @@ namespace xchip { namespace utility {
 
 void* alloc_arr(const size_t size) noexcept
 {
+	ASSERT_MSG(size > 0,
+		"Alloc.cpp:alloc_arr: attempt to alloc array of size 0");
+
 	auto* const block = (size_t*) std::malloc(size + sizeof(size_t));
 	if (!block)
 		return nullptr;

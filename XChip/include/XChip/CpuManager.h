@@ -111,6 +111,7 @@ inline void CpuManager::InsertByte(const uint8_t val, const size_t offset)
 		"CpuManager::InsertByte: null Cpu::memory!");
 	ASSERT_MSG(offset < utility::arr_size(_cpu.memory),
 		"CpuManager::InsertByte: offset greater than Cpu::memory size!");
+
 	_cpu.memory[offset] = val; 
 }
 
@@ -120,11 +121,30 @@ inline void CpuManager::InsertAddress(void* addr, const size_t offset)
 		"CpuManager::InsertAddress: null Cpu::memory!");
 	ASSERT_MSG(offset < utility::arr_size(_cpu.memory),
 		"CpuManager::InsertAddress: offset greater than Cpu::memory size!");
+
 	reinterpret_cast<void*&>(_cpu.memory[offset]) = addr; 
 }
 
 
 
+inline void CpuManager::CleanMemory() { utility::arr_zero(_cpu.memory); }
+
+inline void CpuManager::CleanRegisters()
+{
+	utility::arr_zero(_cpu.registers);
+	_cpu.I = 0;
+	_cpu.delayTimer = 0;
+	_cpu.soundTimer = 0;
+}
+
+
+inline void CpuManager::CleanStack()
+{
+	utility::arr_zero(_cpu.stack);
+	_cpu.sp = 0;
+}
+
+inline void CpuManager::CleanGfx() { utility::arr_zero(_cpu.gfx); }
 
 
 

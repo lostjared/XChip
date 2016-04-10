@@ -8,7 +8,10 @@
 #define ASSERT_MSG(...)
 
 
+
+
 #else
+
 // else, includes...
 #include <cassert>
 #include <cstdio>
@@ -18,7 +21,7 @@ namespace xchip { namespace utility {
 // save space on binary
 static void print_assert(const char* msg)
 {
-	static const char* ASSERT_FMT_STRING = "ASSERT_MSG: %s!\n";
+	static const char* ASSERT_FMT_STRING = "ASSERT_MSG: %s!!\n";
 	std::fprintf(stderr, ASSERT_FMT_STRING, msg);
 }
 
