@@ -2,9 +2,10 @@
 #define _XCHIP_EMULATOR_H_
 #include <string>
 #include "CpuManager.h"
-#include "Interfaces/iRender.h"
+#include "Interfaces.h"
 #include "Utility/Memory.h"
 #include "Utility/Timer.h"
+#include "Utility/Assert.h"
 
  
 namespace xchip {
@@ -94,19 +95,21 @@ inline iInput* Emulator::GetInput() { return _manager.GetInput(); }
 inline iSound* Emulator::GetSound() { return _manager.GetSound(); }
 
 
-inline void Emulator::ExecuteInstr()  
-{ 
-	instructions::execute_instruction(_manager.GetCpu()); 
-	_instrf = false; 
+inline void Emulator::ExecuteInstr()
+{
+	instructions::execute_instruction(_manager.GetCpu());
+	_instrf = false;
 }
 
-inline void Emulator::Draw() 
+
+inline void Emulator::Draw()
 {
+	ASSERT_MSG(_manager.GetRender() != nullptr,
+		"Emulator::Draw: null render!");
+
 	_manager.GetRender()->DrawBuffer();
 	_drawf = false;
 }
-
-
 
 
 

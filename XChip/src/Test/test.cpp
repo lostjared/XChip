@@ -1,5 +1,43 @@
-
 #if 1
+#include <XChip/Emulator.h>
+
+
+int main(int argc, char** argv)
+{
+	using xchip::Emulator;
+	Emulator emulator;
+	emulator.Initialize(nullptr, nullptr, nullptr);
+
+
+	emulator.Draw();
+
+
+
+}
+
+
+
+
+
+
+
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if 0
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/SDL_MEDIA/SdlRender.h>
@@ -143,27 +181,6 @@ int main(int argc, char** argv)
 
 
 #endif
-
-
-
-
-#if 1
-#include <XChip/Emulator.h>
-#include <XChip/Interfaces.h>
-
-
-
-
-
-
-#endif
-
-
-
-
-
-
-
 
 
 #if 0

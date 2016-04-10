@@ -385,8 +385,12 @@ static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept
 template<class T>
 static void free_cpu_arr(T*& arr) noexcept
 {
-	free_arr(arr);
-	arr = nullptr;
+	if(arr != nullptr)
+	{
+		free_arr(arr);
+		arr = nullptr;
+	}
+
 }
 
 

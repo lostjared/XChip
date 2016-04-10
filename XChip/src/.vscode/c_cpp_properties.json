@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": ["/usr/include"]
+        },
+        {
+            "name": "Linux",
+            "includePath": ["/usr/include/c++/5.3.0/"]
+        },
+        {
+            "name": "Win32",
+            "includePath": ["c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"]
+        }
+    ]
+}

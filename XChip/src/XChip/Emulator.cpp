@@ -1,9 +1,7 @@
 #include <XChip/Emulator.h>
-#include <XChip/Interfaces.h>
 #include <XChip/Fonts.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
-#include <XChip/Utility/Assert.h>
 
 
 namespace xchip {
@@ -167,7 +165,6 @@ void Emulator::UpdateSystems()
 
 
 
-
 void Emulator::CleanFlags()
 {
 	_instrf = false;
@@ -221,7 +218,7 @@ bool Emulator::InitInput()
 	iInput* const input = _manager.GetInput();
 
 	if (!input) {
-		utility::LOGerr("ERROR: Cannot Initialize iInput: nullptr");
+		utility::LOGerr("Cannot Initialize iInput: nullptr");
 		return false;
 	}
 	else if (input->IsInitialized()) {
