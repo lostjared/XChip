@@ -20,11 +20,11 @@ struct Cpu
 	iRender* render;
 	iInput* input;
 	iSound* sound;
-
-	uint16_t opcode;
-	size_t I;
+	
 	size_t sp;
 	size_t pc;
+	size_t I;
+	uint16_t opcode;
 	uint8_t delayTimer;
 	uint8_t soundTimer;
 };

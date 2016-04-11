@@ -28,13 +28,12 @@ int main(void)
 
 int main(int argc, char** argv)
 {
-	using xchip::utility::make_unique; // if no C++14, but is a nothrow version
 	using std::move;
 	using xchip::Emulator;
 	using xchip::SdlRender;
 	using xchip::SdlInput;
 	using xchip::SdlSound;
-	
+	using xchip::utility::make_unique; // nothrow version	
 
 	if(argc < 2)
 	{
@@ -147,9 +146,9 @@ int main(int argc, char** argv)
 	// we can use our media interfaces from the emulator
 	auto rend = emulator.GetRender();
 	if(rend->IsInitialized()) { /*... */  }
-	// do whatever you whish from the interface
+	// do whatever to the interface
 
-	// wan't to do something specific to the child class ? dynamic cast it
+	// want to do something specific to the child class ? dynamic cast it
 	auto sdlRender = dynamic_cast<SdlRender*>(rend);
 	if (sdlRender != nullptr) {
 		//sdlRender->whatever...
