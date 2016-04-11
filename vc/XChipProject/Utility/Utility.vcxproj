@@ -107,6 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <OmitFramePointers>true</OmitFramePointers>
       <ExceptionHandling>Sync</ExceptionHandling>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -122,6 +123,7 @@
       <SDLCheck>true</SDLCheck>
       <OmitFramePointers>true</OmitFramePointers>
       <ExceptionHandling>Sync</ExceptionHandling>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

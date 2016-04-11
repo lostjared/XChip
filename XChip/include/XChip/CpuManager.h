@@ -1,7 +1,7 @@
 #ifndef _XCHIP_CPU_MANAGER_H_
 #define _XCHIP_CPU_MANAGER_H_
 #include "Cpu.h"
-
+#include "Utility/Alloc.h"
 
  
 namespace xchip {
@@ -100,11 +100,19 @@ inline void CpuManager::SetErrorFlag(const bool val) { SetErrorFlag(_cpu, val); 
 
 inline void CpuManager::InsertByte(const uint8_t val, const size_t offset) 
 { 
+	ASSERT_MSG(_cpu.memory != nullptr,
+		"CpuManager::InsertByte: null Cpu::memory!");
+	ASSERT_MSG(offset < utility::arr_size(_cpu.memory),
+		"CpuManager::InsertByte: offset greater than Cpu::memory size!");
 	_cpu.memory[offset] = val; 
 }
 
 inline void CpuManager::InsertAddress(void* addr, const size_t offset)  
-{   
+{
+	ASSERT_MSG(_cpu.memory != nullptr,
+		"CpuManager::InsertAddress: null Cpu::memory!");
+	ASSERT_MSG(offset < utility::arr_size(_cpu.memory),
+		"CpuManager::InsertAddress: offset greater than Cpu::memory size!");
 	reinterpret_cast<void*&>(_cpu.memory[offset]) = addr; 
 }
 

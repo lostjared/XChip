@@ -1,17 +1,12 @@
-#if 1
+#if 0
 #include <XChip/Emulator.h>
-
+#include <XChip/Utility/Alloc.h>
 
 int main(int argc, char** argv)
 {
-	using xchip::Emulator;
-	Emulator emulator;
-	emulator.Initialize(nullptr, nullptr, nullptr);
-
-
-	emulator.Draw();
-
-
+	using xchip::CpuManager;
+	CpuManager man;
+	man.CleanMemory();
 
 }
 
@@ -31,13 +26,7 @@ int main(int argc, char** argv)
 
 
 
-
-
-
-
-
-
-#if 0
+#if 1
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/SDL_MEDIA/SdlRender.h>

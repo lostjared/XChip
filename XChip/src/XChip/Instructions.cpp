@@ -46,9 +46,16 @@ void unknown_opcode(Cpu* const _cpu)
 
 void execute_instruction(Cpu& _cpu)
 {
+	ASSERT_MSG(_cpu.memory != nullptr, 
+		"Instructions.cpp::execute_instruction: null Cpu::memory");
+	ASSERT_MSG((_cpu.pc + 1) < arr_size(_cpu.memory), 
+		"Instructions.cpp::execute_instruction: Cpu::pc greater than Cpu::memory");
+
 	_cpu.opcode =  (_cpu.memory[_cpu.pc] << 8) | _cpu.memory[_cpu.pc + 1];
 	_cpu.pc += 2;
+
 	const auto opmsn = static_cast<size_t>((_cpu.opcode & 0xf000) >> 12);
+	
 	ASSERT_MSG(opmsn < arr_size(instrTable), "Instruction Table Overflow!");
 	
 	instrTable[opmsn](&_cpu);
@@ -451,10 +458,15 @@ void op_FXx5(Cpu *const _cpu)
 
 
 		case 0x55: //FX55  Stores V0 to VX in memory starting at address I
+			ASSERT_MSG((X + 1) < arr_size(_cpu->memory) - _cpu->I,
+				"Instructions.cpp::op_FX55: memory overflow");
+
 			std::copy_n(_cpu->registers, X + 1, _cpu->memory + _cpu->I);
 			break;
 
 		case 0x65: //FX65  Fills V0 to VX with values from memory starting at address I.
+			ASSERT_MSG((X+1) < arr_size(_cpu->registers),
+				"Instructions.cpp::op_FX65: registers overflow");
 			std::copy_n(_cpu->memory + _cpu->I, X + 1, _cpu->registers);
 			break;
 	}

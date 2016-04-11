@@ -1,6 +1,4 @@
-#include <cstring>
 #include <XChip/CpuManager.h>
-#include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
 #include <XChip/Utility/Assert.h>
@@ -171,9 +169,9 @@ bool CpuManager::SetGfx(const std::size_t size)
 void CpuManager::SetFont(const uint8_t* font, const size_t size)
 {
 	ASSERT_MSG(_cpu.memory != nullptr,
-		"CpuManager::SetFont: null _cpu.memory");
+		"CpuManager::SetFont: null Cpu::memory");
 	ASSERT_MSG(arr_size(_cpu.memory) > size,
-		"CpuManager::SetFont: font size too big");
+		"CpuManager::SetFont: font size greater than Cpu::memory");
 
 	memcpy(_cpu.memory, font, size);
 }
@@ -183,6 +181,13 @@ void CpuManager::SetFont(const uint8_t* font, const size_t size)
 
 bool CpuManager::LoadRom(const char* fileName, const size_t at)
 {
+
+	ASSERT_MSG(_cpu.memory != nullptr,
+		"CpuManager::LoadRom: null Cpu::memory");
+	ASSERT_MSG(arr_size(_cpu.memory) > at,
+		"CpuManager::LoadRom: parameter 'at' greater than Cpu::memory");
+
+
 	LOG("Loading "_s + fileName);
 	auto *const file = std::fopen(fileName, "rb");
 
@@ -199,10 +204,14 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 	const auto fileSize = static_cast<size_t>(std::ftell(file));
 	std::fseek(file, 0, SEEK_SET);
 
+
+	
+	
 	// check if file size will not overflow emulated memory size
-	if (fileSize > arr_size(_cpu.memory) - at) 
+	// careful to compare unsigned values, and subtracting them
+	if ( (arr_size(_cpu.memory) - at) < fileSize)
 	{
-		LOGerr("Error, ROM size not compatible, interrupting Chip8 instance.");
+		LOGerr("Error, ROM size not compatible!");
 		return false;
 	}
 
@@ -210,26 +219,6 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 	LOG("Load Done!");
 	return true;
 }
-
-
-
-
-
-
-
-void CpuManager::PlaceErrorFlag(void* addr)
-{
-	ASSERT_MSG(_cpu.memory != nullptr,
-		"CpuManager::PlaceErrorFlag: null cpu.memory");
-
-	const auto flagOffs = get_error_flag_offs(_cpu.memory);
-	InsertByte(0xFF, flagOffs - sizeof(uint8_t));
-	InsertAddress(addr, flagOffs);
-}
-
-
-
-
 
 
 
@@ -328,13 +317,22 @@ size_t CpuManager::GetGfxSize() const
 
 
 
+void CpuManager::PlaceErrorFlag(void* addr)
+{
+	ASSERT_MSG(_cpu.memory != nullptr,
+		"CpuManager::PlaceErrorFlag: null Cpu::memory");
+
+	const auto flagOffs = get_error_flag_offs(_cpu.memory);
+	InsertByte(0xFF, flagOffs - sizeof(uint8_t));
+	InsertAddress(addr, flagOffs);
+}
 
 
-
+// static
 void CpuManager::SetErrorFlag(Cpu& _cpu, const bool val)
 {
 	ASSERT_MSG(_cpu.memory != nullptr,
-		"CpuManager::SetErrorFlag: null _cpu.memory");
+		"CpuManager::SetErrorFlag: null Cpu::memory");
 
 	const auto flagOffs = get_error_flag_offs(_cpu.memory);
 	if (_cpu.memory[flagOffs - sizeof(uint8_t)] == 0xFF)
@@ -392,10 +390,6 @@ static void free_cpu_arr(T*& arr) noexcept
 	}
 
 }
-
-
-
-
 
 
 template<class T>

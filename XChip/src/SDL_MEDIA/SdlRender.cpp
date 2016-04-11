@@ -5,6 +5,8 @@
 #include <XChip/SDL_MEDIA/SdlRender.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
+#include <XChip/Utility/Assert.h>
+
 
 namespace xchip {
 
@@ -63,7 +65,7 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	if (!_texture)
 		return false;
 
-	SDL_SetRenderDrawColor(_rend, 0, 0, 0, 255);
+	SDL_SetRenderDrawColor(_rend, 55, 55, 55, 255);
 	SDL_RenderClear(_rend);
 	SDL_RenderPresent(_rend);
 
@@ -122,6 +124,9 @@ bool SdlRender::UpdateEvents()
 
 void SdlRender::DrawBuffer()
 {
+	ASSERT_MSG(_buffer != nullptr,
+		"SdlRender::DrawBuffer: attempt to draw null buffer");
+
 	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
 	SDL_RenderCopy(_rend, _texture, nullptr, nullptr);
 	SDL_RenderPresent(_rend);
