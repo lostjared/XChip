@@ -374,11 +374,24 @@ template<class T>
 static size_t get_error_flag_offs(const T*const memory) noexcept
 {
 	ASSERT_MSG(memory != nullptr 
-	           && arr_size(memory) > (sizeof(uintptr_t) + sizeof(uint8_t)),
+	           && arr_size(memory) > (alignof(uintptr_t) + sizeof(uintptr_t) + sizeof(uint8_t)),
 	"get_error_flag_offs: null memory or size is too low");	
 
 	
-	return (arr_size(memory)-1) - sizeof(uintptr_t);
+	// workaround the memory aligned problem pointed by the sanitizer:
+	// This code will check for the memory address of the flagLocation
+	// inside the given argument 'memory' array.
+	// while that address isn't a multiple of the proper align size
+	// of a pointer, we need to go back until we get an aligned address.
+	auto flagLocation = (arr_size(memory) - 1) - sizeof(uintptr_t);
+	auto memoryAddr = reinterpret_cast<uintptr_t>(&memory[flagLocation]);
+
+	while( ( memoryAddr % alignof(uintptr_t) ) != 0) {
+		--memoryAddr;
+		--flagLocation;
+	}
+
+	return flagLocation;
 
 }
 
