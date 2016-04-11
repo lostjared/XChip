@@ -27,6 +27,8 @@ void* realloc_arr(void* from, const size_t size) noexcept
 {
 	ASSERT_MSG(from != nullptr,
 	"Alloc.cpp::realloc_arr: attempt to realloc from null memory!");
+	ASSERT_MSG(size > 0,
+	"Alloc.cpp::realloc_arr: attempt to realloc to size 0!");
 
 	auto* const block = (size_t*) std::realloc(((size_t*)from-1), size + sizeof(size_t));
 	if(!block)
@@ -47,6 +49,15 @@ void free_arr(const void* block) noexcept
 
 	std::free(((size_t*)block) - 1);
 }
+
+
+
+
+
+
+
+
+
 
 
 

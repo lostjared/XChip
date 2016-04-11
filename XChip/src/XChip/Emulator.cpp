@@ -70,7 +70,8 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 
 	// place a error flag addr at the end of cpu's memory
 	_manager.PlaceErrorFlag(&_exitf);
-	_manager.ResizeMemory(0x1FFFF); // test
+	
+	_manager.ResizeMemory(0x1FFF); // test
 
 	_exitf = false;
 	_initialized = true;

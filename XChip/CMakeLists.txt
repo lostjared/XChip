@@ -24,7 +24,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 	set(CXX_FLAGS "${CXX_FLAGS} -O3")
 
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set(CXX_FLAGS "${CXX_FLAGS} -O0 -g -ggdb -fno-omit-frame-pointer -fsanitize=address -D_DEBUG")
+	set(CXX_FLAGS "${CXX_FLAGS} -O0 -g -ggdb -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined -D_DEBUG")
 
 elseif(CMAKE_BUILD_TYPE STREQUAL "OPTDebug")
 	set(CXX_FLAGS "${CXX_FLAGS} -O2 -g -ggdb -fno-omit-frame-pointer -D_DEBUG")

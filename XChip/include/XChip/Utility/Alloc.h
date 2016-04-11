@@ -27,8 +27,8 @@ enable_if_t<is_pointer<T>::value && !is_same<T,uint8_t*>::value,
 size_t> arr_size(const T arr) noexcept
 {
 	if (arr == nullptr) return 0;
-	const size_t* const size = (size_t*) arr;
-	return *(size - 1) / sizeof(T);
+	const auto size = reinterpret_cast<const size_t*>(arr) - 1;
+	return *size / sizeof(T);
 }
 
 
@@ -39,8 +39,8 @@ enable_if_t<is_pointer<T>::value && is_same<T, uint8_t*>::value,
 size_t> arr_size(const T arr) noexcept
 {
 	if (arr == nullptr) return 0;
-	const size_t* const size = (size_t*) arr;
-	return *(size - 1);
+	const auto size = reinterpret_cast<const size_t*>(arr) - 1;
+	return *size;
 }
 
 

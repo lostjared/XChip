@@ -69,7 +69,7 @@ public:
 	void CleanGfx();
 
 
-	static void SetErrorFlag(Cpu& _cpu, const int val);
+	static void SetErrorFlag(Cpu& _cpu, const bool val);
 private:
 	Cpu _cpu;
 
@@ -122,7 +122,7 @@ inline void CpuManager::InsertAddress(void* addr, const size_t offset)
 	ASSERT_MSG(offset < utility::arr_size(_cpu.memory),
 		"CpuManager::InsertAddress: offset greater than Cpu::memory size!");
 
-	reinterpret_cast<void*&>(_cpu.memory[offset]) = addr; 
+	reinterpret_cast<void*&>(_cpu.memory[offset]) = addr;
 }
 
 

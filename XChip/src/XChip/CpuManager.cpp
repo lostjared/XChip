@@ -19,7 +19,7 @@ static void free_cpu_arr(T*& arr) noexcept;
 template<class T>
 static size_t get_error_flag_offs(const T*const memory) noexcept;
 template<class T>
-static int* get_error_flag_addr(T*const memory) noexcept;
+static void* get_error_flag_addr(T*const memory) noexcept;
 template<class T>
 static void erase_error_flag(T*const memory) noexcept;
 
@@ -113,7 +113,7 @@ bool CpuManager::ResizeMemory(const std::size_t size)
 {
 	auto* const errorFlag = get_error_flag_addr(_cpu.memory);
 
-	// erase the old flag location that is going to be realloc
+	// erase the old flag location that is going to be reallocated
 	if(errorFlag)
 		erase_error_flag(_cpu.memory);
 
@@ -275,10 +275,12 @@ void CpuManager::PlaceErrorFlag(void* addr)
 
 
 // static
-void CpuManager::SetErrorFlag(Cpu& _cpu, const int val)
+void CpuManager::SetErrorFlag(Cpu& _cpu, const bool val)
 {
-	int* const errorFlag = get_error_flag_addr(_cpu.memory);
-	if(errorFlag != nullptr)
+	auto* const errorFlag =
+		static_cast<bool*>(get_error_flag_addr(_cpu.memory));
+	
+	if (errorFlag != nullptr)
 		*errorFlag = val;
 }
 
@@ -371,21 +373,23 @@ static bool __realloc_arr(T*& arr, const size_t size) noexcept
 template<class T>
 static size_t get_error_flag_offs(const T*const memory) noexcept
 {
-	ASSERT_MSG(memory != nullptr && 
-	arr_size(memory) > sizeof(uintptr_t) + sizeof(uint8_t),
-	"get_error_flag_offs: null memory or size is too low");
+	ASSERT_MSG(memory != nullptr 
+	           && arr_size(memory) > (sizeof(uintptr_t) + sizeof(uint8_t)),
+	"get_error_flag_offs: null memory or size is too low");	
 
-	return arr_size(memory) - sizeof(uintptr_t) - 1;
+	
+	return (arr_size(memory)-1) - sizeof(uintptr_t);
+
 }
 
 
 
 template<class T>
-static int* get_error_flag_addr(T*const memory) noexcept
+static void* get_error_flag_addr(T*const memory) noexcept
 {
 	const auto flagOffs = get_error_flag_offs(memory);
 	if (memory[flagOffs - sizeof(uint8_t)] == 0xFF)
-		return reinterpret_cast<int*&>(memory[flagOffs]);
+		return reinterpret_cast<void*&>(memory[flagOffs]);
 
 	return nullptr;
 }
