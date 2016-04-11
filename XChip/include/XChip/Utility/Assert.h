@@ -1,13 +1,15 @@
 #ifndef _XCHIP_UTILITY_ASSERT_H_
 #define _XCHIP_UTILITY_ASSERT_H_
-// if not debug build, includes nothing.
+
 
 #if !_DEBUG
+// if not debug build, includes nothing.
 #define NDEBUG 1
 #define ASSERT_MSG(...)
 
-// else, includes...
+
 #else
+// else, includes...
 #include <cassert>
 #include <cstdio>
 
