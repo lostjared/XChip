@@ -9,7 +9,7 @@
 namespace xchip {
 
 	
-class SdlInput final : private SdlSystem, public iInput
+class SdlInput final : public iInput, private SdlSystem
 {
 	using SDL_Scancode = int;
 	using KeyPair = std::pair<Key, SDL_Scancode>;

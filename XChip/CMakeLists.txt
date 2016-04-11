@@ -5,13 +5,9 @@ project(XChipApp)
 cmake_minimum_required(VERSION 2.8)
 
 
-#media variables
-set(USING_SDL_MEDIA  "ON" CACHE STRING "" )
-
-#additional libs, subdirectories libs can use this variable
-set(ADD_LIBS "" CACHE STRING "additional libs to link...")
-set(ADD_CXX_FLAGS "" CACHE STRING "additional compiler flags")
-
+###############################################################
+##############################################################
+# COMPILER SETTINGS
 
 #include paths
 set(XCHIP_DEFAULT_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/" CACHE STRING "")
@@ -37,33 +33,62 @@ endif()
 
 
 
-#sub libs
+
+#################################################################
+################################################################
+#Sub Dir Projects settings
+
+#additional libs, subdirectories libs can use this variable
+#to add their dependencies to link with the project
+set(ADD_LIBS "" CACHE STRING "additional libs to link...")
+
+
+#turn ON the media library that the APP will be using
+set(USING_SDL_MEDIA  "ON" CACHE STRING "" )
+
+
+
+#add sub directories libs
+#XChip
 add_subdirectory(src/XChip)
 
+
+
+# SDL_MEDIA if using_sdl_media is on
 if( ${USING_SDL_MEDIA} )
 	add_subdirectory(src/SDL_MEDIA)
 endif()
 
 
-# CXX_FLAGS
+
+########################################################
+#######################################################
+# print the config
+message(STATUS "Using Compiler: " ${CXX_COMPILER})
+message(STATUS "Flags: " ${CXX_FLAGS})
+message(STATUS "Additional libs: " ${ADD_LIBS})
+message(STATUS "XChip default include path: " ${XCHIP_DEFAULT_INCLUDE_PATH})
+
+
+
+#######################################################################################
+#######################################################################################
+
+
+# set the CMAKE_CXX_...
 set(CMAKE_CXX_COMPILER "${CXX_COMPILER}")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
-#######################################################################################
-#######################################################################################
 
 
-
-# ACHAR OS .CPP E .H
+# BUILD TEST
 file(GLOB_RECURSE APP_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/Test/*.cpp)
 file(GLOB_RECURSE APP_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} include/*.h)
 
 
-# Linkar src
+# link 
 add_executable(${PROJECT_NAME} ${APP_HEADERS} ${APP_SRC})
 
-message(STATUS "Additional libs: " ${ADD_LIBS})
-message(STATUS "XChip default include path: " ${XCHIP_DEFAULT_INCLUDE_PATH})
 
 # Link libs
 TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${ADD_LIBS} XChip)

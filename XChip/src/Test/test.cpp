@@ -55,7 +55,6 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 
 
-
 	while(!emulator.GetExitFlag())
 	{
 		emulator.HaltForNextFlag();

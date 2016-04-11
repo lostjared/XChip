@@ -11,13 +11,12 @@ struct SDL_Texture;
 namespace xchip {
 
 
-class SdlRender final : private SdlSystem, public iRender
+class SdlRender final : public iRender, private SdlSystem
 {
 
 public:
-	SdlRender();
+	SdlRender() noexcept;
 	~SdlRender();
-
 	bool Initialize(const int width, const int height) noexcept override;
 	void Dispose() noexcept override;
 	

@@ -42,6 +42,9 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iSound.h">
       <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iMediaInterface.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\XChip\Instructions.cpp">

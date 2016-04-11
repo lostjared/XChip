@@ -13,7 +13,7 @@ class iRender : public iMediaInterface
 public:
 	using WinCloseCallback = void(*)(const void*);
 	using WinResizeCallback = void(*)(const void*);
-	
+
 	virtual bool Initialize(const int w, const int h) noexcept = 0;
 	virtual bool UpdateEvents() = 0;
 	virtual void SetBuffer(const uint32_t* gfx) = 0;

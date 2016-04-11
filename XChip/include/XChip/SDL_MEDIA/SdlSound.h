@@ -12,7 +12,7 @@ typedef uint32_t SDL_AudioDeviceID;
 namespace xchip {
 
 
-class SdlSound final : private SdlSystem, public iSound
+class SdlSound final : public iSound, private SdlSystem
 {
 	static constexpr float defaultFreq = 450;
 public:

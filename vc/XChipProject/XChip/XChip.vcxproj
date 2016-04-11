@@ -157,6 +157,7 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Fonts.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Instructions.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iInput.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iMediaInterface.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iRender.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Interfaces\iSound.h" />
   </ItemGroup>

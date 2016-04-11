@@ -13,7 +13,7 @@ namespace xchip {
 
 extern SDL_Event g_sdlEvent;
 
-SdlRender::SdlRender()
+SdlRender::SdlRender() noexcept
 	: SdlSystem(System::Render)
 
 {
