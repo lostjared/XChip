@@ -35,6 +35,9 @@ Emulator::~Emulator()
 
 bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound sound) noexcept
 {
+	using fonts::chip8DefaultFont;
+	using utility::arr_size;
+
 	if (_initialized) 
 		this->Dispose();
 
@@ -55,7 +58,7 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	}
 
 	_manager.SetPC(0x200);
-	_manager.SetFont(fonts::chip8_default_font, 80);
+	_manager.SetFont(chip8DefaultFont, arr_size(chip8DefaultFont));
 	_manager.SetRender(render.release());
 	_manager.SetInput(input.release());
 	_manager.SetSound(sound.release());
