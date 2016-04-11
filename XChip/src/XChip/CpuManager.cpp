@@ -274,14 +274,12 @@ void CpuManager::PlaceErrorFlag(void* addr)
 
 
 
+
+
 // static
-void CpuManager::SetErrorFlag(Cpu& _cpu, const bool val)
+void* CpuManager::GetErrorFlag(const Cpu& _cpu)
 {
-	auto* const errorFlag =
-		static_cast<bool*>(get_error_flag_addr(_cpu.memory));
-	
-	if (errorFlag != nullptr)
-		*errorFlag = val;
+	return get_error_flag_addr(_cpu.memory);
 }
 
 
@@ -289,11 +287,7 @@ void CpuManager::SetErrorFlag(Cpu& _cpu, const bool val)
 
 
 
-
-
-
-
-
+// local template functions
 template<class T>
 static bool __alloc_arr(T*& arr, const size_t size) noexcept;
 template<class T>
@@ -406,6 +400,7 @@ static void* get_error_flag_addr(T*const memory) noexcept
 
 	return nullptr;
 }
+
 
 
 template<class T>

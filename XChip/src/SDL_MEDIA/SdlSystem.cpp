@@ -12,7 +12,7 @@ namespace xchip {
 
 // subsystem flag and name
 using FlagAndName = std::pair<Uint32, const char*>;
-constexpr FlagAndName get_sdl_subsystem(const SdlSystem::System sys) noexcept;
+FlagAndName get_sdl_subsystem(const SdlSystem::System sys) noexcept;
 constexpr size_t toSizeT(SdlSystem::System sys) noexcept;
 
 
@@ -104,17 +104,22 @@ void SdlSystem::PollEvent()
 
 
 
-constexpr FlagAndName get_sdl_subsystem(const SdlSystem::System sys) noexcept
+
+FlagAndName get_sdl_subsystem(const SdlSystem::System sys) noexcept
 {
 	using System = SdlSystem::System;
 
-	return (sys == System::Render)
-		? FlagAndName{ SDL_INIT_VIDEO, "SDL Video Subsystem..." }
-		: (sys == System::Input)
-		? FlagAndName{ SDL_INIT_EVENTS, "SDL Input Subsystem..." }
-		: (sys == System::Sound)
-		? FlagAndName{ SDL_INIT_AUDIO, "SDL Audio Subsystem..." }
-		: FlagAndName{ 0, "Unknown SDL Subsystem!" };
+	switch(sys)
+	{
+		case System::Render: 
+			return FlagAndName{ SDL_INIT_VIDEO, "SDL Video Subsystem..." };
+		case System::Input:
+			return FlagAndName{ SDL_INIT_EVENTS, "SDL Input Subsystem..." };
+		case System::Sound:
+		 	return FlagAndName{ SDL_INIT_AUDIO, "SDL Audio Subsystem..." };
+		default:	
+	 		return FlagAndName{ 0, "Unknown SDL Subsystem!" };
+	}
 }
 
 

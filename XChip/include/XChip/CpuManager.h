@@ -31,8 +31,10 @@ public:
 	const uint8_t* GetRegisters() const;
 	const size_t* GetStack() const;
 	const uint32_t* GetGfx() const;
+	const void* GetErrorFlag() const;
 	const Cpu& GetCpu() const;
 
+	void* GetErrorFlag();
 	Cpu& GetCpu();
 	iRender* GetRender();
 	iInput* GetInput();
@@ -53,7 +55,6 @@ public:
 	void InsertByte(const uint8_t val, const size_t offset);
 	void InsertAddress(void* addr, const size_t offset);
 	void PlaceErrorFlag(void* addr);
-	void SetErrorFlag(const bool val);
 	void SetRender(iRender* render);
 	void SetInput(iInput* input);
 	void SetSound(iSound* sound);
@@ -68,8 +69,7 @@ public:
 	void CleanStack();
 	void CleanGfx();
 
-
-	static void SetErrorFlag(Cpu& _cpu, const bool val);
+	static void* GetErrorFlag(const Cpu& _cpu);
 private:
 	Cpu _cpu;
 
@@ -91,9 +91,10 @@ inline const uint8_t* CpuManager::GetMemory() const { return _cpu.memory; }
 inline const uint8_t* CpuManager::GetRegisters() const { return _cpu.registers; }
 inline const size_t* CpuManager::GetStack() const { return _cpu.stack; }
 inline const uint32_t* CpuManager::GetGfx() const { return _cpu.gfx; }
+inline const void* CpuManager::GetErrorFlag() const { return GetErrorFlag(_cpu); };
 inline const Cpu& CpuManager::GetCpu() const { return _cpu; }
 
-
+inline void* CpuManager::GetErrorFlag() { return GetErrorFlag(_cpu); }
 inline Cpu& CpuManager::GetCpu() { return _cpu; }
 inline iRender* CpuManager::GetRender() { return _cpu.render; }
 inline iInput* CpuManager::GetInput() { return _cpu.input; }
@@ -103,7 +104,7 @@ inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
 inline void CpuManager::SetRender(iRender* render) { _cpu.render = render; }
 inline void CpuManager::SetInput(iInput* input) { _cpu.input = input; }
 inline void CpuManager::SetSound(iSound* sound) { _cpu.sound = sound; }
-inline void CpuManager::SetErrorFlag(const bool val) { SetErrorFlag(_cpu, val); }
+
 
 inline void CpuManager::InsertByte(const uint8_t val, const size_t offset) 
 { 
@@ -127,7 +128,12 @@ inline void CpuManager::InsertAddress(void* addr, const size_t offset)
 
 
 
-inline void CpuManager::CleanMemory() { utility::arr_zero(_cpu.memory); }
+
+inline void CpuManager::CleanMemory() 
+{ 
+	utility::arr_zero(_cpu.memory); 
+}
+
 
 inline void CpuManager::CleanRegisters()
 {
@@ -144,10 +150,11 @@ inline void CpuManager::CleanStack()
 	_cpu.sp = 0;
 }
 
-inline void CpuManager::CleanGfx() { utility::arr_zero(_cpu.gfx); }
 
-
-
+inline void CpuManager::CleanGfx() 
+{ 
+	utility::arr_zero(_cpu.gfx); 
+}
 
 
 

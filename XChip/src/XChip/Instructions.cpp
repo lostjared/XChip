@@ -40,7 +40,9 @@ void unknown_opcode(Cpu* const _cpu)
 	using namespace utility::literals;
 	LOGerr("Unknown Opcode: ", Endl::No);
 	LOGerr(_cpu->opcode, Fmt::Hex);
-	CpuManager::SetErrorFlag(*_cpu, true);
+	bool* flag = static_cast<bool*>(CpuManager::GetErrorFlag(*_cpu));
+	if(flag != nullptr)
+		*flag = true;
 }
 
 
