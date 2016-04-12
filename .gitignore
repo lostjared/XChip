@@ -2,6 +2,10 @@
 *.txt.user*
 build/
 
+
+#scripts
+push_master.sh
+
 # Vim files
 *.swp
 
