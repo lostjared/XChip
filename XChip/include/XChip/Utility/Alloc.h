@@ -61,17 +61,6 @@ void arr_zero(T* arr) noexcept
 	memset(arr, 0, arr_size(reinterpret_cast<uint8_t*>(arr)));
 }
 
-/*
-template<class T>
-enable_if_t<is_pointer<T>::value && is_same<remove_all_t<T>, uint8_t>::value,
-void> arr_zero(const T arr) noexcept
-{
-	ASSERT_MSG(arr != nullptr,
-		"Alloc.h::arr_zero: attempt to clean nullptr");
-	
-	memset(arr, 0, arr_size(arr));
-}
-*/
 
 
 template<class T, const size_t sz>
