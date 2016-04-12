@@ -12,6 +12,7 @@
 namespace xchip { namespace instructions {
 using utility::arr_size;
 
+
 #define OPMSN ((_cpu->opcode & 0xf000) >> 12) // opcode most significant nibble
 #define X   ((_cpu->opcode & 0x0f00) >> 8)
 #define Y   ((_cpu->opcode & 0x00f0) >> 4)
@@ -40,9 +41,7 @@ void unknown_opcode(Cpu* const _cpu)
 	using namespace utility::literals;
 	LOGerr("Unknown Opcode: ", Endl::No);
 	LOGerr(_cpu->opcode, Fmt::Hex);
-	bool* flag = static_cast<bool*>(CpuManager::GetErrorFlag(*_cpu));
-	if(flag != nullptr)
-		*flag = true;
+	_cpu->errorFlag = true;
 }
 
 

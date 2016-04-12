@@ -27,6 +27,8 @@ struct Cpu
 	uint16_t opcode;
 	uint8_t delayTimer;
 	uint8_t soundTimer;
+
+	bool errorFlag;
 };
 
 

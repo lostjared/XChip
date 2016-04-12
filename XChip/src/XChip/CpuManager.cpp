@@ -16,13 +16,6 @@ template<class T>
 static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept;
 template<class T>
 static void free_cpu_arr(T*& arr) noexcept;
-template<class T>
-static size_t get_error_flag_offs(const T*const memory) noexcept;
-template<class T>
-static void* get_error_flag_addr(T*const memory) noexcept;
-template<class T>
-static void erase_error_flag(T*const memory) noexcept;
-
 
 
 
@@ -111,23 +104,12 @@ bool CpuManager::SetGfx(const std::size_t size)
 
 bool CpuManager::ResizeMemory(const std::size_t size)
 {
-	auto* const errorFlag = get_error_flag_addr(_cpu.memory);
-
-	// erase the old flag location that is going to be reallocated
-	if(errorFlag)
-		erase_error_flag(_cpu.memory);
-
 
 	if ( !realloc_cpu_arr(_cpu.memory, size)) 
 	{
 		LOGerr("Cannot reallocate Cpu memory to size: "_s + std::to_string(size));
 		return false;
 	}
-
-
-	// replace the flag in new memory location
-	if(errorFlag)
-		this->PlaceErrorFlag(errorFlag);
 
 
 	return true;
@@ -265,26 +247,6 @@ iSound* CpuManager::SwapSound(iSound* sound)
 
 
 
-void CpuManager::PlaceErrorFlag(void* addr)
-{
-	const auto flagOffs = get_error_flag_offs(_cpu.memory);
-	InsertByte(0xFF, flagOffs - sizeof(uint8_t));
-	InsertAddress(addr, flagOffs);
-}
-
-
-
-
-
-// static
-void* CpuManager::GetErrorFlag(const Cpu& _cpu)
-{
-	return get_error_flag_addr(_cpu.memory);
-}
-
-
-
-
 
 
 // local template functions
@@ -297,15 +259,17 @@ static bool __realloc_arr(T*& arr, const size_t size) noexcept;
 template<class T>
 static bool alloc_cpu_arr(T*& arr, const size_t size) noexcept
 {
-	if (size == arr_size(arr))
-		return true;
+	if (arr != nullptr)
+	{
+		if (size == arr_size(arr))
+			return true;
+		
+		else
+			free_arr(arr);
+	}
 
-	else if (arr != nullptr)
-		free_arr(arr);
 
-	
 	return __alloc_arr(arr, size);
-
 }
 
 
@@ -335,6 +299,8 @@ static void free_cpu_arr(T*& arr) noexcept
 }
 
 
+
+
 template<class T>
 static bool __alloc_arr(T*& arr, const size_t size) noexcept
 {
@@ -355,63 +321,6 @@ static bool __realloc_arr(T*& arr, const size_t size) noexcept
 	arr = (T*) realloc_arr(arr, sizeof(T) * size);
 	return arr != nullptr;
 }
-
-
-
-
-
-
-
-
-
-template<class T>
-static size_t get_error_flag_offs(const T*const memory) noexcept
-{
-	ASSERT_MSG(memory != nullptr 
-	           && arr_size(memory) > (alignof(uintptr_t) + sizeof(uintptr_t) + sizeof(uint8_t)),
-	"get_error_flag_offs: null memory or size is too low");	
-
-	
-	// workaround the memory aligned problem pointed by the sanitizer:
-	// This code will check for the memory address of the flagLocation
-	// inside the given argument 'memory' array.
-	// while that address isn't a multiple of the proper align size
-	// of a pointer, we need to go back until we get an aligned address.
-	auto flagLocation = (arr_size(memory) - 1) - sizeof(uintptr_t);
-	auto memoryAddr = reinterpret_cast<uintptr_t>(&memory[flagLocation]);
-
-	while( ( memoryAddr % alignof(uintptr_t) ) != 0) {
-		--memoryAddr;
-		--flagLocation;
-	}
-
-	return flagLocation;
-
-}
-
-
-
-template<class T>
-static void* get_error_flag_addr(T*const memory) noexcept
-{
-	const auto flagOffs = get_error_flag_offs(memory);
-	if (memory[flagOffs - sizeof(uint8_t)] == 0xFF)
-		return reinterpret_cast<void*&>(memory[flagOffs]);
-
-	return nullptr;
-}
-
-
-
-template<class T>
-static void erase_error_flag(T*const memory) noexcept
-{
-	const auto flagOffs = get_error_flag_offs(memory);
-	memory[flagOffs-sizeof(uint8_t)] = 0;
-	memset(memory+flagOffs, 0, sizeof(uintptr_t));
-}
-
-
 
 
 

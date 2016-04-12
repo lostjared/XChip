@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 	using xchip::SdlSound;
 	using xchip::utility::make_unique; // nothrow version	
 
-	if(argc < 2)
+	if(argc < 1)
 	{
 		std::cout << "No game to load..." << std::endl;
 		return EXIT_SUCCESS;
@@ -51,8 +51,9 @@ int main(int argc, char** argv)
 	if(!emulator.Initialize(move(render), move(input), move(sound)))
 		return EXIT_FAILURE;
 	
-	if(!emulator.LoadRom(argv[1]))
-		return EXIT_FAILURE;
+
+	//if(!emulator.LoadRom("../"))
+		//return EXIT_FAILURE;
 
 
 	while(!emulator.GetExitFlag())

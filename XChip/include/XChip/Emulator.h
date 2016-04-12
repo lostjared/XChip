@@ -81,7 +81,7 @@ private:
 
 inline bool Emulator::GetInstrFlag() const { return _instrf; }
 inline bool Emulator::GetDrawFlag() const { return _drawf; }
-inline bool Emulator::GetExitFlag() const { return _exitf; }
+inline bool Emulator::GetExitFlag() const { return _exitf || _manager.GetErrorFlag(); }
 
 inline void Emulator::SetInstrPerSec(const unsigned short value) { 
 	_instrTimer.SetTargetTime(utility::literals::operator""_hz(value));

@@ -23,6 +23,7 @@ public:
 	size_t GetRegistersSize() const;
 	size_t GetStackSize() const;
 	size_t GetGfxSize() const;
+	bool GetErrorFlag() const;
 
 	const iRender* GetRender() const;
 	const iInput* GetInput() const;
@@ -31,10 +32,8 @@ public:
 	const uint8_t* GetRegisters() const;
 	const size_t* GetStack() const;
 	const uint32_t* GetGfx() const;
-	const void* GetErrorFlag() const;
 	const Cpu& GetCpu() const;
 
-	void* GetErrorFlag();
 	Cpu& GetCpu();
 	iRender* GetRender();
 	iInput* GetInput();
@@ -48,13 +47,11 @@ public:
 	bool ResizeRegisters(const size_t size);
 	bool ResizeStack(const size_t size);
 	bool ResizeGfx(const size_t size);
+	void SetErrorFlag(const bool val);
 	void SetPC(const size_t offset);
 	void SetSP(const size_t offset);
 	void SetFont(const uint8_t* font, const size_t size);
 	bool LoadRom(const char* file, const size_t at);
-	void InsertByte(const uint8_t val, const size_t offset);
-	void InsertAddress(void* addr, const size_t offset);
-	void PlaceErrorFlag(void* addr);
 	void SetRender(iRender* render);
 	void SetInput(iInput* input);
 	void SetSound(iSound* sound);
@@ -68,8 +65,6 @@ public:
 	void CleanRegisters();
 	void CleanStack();
 	void CleanGfx();
-
-	static void* GetErrorFlag(const Cpu& _cpu);
 private:
 	Cpu _cpu;
 
@@ -84,6 +79,7 @@ inline size_t CpuManager::GetMemorySize() const { return utility::arr_size(_cpu.
 inline size_t CpuManager::GetRegistersSize() const { return utility::arr_size(_cpu.registers); }
 inline size_t CpuManager::GetStackSize() const { return utility::arr_size(_cpu.stack); }
 inline size_t CpuManager::GetGfxSize() const { return utility::arr_size(_cpu.gfx); }
+inline bool CpuManager::GetErrorFlag() const { return _cpu.errorFlag; };
 inline const iRender* CpuManager::GetRender() const { return _cpu.render; }
 inline const iInput* CpuManager::GetInput() const { return _cpu.input; }
 inline const iSound* CpuManager::GetSound() const { return _cpu.sound; }
@@ -91,42 +87,19 @@ inline const uint8_t* CpuManager::GetMemory() const { return _cpu.memory; }
 inline const uint8_t* CpuManager::GetRegisters() const { return _cpu.registers; }
 inline const size_t* CpuManager::GetStack() const { return _cpu.stack; }
 inline const uint32_t* CpuManager::GetGfx() const { return _cpu.gfx; }
-inline const void* CpuManager::GetErrorFlag() const { return GetErrorFlag(_cpu); };
 inline const Cpu& CpuManager::GetCpu() const { return _cpu; }
 
-inline void* CpuManager::GetErrorFlag() { return GetErrorFlag(_cpu); }
+
 inline Cpu& CpuManager::GetCpu() { return _cpu; }
 inline iRender* CpuManager::GetRender() { return _cpu.render; }
 inline iInput* CpuManager::GetInput() { return _cpu.input; }
 inline iSound* CpuManager::GetSound() { return _cpu.sound; }
+inline void CpuManager::SetErrorFlag(const bool val) { _cpu.errorFlag = val; }
 inline void CpuManager::SetPC(const size_t offset) { _cpu.pc = offset; }
 inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
 inline void CpuManager::SetRender(iRender* render) { _cpu.render = render; }
 inline void CpuManager::SetInput(iInput* input) { _cpu.input = input; }
 inline void CpuManager::SetSound(iSound* sound) { _cpu.sound = sound; }
-
-
-inline void CpuManager::InsertByte(const uint8_t val, const size_t offset) 
-{ 
-	ASSERT_MSG(_cpu.memory != nullptr,
-		"CpuManager::InsertByte: null Cpu::memory!");
-	ASSERT_MSG(offset < utility::arr_size(_cpu.memory),
-		"CpuManager::InsertByte: offset greater than Cpu::memory size!");
-
-	_cpu.memory[offset] = val; 
-}
-
-inline void CpuManager::InsertAddress(void* addr, const size_t offset)  
-{
-	ASSERT_MSG(_cpu.memory != nullptr,
-		"CpuManager::InsertAddress: null Cpu::memory!");
-	ASSERT_MSG(offset < utility::arr_size(_cpu.memory),
-		"CpuManager::InsertAddress: offset greater than Cpu::memory size!");
-
-	reinterpret_cast<void*&>(_cpu.memory[offset]) = addr;
-}
-
-
 
 
 inline void CpuManager::CleanMemory() 
