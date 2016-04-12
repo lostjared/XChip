@@ -4,7 +4,6 @@
 #include "StdintDef.h"
 #include "BaseTraits.h"
 #include "Assert.h"
-#include <type_traits>
 
 namespace xchip { namespace utility {
 
@@ -29,7 +28,7 @@ size_t> arr_size(const T arr) noexcept
 		"Alloc.h::arr_size: attempt to get size from nullptr");
 
 	const auto size = reinterpret_cast<const size_t*>(arr) - 1;
-	return (*size) / sizeof(T);
+	return (*size) / sizeof(remove_all_t<T>);
 }
 
 template<class T>
@@ -64,7 +63,9 @@ void> arr_zero(T arr) noexcept
 }
 
 
-inline void arr_zero(uint8_t* arr) noexcept
+template<class T>
+enable_if_t<is_pointer<T>::value && is_same<remove_all_t<T>, uint8_t>::value,
+void> arr_zero(const T arr) noexcept
 {
 	ASSERT_MSG(arr != nullptr,
 		"Alloc.h::arr_zero: attempt to clean nullptr");
