@@ -2,7 +2,7 @@
 #define _XCHIP_UTILITY_TIMER_H
 #include <chrono>
 
-#if __linux__ | __CYGWIN32__
+#if defined(__linux__) ||  defined(__CYGWIN32__) || defined(__APPLE__)
 
 #include <ctime>
 
@@ -11,6 +11,8 @@
 #include <Windows.h>
 
 #endif
+
+
 
  
 namespace xchip { namespace utility {
@@ -78,7 +80,7 @@ inline void Timer::Halt(const Timer::Nano& nano)
 	using namespace literals;
 	/* high precision sleep on linux */
 
-#if __linux__ | __CYGWIN32__
+#if defined(__linux__) || defined(__CYGWIN32__) || defined(__APPLE__)
 	static timespec _sleep{ 0, 0 };
 	_sleep.tv_nsec = nano.count();
 	nanosleep(&_sleep, NULL);
