@@ -79,7 +79,7 @@ inline size_t CpuManager::GetMemorySize() const { return utility::arr_size(_cpu.
 inline size_t CpuManager::GetRegistersSize() const { return utility::arr_size(_cpu.registers); }
 inline size_t CpuManager::GetStackSize() const { return utility::arr_size(_cpu.stack); }
 inline size_t CpuManager::GetGfxSize() const { return utility::arr_size(_cpu.gfx); }
-inline bool CpuManager::GetErrorFlag() const { return _cpu.errorFlag; };
+inline bool CpuManager::GetErrorFlag() const { return _cpu.errorFlag; }
 inline const iRender* CpuManager::GetRender() const { return _cpu.render; }
 inline const iInput* CpuManager::GetInput() const { return _cpu.input; }
 inline const iSound* CpuManager::GetSound() const { return _cpu.sound; }

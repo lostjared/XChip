@@ -1,7 +1,10 @@
+// needed for M_PI 
+#define _USE_MATH_DEFINES 
 #include <cmath>
+
+
 #include <cstdlib>
 #include <cstring>
-
 #include <SDL2/SDL.h>
 #include <XChip/SDL_MEDIA/SdlSound.h>
 #include <XChip/Utility/Log.h>
