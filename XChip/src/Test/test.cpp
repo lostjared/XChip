@@ -1,14 +1,24 @@
-
 // assert test
 #if 0
+#include <iostream>
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Alloc.h>
+
+
+template<class T>
+void foo(const T*& arr)
+{
+	std::cout << xchip::utility::arr_size(arr) << std::endl;;
+}
+
 
 int main(void)
 {
 	using xchip::CpuManager;
+	using namespace xchip::utility;
 	CpuManager man;
-	man.CleanMemory();
+
+
 
 }
 
@@ -35,7 +45,7 @@ int main(int argc, char** argv)
 	using xchip::SdlSound;
 	using xchip::utility::make_unique; // nothrow version	
 
-	if(argc < 1)
+	if(argc < 2)
 	{
 		std::cout << "No game to load..." << std::endl;
 		return EXIT_SUCCESS;
@@ -52,8 +62,8 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	
 
-	//if(!emulator.LoadRom("../"))
-		//return EXIT_FAILURE;
+	if(!emulator.LoadRom(argv[1]))
+		return EXIT_FAILURE;
 
 
 	while(!emulator.GetExitFlag())
