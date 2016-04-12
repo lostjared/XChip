@@ -59,7 +59,7 @@ void> arr_zero(T arr) noexcept
 {
 	ASSERT_MSG(arr != nullptr,
 		"Alloc.h::arr_zero: attempt to clean nullptr");
-	memset(arr, 0, arr_size(arr) * sizeof(T));
+	memset(arr, 0, arr_size(arr) * sizeof(remove_all_t<T>));
 }
 
 
@@ -81,6 +81,12 @@ void arr_zero(T(&arr)[sz]) noexcept
 	for (auto& it : arr)
 		it = 0;
 }
+
+
+
+
+
+
 
 
 

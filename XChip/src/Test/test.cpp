@@ -1,5 +1,5 @@
 // assert test
-#if 1
+#if 0
 #include <iostream>
 #include <XChip/Emulator.h>
 #include <XChip/Utility/Alloc.h>
@@ -30,7 +30,7 @@ int main(void)
 
 
 // normal run:
-#if 0
+#if 1
 #include <iostream>
 #include <XChip/Emulator.h>
 #include <XChip/SDL_MEDIA/SdlRender.h>
