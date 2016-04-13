@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\wXChip\main.cpp">
+    <ClCompile Include="..\..\..\XChip\src\GUI\wXChip\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

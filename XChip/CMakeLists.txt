@@ -15,7 +15,7 @@ INCLUDE_DIRECTORIES(${XCHIP_DEFAULT_INCLUDE_PATH})
 
 
 #flags && compiler selection
-set(CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++11 -pedantic -fno-exceptions -fno-unwind-tables")
+set(CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++11 -pedantic -fno-exceptions -fno-unwind-tables ")
 
 
 if(APPLE)
@@ -32,13 +32,13 @@ endif()
 
 # BUILD TYPES
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-	set(CXX_FLAGS "${CXX_FLAGS} -O3")
+	set(CXX_FLAGS "-O3 -DNDEBUG ${CXX_FLAGS}")
 
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set(CXX_FLAGS "${CXX_FLAGS} -O0 -g -ggdb -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined -D_DEBUG")
+	set(CXX_FLAGS "-D_DEBUG ${CXX_FLAGS} -O0 -g -ggdb -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined")
 
 elseif(CMAKE_BUILD_TYPE STREQUAL "OPTDebug")
-	set(CXX_FLAGS "${CXX_FLAGS} -O2 -g -ggdb -fno-omit-frame-pointer -D_DEBUG")
+	set(CXX_FLAGS "-D_DEBUG ${CXX_FLAGS} -O2 -g -ggdb -fno-omit-frame-pointer")
 
 endif()
 
@@ -61,14 +61,16 @@ set(USING_SDL_MEDIA  "ON" CACHE STRING "" )
 
 
 #add sub directories libs
-#XChip
-add_subdirectory(src/XChip)
+#Core
+add_subdirectory(src/Core)
+#utility
+add_subdirectory(src/Utility)
 
-
+set(ADD_LIBS "${ADD_LIBS};Core;Utility;")
 
 # SDL_MEDIA if using_sdl_media is on
 if( ${USING_SDL_MEDIA} )
-	add_subdirectory(src/SDL_MEDIA)
+	add_subdirectory(src/Media/SDLMedia)
 endif()
 
 
@@ -103,4 +105,4 @@ add_executable(${PROJECT_NAME} ${APP_HEADERS} ${APP_SRC})
 
 
 # Link libs
-TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${ADD_LIBS} XChip)
+TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${ADD_LIBS})

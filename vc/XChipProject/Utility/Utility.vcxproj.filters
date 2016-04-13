@@ -15,22 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Traits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Alloc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Memory.h">
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Assert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\BaseTraits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\ScopeExit.h">
@@ -39,12 +36,15 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\StdintDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Assert.h">
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\XChip\src\XChip\Utility\Alloc.cpp">
+    <ClCompile Include="..\..\..\XChip\src\Utility\Alloc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
