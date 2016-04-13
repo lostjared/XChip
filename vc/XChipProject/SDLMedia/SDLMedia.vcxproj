@@ -34,7 +34,7 @@
     <ProjectGuid>{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}</ProjectGuid>
     <RootNamespace>MediaSDL</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
-    <ProjectName>SDL_MEDIA</ProjectName>
+    <ProjectName>SDLMedia</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
