@@ -1,2 +1,2 @@
 #### put your SDL's library include folder inside your system's folder (WIN/LIN/OSX)...
-#### example: ./WIN/SDL2/ ( .h files here )
+#### example: .SDL2/WIN/include/SDL2/ -> ( .h files here )
