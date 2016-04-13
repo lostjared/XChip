@@ -23,7 +23,7 @@ using std::int64_t;
 
 using std::size_t;
 using std::uintptr_t;
-
+using std::intptr_t;
 
 
 

@@ -78,7 +78,7 @@ inline void Timer::Halt(const Timer::Nano& nano)
 {
 	using namespace std::chrono;
 	using namespace literals;
-	/* high precision sleep on linux */
+	/* high precision sleep unix */
 
 #if defined(__linux__) || defined(__CYGWIN32__) || defined(__APPLE__)
 	static timespec _sleep{ 0, 0 };

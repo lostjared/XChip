@@ -32,10 +32,10 @@ int main(void)
 // normal run:
 #if 1
 #include <iostream>
-#include <XChip/Emulator.h>
-#include <XChip/SDL_MEDIA/SdlRender.h>
-#include <XChip/SDL_MEDIA/SdlInput.h>
-#include <XChip/SDL_MEDIA/SdlSound.h>
+#include <XChip/Core/Emulator.h>
+#include <XChip/Media/SDLMedia/SdlRender.h>
+#include <XChip/Media/SDLMedia/SdlInput.h>
+#include <XChip/Media/SDLMedia/SdlSound.h>
 #include <XChip/Utility/Memory.h>
 
 int main(int argc, char** argv)
