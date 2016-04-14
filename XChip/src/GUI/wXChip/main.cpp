@@ -10,7 +10,7 @@
 
 #if defined(__APPLE__) || defined(__linux__)
 #include<dirent.h>
-#elif _defined(WIN32)
+#elif defined(_WIN32)
 #include "dirent.h"
 #endif
 
