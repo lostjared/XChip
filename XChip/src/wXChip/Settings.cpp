@@ -1,2 +1,2 @@
-#include"Settings.h"
+#include <wXChip/Settings.h>
 

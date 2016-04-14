@@ -1,4 +1,4 @@
-#include "savelist.h"
+#include <wXChip/savelist.h>
 
 void saveDirectory(const std::string &text) {
     std::fstream file;
