@@ -1,0 +1,5 @@
+add_subdirectory(Utility)
+add_subdirectory(Core)
+add_subdirectory(Media)
+add_subdirectory(Test)
+#add_subdirectory(GUI)
