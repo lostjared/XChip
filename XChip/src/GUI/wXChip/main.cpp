@@ -7,6 +7,8 @@
     #include <wx/wx.h>
 #endif
 #include<wx/listbox.h>
+#include"dirent.h"
+
 
 
 class MyApp: public wxApp
@@ -34,10 +36,8 @@ private:
     wxDECLARE_EVENT_TABLE();
     
 };
-enum
-{
-    ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_SETTINGS = 4
-};
+enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_SETTINGS = 4, ID_TEXT = 5 };
+
 wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(ID_Chip,   MyFrame::OnChip)
     EVT_MENU(wxID_EXIT,  MyFrame::OnExit)
@@ -58,8 +58,8 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
         : wxFrame(NULL, wxID_ANY, title, pos, size)
 {
     wxMenu *menuFile = new wxMenu;
-    menuFile->Append(ID_Chip, "&Settings...\tCtrl-S",
-                     "Set settings");
+    menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L",
+                     "Load Roms");
     menuFile->AppendSeparator();
     menuFile->Append(wxID_EXIT);
     wxMenu *menuHelp = new wxMenu;
@@ -72,10 +72,13 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
     SetStatusText( "Welcome to wXChip" );
     wxPanel* panel = new wxPanel(this, wxID_ANY);
     wxArrayString strings;
-    ListBox = new wxListBox(panel, ID_LISTBOX, wxPoint(10, 10), wxSize(620, 380), strings, wxLB_SINGLE);
+    
+    wxStaticText *text = new wxStaticText(panel, ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
+    
+    ListBox = new wxListBox(panel, ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
     ListBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MyFrame::OnLDown), NULL, this);
     startRom = new wxButton(panel, ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
-    settings = new wxButton(panel, ID_SETTINGS, _T("Settings"), wxPoint(120, 400), wxSize(100,25));
+    settings = new wxButton(panel, ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
 }
 
 
@@ -126,6 +129,37 @@ void MyFrame::OnAbout(wxCommandEvent& event)
 
 void MyFrame::OnChip(wxCommandEvent& event)
 {
-    // Load settings window for rom path
-    wxLogMessage("wXChip Settings Here!");
+    wxDirDialog dlg(NULL, "Choose input directory", "",
+                    wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+    if (dlg.ShowModal() == wxID_CANCEL)
+        return;     // the user changed idea...
+ 
+    wxArrayString strings;
+    
+    
+#if defined(__APPLE__) || defined(__linux__)
+    
+    DIR *dir = opendir(dlg.GetPath().c_str());
+    
+    if(dir == NULL) {
+        std::cerr << "Error could not open directory.\n";
+        return;
+    }
+    
+    dirent *e;
+    
+    while((e = readdir(dir))) {
+        if(e->d_type == 0x8) {
+            wxString w(e->d_name);
+            strings.Add(w);
+        }
+    }
+    
+    closedir(dir);
+    ListBox->InsertItems(strings, 0);
+    
+#else // windows
+    
+#endif
+    
 }
