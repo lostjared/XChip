@@ -1,22 +1,5 @@
 project(Utility)
-cmake_minimum_required(VERSION 2.8)
+file(GLOB_RECURSE SRC ./*.cpp)
+file(GLOB_RECURSE HEADERS XChip/*.h)
 
-INCLUDE_DIRECTORIES(${XCHIP_DEFAULT_INCLUDE_PATH})
-
-# CXX_FLAGS
-set(CMAKE_CXX_COMPILER "${CXX_COMPILER}")
-set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
-
-file(GLOB_RECURSE UTILITY_SRC ./*.cpp)
-file(GLOB_RECURSE UTILITY_HEADERS XChip/Utility/*.h)
-
-
-# xchip added
-add_library(${PROJECT_NAME} ${UTILITY_HEADERS} ${UTILITY_SRC})
-
-
-
-
-
-
-
+add_library(${PROJECT_NAME} ${HEADERS} ${SRC})
