@@ -3,13 +3,21 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 project(XChip)
 
 
-set(SANITIZERS "OFF" CACHE STRING "use address sanitizer and undefined behavior sanitizer")
-
+set(MEMORY_SANITIZER "OFF" CACHE STRING "-fsanitize=memory")
+set(UNDEFINED_SANITIZER "OFF" CACHE STRING "-fsanitize=undefined")
 
 #set on media libraries
-set(USING_SDL_MEDIA "ON" CACHE STRING "")
+set(USING_SDL_MEDIA "OFF" CACHE STRING "")
 
-#set(CMAKE_CXX_COMPILER "clang++")
+
+#build Test ?
+set(TEST_BUILD "OFF" CACHE STRING "")
+
+# build wXChip ?
+set(WXCHIP_BUILD "OFF" CACHE STRING "")
+
+
+# compiler settings flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++11 -pedantic -fno-exceptions")
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -27,8 +35,12 @@ elseif(${CMAKE_BUILD_TYPE} STREQUAL "Bench")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g -ggdb -DNDEBUG")
 endif()
 
-if(${SANITIZERS} STREQUAL "ON")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=undefined")
+if(${MEMORY_SANITIZER} STREQUAL "ON")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+endif()
+
+if(${UNDEFINED_SANITIZER} STREQUAL "ON")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
 endif()
 
 

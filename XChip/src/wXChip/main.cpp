@@ -2,25 +2,36 @@
    (c) 2016
 */
 
+
+#include <sstream>
+#include <XChip/Utility/Memory.h>
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
-#include<wx/listbox.h>
+#include <wx/listbox.h>
 
 #if defined(__APPLE__) || defined(__linux__)
-#include<dirent.h>
+#include <dirent.h>
 #elif defined(_WIN32)
 #include <wXChip/dirent.h>
 #endif
 
-#include<wXChip/savelist.h>
-#include<sstream>
+#include <wXChip/savelist.h>
+
+
+class MainWindow;
+
 
 class wXChip: public wxApp
 {
 public:
     virtual bool OnInit();
+
+private:
+    std::unique_ptr<MainWindow> _frame;
+
 };
 
 class MainWindow: public wxFrame
@@ -28,10 +39,10 @@ class MainWindow: public wxFrame
 public:
     MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
     
-    wxListBox *ListBox;
-    wxButton *startRom;
-    wxButton *settings;
-    wxButton *emulator_settings;
+    std::unique_ptr<wxListBox> _listBox;
+    std::unique_ptr<wxButton> _startRom;
+    std::unique_ptr<wxButton> _settings;
+    std::unique_ptr<wxButton> _emulatorSettings;
     
     void LoadList(const std::string &text);
     std::string file_path;
@@ -69,48 +80,61 @@ wxIMPLEMENT_APP(wXChip);
 
 bool wXChip::OnInit()
 {
+    using xchip::utility::make_unique;    
     
-    std::string file = getDirectory();
+    const std::string file = getDirectory();
     
-    MainWindow *frame = new MainWindow( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
-    frame->Show( true );
-    if(file != "nolist") frame->LoadList(file);
+    _frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
+    _frame->Show( true );
+    
+    if(file != "nolist") 
+        _frame->LoadList(file);
     
     return true;
 }
 
+
+
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
         : wxFrame(NULL, wxID_ANY, title, pos, size)
 {
+   using xchip::utility::make_unique;
+
+
     wxMenu *menuFile = new wxMenu;
     menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L",
                      "Load Roms");
+
     menuFile->AppendSeparator();
     menuFile->Append(wxID_EXIT);
     wxMenu *menuHelp = new wxMenu;
     menuHelp->Append(wxID_ABOUT);
     wxMenuBar *menuBar = new wxMenuBar;
+    
     menuBar->Append( menuFile, "&File" );
     menuBar->Append( menuHelp, "&Help" );
     SetMenuBar( menuBar );
     CreateStatusBar();
     SetStatusText( "Welcome to wXChip" );
+    
     wxPanel* panel = new wxPanel(this, wxID_ANY);
     wxArrayString strings;
     
     wxStaticText *text = new wxStaticText(panel, ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
     
-    ListBox = new wxListBox(panel, ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
-    ListBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
-    startRom = new wxButton(panel, ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
-    settings = new wxButton(panel, ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
-    emulator_settings = new wxButton(panel, ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
+    _listBox = make_unique<wxListBox>(panel, ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
+    _listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
+    
+    _startRom = make_unique<wxButton>(panel, ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
+    _settings = make_unique<wxButton>(panel, ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
+    _emulatorSettings = make_unique<wxButton>(panel, ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 }
 
 
 void MainWindow::OnLDown(wxMouseEvent& event)
 {
-    wxListBox* m_lbox = dynamic_cast<wxListBox*>(event.GetEventObject());
+    auto m_lbox = static_cast<wxListBox*>(event.GetEventObject());
+
     // Get the item index
     int item = m_lbox->HitTest(event.GetPosition());
     
@@ -151,13 +175,16 @@ void MainWindow::OnAbout(wxCommandEvent& event)
                   "About wXChip", wxOK | wxICON_INFORMATION );
 }
 
-void MainWindow::LoadList(const std::string &text) {
+
+
+void MainWindow::LoadList(const std::string &text) 
+{
     
     saveDirectory(text);
     
     wxArrayString strings;
     
-    ListBox->Clear();
+    _listBox->Clear();
     
     DIR *dir = opendir(text.c_str());
     
@@ -168,7 +195,8 @@ void MainWindow::LoadList(const std::string &text) {
     
     dirent *e;
     
-    while((e = readdir(dir))) {
+    while((e = readdir(dir))) 
+    {
         if(e->d_type == 0x8) {
             wxString w(e->d_name);
             strings.Add(w);
@@ -176,24 +204,29 @@ void MainWindow::LoadList(const std::string &text) {
     }
     
     closedir(dir);
-    ListBox->InsertItems(strings, 0);
+    _listBox->InsertItems(strings, 0);
     file_path = text;
 }
 
-void MainWindow::LaunchRom() {
+
+
+void MainWindow::LaunchRom() 
+{
     // Get the item index
-    int item = ListBox->GetSelection();
+    int item = _listBox->GetSelection();
     
     if (item != wxNOT_FOUND ) {
-        wxString str = ListBox->GetString(item);
+        const wxString str = _listBox->GetString(item);
         std::ostringstream stream;
         stream << file_path << "/" << str.c_str();
-        std::string fullname = stream.str();
+        const std::string fullname = stream.str();
         std::cout << "Start Rom At Path: " << fullname << "\n";
         wxString fname(fullname.c_str());
         wxLogMessage(fname);
     }
 }
+
+
 
 void MainWindow::OnChip(wxCommandEvent& event)
 {
