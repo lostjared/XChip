@@ -14,6 +14,7 @@
 #include "dirent.h"
 #endif
 
+#include"savelist.h"
 
 class wXChip: public wxApp
 {
@@ -29,6 +30,8 @@ public:
     wxListBox *ListBox;
     wxButton *startRom;
     wxButton *settings;
+    
+    void LoadList(const std::string &text);
     
 private:
     void OnChip(wxCommandEvent& event);
@@ -53,8 +56,13 @@ wxIMPLEMENT_APP(wXChip);
 
 bool wXChip::OnInit()
 {
+    
+    std::string file = getDirectory();
+    
     MainWindow *frame = new MainWindow( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
     frame->Show( true );
+    if(file != "nolist") frame->LoadList(file);
+    
     return true;
 }
 
@@ -120,19 +128,15 @@ void MainWindow::OnAbout(wxCommandEvent& event)
                   "About wXChip", wxOK | wxICON_INFORMATION );
 }
 
-void MainWindow::OnChip(wxCommandEvent& event)
-{
-    wxDirDialog dlg(NULL, "Choose input directory", "",
-                    wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
-    if (dlg.ShowModal() == wxID_CANCEL)
-        return;     // the user changed idea...
- 
+void MainWindow::LoadList(const std::string &text) {
+    
+    saveDirectory(text);
+    
     wxArrayString strings;
     
+    ListBox->Clear();
     
-//#if defined(__APPLE__) || defined(__linux__)
-    
-    DIR *dir = opendir(dlg.GetPath().c_str());
+    DIR *dir = opendir(text.c_str());
     
     if(dir == NULL) {
         std::cerr << "Error could not open directory.\n";
@@ -150,9 +154,17 @@ void MainWindow::OnChip(wxCommandEvent& event)
     
     closedir(dir);
     ListBox->InsertItems(strings, 0);
+
+}
+
+void MainWindow::OnChip(wxCommandEvent& event)
+{
+    wxDirDialog dlg(NULL, "Choose input directory", "",
+                    wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+    if (dlg.ShowModal() == wxID_CANCEL)
+        return;     // the user changed idea...
     
-//#else // windows
-    
-//#endif
-    
+
+    wxString value = dlg.GetPath();
+    LoadList(std::string(value.c_str()));
 }
