@@ -11,7 +11,7 @@ public:
     SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize);
    
 private:
-     wxDECLARE_EVENT_TABLE();
+    wxDECLARE_EVENT_TABLE();
 };
 
 

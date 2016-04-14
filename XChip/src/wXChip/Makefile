@@ -1,4 +1,4 @@
-CXXFLAGS= `wx-config --cflags` -I./include
+CXXFLAGS= `wx-config --cflags` -I./../../include/wXChip
 LDFLAGS= `wx-config --libs`
 CPP_FILES := $(wildcard *.cpp)
 OBJ_FILES := $(addprefix ,$(notdir $(CPP_FILES:.cpp=.o)))
