@@ -11,10 +11,10 @@
 #if defined(__APPLE__) || defined(__linux__)
 #include<dirent.h>
 #elif defined(_WIN32)
-#include "dirent.h"
+#include <wXChip/dirent.h>
 #endif
 
-#include"savelist.h"
+#include<wXChip/savelist.h>
 #include<sstream>
 
 class wXChip: public wxApp
