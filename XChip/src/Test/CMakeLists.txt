@@ -1,5 +1,5 @@
-#if(${TEST_BUILD} STREQUAL "ON")
+if(${TEST_BUILD} STREQUAL "ON")
 	project(XChipTest)
 	add_executable(${PROJECT_NAME} test.cpp)
 	target_link_libraries(${PROJECT_NAME} Core SDLMedia)
-#endif()
+endif()
