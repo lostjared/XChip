@@ -31,6 +31,7 @@ public:
     wxListBox *ListBox;
     wxButton *startRom;
     wxButton *settings;
+    wxButton *emulator_settings;
     
     void LoadList(const std::string &text);
     std::string file_path;
@@ -41,11 +42,15 @@ private:
     void OnAbout(wxCommandEvent& event);
     void OnLDown(wxMouseEvent &event);
     void OnStartRom(wxCommandEvent &event);
+    void LoadSettings(wxCommandEvent &event);
     void LaunchRom();
     wxDECLARE_EVENT_TABLE();
     
 };
-enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_SETTINGS = 4, ID_TEXT = 5 };
+enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_SETTINGS = 4, ID_TEXT = 5, ID_EMUSET};
+
+
+
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(ID_Chip,   MainWindow::OnChip)
@@ -53,8 +58,14 @@ wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
 EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
 EVT_BUTTON(ID_SETTINGS, MainWindow::OnChip)
+EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
 wxEND_EVENT_TABLE()
 wxIMPLEMENT_APP(wXChip);
+
+//xBEGIN_EVENT_TABLE(SettingsWindow, wxFrame)
+//wxEND_EVENT_TABLE()
+
+
 
 bool wXChip::OnInit()
 {
@@ -93,6 +104,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
     ListBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
     startRom = new wxButton(panel, ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
     settings = new wxButton(panel, ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
+    emulator_settings = new wxButton(panel, ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 }
 
 
@@ -118,6 +130,9 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 }
 
 
+void MainWindow::LoadSettings(wxCommandEvent &event) {
+    
+}
 
 void MainWindow::OnStartRom(wxCommandEvent &event) {
     std::cout << "Starting Rom...\n";
