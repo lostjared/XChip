@@ -12,6 +12,10 @@ set(USING_SDL_MEDIA "ON" CACHE STRING "")
 #set(CMAKE_CXX_COMPILER "clang++")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++11 -pedantic -fno-exceptions")
 
+if(NOT CMAKE_BUILD_TYPE)
+	message(STATUS "No build type selected! default to release")
+	set(CMAKE_BUILD_TYPE "Release")
+endif()
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -DNDEBUG")
