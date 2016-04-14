@@ -1,22 +1,5 @@
 project(Core)
-cmake_minimum_required(VERSION 2.8)
-
-INCLUDE_DIRECTORIES(${XCHIP_DEFAULT_INCLUDE_PATH})
-
-# CXX_FLAGS
-set(CMAKE_CXX_COMPILER "${CXX_COMPILER}")
-set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
-
-file(GLOB_RECURSE CORE_SRC ./*.cpp)
-file(GLOB_RECURSE CORE_HEADERS XChip/*.h)
-
-
-# xchip added
-add_library(${PROJECT_NAME} ${CORE_HEADERS} ${CORE_SRC})
-
-
-
-
-
-
-
+file(GLOB_RECURSE SRC ./*.cpp)
+file(GLOB_RECURSE HEADERS XChip/*.h)
+add_library(${PROJECT_NAME} ${HEADERS} ${SRC})
+target_link_libraries(${PROJECT_NAME} Utility)
