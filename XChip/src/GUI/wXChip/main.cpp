@@ -15,6 +15,7 @@
 #endif
 
 #include"savelist.h"
+#include<sstream>
 
 class wXChip: public wxApp
 {
@@ -32,6 +33,7 @@ public:
     wxButton *settings;
     
     void LoadList(const std::string &text);
+    std::string file_path;
     
 private:
     void OnChip(wxCommandEvent& event);
@@ -39,7 +41,7 @@ private:
     void OnAbout(wxCommandEvent& event);
     void OnLDown(wxMouseEvent &event);
     void OnStartRom(wxCommandEvent &event);
-    
+    void LaunchRom();
     wxDECLARE_EVENT_TABLE();
     
 };
@@ -97,23 +99,29 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 void MainWindow::OnLDown(wxMouseEvent& event)
 {
     wxListBox* m_lbox = dynamic_cast<wxListBox*>(event.GetEventObject());
-    
     // Get the item index
     int item = m_lbox->HitTest(event.GetPosition());
     
     if ( item != wxNOT_FOUND ) {
-        wxLogMessage(_T("Listbox item %d clicked"), item);
         wxString str = m_lbox->GetString(item);
-        std::cout << "Start Rom: " << str.c_str() << "\n";
+        std::ostringstream stream;
+        stream << file_path << "/" << str.c_str();
+        std::string fullname = stream.str();
+        std::cout << "Start Rom At Path: " << fullname << "\n";
+        wxString fname(fullname.c_str());
+        wxLogMessage(fname);
+        
     }
-    else
-        wxLogMessage(_T("Listbox right clicked but no item clicked upon"));
+  
+//    else
+//        wxLogMessage(_T("Listbox right clicked but no item clicked upon"));
 }
 
 
 
 void MainWindow::OnStartRom(wxCommandEvent &event) {
     std::cout << "Starting Rom...\n";
+    LaunchRom();
     // start application
 }
 
@@ -154,7 +162,22 @@ void MainWindow::LoadList(const std::string &text) {
     
     closedir(dir);
     ListBox->InsertItems(strings, 0);
+    file_path = text;
+}
 
+void MainWindow::LaunchRom() {
+    // Get the item index
+    int item = ListBox->GetSelection();
+    
+    if (item != wxNOT_FOUND ) {
+        wxString str = ListBox->GetString(item);
+        std::ostringstream stream;
+        stream << file_path << "/" << str.c_str();
+        std::string fullname = stream.str();
+        std::cout << "Start Rom At Path: " << fullname << "\n";
+        wxString fname(fullname.c_str());
+        wxLogMessage(fname);
+    }
 }
 
 void MainWindow::OnChip(wxCommandEvent& event)
