@@ -9,9 +9,13 @@
 #include<wx/listbox.h>
 
 #if defined(__APPLE__) || defined(__linux__)
-#include"dirent.h"
+#include<dirent.h>
+#elif defined(_WIN32)
+#include "dirent.h"
 #endif
 
+#include"savelist.h"
+#include<sstream>
 
 class wXChip: public wxApp
 {
@@ -28,13 +32,16 @@ public:
     wxButton *startRom;
     wxButton *settings;
     
+    void LoadList(const std::string &text);
+    std::string file_path;
+    
 private:
     void OnChip(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnLDown(wxMouseEvent &event);
     void OnStartRom(wxCommandEvent &event);
-    
+    void LaunchRom();
     wxDECLARE_EVENT_TABLE();
     
 };
@@ -51,8 +58,13 @@ wxIMPLEMENT_APP(wXChip);
 
 bool wXChip::OnInit()
 {
+    
+    std::string file = getDirectory();
+    
     MainWindow *frame = new MainWindow( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
     frame->Show( true );
+    if(file != "nolist") frame->LoadList(file);
+    
     return true;
 }
 
@@ -87,23 +99,29 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 void MainWindow::OnLDown(wxMouseEvent& event)
 {
     wxListBox* m_lbox = dynamic_cast<wxListBox*>(event.GetEventObject());
-    
     // Get the item index
     int item = m_lbox->HitTest(event.GetPosition());
     
     if ( item != wxNOT_FOUND ) {
-        wxLogMessage(_T("Listbox item %d clicked"), item);
         wxString str = m_lbox->GetString(item);
-        std::cout << "Start Rom: " << str.c_str() << "\n";
+        std::ostringstream stream;
+        stream << file_path << "/" << str.c_str();
+        std::string fullname = stream.str();
+        std::cout << "Start Rom At Path: " << fullname << "\n";
+        wxString fname(fullname.c_str());
+        wxLogMessage(fname);
+        
     }
-    else
-        wxLogMessage(_T("Listbox right clicked but no item clicked upon"));
+  
+//    else
+//        wxLogMessage(_T("Listbox right clicked but no item clicked upon"));
 }
 
 
 
 void MainWindow::OnStartRom(wxCommandEvent &event) {
     std::cout << "Starting Rom...\n";
+    LaunchRom();
     // start application
 }
 
@@ -118,19 +136,15 @@ void MainWindow::OnAbout(wxCommandEvent& event)
                   "About wXChip", wxOK | wxICON_INFORMATION );
 }
 
-void MainWindow::OnChip(wxCommandEvent& event)
-{
-    wxDirDialog dlg(NULL, "Choose input directory", "",
-                    wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
-    if (dlg.ShowModal() == wxID_CANCEL)
-        return;     // the user changed idea...
- 
+void MainWindow::LoadList(const std::string &text) {
+    
+    saveDirectory(text);
+    
     wxArrayString strings;
     
+    ListBox->Clear();
     
-#if defined(__APPLE__) || defined(__linux__)
-    
-    DIR *dir = opendir(dlg.GetPath().c_str());
+    DIR *dir = opendir(text.c_str());
     
     if(dir == NULL) {
         std::cerr << "Error could not open directory.\n";
@@ -148,9 +162,32 @@ void MainWindow::OnChip(wxCommandEvent& event)
     
     closedir(dir);
     ListBox->InsertItems(strings, 0);
+    file_path = text;
+}
+
+void MainWindow::LaunchRom() {
+    // Get the item index
+    int item = ListBox->GetSelection();
     
-#else // windows
+    if (item != wxNOT_FOUND ) {
+        wxString str = ListBox->GetString(item);
+        std::ostringstream stream;
+        stream << file_path << "/" << str.c_str();
+        std::string fullname = stream.str();
+        std::cout << "Start Rom At Path: " << fullname << "\n";
+        wxString fname(fullname.c_str());
+        wxLogMessage(fname);
+    }
+}
+
+void MainWindow::OnChip(wxCommandEvent& event)
+{
+    wxDirDialog dlg(NULL, "Choose input directory", "",
+                    wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+    if (dlg.ShowModal() == wxID_CANCEL)
+        return;     // the user changed idea...
     
-#endif
-    
+
+    wxString value = dlg.GetPath();
+    LoadList(std::string(value.c_str()));
 }
