@@ -9,7 +9,9 @@
 #include<wx/listbox.h>
 
 #if defined(__APPLE__) || defined(__linux__)
-#include"dirent.h"
+#include<dirent.h>
+#elif _defined(WIN32)
+#include "dirent.h"
 #endif
 
 
@@ -128,7 +130,7 @@ void MainWindow::OnChip(wxCommandEvent& event)
     wxArrayString strings;
     
     
-#if defined(__APPLE__) || defined(__linux__)
+//#if defined(__APPLE__) || defined(__linux__)
     
     DIR *dir = opendir(dlg.GetPath().c_str());
     
@@ -149,8 +151,8 @@ void MainWindow::OnChip(wxCommandEvent& event)
     closedir(dir);
     ListBox->InsertItems(strings, 0);
     
-#else // windows
+//#else // windows
     
-#endif
+//#endif
     
 }
