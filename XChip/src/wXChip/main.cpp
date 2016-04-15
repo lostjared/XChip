@@ -27,8 +27,6 @@ class wXChip: public wxApp
 {
 public:
     virtual bool OnInit();
-private:
-
 };
 
 class MainWindow: public wxFrame
