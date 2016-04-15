@@ -20,20 +20,16 @@
 #include <wXChip/SaveList.h>
 
 
-class MainWindow;
-
-
 class wXChip: public wxApp
 {
 public:
     virtual bool OnInit();
-
 };
 
 class MainWindow: public wxFrame
 {
 public:
-    MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);    
+    MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
     void LoadList(const std::string &text);
 
     
@@ -44,9 +40,10 @@ private:
     void OnLDown(wxMouseEvent &event);
     void OnStartRom(wxCommandEvent &event);
     void LoadSettings(wxCommandEvent &event);
-    void LaunchRom()
-;
-    std::string _filePath;
+    void LaunchRom();
+    void OnMouseOver(wxMouseEvent &event);
+    void OnSize(wxSizeEvent &event);
+
     std::unique_ptr<wxPanel> _panel;
     std::unique_ptr<wxStaticText> _text;
 
@@ -54,7 +51,7 @@ private:
     std::unique_ptr<wxButton> _startRom;
     std::unique_ptr<wxButton> _settings;
     std::unique_ptr<wxButton> _emulatorSettings;
-
+    std::string _filePath;
 
     wxDECLARE_EVENT_TABLE();
     
@@ -65,9 +62,10 @@ enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_SETTINGS = 4, ID_TEXT = 
 
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
-    EVT_MENU(ID_Chip,   MainWindow::OnChip)
-    EVT_MENU(wxID_EXIT,  MainWindow::OnExit)
-    EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
+EVT_MENU(ID_Chip,   MainWindow::OnChip)
+EVT_MENU(wxID_EXIT,  MainWindow::OnExit)
+EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
+EVT_MOTION(MainWindow::OnMouseOver)
 EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
 EVT_BUTTON(ID_SETTINGS, MainWindow::OnChip)
 EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
@@ -99,7 +97,7 @@ bool wXChip::OnInit()
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
-        : wxFrame(NULL, wxID_ANY, title, pos, size)
+        : wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
    using xchip::utility::make_unique;
 
@@ -122,12 +120,12 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
     CreateStatusBar();
     SetStatusText( "Welcome to wXChip" );
-    
 
-    _panel = make_unique<wxPanel>(this, wxID_ANY);
+
     wxArrayString strings;
     
-
+    _panel = make_unique<wxPanel>(this, wxID_ANY);
+    
     _text = make_unique<wxStaticText>(_panel.get(), ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
     
     _listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
@@ -136,7 +134,9 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
     _startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
     _settings = make_unique<wxButton>(_panel.get(), ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
     _emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
-   
+    
+    SetMinSize(GetSize());
+    SetMaxSize(GetSize());
 }
 
 
@@ -183,6 +183,14 @@ void MainWindow::OnAbout(wxCommandEvent& event)
 {
     wxMessageBox( "wXChip - xChip8 Emulator",
                   "About wXChip", wxOK | wxICON_INFORMATION );
+}
+
+void MainWindow::OnMouseOver(wxMouseEvent &event) {
+    
+}
+
+void MainWindow::OnSize(wxSizeEvent& event) {
+    
 }
 
 
