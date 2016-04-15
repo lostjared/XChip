@@ -38,7 +38,7 @@ public:
     std::unique_ptr<wxButton> _startRom;
     std::unique_ptr<wxButton> _settings;
     std::unique_ptr<wxButton> _emulatorSettings;
-    
+    std::unique_ptr<wxStaticText> _text;
     void LoadList(const std::string &text);
     std::string _filePath;
     
@@ -115,7 +115,9 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
     wxPanel* panel = new wxPanel(this, wxID_ANY);
     wxArrayString strings;
     
-    wxStaticText *text = new wxStaticText(panel, ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
+//    wxStaticText *text = new wxStaticText(panel, ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
+    
+    _text = make_unique<wxStaticText>(panel, ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
     
     _listBox = make_unique<wxListBox>(panel, ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
     _listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
