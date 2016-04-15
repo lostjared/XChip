@@ -44,6 +44,8 @@ private:
     void OnStartRom(wxCommandEvent &event);
     void LoadSettings(wxCommandEvent &event);
     void LaunchRom();
+    void OnMouseOver(wxMouseEvent &event);
+    void OnSize(wxSizeEvent &event);
 
     std::unique_ptr<wxMenu> _menuFile;
     std::unique_ptr<wxMenu> _menuHelp;
@@ -66,9 +68,10 @@ enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_SETTINGS = 4, ID_TEXT = 
 
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
-    EVT_MENU(ID_Chip,   MainWindow::OnChip)
-    EVT_MENU(wxID_EXIT,  MainWindow::OnExit)
-    EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
+EVT_MENU(ID_Chip,   MainWindow::OnChip)
+EVT_MENU(wxID_EXIT,  MainWindow::OnExit)
+EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
+EVT_MOTION(MainWindow::OnMouseOver)
 EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
 EVT_BUTTON(ID_SETTINGS, MainWindow::OnChip)
 EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
@@ -98,7 +101,7 @@ bool wXChip::OnInit()
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
-        : wxFrame(NULL, wxID_ANY, title, pos, size)
+        : wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
    using xchip::utility::make_unique;
 
@@ -133,7 +136,9 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
     _startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
     _settings = make_unique<wxButton>(_panel.get(), ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
     _emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
-   
+    
+    SetMinSize(GetSize());
+    SetMaxSize(GetSize());
 }
 
 
@@ -179,6 +184,14 @@ void MainWindow::OnAbout(wxCommandEvent& event)
 {
     wxMessageBox( "wXChip - xChip8 Emulator",
                   "About wXChip", wxOK | wxICON_INFORMATION );
+}
+
+void MainWindow::OnMouseOver(wxMouseEvent &event) {
+    
+}
+
+void MainWindow::OnSize(wxSizeEvent& event) {
+    
 }
 
 
