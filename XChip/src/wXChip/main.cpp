@@ -17,7 +17,7 @@
 #include <wXChip/dirent.h>
 #endif
 
-#include <wXChip/Savelist.h>
+#include <wXChip/SaveList.h>
 
 
 class MainWindow;
