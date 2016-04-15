@@ -17,7 +17,7 @@
 #include <wXChip/dirent.h>
 #endif
 
-#include <wXChip/savelist.h>
+#include <wXChip/Savelist.h>
 
 
 class MainWindow;
@@ -34,10 +34,7 @@ class MainWindow: public wxFrame
 {
 public:
     MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
-    std::unique_ptr<wxListBox> _listBox;
-    std::unique_ptr<wxButton> _startRom;
-    std::unique_ptr<wxButton> _settings;
-    std::unique_ptr<wxButton> _emulatorSettings;
+
     
     void LoadList(const std::string &text);
     std::string _filePath;
@@ -50,6 +47,19 @@ private:
     void OnStartRom(wxCommandEvent &event);
     void LoadSettings(wxCommandEvent &event);
     void LaunchRom();
+
+    std::unique_ptr<wxMenu> _menuFile;
+    std::unique_ptr<wxMenu> _menuHelp;
+    std::unique_ptr<wxMenuBar> _menuBar;
+    std::unique_ptr<wxPanel> _panel;
+    std::unique_ptr<wxStaticText> _text;
+
+    std::unique_ptr<wxListBox> _listBox;
+    std::unique_ptr<wxButton> _startRom;
+    std::unique_ptr<wxButton> _settings;
+    std::unique_ptr<wxButton> _emulatorSettings;
+
+
     wxDECLARE_EVENT_TABLE();
     
 };
@@ -79,11 +89,11 @@ bool wXChip::OnInit()
     
     const std::string file = getDirectory();
     
-    auto _frame = new MainWindow( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
-    _frame->Show( true );
+    auto frame = new MainWindow( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
+    frame->Show( true );
     
     if(file != "nolist") 
-        _frame->LoadList(file);
+        frame->LoadList(file);
     
     return true;
 }
@@ -96,33 +106,37 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
    using xchip::utility::make_unique;
 
 
-    wxMenu *menuFile = new wxMenu;
-    menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L",
+    _menuFile = make_unique<wxMenu>();
+    _menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L",
                      "Load Roms");
 
-    menuFile->AppendSeparator();
-    menuFile->Append(wxID_EXIT);
-    wxMenu *menuHelp = new wxMenu;
-    menuHelp->Append(wxID_ABOUT);
-    wxMenuBar *menuBar = new wxMenuBar;
+    _menuFile->AppendSeparator();
+    _menuFile->Append(wxID_EXIT);
     
-    menuBar->Append( menuFile, "&File" );
-    menuBar->Append( menuHelp, "&Help" );
-    SetMenuBar( menuBar );
+
+    _menuHelp = make_unique<wxMenu>();
+    _menuHelp->Append(wxID_ABOUT);
+    _menuBar = make_unique<wxMenuBar>();
+    
+    _menuBar->Append( _menuFile.release(), "&File" );
+    _menuBar->Append( _menuHelp.release(), "&Help" );
+    SetMenuBar( _menuBar.release() );
     CreateStatusBar();
     SetStatusText( "Welcome to wXChip" );
     
-    wxPanel* panel = new wxPanel(this, wxID_ANY);
+    _panel = make_unique<wxPanel>(this, wxID_ANY);
     wxArrayString strings;
     
-    wxStaticText *text = new wxStaticText(panel, ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
+
+    _text = make_unique<wxStaticText>(_panel.get(), ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
     
-    _listBox = make_unique<wxListBox>(panel, ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
+    _listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
     _listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
     
-    _startRom = make_unique<wxButton>(panel, ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
-    _settings = make_unique<wxButton>(panel, ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
-    _emulatorSettings = make_unique<wxButton>(panel, ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
+    _startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
+    _settings = make_unique<wxButton>(_panel.get(), ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
+    _emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
+   
 }
 
 
