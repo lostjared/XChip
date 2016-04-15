@@ -1,6 +1,6 @@
 #ifndef __SETTINGS__H__
 #define __SETTINGS__H__
-#if 0
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -13,7 +13,7 @@ public:
 private:
     wxDECLARE_EVENT_TABLE();
 };
-#endif
+
 
 
 #endif
