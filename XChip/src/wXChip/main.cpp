@@ -2,7 +2,6 @@
    (c) 2016
 */
 
-
 #include <sstream>
 #include <XChip/Utility/Memory.h>
 
@@ -29,23 +28,19 @@ class wXChip: public wxApp
 public:
     virtual bool OnInit();
 
-private:
-    std::unique_ptr<MainWindow> _frame;
-
 };
 
 class MainWindow: public wxFrame
 {
 public:
     MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
-    
     std::unique_ptr<wxListBox> _listBox;
     std::unique_ptr<wxButton> _startRom;
     std::unique_ptr<wxButton> _settings;
     std::unique_ptr<wxButton> _emulatorSettings;
     
     void LoadList(const std::string &text);
-    std::string file_path;
+    std::string _filePath;
     
 private:
     void OnChip(wxCommandEvent& event);
@@ -84,7 +79,7 @@ bool wXChip::OnInit()
     
     const std::string file = getDirectory();
     
-    _frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
+    auto _frame = new MainWindow( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
     _frame->Show( true );
     
     if(file != "nolist") 
@@ -141,7 +136,7 @@ void MainWindow::OnLDown(wxMouseEvent& event)
     if ( item != wxNOT_FOUND ) {
         wxString str = m_lbox->GetString(item);
         std::ostringstream stream;
-        stream << file_path << "/" << str.c_str();
+        stream << _filePath << "/" << str.c_str();
         std::string fullname = stream.str();
         std::cout << "Start Rom At Path: " << fullname << "\n";
         wxString fname(fullname.c_str());
@@ -205,7 +200,7 @@ void MainWindow::LoadList(const std::string &text)
     
     closedir(dir);
     _listBox->InsertItems(strings, 0);
-    file_path = text;
+    _filePath = text;
 }
 
 
@@ -218,7 +213,7 @@ void MainWindow::LaunchRom()
     if (item != wxNOT_FOUND ) {
         const wxString str = _listBox->GetString(item);
         std::ostringstream stream;
-        stream << file_path << "/" << str.c_str();
+        stream << _filePath << "/" << str.c_str();
         const std::string fullname = stream.str();
         std::cout << "Start Rom At Path: " << fullname << "\n";
         wxString fname(fullname.c_str());
