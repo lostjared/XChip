@@ -39,6 +39,7 @@ public:
     std::unique_ptr<wxButton> _settings;
     std::unique_ptr<wxButton> _emulatorSettings;
     std::unique_ptr<wxStaticText> _text;
+    wxPanel *panel;
     void LoadList(const std::string &text);
     std::string _filePath;
     
@@ -112,10 +113,8 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
     CreateStatusBar();
     SetStatusText( "Welcome to wXChip" );
     
-    wxPanel* panel = new wxPanel(this, wxID_ANY);
+    panel = new wxPanel(this, wxID_ANY);
     wxArrayString strings;
-    
-//    wxStaticText *text = new wxStaticText(panel, ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
     
     _text = make_unique<wxStaticText>(panel, ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
     
