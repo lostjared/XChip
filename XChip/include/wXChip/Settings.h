@@ -8,12 +8,11 @@
 
 class SettingsWindow: public wxFrame {
 public:
-    SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize);
-   
+    SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
+    
 private:
     wxDECLARE_EVENT_TABLE();
 };
-
 
 
 #endif
