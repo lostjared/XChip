@@ -1,5 +1,5 @@
 #include <string>
-#include <wXChip/Savelist.h>
+#include <wXChip/SaveList.h>
 #include <XChip/Utility/Log.h>
 
 void saveDirectory(const std::string &text) 
