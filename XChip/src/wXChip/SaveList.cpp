@@ -11,7 +11,7 @@ void saveDirectory(const std::string &text)
         return;
     }
 
-	file << text << "\n";
+    file << text << "\n";
     file.close();
 }
 
@@ -22,6 +22,7 @@ std::string getDirectory()
     if(!file.is_open()) {
         return "nolist";
     }
+    
     std::string value;
     std::getline(file, value);
     file.close();

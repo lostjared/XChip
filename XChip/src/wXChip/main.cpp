@@ -20,11 +20,15 @@
 #include <wXChip/SaveList.h>
 
 
+
 class wXChip: public wxApp
 {
 public:
     virtual bool OnInit();
 };
+
+
+
 
 class MainWindow: public wxFrame
 {
@@ -83,7 +87,7 @@ bool wXChip::OnInit()
     
     const std::string file = getDirectory();
     
-    auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
+    auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(800, 600) );
     frame->Show( true );
     
     if(file != "nolist") 
@@ -99,7 +103,7 @@ bool wXChip::OnInit()
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
         : wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
-   using xchip::utility::make_unique;
+    using xchip::utility::make_unique;
 
 
     auto menuFile = make_unique<wxMenu>();
