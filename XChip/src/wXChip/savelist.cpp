@@ -1,17 +1,22 @@
-#include <wXChip/savelist.h>
+#include <string>
+#include <wXChip/Savelist.h>
+#include <XChip/Utility/Log.h>
 
-void saveDirectory(const std::string &text) {
+void saveDirectory(const std::string &text) 
+{
     std::fstream file;
     file.open("romlist.dat", std::ios::out);
     if(!file.is_open()) {
-        std::cerr << "Error could not open file.\n";
+        xchip::utility::LOGerr("Error could not open file");
         return;
     }
-    file << text << "\n";
+
+	file << text << "\n";
     file.close();
 }
 
-std::string getDirectory() {
+std::string getDirectory() 
+{
     std::fstream file;
     file.open("romlist.dat", std::ios::in);
     if(!file.is_open()) {
