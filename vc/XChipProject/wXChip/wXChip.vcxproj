@@ -20,12 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\wXChip\dirent.h" />
-    <ClInclude Include="..\..\..\XChip\include\wXChip\Savelist.h" />
+    <ClInclude Include="..\..\..\XChip\include\wXChip\SaveList.h" />
     <ClInclude Include="..\..\..\XChip\include\wXChip\Settings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\wXChip\main.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\wXChip\Savelist.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\wXChip\SaveList.cpp" />
     <ClCompile Include="..\..\..\XChip\src\wXChip\Settings.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
