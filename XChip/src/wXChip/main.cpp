@@ -106,7 +106,8 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
     auto menuFile = make_unique<wxMenu>();
     menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L",
                      "Load Roms");
-
+    
+    menuFile->Append(ID_EMUSET, "&Settings\tCtrl-S", "Settings");
     menuFile->AppendSeparator();
     menuFile->Append(wxID_EXIT);
 
