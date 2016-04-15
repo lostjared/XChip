@@ -33,11 +33,9 @@ public:
 class MainWindow: public wxFrame
 {
 public:
-    MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
-
-    
+    MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);    
     void LoadList(const std::string &text);
-    std::string _filePath;
+
     
 private:
     void OnChip(wxCommandEvent& event);
@@ -46,11 +44,9 @@ private:
     void OnLDown(wxMouseEvent &event);
     void OnStartRom(wxCommandEvent &event);
     void LoadSettings(wxCommandEvent &event);
-    void LaunchRom();
-
-    std::unique_ptr<wxMenu> _menuFile;
-    std::unique_ptr<wxMenu> _menuHelp;
-    std::unique_ptr<wxMenuBar> _menuBar;
+    void LaunchRom()
+;
+    std::string _filePath;
     std::unique_ptr<wxPanel> _panel;
     std::unique_ptr<wxStaticText> _text;
 
@@ -89,12 +85,14 @@ bool wXChip::OnInit()
     
     const std::string file = getDirectory();
     
-    auto frame = new MainWindow( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
+    auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(640, 480) );
     frame->Show( true );
     
     if(file != "nolist") 
         frame->LoadList(file);
-    
+
+
+    frame.release();    
     return true;
 }
 
@@ -106,24 +104,26 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
    using xchip::utility::make_unique;
 
 
-    _menuFile = make_unique<wxMenu>();
-    _menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L",
+    auto menuFile = make_unique<wxMenu>();
+    menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L",
                      "Load Roms");
 
-    _menuFile->AppendSeparator();
-    _menuFile->Append(wxID_EXIT);
-    
+    menuFile->AppendSeparator();
+    menuFile->Append(wxID_EXIT);
 
-    _menuHelp = make_unique<wxMenu>();
-    _menuHelp->Append(wxID_ABOUT);
-    _menuBar = make_unique<wxMenuBar>();
     
-    _menuBar->Append( _menuFile.release(), "&File" );
-    _menuBar->Append( _menuHelp.release(), "&Help" );
-    SetMenuBar( _menuBar.release() );
+    auto menuHelp = make_unique<wxMenu>();
+    menuHelp->Append(wxID_ABOUT);
+    
+    auto menuBar = make_unique<wxMenuBar>();
+    menuBar->Append( menuFile.release(), "&File" );
+    menuBar->Append( menuHelp.release(), "&Help" );
+    SetMenuBar( menuBar.release() );
+
     CreateStatusBar();
     SetStatusText( "Welcome to wXChip" );
     
+
     _panel = make_unique<wxPanel>(this, wxID_ANY);
     wxArrayString strings;
     
@@ -147,7 +147,8 @@ void MainWindow::OnLDown(wxMouseEvent& event)
     // Get the item index
     int item = m_lbox->HitTest(event.GetPosition());
     
-    if ( item != wxNOT_FOUND ) {
+    if ( item != wxNOT_FOUND ) 
+    {
         wxString str = m_lbox->GetString(item);
         std::ostringstream stream;
         stream << _filePath << "/" << str.c_str();
@@ -224,7 +225,8 @@ void MainWindow::LaunchRom()
     // Get the item index
     int item = _listBox->GetSelection();
     
-    if (item != wxNOT_FOUND ) {
+    if (item != wxNOT_FOUND ) 
+    {
         const wxString str = _listBox->GetString(item);
         std::ostringstream stream;
         stream << _filePath << "/" << str.c_str();
@@ -241,6 +243,7 @@ void MainWindow::OnChip(wxCommandEvent& event)
 {
     wxDirDialog dlg(NULL, "Choose input directory", "",
                     wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+    
     if (dlg.ShowModal() == wxID_CANCEL)
         return;     // the user changed idea...
     
