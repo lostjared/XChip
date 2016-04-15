@@ -56,7 +56,8 @@ private:
     wxDECLARE_EVENT_TABLE();
     
 };
-enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_SETTINGS = 4, ID_TEXT = 5, ID_EMUSET};
+enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4,
+    ID_TEXT = 5, ID_EMUSET};
 
 
 
@@ -67,7 +68,7 @@ EVT_MENU(wxID_EXIT,  MainWindow::OnExit)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
 EVT_MOTION(MainWindow::OnMouseOver)
 EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
-EVT_BUTTON(ID_SETTINGS, MainWindow::OnChip)
+EVT_BUTTON(ID_LOADROM, MainWindow::OnChip)
 EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
 wxEND_EVENT_TABLE()
 wxIMPLEMENT_APP(wXChip);
@@ -132,7 +133,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
     _listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
     
     _startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
-    _settings = make_unique<wxButton>(_panel.get(), ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
+    _settings = make_unique<wxButton>(_panel.get(), ID_LOADROM, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
     _emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
     
     SetMinSize(GetSize());
@@ -164,14 +165,14 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 }
 
 
-void MainWindow::LoadSettings(wxCommandEvent &event) {
-    
-}
-
 void MainWindow::OnStartRom(wxCommandEvent &event) {
     std::cout << "Starting Rom...\n";
     LaunchRom();
     // start application
+}
+
+void MainWindow::LoadSettings(wxCommandEvent &event) {
+    
 }
 
 void MainWindow::OnExit(wxCommandEvent& event)
@@ -192,6 +193,7 @@ void MainWindow::OnMouseOver(wxMouseEvent &event) {
 void MainWindow::OnSize(wxSizeEvent& event) {
     
 }
+
 
 
 
