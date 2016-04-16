@@ -60,7 +60,8 @@ private:
 	wxDECLARE_EVENT_TABLE();
     
 };
-enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_SETTINGS = 4, ID_TEXT = 5, ID_EMUSET};
+enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4,
+    ID_TEXT = 5, ID_EMUSET};
 
 
 
@@ -71,7 +72,7 @@ EVT_MENU(wxID_EXIT,  MainWindow::OnExit)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
 EVT_MOTION(MainWindow::OnMouseOver)
 EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
-EVT_BUTTON(ID_SETTINGS, MainWindow::OnChip)
+EVT_BUTTON(ID_LOADROM, MainWindow::OnChip)
 EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
 wxEND_EVENT_TABLE()
 wxIMPLEMENT_APP(wXChip);
@@ -83,17 +84,16 @@ wxIMPLEMENT_APP(wXChip);
 
 bool wXChip::OnInit()
 {
-	using xchip::utility::make_unique;    
-
-	const std::string file = getDirectory();
-
-	auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(800, 600) );
-	frame->Show( true );
-
-	if(file != "nolist") 
+    using xchip::utility::make_unique;
+    
+    const std::string file = getDirectory();
+    
+    auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(800, 600) );
+    frame->Show( true );
+    
+	if(file != "nolist")
 		frame->LoadList(file);
-
-
+	
 	frame.release();    
 	return true;
 }
@@ -105,14 +105,13 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 {
 	using xchip::utility::make_unique;
 
-
-	auto menuFile = make_unique<wxMenu>();
-	menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L",
-	             "Load Roms");
-
-	menuFile->AppendSeparator();
-	menuFile->Append(wxID_EXIT);
-
+    auto menuFile = make_unique<wxMenu>();
+    menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L",
+                     "Load Roms");
+    
+    menuFile->Append(ID_EMUSET, "&Settings\tCtrl-S", "Settings");
+    menuFile->AppendSeparator();
+    menuFile->Append(wxID_EXIT);
 
 	auto menuHelp = make_unique<wxMenu>();
 	menuHelp->Append(wxID_ABOUT);
@@ -136,7 +135,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
 
 	_startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
-	_settings = make_unique<wxButton>(_panel.get(), ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
+	_settings = make_unique<wxButton>(_panel.get(), ID_Chip, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
 	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 
 	SetMinSize(GetSize());
@@ -162,20 +161,17 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 		wxLogMessage(fname);
 
 	}
-  
-//    else
-//        wxLogMessage(_T("Listbox right clicked but no item clicked upon"));
 }
 
-
-void MainWindow::LoadSettings(wxCommandEvent &event) {
-    
-}
 
 void MainWindow::OnStartRom(wxCommandEvent &event) {
 	std::cout << "Starting Rom...\n";
 	LaunchRom();
     // start application
+}
+
+void MainWindow::LoadSettings(wxCommandEvent &event) {
+    
 }
 
 void MainWindow::OnExit(wxCommandEvent& event)
@@ -196,6 +192,7 @@ void MainWindow::OnMouseOver(wxMouseEvent &event) {
 void MainWindow::OnSize(wxSizeEvent& event) {
     
 }
+
 
 
 
