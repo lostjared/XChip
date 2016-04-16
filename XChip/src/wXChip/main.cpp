@@ -91,8 +91,8 @@ bool wXChip::OnInit()
     auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(800, 600) );
     frame->Show( true );
     
-    if(file != "nolist") 
-        frame->LoadList(file);
+	if(file != "nolist")
+		frame->LoadList(file);
 	
 	frame.release();    
 	return true;
