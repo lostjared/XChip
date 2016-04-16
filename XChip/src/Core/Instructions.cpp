@@ -10,6 +10,7 @@
 
 
 namespace xchip { namespace instructions {
+
 using utility::arr_size;
 
 
@@ -49,10 +50,26 @@ void unknown_opcode(Cpu* const _cpu)
 
 void execute_instruction(Cpu& _cpu)
 {
-	ASSERT_MSG(_cpu.memory != nullptr, 
-		"Instructions.cpp::execute_instruction: null Cpu::memory");
+	ASSERT_MSG(_cpu.memory != nullptr && arr_size(_cpu.memory) >= 0x0FFF, 
+                   "Instructions.cpp::execute_instruction: Cpu::memory, null or size is too low!");
+
+	
+	ASSERT_MSG(_cpu.registers != nullptr && arr_size(_cpu.registers) >= 0x10,
+                   "Instructions.cpp:execute_instruction: Cpu::registers, null or size is too low!");
+
+
+	ASSERT_MSG(_cpu.stack != nullptr && arr_size(_cpu.stack) >= 0x10,
+                   "Instructions.cpp::execute_instruction: Cpu::stack, null or size is too low!");
+
+
+	ASSERT_MSG(_cpu.gfx != nullptr && arr_size(_cpu.gfx) >= (64 * 32),
+                   "Instructions.cpp::execute_instruction: Cpu::Gfx, null or size is too low!");
+
+
 	ASSERT_MSG((_cpu.pc + 1) < arr_size(_cpu.memory), 
-		"Instructions.cpp::execute_instruction: Cpu::pc greater than Cpu::memory");
+                   "Instructions.cpp::execute_instruction: Cpu::pc greater than Cpu::memory");
+
+
 
 	_cpu.opcode =  (_cpu.memory[_cpu.pc] << 8) | _cpu.memory[_cpu.pc + 1];
 	_cpu.pc += 2;
@@ -172,7 +189,7 @@ static InstrTable op_8XYx_Table[16] =
 
 void op_8XYx(Cpu* const _cpu)
 {
-	ASSERT_MSG(static_cast<std::size_t>(N) < arr_size(op_8XYx_Table),
+	ASSERT_MSG(static_cast<size_t>(N) < arr_size(op_8XYx_Table),
 		"op_8XYx_Table Overflow!");
 
 	// call it
@@ -348,8 +365,7 @@ void op_CXNN(Cpu *const _cpu)
 // DXYN: DRAW INSTRUCTION
 void op_DXYN(Cpu *const _cpu)
 {
-	ASSERT_MSG(_cpu->gfx != nullptr,
-	"Instructions.cpp::op_DXYN: null Cpu::gfx");
+
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
@@ -382,6 +398,10 @@ void op_DXYN(Cpu *const _cpu)
 // 2 instruction EX9E, EXA1
 void op_EXxx(Cpu *const _cpu)
 {
+	ASSERT_MSG(_cpu->input != nullptr && _cpu->input->IsInitialized(),
+               "Instructions.cpp::op_EXxx: Cpu::Input, null or not initialized!");
+
+
 	switch (N)
 	{
 		default: unknown_opcode(_cpu); break;
@@ -422,7 +442,7 @@ static InstrTable op_FXxx_Table[] =
 
 void op_FXxx(Cpu *const _cpu) // 9 instructions.
 {
-	ASSERT_MSG(static_cast<std::size_t>(N) < arr_size(op_FXxx_Table),
+	ASSERT_MSG(static_cast<size_t>(N) < arr_size(op_FXxx_Table),
 		"Table op_FXxx_Table overflow...");
 
 	op_FXxx_Table[N](_cpu);
@@ -443,6 +463,9 @@ void op_FX07(Cpu *const _cpu)
 // FX0A   A key press is awaited, and then stored in VX.
 void op_FX0A(Cpu *const _cpu)
 {
+	ASSERT_MSG(_cpu->input != nullptr && _cpu->input->IsInitialized(),
+               "Instructions.cpp::op_FX0A: Cpu::input, null or not initialized!");
+
 	VX = static_cast<uint8_t>(_cpu->input->WaitKeyPress());
 }
 
@@ -484,7 +507,11 @@ void op_FXx5(Cpu *const _cpu)
 // FX18   Sets the sound timer to VX.
 void op_FX18(Cpu *const _cpu)
 {
+	ASSERT_MSG(_cpu->sound != nullptr && _cpu->sound->IsInitialized(),
+               "Instructions::op_FX18: Cpu::sound, null or not initialized");
+
 	_cpu->soundTimer = VX;
+
 	if (_cpu->soundTimer > 0) {
 		_cpu->sound->Play(_cpu->soundTimer);
 	}
@@ -522,6 +549,9 @@ void op_FX29(Cpu *const _cpu)
 //  the tens digit at location I+1, and the ones digit at location I+2.)
 void op_FX33(Cpu *const _cpu)
 {
+	ASSERT_MSG(arr_size(_cpu->memory) > (_cpu->I + 2),
+		"Instructions.cpp:op_FX33: Cpu::I + 2 overflows Cpu::memory!");
+
 	const uint8_t vx = VX;
 	_cpu->memory[_cpu->I + 2] = vx % 10;
 	_cpu->memory[_cpu->I + 1] = (vx / 10) % 10;
