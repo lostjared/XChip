@@ -84,7 +84,7 @@ wxIMPLEMENT_APP(wXChip);
 
 bool wXChip::OnInit()
 {
-    using xchip::utility::make_unique;    
+    using xchip::utility::make_unique;
     
     const std::string file = getDirectory();
     
