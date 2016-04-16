@@ -161,9 +161,6 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 		wxLogMessage(fname);
 
 	}
-  
-//    else
-//        wxLogMessage(_T("Listbox right clicked but no item clicked upon"));
 }
 
 
