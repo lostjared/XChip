@@ -84,7 +84,6 @@ wxIMPLEMENT_APP(wXChip);
 
 bool wXChip::OnInit()
 {
-<<<<<<< HEAD
     using xchip::utility::make_unique;
     
     const std::string file = getDirectory();
@@ -94,19 +93,7 @@ bool wXChip::OnInit()
     
     if(file != "nolist") 
         frame->LoadList(file);
-=======
-	using xchip::utility::make_unique;    
-
-	const std::string file = getDirectory();
-
-	auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(800, 600) );
-	frame->Show( true );
->>>>>>> upstream/master
-
-	if(file != "nolist") 
-		frame->LoadList(file);
-
-
+	
 	frame.release();    
 	return true;
 }
@@ -148,7 +135,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
 
 	_startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
-	_settings = make_unique<wxButton>(_panel.get(), ID_SETTINGS, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
+	_settings = make_unique<wxButton>(_panel.get(), ID_Chip, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
 	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 
 	SetMinSize(GetSize());
