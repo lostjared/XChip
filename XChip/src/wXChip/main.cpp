@@ -24,7 +24,7 @@
 class wXChip: public wxApp
 {
 public:
-    virtual bool OnInit();
+	virtual bool OnInit();
 };
 
 
@@ -60,8 +60,7 @@ private:
 	wxDECLARE_EVENT_TABLE();
     
 };
-enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4,
-    ID_TEXT = 5, ID_EMUSET};
+enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET };
 
 
 
@@ -84,13 +83,12 @@ wxIMPLEMENT_APP(wXChip);
 
 bool wXChip::OnInit()
 {
-    using xchip::utility::make_unique;
+	using xchip::utility::make_unique;
     
-    const std::string file = getDirectory();
-    
-    auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(800, 600) );
-    frame->Show( true );
-    
+	const std::string file = getDirectory();
+	auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(800, 600) );
+	frame->Show( true );
+   
 	if(file != "nolist")
 		frame->LoadList(file);
 	
@@ -105,13 +103,14 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 {
 	using xchip::utility::make_unique;
 
-    auto menuFile = make_unique<wxMenu>();
-    menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L",
-                     "Load Roms");
+
+	auto menuFile = make_unique<wxMenu>();
+	menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L", 
+                         "Load Roms");
     
-    menuFile->Append(ID_EMUSET, "&Settings\tCtrl-S", "Settings");
-    menuFile->AppendSeparator();
-    menuFile->Append(wxID_EXIT);
+	menuFile->Append(ID_EMUSET, "&Settings\tCtrl-S", "Settings");
+	menuFile->AppendSeparator();
+	menuFile->Append(wxID_EXIT);
 
 	auto menuHelp = make_unique<wxMenu>();
 	menuHelp->Append(wxID_ABOUT);
@@ -182,7 +181,7 @@ void MainWindow::OnExit(wxCommandEvent& event)
 void MainWindow::OnAbout(wxCommandEvent& event)
 {
 	wxMessageBox( "wXChip - xChip8 Emulator",
-	          "About wXChip", wxOK | wxICON_INFORMATION );
+                     "About wXChip", wxOK | wxICON_INFORMATION );
 }
 
 void MainWindow::OnMouseOver(wxMouseEvent &event) {
@@ -251,7 +250,7 @@ void MainWindow::LaunchRom()
 void MainWindow::OnChip(wxCommandEvent& event)
 {
 	wxDirDialog dlg(NULL, "Choose input directory", "",
-	            wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+                        wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;     // the user changed idea...
