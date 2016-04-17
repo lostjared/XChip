@@ -6,15 +6,6 @@
 #endif
 #include <wx/listbox.h>
 
-#if defined(__APPLE__) || defined(__linux__)
-#include <dirent.h>
-#elif defined(_WIN32)
-#include <wXChip/dirent.h>
-#endif
-
-#include <wXChip/SaveList.h>
-
-
 
 class wXChip: public wxApp
 {
