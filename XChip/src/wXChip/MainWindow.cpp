@@ -13,7 +13,16 @@
 
 #include <wXChip/SaveList.h>
 
-
+wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
+EVT_MENU(ID_Chip,   MainWindow::OnChip)
+EVT_MENU(wxID_EXIT,  MainWindow::OnExit)
+EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
+EVT_MOTION(MainWindow::OnMouseOver)
+EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
+EVT_BUTTON(ID_LOADROM, MainWindow::OnChip)
+EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
+wxEND_EVENT_TABLE()
+wxIMPLEMENT_APP(wXChip);
 
 bool wXChip::OnInit()
 {
@@ -114,7 +123,7 @@ void MainWindow::OnExit(wxCommandEvent& event)
 
 void MainWindow::OnAbout(wxCommandEvent& event)
 {
-	wxMessageBox( "wXChip - xChip8 Emulator",
+	wxMessageBox( "wXChip - Chip8 Emulator",
                      "About wXChip", wxOK | wxICON_INFORMATION );
 }
 
