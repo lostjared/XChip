@@ -1,3 +1,6 @@
+#ifndef _WXCHIP_MAINWINDOW_H_
+#define _WXCHIP_MAINWINDOW_H_
+
 #include <XChip/Utility/Memory.h>
 
 #include <wx/wxprec.h>
@@ -48,3 +51,10 @@ private:
 };
 enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET };
 
+
+
+
+
+
+
+#endif
