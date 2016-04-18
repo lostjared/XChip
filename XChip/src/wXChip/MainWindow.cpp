@@ -176,6 +176,7 @@ void MainWindow::LoadList(const std::string &text)
 	closedir(dir);
 	_listBox->InsertItems(strings, 0);
 	_filePath = text;
+	_settingsWin->setRomPath(text);
 }
 
 
