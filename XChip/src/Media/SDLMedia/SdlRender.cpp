@@ -125,8 +125,7 @@ bool SdlRender::UpdateEvents()
 
 void SdlRender::DrawBuffer()
 {
-	ASSERT_MSG(_buffer != nullptr,
-		"SdlRender::DrawBuffer: attempt to draw null buffer");
+	ASSERT_MSG(_buffer != nullptr, "attempt to draw null buffer");
 
 	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
 	SDL_RenderCopy(_rend, _texture, nullptr, nullptr);

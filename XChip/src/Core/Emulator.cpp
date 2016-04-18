@@ -150,10 +150,8 @@ void Emulator::UpdateTimers()
  
 void Emulator::UpdateSystems()
 {
-	ASSERT_MSG(_manager.GetRender() != nullptr,
-		"Emulator::UpdateSystems: null render");
-	ASSERT_MSG(_manager.GetInput() != nullptr,
-		"Emulator::UpdateSystems: null input");
+	ASSERT_MSG(_manager.GetRender() != nullptr, "null render");
+	ASSERT_MSG(_manager.GetInput() != nullptr, "null input");
 
 	_manager.GetRender()->UpdateEvents();
 	_manager.GetInput()->UpdateKeys();
@@ -175,8 +173,7 @@ void Emulator::CleanFlags()
 
 void Emulator::Reset()
 {
-	ASSERT_MSG(_manager.GetSound() != nullptr,
-		"Emulator::Reset: null sound");
+	ASSERT_MSG(_manager.GetSound() != nullptr, "null sound");
 
 	if(_manager.GetSound()->IsPlaying())
 		_manager.GetSound()->Stop();

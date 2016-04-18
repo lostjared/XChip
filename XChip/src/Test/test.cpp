@@ -1,7 +1,7 @@
 // assert test
 #if 0
 #include <iostream>
-#include <XChip/Emulator.h>
+#include <XChip/Core/Emulator.h>
 #include <XChip/Utility/Alloc.h>
 
 
@@ -14,13 +14,7 @@ void foo(const T*& arr)
 
 int main(void)
 {
-	using xchip::CpuManager;
-	using namespace xchip::utility;
-	CpuManager man;
-
-	man.SetMemory(100);
-
-
+	ASSERT_MSG(false, "Testing this");
 
 }
 

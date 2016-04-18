@@ -51,23 +51,23 @@ void unknown_opcode(Cpu* const _cpu)
 void execute_instruction(Cpu& _cpu)
 {
 	ASSERT_MSG(_cpu.memory != nullptr && arr_size(_cpu.memory) >= 0x0FFF, 
-                   "Instructions.cpp::execute_instruction: Cpu::memory, null or size is too low!");
+                   "Cpu::memory, null or size is too low!");
 
 	
 	ASSERT_MSG(_cpu.registers != nullptr && arr_size(_cpu.registers) >= 0x10,
-                   "Instructions.cpp:execute_instruction: Cpu::registers, null or size is too low!");
+                   "Cpu::registers, null or size is too low!");
 
 
 	ASSERT_MSG(_cpu.stack != nullptr && arr_size(_cpu.stack) >= 0x10,
-                   "Instructions.cpp::execute_instruction: Cpu::stack, null or size is too low!");
+                   "Cpu::stack, null or size is too low!");
 
 
 	ASSERT_MSG(_cpu.gfx != nullptr && arr_size(_cpu.gfx) >= (64 * 32),
-                   "Instructions.cpp::execute_instruction: Cpu::Gfx, null or size is too low!");
+                   "Cpu::Gfx, null or size is too low!");
 
 
 	ASSERT_MSG((_cpu.pc + 1) < arr_size(_cpu.memory), 
-                   "Instructions.cpp::execute_instruction: Cpu::pc greater than Cpu::memory");
+                   "Cpu::pc greater than Cpu::memory");
 
 
 
@@ -97,8 +97,7 @@ void op_0xxx(Cpu* const _cpu)
 			break;
 
 		case 0x00EE: // return from a subroutine ( unwind stack )
-			ASSERT_MSG((_cpu->sp - 1) < arr_size(_cpu->stack),
-				"op_00EE: Stack Underflow");
+			ASSERT_MSG((_cpu->sp - 1) < arr_size(_cpu->stack), "Stack Underflow");
 
 			_cpu->pc = _cpu->stack[--_cpu->sp];
 			break;
@@ -120,8 +119,7 @@ void op_1NNN(Cpu *const _cpu)
 void op_2NNN(Cpu *const _cpu)
 {
 
-	ASSERT_MSG(_cpu->sp < arr_size(_cpu->stack),
-		"op_2NNN: Stack Overflow");
+	ASSERT_MSG(_cpu->sp < arr_size(_cpu->stack), "Stack Overflow");
 	
 	_cpu->stack[_cpu->sp++] = _cpu->pc;
 	_cpu->pc = NNN;
@@ -399,7 +397,7 @@ void op_DXYN(Cpu *const _cpu)
 void op_EXxx(Cpu *const _cpu)
 {
 	ASSERT_MSG(_cpu->input != nullptr && _cpu->input->IsInitialized(),
-               "Instructions.cpp::op_EXxx: Cpu::Input, null or not initialized!");
+               "Cpu::Input, null or not initialized!");
 
 
 	switch (N)
@@ -443,7 +441,7 @@ static InstrTable op_FXxx_Table[] =
 void op_FXxx(Cpu *const _cpu) // 9 instructions.
 {
 	ASSERT_MSG(static_cast<size_t>(N) < arr_size(op_FXxx_Table),
-		"Table op_FXxx_Table overflow...");
+		"op_FXxx_Table overflow...");
 
 	op_FXxx_Table[N](_cpu);
 }
@@ -464,7 +462,7 @@ void op_FX07(Cpu *const _cpu)
 void op_FX0A(Cpu *const _cpu)
 {
 	ASSERT_MSG(_cpu->input != nullptr && _cpu->input->IsInitialized(),
-               "Instructions.cpp::op_FX0A: Cpu::input, null or not initialized!");
+               "Cpu::input, null or not initialized!");
 
 	VX = static_cast<uint8_t>(_cpu->input->WaitKeyPress());
 }
@@ -486,14 +484,14 @@ void op_FXx5(Cpu *const _cpu)
 
 		case 0x55: //FX55  Stores V0 to VX in memory starting at address I
 			ASSERT_MSG(static_cast<size_t>(X+1) < (arr_size(_cpu->memory) - _cpu->I),
-				"Instructions.cpp::op_FX55: memory overflow");
+				"memory overflow");
 
 			std::copy_n(_cpu->registers, X + 1, _cpu->memory + _cpu->I);
 			break;
 
 		case 0x65: //FX65  Fills V0 to VX with values from memory starting at address I.
 			ASSERT_MSG(static_cast<size_t>(X+1) < arr_size(_cpu->registers),
-				"Instructions.cpp::op_FX65: registers overflow");
+				"registers overflow");
 
 			std::copy_n(_cpu->memory + _cpu->I, X + 1, _cpu->registers);
 			break;
@@ -508,7 +506,7 @@ void op_FXx5(Cpu *const _cpu)
 void op_FX18(Cpu *const _cpu)
 {
 	ASSERT_MSG(_cpu->sound != nullptr && _cpu->sound->IsInitialized(),
-               "Instructions::op_FX18: Cpu::sound, null or not initialized");
+               "Cpu::sound, null or not initialized");
 
 	_cpu->soundTimer = VX;
 
@@ -550,7 +548,7 @@ void op_FX29(Cpu *const _cpu)
 void op_FX33(Cpu *const _cpu)
 {
 	ASSERT_MSG(arr_size(_cpu->memory) > (_cpu->I + 2),
-		"Instructions.cpp:op_FX33: Cpu::I + 2 overflows Cpu::memory!");
+		"Cpu::I + 2 overflows Cpu::memory!");
 
 	const uint8_t vx = VX;
 	_cpu->memory[_cpu->I + 2] = vx % 10;

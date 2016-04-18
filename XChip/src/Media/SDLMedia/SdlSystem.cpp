@@ -32,7 +32,7 @@ SdlSystem::SdlSystem(const System sys)
 	using utility::arr_size;
 	ASSERT_MSG(toSizeT(sys) < arr_size(s_nSystems)
 		&& toSizeT(sys) < arr_size(s_SubSystems),
-		"SdlSystem::SdlSystem: sys greater than systems/subsystems array counter");
+		"sys greater than systems/subsystems array counter");
 
 	++s_nSystems[toSizeT(_sys)];
 }
