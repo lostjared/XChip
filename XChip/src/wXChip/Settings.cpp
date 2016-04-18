@@ -8,7 +8,13 @@ SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const 
         SetMaxSize(GetSize());
 }
 
+void SettingsWindow::OnCloseWindow(wxCloseEvent &event) {
+	Show(false);
+	event.Veto();
+}
+
 wxBEGIN_EVENT_TABLE(SettingsWindow, wxFrame)
+EVT_CLOSE(SettingsWindow::OnCloseWindow)
 wxEND_EVENT_TABLE()
 
 

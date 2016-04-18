@@ -10,6 +10,10 @@ class SettingsWindow: public wxFrame {
 public:
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 private:
+	
+	
+	void OnCloseWindow(wxCloseEvent &event);
+	
 	wxDECLARE_EVENT_TABLE();
 };
 
