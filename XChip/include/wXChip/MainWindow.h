@@ -2,7 +2,7 @@
 #define _WXCHIP_MAINWINDOW_H_
 
 #include <XChip/Utility/Memory.h>
-#include <wXChip/Settings.h>
+#include <wXChip/SettingsWindow.h>
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
