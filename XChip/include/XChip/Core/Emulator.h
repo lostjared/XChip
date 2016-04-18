@@ -106,8 +106,7 @@ inline void Emulator::ExecuteInstr()
 
 inline void Emulator::Draw()
 {
-	ASSERT_MSG(_manager.GetRender() != nullptr,
-		"Emulator::Draw: null render!");
+	ASSERT_MSG(_manager.GetRender() != nullptr, "null render!");
 
 	_manager.GetRender()->DrawBuffer();
 	_drawf = false;

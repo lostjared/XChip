@@ -159,10 +159,8 @@ bool CpuManager::ResizeGfx(const size_t size)
 
 void CpuManager::SetFont(const uint8_t* font, const size_t size)
 {
-	ASSERT_MSG(_cpu.memory != nullptr,
-		"CpuManager::SetFont: null Cpu::memory");
-	ASSERT_MSG(arr_size(_cpu.memory) > size,
-		"CpuManager::SetFont: font size greater than Cpu::memory");
+	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
+	ASSERT_MSG(arr_size(_cpu.memory) > size, "font size greater than Cpu::memory");
 
 	memcpy(_cpu.memory, font, size);
 }
@@ -173,10 +171,8 @@ void CpuManager::SetFont(const uint8_t* font, const size_t size)
 bool CpuManager::LoadRom(const char* fileName, const size_t at)
 {
 
-	ASSERT_MSG(_cpu.memory != nullptr,
-		"CpuManager::LoadRom: null Cpu::memory");
-	ASSERT_MSG(arr_size(_cpu.memory) > at,
-		"CpuManager::LoadRom: parameter 'at' greater than Cpu::memory");
+	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
+	ASSERT_MSG(arr_size(_cpu.memory) > at, "parameter 'at' greater than Cpu::memory");
 
 
 	LOG("Loading "_s + fileName);
