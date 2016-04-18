@@ -48,19 +48,3 @@ private:
 };
 enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET };
 
-
-
-
-wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
-EVT_MENU(ID_Chip,   MainWindow::OnChip)
-EVT_MENU(wxID_EXIT,  MainWindow::OnExit)
-EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
-EVT_MOTION(MainWindow::OnMouseOver)
-EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
-EVT_BUTTON(ID_LOADROM, MainWindow::OnChip)
-EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
-wxEND_EVENT_TABLE()
-wxIMPLEMENT_APP(wXChip);
-
-//xBEGIN_EVENT_TABLE(SettingsWindow, wxFrame)
-//wxEND_EVENT_TABLE()
