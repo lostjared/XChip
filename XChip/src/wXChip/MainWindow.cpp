@@ -37,10 +37,10 @@ bool wXChip::OnInit()
 			frame->LoadList(file);
 	
 		frame->Show( true );
-		
-	frame.release();
+		frame.release();
 	} catch(std::exception &e) {
 		xchip::utility::LOGerr(e.what());
+		return false;
 	}
 	return true;
 }
