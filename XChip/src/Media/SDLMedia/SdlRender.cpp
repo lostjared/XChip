@@ -91,7 +91,7 @@ void SdlRender::Dispose() noexcept
 
 
 
-bool SdlRender::UpdateEvents()
+bool SdlRender::UpdateEvents() noexcept
 {
 	PollEvent();
 	
@@ -123,7 +123,7 @@ bool SdlRender::UpdateEvents()
 
 
 
-void SdlRender::DrawBuffer()
+void SdlRender::DrawBuffer() noexcept
 {
 	ASSERT_MSG(_buffer != nullptr, "attempt to draw null buffer");
 
@@ -136,7 +136,7 @@ void SdlRender::DrawBuffer()
 
 
 
-void SdlRender::SetWinCloseCallback(const void* arg, WinCloseCallback callback)
+void SdlRender::SetWinCloseCallback(const void* arg, WinCloseCallback callback) noexcept
 {
 	_closeClbkArg = arg;
 	_closeClbk = callback;
@@ -145,7 +145,7 @@ void SdlRender::SetWinCloseCallback(const void* arg, WinCloseCallback callback)
 
 
 
-void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback)
+void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback) noexcept 
 {
 	_resizeClbkArg = arg;
 	_resizeClbk = callback;

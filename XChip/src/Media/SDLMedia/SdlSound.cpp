@@ -16,8 +16,8 @@
 namespace xchip {
 
 inline float SdlSound::GetFreq() const { return _freq * _specs[Have].freq; }
-inline bool SdlSound::IsPlaying() const { return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING; }
-inline void SdlSound::SetCountdownFreq(const float hertz) { _cycleTime = _specs[Have].freq / hertz; }
+inline bool SdlSound::IsPlaying() const  noexcept { return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING; }
+inline void SdlSound::SetCountdownFreq(const float hertz) noexcept { _cycleTime = _specs[Have].freq / hertz; }
 inline void SdlSound::SetCycleTime(const float hz) { _cycleTime = _specs[Have].freq / hz; }
 inline void SdlSound::SetFreq(const float hz) { _freq = hz / _specs[Have].freq; }
 inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * len; }
@@ -101,7 +101,7 @@ void SdlSound::Dispose() noexcept
 
 
 
-void SdlSound::Play(const uint8_t soundTimer)
+void SdlSound::Play(const uint8_t soundTimer) noexcept
 {
 	if (!this->IsPlaying()) 
 	{
@@ -124,7 +124,7 @@ void SdlSound::Play(const uint8_t soundTimer)
 
 
 
-void SdlSound::Stop()
+void SdlSound::Stop() noexcept
 {
 	if (this->IsPlaying())
 	{
@@ -170,7 +170,7 @@ bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 
 
 template<class T>
-void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int len)
+void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int len) noexcept
 {
 	auto *const _this = reinterpret_cast<SdlSound*>(userdata);
 	auto *const buff = reinterpret_cast<T*>(stream);

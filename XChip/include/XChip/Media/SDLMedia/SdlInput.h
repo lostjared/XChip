@@ -14,22 +14,22 @@ class SdlInput final : public iInput, private SdlSystem
 	using SDL_Scancode = int;
 	using KeyPair = std::pair<Key, SDL_Scancode>;
 public:
-	SdlInput();
+	SdlInput() noexcept;
 	~SdlInput();
 	
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
 
-	bool IsInitialized() const override;
-	bool IsKeyPressed(const Key key) const override;
-	Key GetPressedKey() const override;
+	bool IsInitialized() const noexcept override;
+	bool IsKeyPressed(const Key key) const noexcept override;
+	Key GetPressedKey() const noexcept override;
 
-	bool UpdateKeys() override;
-	Key WaitKeyPress() override;
+	bool UpdateKeys() noexcept override;
+	Key WaitKeyPress() noexcept override;
 
-	void SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) override;
-	void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) override;
-	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) override;
+	void SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) noexcept override;
+	void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) noexcept override;
+	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept override;
 
 private:
 	std::vector<KeyPair> _keyPairs;
@@ -49,7 +49,7 @@ private:
 
 
 
-inline bool SdlInput::IsInitialized() const { return _initialized; }
+inline bool SdlInput::IsInitialized() const noexcept { return _initialized; }
 
 
 }

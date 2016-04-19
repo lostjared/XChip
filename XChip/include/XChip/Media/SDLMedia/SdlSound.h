@@ -23,12 +23,12 @@ public:
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
 
-	bool IsInitialized() const override;
-	bool IsPlaying() const override;
+	bool IsInitialized() const noexcept override;
+	bool IsPlaying() const noexcept override;
 
-	void SetCountdownFreq(const float hertz) override;
-	void Play(const uint8_t soundTimer) override;
-	void Stop() override;
+	void SetCountdownFreq(const float hertz) noexcept override;
+	void Play(const uint8_t soundTimer) noexcept override;
+	void Stop() noexcept override;
 
 
 
@@ -39,7 +39,7 @@ private:
 	void SetCycleTime(const float hz);
 	void SetLenght(const unsigned int len);
 	template<class T>
-	static void audio_callback(void* userdata, uint8_t* stream, int len);
+	static void audio_callback(void* userdata, uint8_t* stream, int len) noexcept;
 
 
 	SDL_AudioSpec* _specs = nullptr;
@@ -54,7 +54,7 @@ private:
 };
 
 
-inline bool SdlSound::IsInitialized() const { return _initialized; }
+inline bool SdlSound::IsInitialized() const noexcept { return _initialized; }
 
 
 

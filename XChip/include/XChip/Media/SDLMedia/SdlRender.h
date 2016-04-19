@@ -20,13 +20,13 @@ public:
 	bool Initialize(const int width, const int height) noexcept override;
 	void Dispose() noexcept override;
 	
-	bool IsInitialized() const override;
-	void SetBuffer(const uint32_t* gfx) override;
-	void DrawBuffer() override;
-	bool UpdateEvents() override;
+	bool IsInitialized() const noexcept override;
+	void SetBuffer(const uint32_t* gfx) noexcept override;
+	void DrawBuffer() noexcept override;
+	bool UpdateEvents() noexcept override;
 
-	virtual void SetWinCloseCallback(const void* arg, WinCloseCallback callback) override;
-	virtual void SetWinResizeCallback(const void* arg, WinResizeCallback callback) override;
+	virtual void SetWinCloseCallback(const void* arg, WinCloseCallback callback) noexcept override;
+	virtual void SetWinResizeCallback(const void* arg, WinResizeCallback callback) noexcept override;
 
 private:
 	SDL_Window* _window = nullptr;
@@ -48,8 +48,8 @@ private:
 
 
 
-inline bool SdlRender::IsInitialized() const { return _initialized; }
-inline void SdlRender::SetBuffer(const uint32_t* gfx) { _buffer = gfx; }
+inline bool SdlRender::IsInitialized() const noexcept { return _initialized; }
+inline void SdlRender::SetBuffer(const uint32_t* gfx) noexcept { _buffer = gfx; }
 
 }
 #endif

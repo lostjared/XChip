@@ -36,15 +36,15 @@ public:
 	using EscapeKeyCallback = void(*)(const void*);
 
 	virtual bool Initialize() noexcept = 0;
-	virtual Key GetPressedKey() const = 0;
-	virtual bool IsKeyPressed(const Key key) const = 0;
-	virtual bool UpdateKeys() = 0;
-	virtual Key WaitKeyPress() = 0;
+	virtual Key GetPressedKey() const noexcept = 0;
+	virtual bool IsKeyPressed(const Key key) const noexcept = 0;
+	virtual bool UpdateKeys() noexcept = 0;
+	virtual Key WaitKeyPress() noexcept = 0;
 	
 	
-	virtual void SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) = 0;
-	virtual void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) = 0;
-	virtual void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) = 0;
+	virtual void SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) noexcept = 0;
+	virtual void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) noexcept = 0;
+	virtual void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept = 0;
 };
 
 

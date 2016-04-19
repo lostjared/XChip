@@ -10,7 +10,7 @@ namespace xchip {
 using namespace utility;
 extern SDL_Event g_sdlEvent;
 
-SdlInput::SdlInput()
+SdlInput::SdlInput() noexcept
 	: SdlSystem(System::Input),
 	_keyPairs
 	{
@@ -70,7 +70,7 @@ void SdlInput::Dispose() noexcept
 }
 
 
-bool SdlInput::UpdateKeys()
+bool SdlInput::UpdateKeys() noexcept
 {
 	PollEvent();
 	if (g_sdlEvent.type == SDL_KEYDOWN)
@@ -96,13 +96,13 @@ bool SdlInput::UpdateKeys()
 
 
 
-bool SdlInput::IsKeyPressed(const Key key) const
+bool SdlInput::IsKeyPressed(const Key key) const noexcept
 {
 	return _keyboardState[_keyPairs[static_cast<size_t>(key)].second] == SDL_TRUE;
 }
 
 
-Key SdlInput::GetPressedKey() const
+Key SdlInput::GetPressedKey() const noexcept
 {
 	for (const auto& keyPair : _keyPairs)
 	{
@@ -115,7 +115,7 @@ Key SdlInput::GetPressedKey() const
 
 
 
-Key SdlInput::WaitKeyPress()
+Key SdlInput::WaitKeyPress() noexcept
 {
 	if (_waitClbk != nullptr)
 	{
@@ -141,21 +141,21 @@ Key SdlInput::WaitKeyPress()
 
 
 
-void SdlInput::SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) 
+void SdlInput::SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) noexcept
 {
 	_waitClbkArg = arg;
 	_waitClbk = callback;
 }
 
 
-void SdlInput::SetResetKeyCallback(const void* arg, ResetKeyCallback callback) 
+void SdlInput::SetResetKeyCallback(const void* arg, ResetKeyCallback callback) noexcept
 {
 	_resetClbkArg = arg;
 	_resetClbk = callback;
 }
 
 
-void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback)
+void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept
 {
 	_escapeClbkArg = arg;
 	_escapeClbk = callback;

@@ -19,7 +19,7 @@
 
 namespace xchip { namespace utility {
 // save space on binary
-static void print_assert(const char* msg)
+static void print_assert(const char* msg) noexcept
 {
 	static const char* ASSERT_FMT_STRING = "ASSERT_MSG: %s!!\n";
 	std::fprintf(stderr, ASSERT_FMT_STRING, msg);

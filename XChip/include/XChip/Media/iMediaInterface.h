@@ -11,9 +11,10 @@ namespace xchip {
 class iMediaInterface
 {
 public:
+	iMediaInterface() noexcept = default;
 	virtual ~iMediaInterface() = default;
 	virtual void Dispose() noexcept = 0;
-	virtual bool IsInitialized() const = 0;
+	virtual bool IsInitialized() const noexcept = 0;
 };
 
 

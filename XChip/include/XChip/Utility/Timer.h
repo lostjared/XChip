@@ -34,7 +34,6 @@ public:
 	using Nano = std::chrono::nanoseconds;
 	using Duration = std::chrono::duration<long long, std::nano>;
 
-public:
 	Timer() noexcept = default;
 	Timer(const Micro& target) noexcept;
 
