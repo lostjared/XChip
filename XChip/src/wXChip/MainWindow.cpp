@@ -16,6 +16,7 @@
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(ID_Chip,   MainWindow::OnChip)
 EVT_MENU(wxID_EXIT,  MainWindow::OnExit)
+EVT_CLOSE(MainWindow::OnWindowClose)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
 EVT_MOTION(MainWindow::OnMouseOver)
 EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
@@ -80,6 +81,9 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	_settings = make_unique<wxButton>(_panel.get(), ID_Chip, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
 	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 
+	_settingsWin = make_unique<SettingsWindow>("wXChip - Settings", wxPoint(150, 150), wxSize(640, 480));
+	
+	
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
 }
@@ -113,12 +117,12 @@ void MainWindow::OnStartRom(wxCommandEvent &event) {
 }
 
 void MainWindow::LoadSettings(wxCommandEvent &event) {
-    
+	_settingsWin->Show(true);
 }
 
 void MainWindow::OnExit(wxCommandEvent& event)
 {
-	Close( true );
+	Close(true);
 }
 
 void MainWindow::OnAbout(wxCommandEvent& event)
@@ -135,6 +139,11 @@ void MainWindow::OnSize(wxSizeEvent& event) {
     
 }
 
+
+void MainWindow::OnWindowClose(wxCloseEvent &event) {
+	Destroy();
+	// Cleanup here
+}
 
 
 
@@ -167,6 +176,7 @@ void MainWindow::LoadList(const std::string &text)
 	closedir(dir);
 	_listBox->InsertItems(strings, 0);
 	_filePath = text;
+	_settingsWin->setRomPath(text);
 }
 
 

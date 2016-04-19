@@ -2,6 +2,7 @@
 #define _WXCHIP_MAINWINDOW_H_
 
 #include <XChip/Utility/Memory.h>
+#include <wXChip/SettingsWindow.h>
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -31,11 +32,12 @@ private:
 	void OnExit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
 	void OnLDown(wxMouseEvent &event);
+	void OnMouseOver(wxMouseEvent &event);
+	void OnSize(wxSizeEvent &event);
+	void OnWindowClose(wxCloseEvent &event);
 	void OnStartRom(wxCommandEvent &event);
 	void LoadSettings(wxCommandEvent &event);
 	void LaunchRom();
-	void OnMouseOver(wxMouseEvent &event);
-	void OnSize(wxSizeEvent &event);
 
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
@@ -44,6 +46,8 @@ private:
 	std::unique_ptr<wxButton> _startRom;
 	std::unique_ptr<wxButton> _settings;
 	std::unique_ptr<wxButton> _emulatorSettings;
+	std::unique_ptr<SettingsWindow> _settingsWin;
+	
 	std::string _filePath;
 
 	wxDECLARE_EVENT_TABLE();
