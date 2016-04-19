@@ -78,7 +78,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	SetMaxSize(GetSize());
 }
 
-void MainWindow::CreateControls() noexcept {
+void MainWindow::CreateControls()  {
 	using xchip::utility::make_unique;
 	wxArrayString strings;
 	_panel = make_unique<wxPanel>(this, wxID_ANY);
