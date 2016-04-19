@@ -17,7 +17,7 @@ void SettingsWindow::setRomPath(const std::string &text) {
 	stream.flush();
 }
 
-void SettingsWindow::CreateControls() noexcept {
+void SettingsWindow::CreateControls() {
 
 	using xchip::utility::make_unique;
 	
