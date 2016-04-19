@@ -60,16 +60,27 @@ template<class T>
 using remove_pointer_t = typename remove_pointer<T>::type;
 
 
+// remove const
+template<class T>
+struct remove_const : type_is<T> {};
+template<class T>
+struct remove_const<const T> : remove_const<T> {};
+template<class T>
+using remove_const_t = typename remove_const<T>::type;
+
+
+// remove volatile
+template<class T>
+struct remove_volatile : type_is<T> {};
+template<class T>
+struct remove_volatile<volatile T> : remove_volatile<T> {};
+template<class T>
+using remove_volatile_t = typename remove_volatile<T>::type;
+
+
 // remove cv
 template<class T>
-struct remove_cv : type_is<T> {};
-template<class T>
-struct remove_cv<volatile T> : type_is<T> {};
-template<class T>
-struct remove_cv<const T>  : type_is<T> {};
-template<class T>
-struct remove_cv<const volatile T> : type_is<T> {};
-
+struct remove_cv : type_is< remove_volatile_t < remove_const_t<T> > > {};
 template<class T>
 using remove_cv_t = typename remove_cv<T>::type;
 
@@ -86,11 +97,18 @@ template<class T>
 using remove_reference_t = typename remove_reference<T>::type;
 
 
+// remove array
+template<class T>
+struct remove_array : type_is<T> {};
+template<class T, size_t sz>
+struct remove_array<T[sz]> : remove_array<T> {};
+template<class T>
+using remove_array_t = typename remove_array<T>::type;
 
 
 // remove all
 template<class T>
-struct remove_all : type_is< remove_cv_t < remove_pointer_t < remove_reference_t <T> > > > {};
+struct remove_all : type_is< remove_cv_t < remove_pointer_t < remove_reference_t< remove_array_t< remove_cv_t<T> > > > > > {};
 
 
 template<class T>
