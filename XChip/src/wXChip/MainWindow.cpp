@@ -4,6 +4,8 @@
 
 #include <sstream>
 #include <wXChip/MainWindow.h>
+#include <wXChip/SaveList.h>
+#include <XChip/Utility/Log.h>
 
 #if defined(__APPLE__) || defined(__linux__)
 #include <dirent.h>
@@ -11,7 +13,6 @@
 #include <wXChip/dirent.h>
 #endif
 
-#include <wXChip/SaveList.h>
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(ID_Chip,   MainWindow::OnChip)
@@ -28,15 +29,19 @@ wxIMPLEMENT_APP(wXChip);
 bool wXChip::OnInit()
 {
 	using xchip::utility::make_unique;
-    
-	const std::string file = getDirectory();
-	auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(800, 600) );
-	frame->Show( true );
-   
-	if(file != "nolist")
-		frame->LoadList(file);
+	try {
+		const std::string file = getDirectory();
+		auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(800, 600) );
+		
+		if(file != "nolist")
+			frame->LoadList(file);
 	
-	frame.release();    
+		frame->Show( true );
+		frame.release();
+	} catch(std::exception &e) {
+		xchip::utility::LOGerr(e.what());
+		return false;
+	}
 	return true;
 }
 
@@ -66,26 +71,24 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
 	CreateStatusBar();
 	SetStatusText( "Welcome to wXChip" );
-
-
-	wxArrayString strings;
-
-	_panel = make_unique<wxPanel>(this, wxID_ANY);
-
-	_text = make_unique<wxStaticText>(_panel.get(), ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
-
-	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
-	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
-
-	_startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
-	_settings = make_unique<wxButton>(_panel.get(), ID_Chip, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
-	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
-
-	_settingsWin = make_unique<SettingsWindow>("wXChip - Settings", wxPoint(150, 150), wxSize(640, 480));
 	
+	CreateControls();
 	
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
+}
+
+void MainWindow::CreateControls()  {
+	using xchip::utility::make_unique;
+	wxArrayString strings;
+	_panel = make_unique<wxPanel>(this, wxID_ANY);
+	_text = make_unique<wxStaticText>(_panel.get(), ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
+	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
+	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
+	_startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
+	_settings = make_unique<wxButton>(_panel.get(), ID_Chip, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
+	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
+	_settingsWin = make_unique<SettingsWindow>("wXChip - Settings", wxPoint(150, 150), wxSize(640, 480));
 }
 
 

@@ -12,6 +12,7 @@ class SettingsWindow: public wxFrame {
 public:
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 	void setRomPath(const std::string &text);
+	void CreateControls();
 private:
 	
 	std::unique_ptr<wxPanel> _panel;
