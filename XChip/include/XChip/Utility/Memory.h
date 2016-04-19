@@ -9,18 +9,18 @@ namespace xchip { namespace utility {
 
 template<class T, class... Args>
 inline enable_if_t<!std::is_array<T>::value,
-	std::unique_ptr<T>> make_unique(Args&&... args) noexcept
+	std::unique_ptr<T>> make_unique(Args&&... args)
 {
-	return (std::unique_ptr<T>(new(std::nothrow) T(std::forward<Args>(args)...)));
+	return (std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
 }
 
 
 template<class T>
 inline enable_if_t<std::is_array<T>::value && std::extent<T>::value == 0,
-	std::unique_ptr<T>> make_unique(const std::size_t sz) noexcept
+	std::unique_ptr<T>> make_unique(const std::size_t sz)
 {
 	typedef typename std::remove_extent<T>::type elem;
-	return (std::unique_ptr<T>(new(std::nothrow) elem[sz]()));
+	return (std::unique_ptr<T>(new elem[sz]()));
 }
 
 template<class T, class... Args>
