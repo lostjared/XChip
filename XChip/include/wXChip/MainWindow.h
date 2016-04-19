@@ -25,9 +25,10 @@ class MainWindow: public wxFrame
 public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void LoadList(const std::string &text);
-
-    
+    void CreateControls() noexcept;
 private:
+	
+	
 	void OnChip(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
