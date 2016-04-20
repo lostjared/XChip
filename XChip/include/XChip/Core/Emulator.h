@@ -39,7 +39,7 @@ public:
 	uint16_t GetCpuFreq() const;
 	uint16_t GetFps() const;
 
-	void UpdateTimers();
+
 	void UpdateSystems();
 	void ExecuteInstr();
 	void CleanFlags();
@@ -62,7 +62,8 @@ public:
 	UniqueInput SwapInput(UniqueInput input = nullptr);
 	UniqueSound SwapSound(UniqueSound sound = nullptr);
 
-private: 
+private:
+ 	void UpdateTimers();
 	bool InitRender();
 	bool InitInput();
 	bool InitSound();
