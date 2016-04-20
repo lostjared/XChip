@@ -16,7 +16,7 @@ public:
 	void CreateControls();
 	void SaveSettings();
 private:
-	
+	float _fpsValue;
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _romText;
 	std::unique_ptr<wxTextCtrl> _romPath;
