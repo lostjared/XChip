@@ -128,6 +128,10 @@ int main(int argc, char **argv)
 	}
 
 
+	// ok, now you may want to set some
+	// emulator settings
+	emu->SetFramesPerSec(120); // I want 120 fps
+	emu->SetInstrPerSec(485); // I want 485 instructions per second
 
 	// finally the simple main loop
 
