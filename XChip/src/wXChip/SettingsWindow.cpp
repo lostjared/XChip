@@ -3,6 +3,14 @@
 enum { ID_TEXT1 = 1, ID_TEXTCTRL1, ID_TEXT2, ID_TEXTCTRL2, ID_TEXT3, ID_TEXTCTRL3 , ID_BTN_OK, ID_BTN_CANCEL };
 
 
+
+wxBEGIN_EVENT_TABLE(SettingsWindow, wxFrame)
+EVT_CLOSE(SettingsWindow::OnCloseWindow)
+EVT_BUTTON(ID_BTN_OK, SettingsWindow::OnOkay)
+EVT_BUTTON(ID_BTN_CANCEL, SettingsWindow::OnCancel)
+wxEND_EVENT_TABLE()
+
+
 SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size)
 : wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
@@ -42,6 +50,10 @@ void SettingsWindow::CreateControls()
 	
 }
 
+void SettingsWindow::SaveSettings() {
+	
+}
+
 void SettingsWindow::OnCloseWindow(wxCloseEvent &event)
 {
 	Show(false);
@@ -49,8 +61,18 @@ void SettingsWindow::OnCloseWindow(wxCloseEvent &event)
 }
 
 
-wxBEGIN_EVENT_TABLE(SettingsWindow, wxFrame)
-EVT_CLOSE(SettingsWindow::OnCloseWindow)
-wxEND_EVENT_TABLE()
+void SettingsWindow::OnCancel(wxCommandEvent &event)
+{
+	Show(false);
+}
+
+void SettingsWindow::OnOkay(wxCommandEvent &event)
+{
+	// save settings
+	SaveSettings();
+	Show(false);
+}
+
+
 
 

@@ -14,6 +14,7 @@ public:
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 	void setRomPath(const std::string &text);
 	void CreateControls();
+	void SaveSettings();
 private:
 	
 	std::unique_ptr<wxPanel> _panel;
@@ -26,7 +27,8 @@ private:
 	std::unique_ptr<wxButton> _buttonOk;
 	std::unique_ptr<wxButton> _buttonCancel;
 	void OnCloseWindow(wxCloseEvent &event);
-	
+	void OnCancel(wxCommandEvent &event);
+	void OnOkay(wxCommandEvent &event);
 	wxDECLARE_EVENT_TABLE();
 };
 
