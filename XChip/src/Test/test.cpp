@@ -113,12 +113,16 @@ int main(int argc, char **argv)
 
 	// lets set our game color RED
 	color = { 255, 0, 0 };
-	render->SetColorFilter(color);
-
-
-	color = render->GetColorFilter();
-	std::cout << "New Color Filter: " << color << std::endl; 
-
+	
+	if(!render->SetColorFilter(color))
+	{
+		std::cout << "could not set new color filter" << std::endl;
+	}
+	else 
+	{
+		color = render->GetColorFilter();
+		std::cout << "New Color Filter: " << color << std::endl; 
+	}
 
 	// don't forget to put the render back!!
 	// but because we have seted it to null before

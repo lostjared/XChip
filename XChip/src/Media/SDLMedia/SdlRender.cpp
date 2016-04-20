@@ -66,10 +66,15 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	if (!_texture)
 		return false;
 
-	SDL_SetRenderDrawColor(_rend, 55, 55, 55, 255);
+	if(SDL_SetTextureColorMod(_texture, 255, 255, 255))
+		return false;
+
+	
 	SDL_RenderClear(_rend);
 	SDL_RenderPresent(_rend);
+
 	_initialized = true;
+
 	return true;
 }
 
