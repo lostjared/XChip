@@ -12,7 +12,7 @@ wxEND_EVENT_TABLE()
 
 
 SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size)
-: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 
 	CreateControls();
@@ -23,7 +23,7 @@ SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const 
 void SettingsWindow::setRomPath(const std::string &text)
 {
 	_romPath->Clear();
-	*_romPath.get() << text.c_str();
+	*_romPath << text.c_str();
 	
 }
 
