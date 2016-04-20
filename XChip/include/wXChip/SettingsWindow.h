@@ -15,9 +15,9 @@ public:
 	void setRomPath(const std::string &text, const std::string &fps, const std::string &cpufreq);
 	void CreateControls();
 	void SaveSettings();
-	const std::string RomPath();
-	const std::string CPUFreq();
-	const std::string FPS();
+	const std::string RomPath() const;
+	const std::string CPUFreq() const;
+	const std::string FPS() const;
 
 private:
 	float _fpsValue;

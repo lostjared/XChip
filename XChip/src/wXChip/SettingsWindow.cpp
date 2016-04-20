@@ -96,19 +96,19 @@ void SettingsWindow::OnDefault(wxCommandEvent &event)
 	*_cpu << "60";
 }
 
-const std::string SettingsWindow::RomPath()
+const std::string SettingsWindow::RomPath() const
 {
 	wxString val = _romPath->GetLineText(0);
 	return std::string(val.c_str());
 }
 
-const std::string SettingsWindow::CPUFreq()
+const std::string SettingsWindow::CPUFreq() const
 {
 	wxString val = _cpu->GetLineText(0);
 	return std::string(val.c_str());
 }
 
-const std::string SettingsWindow::FPS()
+const std::string SettingsWindow::FPS() const
 {
 	wxString val = _fps->GetLineText(0);
 	return std::string(val.c_str());
