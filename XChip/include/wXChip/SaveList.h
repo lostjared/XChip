@@ -3,9 +3,10 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
-void saveDirectory(const std::string &text);
-std::string getDirectory();
+void saveDirectory(const std::string &text, const std::string &fps, const std::string &cpufreq);
+std::string getDirectory(std::string &fps, std::string &cpufreq);
 
 
 

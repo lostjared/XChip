@@ -2,7 +2,7 @@
 #include <wXChip/SaveList.h>
 #include <XChip/Utility/Log.h>
 
-void saveDirectory(const std::string &text) 
+void saveDirectory(const std::string &text, const std::string &fps, const std::string &cpufreq)
 {
 	std::fstream file;
 	file.open("romlist.dat", std::ios::out);
@@ -11,12 +11,18 @@ void saveDirectory(const std::string &text)
 		xchip::utility::LOGerr("Error could not open file");
 		return;
 	}
-
-	file << text << "\n";
+	
+	if(text.length()==0)
+		file << "nopath";
+	else
+		file << text << "\n";
+	
+	file << fps << "\n";
+	file << cpufreq << "\n";
 	file.close();
 }
 
-std::string getDirectory() 
+std::string getDirectory(std::string &fps, std::string &cpufreq)
 {
 	std::fstream file;
 	file.open("romlist.dat", std::ios::in);
@@ -27,6 +33,17 @@ std::string getDirectory()
 
 	std::string value;
 	std::getline(file, value);
+	
+	if(!file)
+		fps = "60";
+	else
+	std::getline(file, fps);
+	
+	if(!file)
+		cpufreq = "60";
+	else
+		std::getline(file, cpufreq);
+	
 	file.close();
 	return value;
 }

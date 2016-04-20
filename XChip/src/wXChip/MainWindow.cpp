@@ -32,11 +32,12 @@ bool wXChip::OnInit()
 {
 	using xchip::utility::make_unique;
 	try {
-		const std::string file = getDirectory();
+		std::string fps_val, cpu_freq;
+		const std::string file = getDirectory(fps_val, cpu_freq);
 		auto frame = make_unique<MainWindow>( "wXChip ", wxPoint(50, 50), wxSize(800, 600) );
 		
 		if(file != "nolist")
-			frame->LoadList(file);
+			frame->LoadList(file, fps_val, cpu_freq);
 	
 		frame->Show( true );
 		frame.release();
@@ -156,11 +157,13 @@ void MainWindow::OnWindowClose(wxCloseEvent &event)
 	// Cleanup here
 }
 
-void MainWindow::LoadList(const std::string &text)
+void MainWindow::LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq)
 {
 
-	saveDirectory(text);
+	saveDirectory(text, fps, cpu_freq);
 
+	if(text == "nopath") return;
+	
 	wxArrayString strings;
 
 	_listBox->Clear();
@@ -187,12 +190,17 @@ void MainWindow::LoadList(const std::string &text)
 	closedir(dir);
 	
 	
-	
 	if(!strings.IsEmpty())
 	{
 		_listBox->InsertItems(strings, 0);
 		_filePath = text;
-		_settingsWin->setRomPath(text);
+		_settingsWin->setRomPath(text, fps, cpu_freq);
+
+	}
+	else
+ 	{
+		_settingsWin->setRomPath("", fps, cpu_freq);
+
 	}
 }
 
@@ -227,5 +235,7 @@ void MainWindow::OnChip(wxCommandEvent& event)
 
 
 	wxString value = dlg.GetPath();
-	LoadList(std::string(value.c_str()));
+	std::string fps = _settingsWin->FPS();
+	std::string cpu = _settingsWin->CPUFreq();
+	LoadList(std::string(value.c_str()), fps, cpu);
 }

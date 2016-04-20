@@ -24,7 +24,7 @@ class MainWindow: public wxFrame
 {
 public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
-	void LoadList(const std::string &text);
+	void LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq);
 	void CreateControls();
 private:
 	
