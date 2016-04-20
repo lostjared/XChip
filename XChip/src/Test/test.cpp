@@ -69,26 +69,8 @@ int main(int argc, char **argv)
 		std::cout << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
-	
-	// if you want to initialize 
-	// media interfaces before passing it
-	// to the emulator, better initialize all of it.
-	// if you want to ensure that the default
-	// initialization is set before you change something
-	// initialize the Emulator with UNITIALIZED media interfaces
 
-	
-	
-	// alright now lets use it.
-
-	// first, one thing about the Core: functions that can fail returns false when they fail.
-	// If a function from the XChip Core returns false, it already print the error message
-	// into LOGerr. so  there is no need for the caller print another error msg into LOGerr.
-
-	// if the media interface's method ' IsInitialized() ' returns false then
-	// emulator will try to initialize the media interface with emulator's default way to do so.
-	// That means Emulator trust you, if you've initialized the media interface, Emulator
-	// will not try to reinitialize it.
+	// let the Emulator class take care of initializing the Media interfaces...	
 	if (!emu->Initialize(std::move(render), std::move(input), std::move(sound)))
 	{
 		// could not be initialized
