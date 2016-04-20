@@ -216,6 +216,8 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 iRender* CpuManager::SwapRender(iRender* render)
 {
+	ASSERT_MSG(render != _cpu.render, "trying to swap the same addresses");
+
 	auto* const ret = _cpu.render;
 	_cpu.render = render;
 	return ret;
@@ -225,6 +227,8 @@ iRender* CpuManager::SwapRender(iRender* render)
 
 iInput* CpuManager::SwapInput(iInput* input)
 {
+	ASSERT_MSG(input != _cpu.input, "trying to swap the same addresses");
+
 	auto* const ret = _cpu.input;
 	_cpu.input = input;
 	return ret;
@@ -234,6 +238,8 @@ iInput* CpuManager::SwapInput(iInput* input)
 
 iSound* CpuManager::SwapSound(iSound* sound)
 {
+	ASSERT_MSG(sound != _cpu.sound, "trying to swap the same addresses");
+
 	auto* const ret = _cpu.sound;
 	_cpu.sound = sound;
 	return ret;
