@@ -54,7 +54,7 @@ private:
 	wxDECLARE_EVENT_TABLE();
     
 };
-enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET };
+
 
 
 

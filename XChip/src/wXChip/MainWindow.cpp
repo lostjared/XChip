@@ -14,6 +14,7 @@
 #include <wXChip/dirent.h>
 #endif
 
+enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET };
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(ID_Chip,   MainWindow::OnChip)
