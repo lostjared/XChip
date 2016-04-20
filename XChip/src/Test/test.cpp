@@ -1,229 +1,159 @@
-// assert test
-#if 0
 #include <iostream>
-#include <XChip/Core/Emulator.h>
-#include <XChip/Utility/Alloc.h>
+// first choose an API to controll the internal emulator
+// default is Emulator class
+#include <XChip/Core/Emulator.h> 
 
 
-template<class T>
-void foo(const T*& arr)
-{
-	std::cout << xchip::utility::arr_size(arr) << std::endl;;
-}
-
-
-int main(void)
-{
-	ASSERT_MSG(false, "Testing this");
-
-}
-
-#endif
-
-
-
-
-// normal run:
-#if 1
-#include <iostream>
-#include <XChip/Core/Emulator.h>
+// Then choose your render / input / sound  APIs
+// we already have SDL complete
 #include <XChip/Media/SDLMedia/SdlRender.h>
 #include <XChip/Media/SDLMedia/SdlInput.h>
 #include <XChip/Media/SDLMedia/SdlSound.h>
-#include <XChip/Utility/Memory.h>
 
-int main(int argc, char** argv)
+
+#include <XChip/Utility/Memory.h> // make_unique as C++14
+
+// ok . now lets run it
+
+int main(int argc, char **argv)
 {
-	using std::move;
 	using xchip::Emulator;
 	using xchip::SdlRender;
 	using xchip::SdlInput;
 	using xchip::SdlSound;
-	using xchip::utility::make_unique; // nothrow version	
+	using xchip::UniqueRender;
+	using xchip::UniqueInput;
+	using xchip::UniqueSound;
+	using xchip::utility::make_unique;
 
-	if(argc < 2)
-	{
+
+
+
+	if (argc < 2) {
 		std::cout << "No game to load..." << std::endl;
 		return EXIT_SUCCESS;
 	}
 
-
-	auto render = make_unique<SdlRender>();
-	auto input = make_unique<SdlInput>();
-	auto sound = make_unique<SdlSound>();
-
-
-	Emulator emulator;
-	if(!emulator.Initialize(move(render), move(input), move(sound)))
-		return EXIT_FAILURE;
 	
+	// lets create our  objects
+	
+	std::unique_ptr<Emulator> emu;
 
-	if(!emulator.LoadRom(argv[1]))
-		return EXIT_FAILURE;
+	/*
+	
+	we don't need to write all this
+	
+	std::unique_ptr<xchip::iRender> render;
+	std::unique_ptr<xchip::iInput> input;
+	std::unique_ptr<xchip::iSound> sound;
+	
+	*/
+
+	// lets use the XChip type alias instead:
+	
+	UniqueRender render;
+	UniqueInput input;
+	UniqueSound sound;
 
 
-	while(!emulator.GetExitFlag())
-	{
-		emulator.HaltForNextFlag();
-		emulator.UpdateSystems();
-		if(emulator.GetInstrFlag())
-			emulator.ExecuteInstr();
-		if(emulator.GetDrawFlag())
-			emulator.Draw();
+	// we need only worry about exception on
+	// allocation with make_unique or new.
+	// none of the Core functions will throw.
+	try {
+		render = make_unique<SdlRender>();
+		input = make_unique<SdlInput>();
+		sound = make_unique<SdlSound>();
+		emu = make_unique<Emulator>();
 	}
-
-
-
-	return EXIT_SUCCESS;
-}
-
-
-
-
-
-
-
-#endif
-
-
-
-
-
-
-// DEMO:
-#if 0
-#include <XChip/Emulator.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/SDL_MEDIA/SdlRender.h>
-#include <XChip/SDL_MEDIA/SdlInput.h>
-#include <XChip/SDL_MEDIA/SdlSound.h>
-
-
-
- 
-int main(int argc, char** argv)
-{
-
-	using namespace xchip;
-	using std::move;
-	using std::nothrow;
-	using std::unique_ptr;
-	using std::shared_ptr;
-	using xchip::utility::make_unique; // xchip nothrow version of make_unique
+	catch (std::exception& e) {
+		std::cout << e.what() << std::endl;
+		return EXIT_FAILURE;
+	}
 	
+	// if you want to initialize 
+	// media interfaces before passing it
+	// to the emulator, better initialize all of it.
+	// if you want to ensure that the default
+	// initialization is set before you change something
+	// initialize the Emulator with UNITIALIZED media interfaces
 
+	
+	
+	// alright now lets use it.
 
-	if (argc < 2)
+	// first, one thing about the Core: functions that can fail returns false when they fail.
+	// If a function from the XChip Core returns false, it already print the error message
+	// into LOGerr. so  there is no need for the caller print another error msg into LOGerr.
+
+	// if the media interface's method ' IsInitialized() ' returns false then
+	// emulator will try to initialize the media interface with emulator's default way to do so.
+	// That means Emulator trust you, if you've initialized the media interface, Emulator
+	// will not try to reinitialize it.
+	if (!emu->Initialize(std::move(render), std::move(input), std::move(sound)))
 	{
-		utility::LOGerr("No games");
+		// could not be initialized
 		return EXIT_FAILURE;
 	}
 
+	// ok, now render, input, sound (the media interfaces) are initialized with the emulator's
+	// defaults. but we can modify or use it, by gets.
+	emu->GetSound()->SetCountdownFreq(20);
+	emu->GetRender()->DrawBuffer();
+	emu->GetInput()->WaitKeyPress(); // will wait key press here.
+
+	// remember to not use the old unique_ptr
+	///render->DrawBuffer(); // ERROR we've moved it to the emulator
+
+	// but we can get it back if we want
+	render = emu->SwapRender(nullptr); 
+	// get our render back and set emulators render to nullptr
+	// note that setting some emulator media interface to null
+	// will set ExitFlag on.
+
+	// we can put it back
+	// but because we have seted it to null before
+	// now we need to clean flags
+	emu->SetRender(std::move(render));
+	emu->CleanFlags();
 
 
-	// pause at exit to output read in WINDOWS
-	// cuz we might not be using cmd to call the program
-#ifdef _WIN32 
-	std::atexit([]()
+
+	// before to run the emulator
+	// we need to load a game
+
+	if (!emu->LoadRom(argv[1]))
 	{
-		xchip::utility::LOG("PRESS ANY KEY TO EXIT");
-		std::cin.ignore();
-	});
-#endif
-
-
-	
-
-	auto render = make_unique<SdlRender>();
-	auto input = make_unique<SdlInput>();
-	auto sound = make_unique<SdlSound>();
-
-	Emulator emulator;
-
-	// you must give the ownerty of the media interfaces
-	// to the emulator, it won't accept raw pointers
-
-	if (!emulator.Initialize(move(render), move(input), move(sound)))
-	{
+		// could not load this rom
 		return EXIT_FAILURE;
 	}
 
 
-	// we can use our media interfaces from the emulator
-	auto rend = emulator.GetRender();
-	if(rend->IsInitialized()) { /*... */  }
-	// do whatever to the interface
+	// ok, now you may want to set some
+	// emulator settings
+	emu->SetFramesPerSec(120); // I want 120 fps
+	emu->SetInstrPerSec(485); // I want 485 instructions per second
 
-	// want to do something specific to the child class ? dynamic cast it
-	auto sdlRender = dynamic_cast<SdlRender*>(rend);
-	if (sdlRender != nullptr) {
-		//sdlRender->whatever...
-	}
+	// finally the simple main loop
 
-	// but do not delete raw pointers from emulator
-	// delete rend; <- don't do it
-
-	// if you want to own the object again
-	// recover it by swap
-	auto oldRend = emulator.SwapRender(nullptr);
-	// now you can delete if you want, or just let the 
-	// smart pointer take care of it.
-
-
-	// you can set it back if u want... moving the unique pointer
-	emulator.SetRender(move(oldRend));
-	
-	
-	// and even if you swap without catching it
-	// the smart pointer will take care of it and delete it
-	emulator.SwapRender(nullptr);
-
-
-	// by here the oldRend is now nullptr, lets reset it
-	oldRend = make_unique<SdlRender>();
-
-	
-	// if the the new Render we inserted didn't initialized well or you seted a nullptr
-	// the emulator's exitflag is set 
-	if (emulator.GetExitFlag())
+	while (!emu->GetExitFlag())
 	{
-		utility::LOGerr("new render not initialized trying again..");
-		// give the old rend back to the emulator
+		emu->UpdateSystems(); // update window events / input events / timers / flags
+		emu->HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE
 		
-		if (emulator.SetRender(move(oldRend)))
-		{
-			// initialized well, clean error flags
-			emulator.CleanFlags();
-		}
-
-		else
-		{
-			// still didn't initialized, ok I'll give up
-			return EXIT_FAILURE;
-		}
+		if (emu->GetInstrFlag()) // if instrFLag is true, is time to execute one instruction
+			emu->ExecuteInstr();
+		if (emu->GetDrawFlag()) // if drawFlag is true, is time to the frame
+			emu->Draw();
 
 	}
 
-	// lets try load our rom
-	if (!emulator.LoadRom(argv[1]))
-	{
-		return EXIT_FAILURE;
-	}
 
-	// ok, while (allgood) lets run this
-	while (!emulator.GetExitFlag())
-	{
-		emulator.HaltForNextFlag();
-		emulator.UpdateSystems();
 
-		if (emulator.GetInstrFlag())
-			emulator.ExecuteInstr();
-		if (emulator.GetDrawFlag())
-			emulator.Draw();
-	}
-	
 
-	return EXIT_SUCCESS;
+
+
+
+
 }
 
 
@@ -234,121 +164,6 @@ int main(int argc, char** argv)
 
 
 
-#endif
-
-
-#if 0
-#include <iostream>
-#include <SDL2/SDL.h>
-#undef main
-#include <XChip/SDL_MEDIA/SdlSound.h>
-
-
-int main()
-{
-	using namespace xchip;
-	SdlSound sound;
-
-	if (!sound.Initialize()) {
-		std::cout << "could not initialize sound";
-		return EXIT_FAILURE;
-	}
-
-	sound.Play(10);
-
-	SDL_Delay(1000 * 11);
-
-	return 0;
-}
-
-#endif
-
-
-#if 0
-#include <XChip/Emulator.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/SDL_MEDIA/SdlRender.h>
-#include <XChip/SDL_MEDIA/SdlInput.h>
-#include <XChip/SDL_MEDIA/SdlSound.h>
-
-
-
-int main(int argc, char** argv)
-{
-	using std::make_unique;
-	using std::move;
-	using std::nothrow;
-	using xchip::Emulator;
-	using xchip::SdlRender;
-	using xchip::SdlInput;
-	using xchip::SdlSound;
-
-	if (argc < 1) 
-	{
-		xchip::utility::LOG("No game to load...");
-		return EXIT_FAILURE;
-	}
-
-
-	// pause at exit to output read in WINDOWS
-	// cuz we might not be using cmd to call the program
-	#ifdef _WIN32 
-	std::atexit([]()
-	{
-		xchip::utility::LOG("PRESS ANY KEY TO EXIT");
-		std::cin.ignore();
-	});
-	#endif
-
-	static Emulator emulator;
-
-
-	if (!emulator.Initialize(make_unique<SdlRender>(), 
-                             make_unique<SdlInput>(),
-                             make_unique<SdlSound>()))
-	{
-		return EXIT_FAILURE;
-	}
-	else if (!emulator.LoadRom("ufo"))
-	{
-		return EXIT_FAILURE;
-	}
-
-	main_loop:
-	// all good to run the main loop...
-	while (! emulator.GetExitFlag())
-	{
-		emulator.HaltForNextFlag();
-		emulator.UpdateSystems();
-		
-		if (emulator.GetInstrFlag())
-			emulator.ExecuteInstr();
-		
-		if (emulator.GetDrawFlag())
-			emulator.Draw();
-	}
-
-	
-	auto newRend = make_unique<SdlRender>();
-	auto newInput = make_unique<SdlInput>();
-	auto newSound = make_unique<SdlSound>();
-
-	emulator.Dispose();
-	
-	if (!emulator.Initialize(std::move(newRend), std::move(newInput), std::move(newSound)) )
-		return EXIT_FAILURE;
-
-	if (!emulator.LoadRom("ufo"))
-		return EXIT_FAILURE;
-	
-	goto main_loop;
-
-
-	return EXIT_SUCCESS;
-}
-
-
-#endif
 
 
 
