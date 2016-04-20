@@ -156,7 +156,9 @@ struct is_numeric :
                          || is_same<uint64_t, remove_cv_t<T>>::value
                          || is_same<int64_t, remove_cv_t<T>>::value
                          || is_same<long, remove_cv_t<T>>::value
+                         || is_same<unsigned long, remove_cv_t<T>>::value
                          || is_same<long long, remove_cv_t<T>>::value
+                         || is_same<unsigned long long, remove_cv_t<T>>::value
                          || is_same<size_t, remove_cv_t<T>>::value
                          || is_same<float, remove_cv_t<T>>::value
                          || is_same<double, remove_cv_t<T>>::value
