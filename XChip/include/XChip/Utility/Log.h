@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include "BaseTraits.h"
 
 namespace xchip { namespace utility {
 	
@@ -14,9 +15,9 @@ namespace literals {
 
 inline void CLS() noexcept
 {
-	#ifdef _WIN32
+	#if defined(_WIN32)
 			std::system("cls");
-	#elif __linux__ | __CYGWIN32__
+	#elif defined(__linux__) | defined(__CYGWIN32__) | defined(__APPLE__)
 			std::system("clear");
 	#endif
 }
@@ -25,21 +26,28 @@ inline void CLS() noexcept
 enum class Endl { Yes, No };
 enum class Fmt { Dec, Hex, Oct };
 
-inline void LOG(const std::string& out) noexcept
+
+
+template<class T>
+enable_if_t<!is_numeric<T>::value, 
+void> LOG(const T& out) noexcept
 {
 	std::cout << out << std::endl;
 }
 
 
-
-inline void LOGerr(const std::string& out) noexcept
+template<class T>
+enable_if_t<!is_numeric<T>::value, 
+void> LOGerr(const T& out) noexcept
 {
 	std::cerr << out << std::endl;
 }
 
 
 
-inline void LOG(const std::string& out, Endl endl) noexcept
+template<class T>
+enable_if_t<!is_numeric<T>::value, 
+void> LOG(const T& out, Endl endl) noexcept
 {
 	std::cout << out;
 	if (endl == Endl::Yes)
@@ -47,7 +55,9 @@ inline void LOG(const std::string& out, Endl endl) noexcept
 }
 
 
-inline void LOGerr(const std::string& out, Endl endl) noexcept
+template<class T>
+enable_if_t<!is_numeric<T>::value, 
+void> LOGerr(const T& out, Endl endl) noexcept
 {
 	std::cerr << out;
 	if (endl == Endl::Yes)
@@ -57,7 +67,8 @@ inline void LOGerr(const std::string& out, Endl endl) noexcept
 
 
 template<class N>
-inline  void LOG(const N number, Fmt ofmt = Fmt::Dec, Endl endl = Endl::Yes) noexcept
+enable_if_t<is_numeric<N>::value, 
+void> LOG(const N number, Fmt ofmt = Fmt::Dec, Endl endl = Endl::Yes) noexcept
 {
 
 	if (ofmt != Fmt::Dec) {
@@ -80,7 +91,8 @@ inline  void LOG(const N number, Fmt ofmt = Fmt::Dec, Endl endl = Endl::Yes) noe
 
 
 template<class N>
-inline  void LOGerr(const N number, Fmt ofmt = Fmt::Dec, Endl endl = Endl::Yes) noexcept
+enable_if_t<is_numeric<N>::value, 
+void> LOGerr(const N number, Fmt ofmt = Fmt::Dec, Endl endl = Endl::Yes) noexcept
 {
 	
 	if (ofmt != Fmt::Dec) {

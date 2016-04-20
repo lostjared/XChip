@@ -1,6 +1,6 @@
 #ifndef _XCHIP_BASETRAITS_H_
 #define _XCHIP_BASETRAITS_H_
-
+#include "StdintDef.h"
 
 namespace xchip { namespace utility {
 	
@@ -24,6 +24,7 @@ struct is_same<T, T> : true_type {};
 // C++14 variable template
 //template<class T, class U>
 //constexpr bool is_same_v = is_same<T,U>::value;
+
 
 
 // is pointer
@@ -117,10 +118,7 @@ using remove_all_t = typename remove_all<T>::type;
 
 // enable_if
 template<bool cond, class T>
-struct enable_if;
-
-template<class T>
-struct enable_if<true, T> : type_is<T> {};
+struct enable_if : type_is<T> {};
 
 template<class T>
 struct enable_if<false, T> {};
@@ -130,6 +128,15 @@ template<bool cond, class T>
 using enable_if_t = typename enable_if<cond, T>::type;
 
 
+// conditional
+template<bool cond, class T, class F>
+struct conditional : type_is<T> {};
+
+template<class T, class F>
+struct conditional<false, T, F> : type_is<F> {};
+
+template<bool cond, class T, class F>
+using conditional_t = typename conditional<cond, T, F>::type;
 
 
 
@@ -137,14 +144,28 @@ using enable_if_t = typename enable_if<cond, T>::type;
 
 
 
+// is numeric
+template<class T>
+struct is_numeric : 
+	conditional_t< is_same<uint8_t, remove_cv_t<T>>::value
+                         || is_same<int8_t, remove_cv_t<T>>::value
+                         || is_same<uint16_t, remove_cv_t<T>>::value
+                         || is_same<int16_t, remove_cv_t<T>>::value
+                         || is_same<uint32_t, remove_cv_t<T>>::value
+                         || is_same<int32_t, remove_cv_t<T>>::value
+                         || is_same<uint64_t, remove_cv_t<T>>::value
+                         || is_same<int64_t, remove_cv_t<T>>::value
+                         || is_same<long, remove_cv_t<T>>::value
+                         || is_same<long long, remove_cv_t<T>>::value
+                         || is_same<size_t, remove_cv_t<T>>::value
+                         || is_same<float, remove_cv_t<T>>::value
+                         || is_same<double, remove_cv_t<T>>::value
+                         || is_same<long double, remove_cv_t<T>>::value, true_type, false_type> 
+{
 
 
 
-
-
-
-
-
+};
 
 
 
