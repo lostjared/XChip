@@ -6,6 +6,7 @@
 #include <wXChip/MainWindow.h>
 #include <wXChip/SaveList.h>
 #include <XChip/Utility/Log.h>
+#include<sys/stat.h>
 
 #if defined(__APPLE__) || defined(__linux__)
 #include <dirent.h>
@@ -155,9 +156,7 @@ void MainWindow::OnWindowClose(wxCloseEvent &event)
 	// Cleanup here
 }
 
-
-
-void MainWindow::LoadList(const std::string &text) 
+void MainWindow::LoadList(const std::string &text)
 {
 
 	saveDirectory(text);
@@ -178,8 +177,10 @@ void MainWindow::LoadList(const std::string &text)
 
 	while((e = readdir(dir)))
 	{
-		if(e->d_type == 0x8)
-		{
+		struct stat s;
+		std::string fullpath = text+"/"+e->d_name;
+		lstat(fullpath.c_str(),&s);
+		if(!S_ISDIR(s.st_mode)) {
 			wxString w(e->d_name);
 			strings.Add(w);
 		}
