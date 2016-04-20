@@ -78,7 +78,8 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	SetMaxSize(GetSize());
 }
 
-void MainWindow::CreateControls()  {
+void MainWindow::CreateControls()
+{
 	using xchip::utility::make_unique;
 	wxArrayString strings;
 	_panel = make_unique<wxPanel>(this, wxID_ANY);
@@ -86,7 +87,7 @@ void MainWindow::CreateControls()  {
 	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
 	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
 	_startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
-	_settings = make_unique<wxButton>(_panel.get(), ID_Chip, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
+	_settings = make_unique<wxButton>(_panel.get(), ID_LOADROM, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
 	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 	_settingsWin = make_unique<SettingsWindow>("wXChip - Settings", wxPoint(150, 150), wxSize(640, 220));
 }
@@ -113,13 +114,15 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 }
 
 
-void MainWindow::OnStartRom(wxCommandEvent &event) {
+void MainWindow::OnStartRom(wxCommandEvent &event)
+{
 	std::cout << "Starting Rom...\n";
 	LaunchRom();
     // start application
 }
 
-void MainWindow::LoadSettings(wxCommandEvent &event) {
+void MainWindow::LoadSettings(wxCommandEvent &event)
+{
 	_settingsWin->Show(true);
 }
 
@@ -134,16 +137,19 @@ void MainWindow::OnAbout(wxCommandEvent& event)
                      "About wXChip", wxOK | wxICON_INFORMATION );
 }
 
-void MainWindow::OnMouseOver(wxMouseEvent &event) {
+void MainWindow::OnMouseOver(wxMouseEvent &event)
+{
     
 }
 
-void MainWindow::OnSize(wxSizeEvent& event) {
+void MainWindow::OnSize(wxSizeEvent& event)
+{
     
 }
 
 
-void MainWindow::OnWindowClose(wxCloseEvent &event) {
+void MainWindow::OnWindowClose(wxCloseEvent &event)
+{
 	Destroy();
 	// Cleanup here
 }
@@ -161,16 +167,18 @@ void MainWindow::LoadList(const std::string &text)
 
 	DIR *dir = opendir(text.c_str());
 
-	if(dir == NULL) {
+	if(dir == NULL)
+	{
 		std::cerr << "Error could not open directory.\n";
 		return;
 	}
     
 	dirent *e;
 
-	while((e = readdir(dir))) 
+	while((e = readdir(dir)))
 	{
-		if(e->d_type == 0x8) {
+		if(e->d_type == 0x8)
+		{
 			wxString w(e->d_name);
 			strings.Add(w);
 		}
@@ -209,7 +217,7 @@ void MainWindow::OnChip(wxCommandEvent& event)
                         wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
-		return;     // the user changed idea...
+		return;
 
 
 	wxString value = dlg.GetPath();

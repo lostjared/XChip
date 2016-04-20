@@ -8,7 +8,8 @@
 
 #include <XChip/Utility/Memory.h>
 
-class SettingsWindow: public wxFrame {
+class SettingsWindow: public wxFrame
+{
 public:
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 	void setRomPath(const std::string &text);
