@@ -36,8 +36,8 @@ public:
 	bool GetDrawFlag() const;
 	bool GetExitFlag() const;
 	void HaltForNextFlag() const;
-	uint16_t GetInstrPerSec() const;
-	uint16_t GetFramesPerSec() const;
+	uint16_t GetCpuFreq() const;
+	uint16_t GetFps() const;
 
 	void UpdateTimers();
 	void UpdateSystems();
@@ -46,8 +46,8 @@ public:
 	void Draw();
 	void Reset();
 
-	void SetInstrPerSec(const uint16_t value);
-	void SetFramesPerSec(const uint16_t value);
+	void SetCpuFreq(const uint16_t value);
+	void SetFps(const uint16_t value);
 	bool LoadRom(const std::string& fileName);
 
 	bool SetRender(UniqueRender rend);
@@ -87,20 +87,20 @@ inline bool Emulator::GetDrawFlag() const { return _drawf; }
 inline bool Emulator::GetExitFlag() const { return _exitf || _manager.GetErrorFlag(); }
 
 
-inline uint16_t Emulator::GetInstrPerSec() const {
+inline uint16_t Emulator::GetCpuFreq() const {
 	using namespace utility::literals;
 	return 1_sec / _instrTimer.GetTarget();
 }
 
-inline uint16_t Emulator::GetFramesPerSec() const {
+inline uint16_t Emulator::GetFps() const {
 	using namespace utility::literals;
 	return 1_sec / _frameTimer.GetTarget();
 }
 
-inline void Emulator::SetInstrPerSec(const uint16_t value) { 
+inline void Emulator::SetCpuFreq(const uint16_t value) { 
 	_instrTimer.SetTargetTime(utility::literals::operator""_hz(value));
 }
-inline void Emulator::SetFramesPerSec(const uint16_t value) { 
+inline void Emulator::SetFps(const uint16_t value) { 
 	_frameTimer.SetTargetTime(utility::literals::operator""_hz(value));
 }
 

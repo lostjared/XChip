@@ -131,17 +131,17 @@ int main(int argc, char **argv)
 	// ok, now you may want to set some
 	// emulator settings
 	// lets show the default FPS and CPU Frequency
-	std::cout << "Default FPS: " << emu->GetFramesPerSec() << std::endl;
-	std::cout << "Default CPU Freq: " << emu->GetInstrPerSec() << std::endl;
+	std::cout << "Default FPS: " << emu->GetFps() << std::endl;
+	std::cout << "Default CPU Freq: " << emu->GetCpuFreq() << std::endl;
 
 	// ok, now lets set some new values
-	emu->SetFramesPerSec(120); // I want 120 fps
-	emu->SetInstrPerSec(485); // I want 485 instructions per second
+	emu->SetFps(120); // I want 120 fps
+	emu->SetCpuFreq(485); // I want 485 instructions per second
 
 
 	// show them 
-	std::cout << "New FPS: " << emu->GetFramesPerSec() << std::endl;
-	std::cout << "New CPU Freq: " << emu->GetInstrPerSec() << std::endl;
+	std::cout << "New FPS: " << emu->GetFps() << std::endl;
+	std::cout << "New CPU Freq: " << emu->GetCpuFreq() << std::endl;
 
 
 
