@@ -19,11 +19,11 @@ namespace xchip { namespace utility {
 
 
 namespace literals {
-	inline std::chrono::microseconds operator""_sec(unsigned long long x) { return std::chrono::seconds(x); }
-	inline std::chrono::microseconds operator""_milli(unsigned long long x) { return std::chrono::milliseconds(x); }
-	inline std::chrono::microseconds operator""_micro(unsigned long long x) { return std::chrono::microseconds(x); }
-	inline std::chrono::nanoseconds operator""_nano(unsigned long long x) { return std::chrono::nanoseconds(x); }
-	inline std::chrono::microseconds operator""_hz(unsigned long long x) { return 1_sec / x; }
+	constexpr std::chrono::microseconds operator""_sec(unsigned long long x) { return std::chrono::seconds(x); }
+	constexpr std::chrono::microseconds operator""_milli(unsigned long long x) { return std::chrono::milliseconds(x); }
+	constexpr std::chrono::microseconds operator""_micro(unsigned long long x) { return std::chrono::microseconds(x); }
+	constexpr std::chrono::nanoseconds operator""_nano(unsigned long long x) { return std::chrono::nanoseconds(x); }
+	constexpr std::chrono::microseconds operator""_hz(unsigned long long x) { return 1_sec / x; }
 }
 
 
