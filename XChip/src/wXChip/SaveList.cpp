@@ -6,7 +6,8 @@ void saveDirectory(const std::string &text)
 {
 	std::fstream file;
 	file.open("romlist.dat", std::ios::out);
-	if(!file.is_open()) {
+	if(!file.is_open())
+	{
 		xchip::utility::LOGerr("Error could not open file");
 		return;
 	}
@@ -19,7 +20,8 @@ std::string getDirectory()
 {
 	std::fstream file;
 	file.open("romlist.dat", std::ios::in);
-	if(!file.is_open()) {
+	if(!file.is_open())
+	{
 		return "nolist";
 	}
 

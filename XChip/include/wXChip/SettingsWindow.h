@@ -8,19 +8,27 @@
 
 #include <XChip/Utility/Memory.h>
 
-class SettingsWindow: public wxFrame {
+class SettingsWindow: public wxFrame
+{
 public:
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 	void setRomPath(const std::string &text);
 	void CreateControls();
+	void SaveSettings();
 private:
 	
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _romText;
 	std::unique_ptr<wxTextCtrl> _romPath;
-	
+	std::unique_ptr<wxStaticText> _fpsText;
+	std::unique_ptr<wxTextCtrl> _fps;
+	std::unique_ptr<wxStaticText> _cpuText;
+	std::unique_ptr<wxTextCtrl> _cpu;
+	std::unique_ptr<wxButton> _buttonOk;
+	std::unique_ptr<wxButton> _buttonCancel;
 	void OnCloseWindow(wxCloseEvent &event);
-	
+	void OnCancel(wxCommandEvent &event);
+	void OnOkay(wxCommandEvent &event);
 	wxDECLARE_EVENT_TABLE();
 };
 
