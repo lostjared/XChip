@@ -101,13 +101,17 @@ int main(int argc, char **argv)
 
 	// ok, now render, input, sound (the media interfaces) are initialized with the emulator's
 	// defaults. but we can modify or use it, by gets.
+	
 	std::cout << "Default Sound countdown freq: " << emu->GetSound()->GetCountdownFreq() << std::endl;
+	
 	emu->GetSound()->SetCountdownFreq(35.88f);
+	
 	std::cout << "new Sound countdown freq: " << emu->GetSound()->GetCountdownFreq() << std::endl;
+	
+	// you can also:
 
-	emu->GetRender()->DrawBuffer();
-	emu->GetInput()->WaitKeyPress(); // will wait key press here.
-
+	// emu->GetInput()->  whatever
+	// emu->GetRender()-> whatever
 
 
 
@@ -126,13 +130,12 @@ int main(int argc, char **argv)
 	std::cout << "Default Color Filter: " << color << std::endl; 
 
 	// lets set our game color RED
-	render->SetColorFilter( {255, 0, 0} );
+	color = { 255, 0, 0 };
+	render->SetColorFilter(color);
 
 
 	color = render->GetColorFilter();
 	std::cout << "New Color Filter: " << color << std::endl; 
-
-
 
 
 	// don't forget to put the render back!!
@@ -148,21 +151,17 @@ int main(int argc, char **argv)
 	std::cout << "Default FPS: " << emu->GetFps() << std::endl;
 	std::cout << "Default CPU Freq: " << emu->GetCpuFreq() << std::endl;
 
-	// ok, now lets set some new values
 	emu->SetFps(120); // I want 120 fps
 	emu->SetCpuFreq(485); // I want 485 instructions per second
 
-
-	// show them 
 	std::cout << "New FPS: " << emu->GetFps() << std::endl;
 	std::cout << "New CPU Freq: " << emu->GetCpuFreq() << std::endl;
 
 
 
 
-	// before to run the emulator
+	// before running the emulator
 	// we need to load a game
-
 	if (!emu->LoadRom(argv[1]))
 	{
 		// could not load this rom
