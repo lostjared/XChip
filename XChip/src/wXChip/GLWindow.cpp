@@ -29,6 +29,7 @@ GLCanvas::GLCanvas(wxFrame* parent, int* args) :
 wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxSize(320, 240), wxFULL_REPAINT_ON_RESIZE)
 {
 	_context = new wxGLContext(this);
+	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 }
 
 GLCanvas::~GLCanvas()
@@ -40,6 +41,9 @@ void GLCanvas::render(wxPaintEvent& evt)
 {
 	if(!IsShown()) return;
 	
+	wxGLCanvas::SetCurrent(*_context);
+	wxPaintDC(this);
+ 
 	glClearColor(0, 0, 0 , 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();

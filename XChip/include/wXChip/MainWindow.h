@@ -3,6 +3,7 @@
 
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>
+#include <wXChip/GLWindow.h>
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -48,6 +49,7 @@ private:
 	std::unique_ptr<wxButton> _settings;
 	std::unique_ptr<wxButton> _emulatorSettings;
 	std::unique_ptr<SettingsWindow> _settingsWin;
+	std::unique_ptr<GLWindow> _glWin;
 	
 	std::string _filePath;
 

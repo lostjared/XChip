@@ -94,6 +94,7 @@ void MainWindow::CreateControls()
 	_settings = make_unique<wxButton>(_panel.get(), ID_LOADROM, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
 	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 	_settingsWin = make_unique<SettingsWindow>("wXChip - Settings", wxPoint(150, 150), wxSize(430, 220));
+	_glWin = make_unique<GLWindow>("GLWindow", wxPoint(600, 300), wxSize(320, 240));
 }
 
 
@@ -221,6 +222,8 @@ void MainWindow::LaunchRom()
 		std::cout << "Start Rom At Path: " << fullname << "\n";
 		wxString fname(fullname.c_str());
 		wxLogMessage(fname);
+		_glWin->Show(true);
+	
 	}
 }
 
