@@ -177,7 +177,7 @@ void MainWindow::LoadList(const std::string &text)
 
 	while((e = readdir(dir)))
 	{
-		if(e->d_type == 0x8)
+		if(e->d_type == DT_REG)
 		{
 			wxString w(e->d_name);
 			strings.Add(w);
