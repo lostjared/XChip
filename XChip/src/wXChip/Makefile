@@ -1,5 +1,5 @@
 CXXFLAGS= -std=c++11 `wx-config --cflags` -I../../include
-LDFLAGS= `wx-config --libs`
+LDFLAGS= `wx-config --libs --gl-libs`
 CPP_FILES := $(wildcard *.cpp)
 OBJ_FILES := $(addprefix ,$(notdir $(CPP_FILES:.cpp=.o)))
 
