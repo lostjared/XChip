@@ -289,6 +289,7 @@ bool Emulator::SetRender(UniqueRender rend)
 		return false;
 	}
 
+	utility::LOG("New iRender is set.");
 	return true;
 
 }
@@ -308,6 +309,7 @@ bool Emulator::SetInput(UniqueInput input)
 		return false;
 	}
 
+	utility::LOG("New iInput is set.");
 	return true;
 	
 }
@@ -327,6 +329,7 @@ bool Emulator::SetSound(UniqueSound sound)
 		return false;
 	}
 
+	utility::LOG("New iSound is set.");
 	return true;
 }
 
@@ -341,6 +344,7 @@ UniqueRender Emulator::SwapRender(UniqueRender rend)
 		if (!InitRender())
 			_exitf = true;
 
+		utility::LOGerr("Swaping iRender...");
 		return UniqueRender(oldRend);
 	}
 
@@ -360,6 +364,7 @@ UniqueInput Emulator::SwapInput(UniqueInput input)
 		if (!InitInput())
 			_exitf = true;
 
+		utility::LOGerr("Swaping iInput...");
 		return UniqueInput(oldInput);
 	}
 
@@ -379,6 +384,7 @@ UniqueSound Emulator::SwapSound(UniqueSound sound)
 		if (!InitInput())
 			_exitf = true;
 
+		utility::LOGerr("Swaping iSound...");
 		return UniqueSound(oldSound);
 	}
 
