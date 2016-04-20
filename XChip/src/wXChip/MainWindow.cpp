@@ -177,10 +177,8 @@ void MainWindow::LoadList(const std::string &text)
 
 	while((e = readdir(dir)))
 	{
-		struct stat s;
-		std::string fullpath = text+"/"+e->d_name;
-		lstat(fullpath.c_str(),&s);
-		if(!S_ISDIR(s.st_mode)) {
+		if(e->d_type == DT_REG)
+		{
 			wxString w(e->d_name);
 			strings.Add(w);
 		}
