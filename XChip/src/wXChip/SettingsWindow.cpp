@@ -26,7 +26,7 @@ void SettingsWindow::CreateControls()
 	
 	_panel = make_unique<wxPanel>(this, wxID_ANY);
 	_romText = make_unique<wxStaticText>(_panel.get(), ID_TEXT1,_T("Rom Path: "), wxPoint(10,15), wxSize(150,25));
-	_romPath = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, "", wxPoint(100,10), wxSize(350,20),wxTE_READONLY);
+	_romPath = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, "", wxPoint(100,10), wxSize(320,20),wxTE_READONLY);
 	
 	_fpsText = make_unique<wxStaticText>(_panel.get(), ID_TEXT2,_T("FPS: "), wxPoint(10,40), wxSize(150,25));
 
