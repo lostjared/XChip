@@ -21,6 +21,8 @@ public:
 	void Dispose() noexcept override;
 	
 	bool IsInitialized() const noexcept override;
+	utility::Color GetColorFilter() const noexcept override;
+	bool SetColorFilter(const utility::Color& color) noexcept override;
 	void SetBuffer(const uint32_t* gfx) noexcept override;
 	void DrawBuffer() noexcept override;
 	bool UpdateEvents() noexcept override;

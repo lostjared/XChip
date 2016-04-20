@@ -7,7 +7,7 @@
 #include <XChip/Utility/ScopeExit.h>
 #include <XChip/Utility/Assert.h>
 
-
+#define _INITIALIZED_ASSERT_ ASSERT_MSG(_initialized == true, "SdlRender is not initialized");
 
 namespace xchip {
 
@@ -69,7 +69,6 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	SDL_SetRenderDrawColor(_rend, 55, 55, 55, 255);
 	SDL_RenderClear(_rend);
 	SDL_RenderPresent(_rend);
-
 	_initialized = true;
 	return true;
 }
@@ -93,8 +92,8 @@ void SdlRender::Dispose() noexcept
 
 bool SdlRender::UpdateEvents() noexcept
 {
-	PollEvent();
-	
+	_INITIALIZED_ASSERT_;
+	PollEvent();	
 	if (g_sdlEvent.type == SDL_WINDOWEVENT)
 	{
 		switch (g_sdlEvent.window.event)
@@ -121,12 +120,22 @@ bool SdlRender::UpdateEvents() noexcept
 }
 
 
-
+bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
+{
+	_INITIALIZED_ASSERT_;
+	if(SDL_SetTextureColorMod(_texture, color.r, color.g, color.b))
+	{
+		xchip::utility::LOGerr(SDL_GetError());
+		return false;
+	}
+	return true;
+}
 
 void SdlRender::DrawBuffer() noexcept
 {
-	ASSERT_MSG(_buffer != nullptr, "attempt to draw null buffer");
+	_INITIALIZED_ASSERT_;
 
+	ASSERT_MSG(_buffer != nullptr, "attempt to draw null buffer");
 	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
 	SDL_RenderCopy(_rend, _texture, nullptr, nullptr);
 	SDL_RenderPresent(_rend);
@@ -154,7 +163,14 @@ void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback
 
 
 
+utility::Color SdlRender::GetColorFilter() const noexcept
+{
+	_INITIALIZED_ASSERT_;
+	utility::Color color;
+	SDL_GetTextureColorMod(_texture, &color.r, &color.g, &color.b);
+	return color;
 
+}
 
 
 

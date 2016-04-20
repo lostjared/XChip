@@ -2,8 +2,8 @@
 #include <XChip/Utility/Log.h>
 #include <XChip/Media/SDLMedia/SdlInput.h>
 #include <XChip/Utility/ScopeExit.h>
-
- 
+#include <XChip/Utility/Assert.h>
+#define _INITIALIZED_ASSERT_ ASSERT_MSG(_initialized == true, "SdlInput is not initialized")
 
 namespace xchip {
 
@@ -72,6 +72,8 @@ void SdlInput::Dispose() noexcept
 
 bool SdlInput::UpdateKeys() noexcept
 {
+	 _INITIALIZED_ASSERT_;
+
 	PollEvent();
 	if (g_sdlEvent.type == SDL_KEYDOWN)
 	{
@@ -98,12 +100,14 @@ bool SdlInput::UpdateKeys() noexcept
 
 bool SdlInput::IsKeyPressed(const Key key) const noexcept
 {
+	 _INITIALIZED_ASSERT_;
 	return _keyboardState[_keyPairs[static_cast<size_t>(key)].second] == SDL_TRUE;
 }
 
 
 Key SdlInput::GetPressedKey() const noexcept
 {
+	 _INITIALIZED_ASSERT_;
 	for (const auto& keyPair : _keyPairs)
 	{
 		if (_keyboardState[keyPair.second])
@@ -117,6 +121,7 @@ Key SdlInput::GetPressedKey() const noexcept
 
 Key SdlInput::WaitKeyPress() noexcept
 {
+	_INITIALIZED_ASSERT_;
 	if (_waitClbk != nullptr)
 	{
 		const auto begin = _keyPairs.crbegin();

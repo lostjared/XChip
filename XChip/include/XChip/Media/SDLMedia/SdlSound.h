@@ -25,6 +25,7 @@ public:
 
 	bool IsInitialized() const noexcept override;
 	bool IsPlaying() const noexcept override;
+	float GetCountdownFreq() const noexcept override;	
 
 	void SetCountdownFreq(const float hertz) noexcept override;
 	void Play(const uint8_t soundTimer) noexcept override;

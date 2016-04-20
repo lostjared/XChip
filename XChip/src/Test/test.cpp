@@ -95,11 +95,21 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
+
+	std::cout << "\t----- EMULATOR SETTINGS -----" << std::endl;
+
+
 	// ok, now render, input, sound (the media interfaces) are initialized with the emulator's
 	// defaults. but we can modify or use it, by gets.
-	emu->GetSound()->SetCountdownFreq(20);
+	std::cout << "Default Sound countdown freq: " << emu->GetSound()->GetCountdownFreq() << std::endl;
+	emu->GetSound()->SetCountdownFreq(35.88f);
+	std::cout << "new Sound countdown freq: " << emu->GetSound()->GetCountdownFreq() << std::endl;
+
 	emu->GetRender()->DrawBuffer();
 	emu->GetInput()->WaitKeyPress(); // will wait key press here.
+
+
+
 
 	// remember to not use the old unique_ptr
 	///render->DrawBuffer(); // ERROR we've moved it to the emulator
@@ -110,22 +120,26 @@ int main(int argc, char **argv)
 	// note that setting some emulator media interface to null
 	// will set ExitFlag on.
 
-	// we can put it back
+
+	// lets check our default game color
+	auto color = render->GetColorFilter();
+	std::cout << "Default Color Filter: " << color << std::endl; 
+
+	// lets set our game color RED
+	render->SetColorFilter( {255, 0, 0} );
+
+
+	color = render->GetColorFilter();
+	std::cout << "New Color Filter: " << color << std::endl; 
+
+
+
+
+	// don't forget to put the render back!!
 	// but because we have seted it to null before
 	// now we need to clean flags
 	emu->SetRender(std::move(render));
 	emu->CleanFlags();
-
-
-
-	// before to run the emulator
-	// we need to load a game
-
-	if (!emu->LoadRom(argv[1]))
-	{
-		// could not load this rom
-		return EXIT_FAILURE;
-	}
 
 
 	// ok, now you may want to set some
@@ -142,6 +156,19 @@ int main(int argc, char **argv)
 	// show them 
 	std::cout << "New FPS: " << emu->GetFps() << std::endl;
 	std::cout << "New CPU Freq: " << emu->GetCpuFreq() << std::endl;
+
+
+
+
+	// before to run the emulator
+	// we need to load a game
+
+	if (!emu->LoadRom(argv[1]))
+	{
+		// could not load this rom
+		return EXIT_FAILURE;
+	}
+
 
 
 
