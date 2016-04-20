@@ -14,9 +14,9 @@ SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const 
 
 void SettingsWindow::setRomPath(const std::string &text)
 {
-	std::ostream stream(_romPath.get());
-	stream << text;
-	stream.flush();
+	_romPath->Clear();
+	*_romPath.get() << text.c_str();
+	
 }
 
 void SettingsWindow::CreateControls()
@@ -30,11 +30,11 @@ void SettingsWindow::CreateControls()
 	
 	_fpsText = make_unique<wxStaticText>(_panel.get(), ID_TEXT2,_T("FPS: "), wxPoint(10,40), wxSize(150,25));
 
-	_fps = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, "", wxPoint(100,40), wxSize(100,20));
+	_fps = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, _T("30"), wxPoint(100,40), wxSize(100,20));
 
 	_cpuText = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), wxPoint(220,40), wxSize(150,25));
 	
-	_cpu = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, "", wxPoint(320,40), wxSize(100,20));
+	_cpu = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, _T(""), wxPoint(320,40), wxSize(100,20));
 	
 	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BTN_OK, _T("Ok"), wxPoint(10, 150), wxSize(100,25));
 	_buttonCancel = make_unique<wxButton>(_panel.get(), ID_BTN_CANCEL, _T("Cancel"), wxPoint(120, 150), wxSize(100,25));
