@@ -17,6 +17,7 @@
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(ID_Chip,   MainWindow::OnChip)
 EVT_MENU(wxID_EXIT,  MainWindow::OnExit)
+EVT_MENU(ID_EMUSET,  MainWindow::LoadSettings)
 EVT_CLOSE(MainWindow::OnWindowClose)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
 EVT_MOTION(MainWindow::OnMouseOver)
@@ -188,7 +189,8 @@ void MainWindow::LoadList(const std::string &text)
 	
 	
 	
-	if(!strings.IsEmpty()) {
+	if(!strings.IsEmpty())
+	{
 		_listBox->InsertItems(strings, 0);
 		_filePath = text;
 		_settingsWin->setRomPath(text);
