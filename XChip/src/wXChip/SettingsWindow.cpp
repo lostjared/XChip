@@ -1,6 +1,6 @@
 #include <wXChip/SettingsWindow.h>
 #include<wx/valnum.h>
-
+#include<cstdlib>
 
 enum { ID_TEXT1 = 1, ID_TEXTCTRL1, ID_TEXT2, ID_TEXTCTRL2, ID_TEXT3, ID_TEXTCTRL3 , ID_BTN_OK, ID_BTN_CANCEL };
 
@@ -37,17 +37,17 @@ void SettingsWindow::CreateControls()
 	_romPath = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, "", wxPoint(100,10), wxSize(320,20),wxTE_READONLY);
 	
 	wxFloatingPointValidator<float> _val(2,&_fpsValue,wxNUM_VAL_ZERO_AS_BLANK);
-	_val.SetRange(1.0,30.0);
+	_val.SetRange(1.0,60.0);
 	
 	_fpsText = make_unique<wxStaticText>(_panel.get(), ID_TEXT2,_T("FPS: "), wxPoint(10,40), wxSize(150,25));
 	_fps = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, _T("30"), wxPoint(100,40), wxSize(100,20),0,_val);
 	_cpuText = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), wxPoint(220,40), wxSize(150,25));
 	
 	wxIntegerValidator<unsigned int>
-	val(&_freqValue, wxNUM_VAL_THOUSANDS_SEPARATOR);
+	val(&_freqValue, wxNUM_VAL_ZERO_AS_BLANK);
 	
-	val.SetMin(0);
-	val.SetMax(1000);
+
+	val.SetRange(1, 1000);
 	
 	_cpu = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, _T("60"), wxPoint(320,40), wxSize(100,20), 0, val);
 	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BTN_OK, _T("Ok"), wxPoint(10, 150), wxSize(100,25));
@@ -73,6 +73,12 @@ void SettingsWindow::OnCancel(wxCommandEvent &event)
 
 void SettingsWindow::OnOkay(wxCommandEvent &event)
 {
+	
+	if(atoi(_cpu->GetLineText(0)) < 60) {
+		wxMessageBox( "CPU Frequency must be a value between 60 and 1000",
+					 "Input Error", wxOK | wxICON_ERROR );
+		return;
+	}
 	// save settings
 	SaveSettings();
 	Show(false);
