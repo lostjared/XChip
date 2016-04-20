@@ -42,7 +42,14 @@ void SettingsWindow::CreateControls()
 	_fpsText = make_unique<wxStaticText>(_panel.get(), ID_TEXT2,_T("FPS: "), wxPoint(10,40), wxSize(150,25));
 	_fps = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, _T("30"), wxPoint(100,40), wxSize(100,20),0,_val);
 	_cpuText = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), wxPoint(220,40), wxSize(150,25));
-	_cpu = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, _T(""), wxPoint(320,40), wxSize(100,20));
+	
+	wxIntegerValidator<unsigned int>
+	val(&_freqValue, wxNUM_VAL_THOUSANDS_SEPARATOR);
+	
+	val.SetMin(0);
+	val.SetMax(1000);
+	
+	_cpu = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, _T("60"), wxPoint(320,40), wxSize(100,20), 0, val);
 	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BTN_OK, _T("Ok"), wxPoint(10, 150), wxSize(100,25));
 	_buttonCancel = make_unique<wxButton>(_panel.get(), ID_BTN_CANCEL, _T("Cancel"), wxPoint(120, 150), wxSize(100,25));
 }

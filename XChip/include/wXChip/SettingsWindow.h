@@ -17,6 +17,7 @@ public:
 	void SaveSettings();
 private:
 	float _fpsValue;
+	unsigned int _freqValue;
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _romText;
 	std::unique_ptr<wxTextCtrl> _romPath;
