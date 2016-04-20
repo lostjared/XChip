@@ -41,7 +41,8 @@ void SettingsWindow::CreateControls()
 	_buttonCancel = make_unique<wxButton>(_panel.get(), ID_BTN_CANCEL, _T("Cancel"), wxPoint(120, 150), wxSize(100,25));
 }
 
-void SettingsWindow::SaveSettings() {
+void SettingsWindow::SaveSettings()
+{
 	
 }
 
