@@ -3,7 +3,6 @@
 
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>
-#include <wXChip/GLWindow.h>
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -27,8 +26,9 @@ public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq);
 	void CreateControls();
+	bool running;
 private:
-	
+	wxTimer _timer;
 	
 	void OnChip(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
@@ -37,9 +37,11 @@ private:
 	void OnMouseOver(wxMouseEvent &event);
 	void OnSize(wxSizeEvent &event);
 	void OnWindowClose(wxCloseEvent &event);
+	void OnTimer(wxTimerEvent& event);
 	void OnStartRom(wxCommandEvent &event);
 	void LoadSettings(wxCommandEvent &event);
 	void LaunchRom();
+	void StartProgram(const std::string &rom);
 
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
@@ -49,7 +51,6 @@ private:
 	std::unique_ptr<wxButton> _settings;
 	std::unique_ptr<wxButton> _emulatorSettings;
 	std::unique_ptr<SettingsWindow> _settingsWin;
-	std::unique_ptr<GLWindow> _glWin;
 	
 	std::string _filePath;
 
