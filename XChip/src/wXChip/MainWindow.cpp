@@ -242,8 +242,7 @@ void testProg(const std::string& text)
 	std::unique_ptr<RunEmulator> emu;
 	
 	try {
-		
-		emu = xchip::utility::make_unique<RunEmulator>();
+		emu = RunEmulator::create();
 
 		if (!emu->init()
 			|| !emu->load(text))
