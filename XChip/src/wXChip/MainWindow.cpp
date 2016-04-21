@@ -6,8 +6,9 @@
 #include <wXChip/MainWindow.h>
 #include <wXChip/SaveList.h>
 #include<thread>
-
-
+#ifdef __APPLE__
+#include <dispatch/dispatch.h>
+#endif
 #ifdef _WIN32
 #include<windows.h>
 #endif
@@ -47,7 +48,7 @@ void RunEmulator::init()
 	using xchip::UniqueSound;
 	using xchip::utility::make_unique;
 	
-	
+
 	UniqueRender render;
 	UniqueInput input;
 	UniqueSound sound;
@@ -130,24 +131,17 @@ void RunEmulator::init()
 
 void RunEmulator::stop()
 {
-	closing = true;
 
 }
 
 void RunEmulator::update() {
-	while (!emu.GetExitFlag() && closing == false)
-	{
-		
 		emu.UpdateSystems(); // update window events / input events / timers / flags
 		emu.HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE
-		
-		if (emu.GetInstrFlag()) // if instrFLag is true, is time to execute one instruction
-			emu.ExecuteInstr();
-		if (emu.GetDrawFlag()) // if drawFlag is true, is time to the frame
-			emu.Draw();
-		
-		
-	}
+	
+	if (emu.GetInstrFlag()) // if instrFLag is true, is time to execute one instruction
+		emu.ExecuteInstr();
+	if (emu.GetDrawFlag()) // if drawFlag is true, is time to the frame
+		emu.Draw();
 }
 
 bool RunEmulator::load(const std::string &text) {
@@ -156,6 +150,7 @@ bool RunEmulator::load(const std::string &text) {
 
 bool wXChip::OnInit()
 {
+	render_loop_on = false;
 	using xchip::utility::make_unique;
 	try {
 		std::string fps_val, cpu_freq;
@@ -165,13 +160,40 @@ bool wXChip::OnInit()
 		if(file != "nolist")
 			frame->LoadList(file, fps_val, cpu_freq);
 	
+		main = frame.get();
+		
 		frame->Show( true );
+		
 		frame.release();
 	} catch(std::exception &e) {
 		xchip::utility::LOGerr(e.what());
 		return false;
 	}
+	activateRenderLoop(true);
 	return true;
+}
+
+void wXChip::activateRenderLoop(bool on)
+{
+	if(on && !render_loop_on)
+	{
+		Connect( wxID_ANY, wxEVT_IDLE, wxIdleEventHandler(wXChip::onIdle) );
+		render_loop_on = true;
+	}
+	else if(!on && render_loop_on)
+	{
+		Disconnect( wxEVT_IDLE, wxIdleEventHandler(wXChip::onIdle) );
+		render_loop_on = false;
+	}
+}
+void wXChip::onIdle(wxIdleEvent& evt)
+{
+	if(render_loop_on)
+	{
+
+		main->UpdateEmulator();
+		evt.RequestMore(); // render continuously, not only once on idle
+	}
 }
 
 
@@ -180,7 +202,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX), _timer(this, ID_TIMER1)
 {
 	using xchip::utility::make_unique;
-	running = false, closing = false;
+	running = false;
 	auto menuFile = make_unique<wxMenu>();
 	menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L", 
                          "Load Roms");
@@ -296,9 +318,10 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
-	//_timer.Stop();
-	closing = true;
-	Update();
+
+	wxGetApp().activateRenderLoop(false);
+	event.Skip(); // don't stop event, we still want window to close
+	running = false;
 	delete emulator;
 	Destroy();
 	// Cleanup here}
@@ -373,22 +396,39 @@ void MainWindow::OnChip(wxCommandEvent& event)
 }
 
 
-void testProg(std::string text) {
-	RunEmulator *emu = new RunEmulator();
-	emu->init();
-	emu->load(text);
-	emu->update();
-	delete emu;
-}
 
 void MainWindow::StartProgram(const std::string &rom)
 {
+	if(current_rom == "")
+ 	{
+		current_rom = rom;
+	}
+	else if(current_rom == rom) return;
 	
-	// before running the emulator
-	// we need to load a game
-	std::thread tr(testProg, rom);
-	tr.detach();
+	
+	if(emulator == nullptr) {
+		emulator = new RunEmulator();
+		emulator->init();
+		emulator->load(rom);
+		running = true;
+	} else {
+		emulator->init();
+		emulator->load(rom);
+		running = true;
+	}
 
+}
+
+void MainWindow::UpdateEmulator() {
+	
+	if(running == true) {
+		if(!emulator->emu.GetExitFlag() && emulator->closing == false)
+		{
+			emulator->update();
+		}
+		else
+			running = false;
+	}
 }
 
 void MainWindow::OnTimer(wxTimerEvent &te)

@@ -9,6 +9,8 @@
 #include <XChip/Media/SDLMedia/SdlRender.h>
 #include <XChip/Media/SDLMedia/SdlInput.h>
 #include <XChip/Media/SDLMedia/SdlSound.h>
+#include<atomic>
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -16,10 +18,16 @@
 #include <wx/listbox.h>
 
 
+class MainWindow;
+
 class wXChip: public wxApp
 {
-public:
+	bool render_loop_on;
 	virtual bool OnInit();
+	void onIdle(wxIdleEvent& evt);
+	MainWindow *main;
+public:
+	void activateRenderLoop(bool on);
 };
 
 class RunEmulator {
@@ -30,12 +38,18 @@ public:
 	void stop();
 	void update();
 	
+	RunEmulator() : closing(false) {
+	
+	}
+	
 	~RunEmulator() {
 		stop();
 	}
 	
-private:
 	bool closing;
+private:
+	
+
 };
 
 class MainWindow: public wxFrame
@@ -44,10 +58,10 @@ public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq);
 	void CreateControls();
-	bool running, closing;
+	void UpdateEmulator();
+	bool running = false;
 private:
 	wxTimer _timer;
-	
 	void OnChip(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
@@ -76,7 +90,8 @@ private:
 	RunEmulator *emulator;
 
 	wxDECLARE_EVENT_TABLE();
-    
+	std::string current_rom;
+	
 };
 
 
