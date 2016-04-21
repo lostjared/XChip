@@ -129,3 +129,4 @@ void RunEmulator::update() {
 bool RunEmulator::load(const std::string &text) {
 	return emu.LoadRom(text);
 }
+

@@ -28,8 +28,4 @@ private:
 	bool closing;
 };
 
-
-
-
-
 #endif

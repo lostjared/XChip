@@ -86,8 +86,6 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
-	
-	emulator = nullptr;
 }
 
 void MainWindow::CreateControls()
@@ -174,7 +172,6 @@ void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
 	closing = true;
 	Update();
-	delete emulator;
 	Destroy();
 }
 

@@ -48,27 +48,15 @@ private:
 
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
-
 	std::unique_ptr<wxListBox> _listBox;
 	std::unique_ptr<wxButton> _startRom;
 	std::unique_ptr<wxButton> _settings;
 	std::unique_ptr<wxButton> _emulatorSettings;
 	std::unique_ptr<SettingsWindow> _settingsWin;
-	
 	std::string _filePath;
 	
-	
-	RunEmulator *emulator;
-
 	wxDECLARE_EVENT_TABLE();
     
 };
-
-
-
-
-
-
-
 
 #endif
