@@ -111,7 +111,10 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 		std::string fullname = stream.str();
 		std::cout << "Start Rom At Path: " << fullname << "\n";
 		
-		if(running != true)
+		if(running == true)
+		{
+		
+		}
 			StartProgram(fullname);
 		
 	}
@@ -155,7 +158,6 @@ void MainWindow::OnSize(wxSizeEvent& event)
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
 	closing = true;
-	sleep(1);
 	Destroy();
 	// Cleanup here
 }

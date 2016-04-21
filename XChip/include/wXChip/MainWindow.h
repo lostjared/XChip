@@ -4,6 +4,7 @@
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>
 #include <XChip/Utility/Log.h>
+#include <XChip/Utility/Timer.h>
 #include <XChip/Core/Emulator.h>
 #include <XChip/Media/SDLMedia/SdlRender.h>
 #include <XChip/Media/SDLMedia/SdlInput.h>
