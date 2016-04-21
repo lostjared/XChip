@@ -3,7 +3,12 @@
 
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>
-
+#include <XChip/Utility/Log.h>
+#include <XChip/Utility/Timer.h>
+#include <XChip/Core/Emulator.h>
+#include <XChip/Media/SDLMedia/SdlRender.h>
+#include <XChip/Media/SDLMedia/SdlInput.h>
+#include <XChip/Media/SDLMedia/SdlSound.h>
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -17,8 +22,21 @@ public:
 	virtual bool OnInit();
 };
 
-
-
+class RunEmulator {
+public:
+	xchip::Emulator emu;
+	bool load(const std::string &text);
+	void init();
+	void stop();
+	void update();
+	
+	~RunEmulator() {
+		stop();
+	}
+	
+private:
+	bool closing;
+};
 
 class MainWindow: public wxFrame
 {
@@ -26,8 +44,9 @@ public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq);
 	void CreateControls();
+	bool running, closing;
 private:
-	
+	wxTimer _timer;
 	
 	void OnChip(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
@@ -36,9 +55,11 @@ private:
 	void OnMouseOver(wxMouseEvent &event);
 	void OnSize(wxSizeEvent &event);
 	void OnWindowClose(wxCloseEvent &event);
+	void OnTimer(wxTimerEvent& event);
 	void OnStartRom(wxCommandEvent &event);
 	void LoadSettings(wxCommandEvent &event);
 	void LaunchRom();
+	void StartProgram(const std::string &rom);
 
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
@@ -50,6 +71,9 @@ private:
 	std::unique_ptr<SettingsWindow> _settingsWin;
 	
 	std::string _filePath;
+	
+	
+	RunEmulator *emulator;
 
 	wxDECLARE_EVENT_TABLE();
     
