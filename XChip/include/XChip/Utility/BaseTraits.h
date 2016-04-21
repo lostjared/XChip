@@ -79,13 +79,6 @@ template<class T>
 using remove_volatile_t = typename remove_volatile<T>::type;
 
 
-// remove cv
-template<class T>
-struct remove_cv : type_is< remove_volatile_t < remove_const_t<T> > > {};
-template<class T>
-using remove_cv_t = typename remove_cv<T>::type;
-
-
 //remove reference
 template<class T>
 struct remove_reference : type_is<T> {};
@@ -96,6 +89,21 @@ struct remove_reference<T&&> : remove_reference<T> {};
 
 template<class T>
 using remove_reference_t = typename remove_reference<T>::type;
+
+
+
+
+// remove cv
+template<class T>
+struct remove_cv : type_is< remove_volatile_t < remove_const_t<T> > > {};
+template<class T>
+using remove_cv_t = typename remove_cv<T>::type;
+
+// remove cvr
+template<class T>
+struct remove_cvr : type_is< remove_volatile_t < remove_const_t < remove_reference_t<T> > > > {};
+template<class T>
+using remove_cvr_t = typename remove_cvr<T>::type;
 
 
 // remove array
@@ -147,20 +155,22 @@ using conditional_t = typename conditional<cond, T, F>::type;
 // is numeric
 template<class T>
 struct is_numeric : 
-	conditional_t< is_same<uint8_t, remove_cv_t<T>>::value
-                         || is_same<int8_t, remove_cv_t<T>>::value
-                         || is_same<uint16_t, remove_cv_t<T>>::value
-                         || is_same<int16_t, remove_cv_t<T>>::value
-                         || is_same<uint32_t, remove_cv_t<T>>::value
-                         || is_same<int32_t, remove_cv_t<T>>::value
-                         || is_same<uint64_t, remove_cv_t<T>>::value
-                         || is_same<int64_t, remove_cv_t<T>>::value
-                         || is_same<long, remove_cv_t<T>>::value
-                         || is_same<long long, remove_cv_t<T>>::value
-                         || is_same<size_t, remove_cv_t<T>>::value
-                         || is_same<float, remove_cv_t<T>>::value
-                         || is_same<double, remove_cv_t<T>>::value
-                         || is_same<long double, remove_cv_t<T>>::value, true_type, false_type> 
+	conditional_t< is_same<uint8_t, remove_cvr_t<T>>::value
+                         || is_same<int8_t, remove_cvr_t<T>>::value
+                         || is_same<uint16_t, remove_cvr_t<T>>::value
+                         || is_same<int16_t, remove_cvr_t<T>>::value
+                         || is_same<uint32_t, remove_cvr_t<T>>::value
+                         || is_same<int32_t, remove_cvr_t<T>>::value
+                         || is_same<uint64_t, remove_cvr_t<T>>::value
+                         || is_same<int64_t, remove_cvr_t<T>>::value
+                         || is_same<long, remove_cvr_t<T>>::value
+                         || is_same<unsigned long, remove_cvr_t<T>>::value
+                         || is_same<long long, remove_cvr_t<T>>::value
+                         || is_same<unsigned long long, remove_cvr_t<T>>::value
+                         || is_same<size_t, remove_cvr_t<T>>::value
+                         || is_same<float, remove_cvr_t<T>>::value
+                         || is_same<double, remove_cvr_t<T>>::value
+                         || is_same<long double, remove_cvr_t<T>>::value, true_type, false_type> 
 {
 
 
