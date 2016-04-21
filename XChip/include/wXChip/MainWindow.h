@@ -1,14 +1,10 @@
 #ifndef _WXCHIP_MAINWINDOW_H_
 #define _WXCHIP_MAINWINDOW_H_
-#include<wXChip/RunEmulator.h>
+
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Utility/Timer.h>
-#include <XChip/Core/Emulator.h>
-#include <XChip/Media/SDLMedia/SdlRender.h>
-#include <XChip/Media/SDLMedia/SdlInput.h>
-#include <XChip/Media/SDLMedia/SdlSound.h>
+
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -36,15 +32,15 @@ private:
 	void OnChip(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
-	void OnLDown(wxMouseEvent &event);
-	void OnMouseOver(wxMouseEvent &event);
-	void OnSize(wxSizeEvent &event);
-	void OnWindowClose(wxCloseEvent &event);
+	void OnLDown(wxMouseEvent& event);
+	void OnMouseOver(wxMouseEvent& event);
+	void OnSize(wxSizeEvent& event);
+	void OnWindowClose(wxCloseEvent& event);
 	void OnTimer(wxTimerEvent& event);
-	void OnStartRom(wxCommandEvent &event);
-	void LoadSettings(wxCommandEvent &event);
+	void OnStartRom(wxCommandEvent& event);
+	void LoadSettings(wxCommandEvent& event);
 	void LaunchRom();
-	void StartProgram(const std::string &rom);
+	void StartProgram(const std::string& rom);
 
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
