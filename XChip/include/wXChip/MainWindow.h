@@ -22,8 +22,21 @@ public:
 	virtual bool OnInit();
 };
 
-
-
+class RunEmulator {
+public:
+	xchip::Emulator emu;
+	bool load(const std::string &text);
+	void init();
+	void stop();
+	void update();
+	
+	~RunEmulator() {
+		stop();
+	}
+	
+private:
+	bool closing;
+};
 
 class MainWindow: public wxFrame
 {
@@ -60,7 +73,7 @@ private:
 	std::string _filePath;
 	
 	
-	
+	RunEmulator *emulator;
 
 	wxDECLARE_EVENT_TABLE();
     
