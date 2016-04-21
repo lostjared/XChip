@@ -20,12 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\wXChip\MainWindow.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\wXChip\RunEmulator.cpp" />
     <ClCompile Include="..\..\..\XChip\src\wXChip\SaveList.cpp" />
     <ClCompile Include="..\..\..\XChip\src\wXChip\SettingsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\wXChip\dirent.h" />
     <ClInclude Include="..\..\..\XChip\include\wXChip\MainWindow.h" />
+    <ClInclude Include="..\..\..\XChip\include\wXChip\RunEmulator.h" />
     <ClInclude Include="..\..\..\XChip\include\wXChip\SaveList.h" />
     <ClInclude Include="..\..\..\XChip\include\wXChip\SettingsWindow.h" />
   </ItemGroup>

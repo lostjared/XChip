@@ -90,12 +90,12 @@ inline bool Emulator::GetExitFlag() const { return _exitf || _manager.GetErrorFl
 
 inline uint16_t Emulator::GetCpuFreq() const {
 	using namespace utility::literals;
-	return 1_sec / _instrTimer.GetTarget();
+	return static_cast<uint16_t>(1_sec / _instrTimer.GetTarget());
 }
 
 inline uint16_t Emulator::GetFps() const {
 	using namespace utility::literals;
-	return 1_sec / _frameTimer.GetTarget();
+	return static_cast<uint16_t>(1_sec / _frameTimer.GetTarget());
 }
 
 inline void Emulator::SetCpuFreq(const uint16_t value) { 

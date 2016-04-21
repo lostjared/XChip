@@ -2,21 +2,19 @@
    (c) 2016
 */
 
-#include <sstream>
-#include <wXChip/MainWindow.h>
-#include <wXChip/SaveList.h>
-#include<thread>
-
-
-#ifdef _WIN32
-#include<windows.h>
-#endif
-
 #if defined(__APPLE__) || defined(__linux__)
 #include <dirent.h>
 #elif defined(_WIN32)
 #include <wXChip/dirent.h>
 #endif
+
+#include <sstream>
+#include <thread>
+
+#include <XChip/Utility/Log.h>
+#include <wXChip/MainWindow.h>
+#include <wXChip/RunEmulator.h>
+#include <wXChip/SaveList.h>
 
 
 enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET, ID_TIMER1};
@@ -39,6 +37,7 @@ wxIMPLEMENT_APP(wXChip);
 bool wXChip::OnInit()
 {
 	using xchip::utility::make_unique;
+	
 	try {
 		std::string fps_val, cpu_freq;
 		const std::string file = getDirectory(fps_val, cpu_freq);
@@ -238,20 +237,38 @@ void MainWindow::OnChip(wxCommandEvent& event)
 }
 
 
-void testProg(std::string text) {
-	RunEmulator *emu = new RunEmulator();
-	emu->init();
-	emu->load(text);
+void testProg(const std::string& text) 
+{
+	std::unique_ptr<RunEmulator> emu;
+	
+	try {
+		
+		emu = xchip::utility::make_unique<RunEmulator>();
+
+		if (!emu->init()
+			|| !emu->load(text))
+			return;
+	}
+	catch (std::exception& err) {
+		std::cout << err.what() << std::endl;
+		return;
+	}
+
 	emu->update();
-	delete emu;
 }
 
 void MainWindow::StartProgram(const std::string &rom)
 {
-	
-	std::thread tr(testProg, rom);
-	tr.detach();
+	if (RunEmulator::isRunning()) 
+	{
+		RunEmulator::stop();
+		while (RunEmulator::isRunning())
+			std::this_thread::yield();
+	}
 
+	RunEmulator::unstop();
+	std::thread tr(testProg, std::ref(rom));
+	tr.detach();
 }
 
 void MainWindow::OnTimer(wxTimerEvent &te)
