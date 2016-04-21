@@ -32,7 +32,4 @@ private:
 
 
 
-inline bool RunEmulator::isRunning() { return s_isRunning; }
-inline void RunEmulator::stop() { s_close = true; }
-inline void RunEmulator::unstop() { s_close = false; }
 #endif

@@ -6,6 +6,10 @@
 #include <XChip/Media/SDLMedia/SdlSound.h>
 
 
+volatile bool RunEmulator::s_isRunning = false;
+volatile bool RunEmulator::s_close = true;
+
+
 std::unique_ptr<RunEmulator> RunEmulator::create()
 {
 	if (!s_isRunning)
@@ -13,6 +17,13 @@ std::unique_ptr<RunEmulator> RunEmulator::create()
 
 	return nullptr;
 }
+
+
+
+bool RunEmulator::isRunning() { return s_isRunning; }
+void RunEmulator::stop() { s_close = true; }
+void RunEmulator::unstop() { s_close = false; }
+
 
 
 
@@ -42,9 +53,11 @@ bool RunEmulator::init()
 		return false;
 	
 	try {
+
 		render = make_unique<SdlRender>();
 		input = make_unique<SdlInput>();
 		sound = make_unique<SdlSound>();
+
 	}
 	catch (std::exception& e) {
 		std::cout << e.what() << std::endl;

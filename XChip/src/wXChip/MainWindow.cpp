@@ -237,7 +237,7 @@ void MainWindow::OnChip(wxCommandEvent& event)
 }
 
 
-void testProg(const std::string& text) 
+void testProg(const std::string text) 
 {
 	std::unique_ptr<RunEmulator> emu;
 	
@@ -266,7 +266,7 @@ void MainWindow::StartProgram(const std::string &rom)
 	}
 
 	RunEmulator::unstop();
-	std::thread tr(testProg, std::ref(rom));
+	std::thread tr(testProg, rom);
 	tr.detach();
 }
 
