@@ -5,11 +5,7 @@
 #include <sstream>
 #include <wXChip/MainWindow.h>
 #include <wXChip/SaveList.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Core/Emulator.h>
-#include <XChip/Media/SDLMedia/SdlRender.h>
-#include <XChip/Media/SDLMedia/SdlInput.h>
-#include <XChip/Media/SDLMedia/SdlSound.h>
+
 
 #if defined(__APPLE__) || defined(__linux__)
 #include <dirent.h>
@@ -59,7 +55,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 	using xchip::utility::make_unique;
-	running = false;
+	running = false, closing = false;
 	auto menuFile = make_unique<wxMenu>();
 	menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L", 
                          "Load Roms");
@@ -158,6 +154,8 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
+	closing = true;
+	sleep(1);
 	Destroy();
 	// Cleanup here
 }
@@ -256,11 +254,11 @@ void MainWindow::StartProgram(const std::string &rom)
 	using xchip::UniqueSound;
 	using xchip::utility::make_unique;
 	
-	std::unique_ptr<Emulator> emu;
-	
 	UniqueRender render;
 	UniqueInput input;
 	UniqueSound sound;
+	std::unique_ptr<Emulator> emu;
+	
 	
 	try {
 		render = make_unique<SdlRender>();
@@ -348,7 +346,7 @@ void MainWindow::StartProgram(const std::string &rom)
 	running = true;
 
 	
-	while (!emu->GetExitFlag())
+	while (!emu->GetExitFlag() && closing == false)
 	{
 		emu->UpdateSystems(); // update window events / input events / timers / flags
 		emu->HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE

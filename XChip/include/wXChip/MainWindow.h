@@ -3,7 +3,11 @@
 
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>
-
+#include <XChip/Utility/Log.h>
+#include <XChip/Core/Emulator.h>
+#include <XChip/Media/SDLMedia/SdlRender.h>
+#include <XChip/Media/SDLMedia/SdlInput.h>
+#include <XChip/Media/SDLMedia/SdlSound.h>
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -26,7 +30,7 @@ public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq);
 	void CreateControls();
-	bool running;
+	bool running, closing;
 private:
 	wxTimer _timer;
 	
@@ -53,6 +57,9 @@ private:
 	std::unique_ptr<SettingsWindow> _settingsWin;
 	
 	std::string _filePath;
+	
+	
+	
 
 	wxDECLARE_EVENT_TABLE();
     
