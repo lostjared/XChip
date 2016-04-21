@@ -6,9 +6,8 @@
 #include <wXChip/MainWindow.h>
 #include <wXChip/SaveList.h>
 #include<thread>
-#ifdef __APPLE__
-#include <dispatch/dispatch.h>
-#endif
+
+
 #ifdef _WIN32
 #include<windows.h>
 #endif
@@ -37,120 +36,8 @@ wxEND_EVENT_TABLE()
 wxIMPLEMENT_APP(wXChip);
 
 
-void RunEmulator::init()
-{
-	using xchip::Emulator;
-	using xchip::SdlRender;
-	using xchip::SdlInput;
-	using xchip::SdlSound;
-	using xchip::UniqueRender;
-	using xchip::UniqueInput;
-	using xchip::UniqueSound;
-	using xchip::utility::make_unique;
-	
-
-	UniqueRender render;
-	UniqueInput input;
-	UniqueSound sound;
-	
-	try {
-		render = make_unique<SdlRender>();
-		input = make_unique<SdlInput>();
-		sound = make_unique<SdlSound>();
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-		return;
-	}
-	
-	if (!emu.Initialize(std::move(render), std::move(input), std::move(sound)))
-	{
-		return;
-	}
-	
-	
-	emu.GetSound()->SetCountdownFreq(35.88f);
-	
-	// you can also:
-	
-	// emu.GetInput()->  whatever
-	// emu.GetRender()-> whatever
-	
-	
-	
-	// remember to not use the old unique_ptr
-	///render->DrawBuffer(); // ERROR we've moved it to the emulator
-	
-	// but we can get it back if we want
-	render = emu.SwapRender(nullptr);
-	// get our render back and set emulators render to nullptr
-	// note that setting some emulator media interface to null
-	// will set ExitFlag on.
-	
-	
-	// lets check our default game color
-	auto color = render->GetColorFilter();
-	std::cout << "Default Color Filter: " << color << std::endl;
-	
-	// lets set our game color RED
-	color = { 255, 0, 0 };
-	
-	if(!render->SetColorFilter(color))
-	{
-		std::cout << "could not set new color filter" << std::endl;
-	}
-	else
-	{
-		color = render->GetColorFilter();
-		std::cout << "New Color Filter: " << color << std::endl;
-	}
-	
-	// don't forget to put the render back!!
-	// but because we have seted it to null before
-	// now we need to clean flags
-	emu.SetRender(std::move(render));
-	emu.CleanFlags();
-	
-	
-	// ok, now you may want to set some
-	// emulator settings
-	// lets show the default FPS and CPU Frequency
-	std::cout << "Default FPS: " << emu.GetFps() << std::endl;
-	std::cout << "Default CPU Freq: " << emu.GetCpuFreq() << std::endl;
-	
-	emu.SetFps(120); // I want 120 fps
-	emu.SetCpuFreq(485); // I want 485 instructions per second
-	
-	std::cout << "New FPS: " << emu.GetFps() << std::endl;
-	std::cout << "New CPU Freq: " << emu.GetCpuFreq() << std::endl;
-	closing = false;
-	
-}
-
-
-void RunEmulator::stop()
-{
-
-}
-
-void RunEmulator::update() {
-		emu.UpdateSystems(); // update window events / input events / timers / flags
-		emu.HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE
-	
-	if (emu.GetInstrFlag()) // if instrFLag is true, is time to execute one instruction
-		emu.ExecuteInstr();
-	if (emu.GetDrawFlag()) // if drawFlag is true, is time to the frame
-		emu.Draw();
-}
-
-bool RunEmulator::load(const std::string &text) {
-	return emu.LoadRom(text);
-}
-
 bool wXChip::OnInit()
 {
-	render_loop_on = false;
 	using xchip::utility::make_unique;
 	try {
 		std::string fps_val, cpu_freq;
@@ -160,40 +47,13 @@ bool wXChip::OnInit()
 		if(file != "nolist")
 			frame->LoadList(file, fps_val, cpu_freq);
 	
-		main = frame.get();
-		
 		frame->Show( true );
-		
 		frame.release();
 	} catch(std::exception &e) {
 		xchip::utility::LOGerr(e.what());
 		return false;
 	}
-	activateRenderLoop(true);
 	return true;
-}
-
-void wXChip::activateRenderLoop(bool on)
-{
-	if(on && !render_loop_on)
-	{
-		Connect( wxID_ANY, wxEVT_IDLE, wxIdleEventHandler(wXChip::onIdle) );
-		render_loop_on = true;
-	}
-	else if(!on && render_loop_on)
-	{
-		Disconnect( wxEVT_IDLE, wxIdleEventHandler(wXChip::onIdle) );
-		render_loop_on = false;
-	}
-}
-void wXChip::onIdle(wxIdleEvent& evt)
-{
-	if(render_loop_on)
-	{
-
-		main->UpdateEmulator();
-		evt.RequestMore(); // render continuously, not only once on idle
-	}
 }
 
 
@@ -202,7 +62,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX), _timer(this, ID_TIMER1)
 {
 	using xchip::utility::make_unique;
-	running = false;
+	running = false, closing = false;
 	auto menuFile = make_unique<wxMenu>();
 	menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L", 
                          "Load Roms");
@@ -248,8 +108,6 @@ void MainWindow::CreateControls()
 void MainWindow::OnLDown(wxMouseEvent& event)
 {
 	auto m_lbox = static_cast<wxListBox*>(event.GetEventObject());
-
-	// Get the item index
 	int item = m_lbox->HitTest(event.GetPosition());
     
 	if ( item != wxNOT_FOUND ) 
@@ -266,7 +124,6 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 
 void MainWindow::LaunchRom()
 {
-	// Get the item index
 	int item = _listBox->GetSelection();
 	
 	if (item != wxNOT_FOUND )
@@ -276,8 +133,6 @@ void MainWindow::LaunchRom()
 		stream << _filePath << "/" << str.c_str();
 		const std::string fullname = stream.str();
 		std::cout << "Start Rom At Path: " << fullname << "\n";
-		//if(running != true)
-//		_timer.Stop();
 		StartProgram(fullname);
 	}
 }
@@ -286,7 +141,6 @@ void MainWindow::OnStartRom(wxCommandEvent &event)
 {
 	std::cout << "Starting Rom...\n";
 	LaunchRom();
-    // start application
 }
 
 void MainWindow::LoadSettings(wxCommandEvent &event)
@@ -318,13 +172,10 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
-
-	wxGetApp().activateRenderLoop(false);
-	event.Skip(); // don't stop event, we still want window to close
-	running = false;
+	closing = true;
+	Update();
 	delete emulator;
 	Destroy();
-	// Cleanup here}
 }
 
 void MainWindow::LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq)
@@ -374,12 +225,6 @@ void MainWindow::LoadList(const std::string &text, const std::string &fps, std::
 	}
 }
 
-
-
-
-
-
-
 void MainWindow::OnChip(wxCommandEvent& event)
 {
 	wxDirDialog dlg(NULL, "Choose input directory", "",
@@ -396,39 +241,20 @@ void MainWindow::OnChip(wxCommandEvent& event)
 }
 
 
+void testProg(std::string text) {
+	RunEmulator *emu = new RunEmulator();
+	emu->init();
+	emu->load(text);
+	emu->update();
+	delete emu;
+}
 
 void MainWindow::StartProgram(const std::string &rom)
 {
-	if(current_rom == "")
- 	{
-		current_rom = rom;
-	}
-	else if(current_rom == rom) return;
 	
-	
-	if(emulator == nullptr) {
-		emulator = new RunEmulator();
-		emulator->init();
-		emulator->load(rom);
-		running = true;
-	} else {
-		emulator->init();
-		emulator->load(rom);
-		running = true;
-	}
+	std::thread tr(testProg, rom);
+	tr.detach();
 
-}
-
-void MainWindow::UpdateEmulator() {
-	
-	if(running == true) {
-		if(!emulator->emu.GetExitFlag() && emulator->closing == false)
-		{
-			emulator->update();
-		}
-		else
-			running = false;
-	}
 }
 
 void MainWindow::OnTimer(wxTimerEvent &te)

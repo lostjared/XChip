@@ -1,6 +1,6 @@
 #ifndef _WXCHIP_MAINWINDOW_H_
 #define _WXCHIP_MAINWINDOW_H_
-
+#include<wXChip/RunEmulator.h>
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>
 #include <XChip/Utility/Log.h>
@@ -9,8 +9,6 @@
 #include <XChip/Media/SDLMedia/SdlRender.h>
 #include <XChip/Media/SDLMedia/SdlInput.h>
 #include <XChip/Media/SDLMedia/SdlSound.h>
-#include<atomic>
-
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -18,39 +16,12 @@
 #include <wx/listbox.h>
 
 
-class MainWindow;
-
 class wXChip: public wxApp
 {
-	bool render_loop_on;
+public:
 	virtual bool OnInit();
-	void onIdle(wxIdleEvent& evt);
-	MainWindow *main;
-public:
-	void activateRenderLoop(bool on);
 };
 
-class RunEmulator {
-public:
-	xchip::Emulator emu;
-	bool load(const std::string &text);
-	void init();
-	void stop();
-	void update();
-	
-	RunEmulator() : closing(false) {
-	
-	}
-	
-	~RunEmulator() {
-		stop();
-	}
-	
-	bool closing;
-private:
-	
-
-};
 
 class MainWindow: public wxFrame
 {
@@ -58,10 +29,10 @@ public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq);
 	void CreateControls();
-	void UpdateEmulator();
-	bool running = false;
+	bool running, closing;
 private:
 	wxTimer _timer;
+	
 	void OnChip(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
@@ -90,8 +61,7 @@ private:
 	RunEmulator *emulator;
 
 	wxDECLARE_EVENT_TABLE();
-	std::string current_rom;
-	
+    
 };
 
 
