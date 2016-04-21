@@ -5,6 +5,7 @@
 #include <sstream>
 #include <wXChip/MainWindow.h>
 #include <wXChip/SaveList.h>
+#include<thread>
 
 
 #if defined(__APPLE__) || defined(__linux__)
@@ -114,7 +115,7 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 		stream << _filePath << "/" << str.c_str();
 		std::string fullname = stream.str();
 		std::cout << "Start Rom At Path: " << fullname << "\n";
-		_timer.Stop();
+		//_timer.Stop();
 		StartProgram(fullname);
 	}
 }
@@ -132,7 +133,7 @@ void MainWindow::LaunchRom()
 		const std::string fullname = stream.str();
 		std::cout << "Start Rom At Path: " << fullname << "\n";
 		//if(running != true)
-		_timer.Stop();
+//		_timer.Stop();
 		StartProgram(fullname);
 	}
 }
@@ -248,6 +249,21 @@ void MainWindow::OnChip(wxCommandEvent& event)
 }
 
 
+void RunEmulator()
+{
+	while (!emu->GetExitFlag())
+	{
+		emu->UpdateSystems(); // update window events / input events / timers / flags
+		emu->HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE
+		
+		if (emu->GetInstrFlag()) // if instrFLag is true, is time to execute one instruction
+			emu->ExecuteInstr();
+		if (emu->GetDrawFlag()) // if drawFlag is true, is time to the frame
+			emu->Draw();
+		
+	}
+
+}
 
 void MainWindow::StartProgram(const std::string &rom)
 {
@@ -360,7 +376,10 @@ void MainWindow::StartProgram(const std::string &rom)
 	running = false;
 	closing = false;
 	 */
-	_timer.Start(1);
+	//_timer.Start(1);
+	std::thread thread1(RunEmulator);
+	thread1.join(); // for now
+	
 }
 
 void MainWindow::OnTimer(wxTimerEvent &te)
