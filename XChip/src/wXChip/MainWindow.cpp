@@ -299,7 +299,7 @@ void MainWindow::OnWindowClose(wxCloseEvent &event)
 	//_timer.Stop();
 	closing = true;
 	Update();
-//	delete emulator;
+	delete emulator;
 	Destroy();
 	// Cleanup here}
 }
@@ -372,29 +372,23 @@ void MainWindow::OnChip(wxCommandEvent& event)
 	LoadList(std::string(value.c_str()), fps, cpu);
 }
 
-std::vector<std::thread> v;
+
+void testProg(std::string text) {
+	RunEmulator *emu = new RunEmulator();
+	emu->init();
+	emu->load(text);
+	emu->update();
+	delete emu;
+}
 
 void MainWindow::StartProgram(const std::string &rom)
 {
 	
 	// before running the emulator
 	// we need to load a game
-	
-	
-	if(emulator == nullptr) {
-		emulator = new RunEmulator();
-		emulator->init();
-		emulator->load(rom);
-		emulator->update();
-		std::cout << "*** Exit.\n";
-	} else {
-		emulator->stop();
-		emulator->load(rom);
-//		emulator->init();
-//		emulator->load(rom);
-//		emulator->update();
-	}
-	
+	std::thread tr(testProg, rom);
+	tr.detach();
+
 }
 
 void MainWindow::OnTimer(wxTimerEvent &te)
