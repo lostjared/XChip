@@ -365,7 +365,10 @@ void MainWindow::StartProgram(const std::string &rom)
 
 void MainWindow::OnTimer(wxTimerEvent &te)
 {
-	if(emu->GetExitFlag()) return;
+	if(emu->GetExitFlag()) {
+		emu->Dispose();
+		return;
+	}
 	if(closing == true) return;
 	emu->UpdateSystems(); // update window events / input events / timers / flags
 	emu->HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE
