@@ -367,6 +367,7 @@ void MainWindow::OnTimer(wxTimerEvent &te)
 {
 	if(emu->GetExitFlag()) {
 		emu->Dispose();
+		_timer.Stop();
 		return;
 	}
 	if(closing == true) return;
