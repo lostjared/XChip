@@ -1,6 +1,6 @@
 #ifndef _WXCHIP_MAINWINDOW_H_
 #define _WXCHIP_MAINWINDOW_H_
-
+#include<wXChip/RunEmulator.h>
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>
 #include <XChip/Utility/Log.h>
@@ -22,21 +22,6 @@ public:
 	virtual bool OnInit();
 };
 
-class RunEmulator {
-public:
-	xchip::Emulator emu;
-	bool load(const std::string &text);
-	void init();
-	void stop();
-	void update();
-	
-	~RunEmulator() {
-		stop();
-	}
-	
-private:
-	bool closing;
-};
 
 class MainWindow: public wxFrame
 {
@@ -63,27 +48,15 @@ private:
 
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
-
 	std::unique_ptr<wxListBox> _listBox;
 	std::unique_ptr<wxButton> _startRom;
 	std::unique_ptr<wxButton> _settings;
 	std::unique_ptr<wxButton> _emulatorSettings;
 	std::unique_ptr<SettingsWindow> _settingsWin;
-	
 	std::string _filePath;
 	
-	
-	RunEmulator *emulator;
-
 	wxDECLARE_EVENT_TABLE();
     
 };
-
-
-
-
-
-
-
 
 #endif
