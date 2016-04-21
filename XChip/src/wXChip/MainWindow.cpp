@@ -29,6 +29,10 @@ EVT_TIMER(ID_TIMER1, MainWindow::OnTimer)
 wxEND_EVENT_TABLE()
 wxIMPLEMENT_APP(wXChip);
 
+std::unique_ptr<xchip::Emulator> emu = xchip::utility::make_unique<xchip::Emulator>();
+
+
+
 bool wXChip::OnInit()
 {
 	using xchip::utility::make_unique;
@@ -52,7 +56,7 @@ bool wXChip::OnInit()
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
-	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX), _timer(this, ID_TIMER1)
 {
 	using xchip::utility::make_unique;
 	running = false, closing = false;
@@ -110,16 +114,28 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 		stream << _filePath << "/" << str.c_str();
 		std::string fullname = stream.str();
 		std::cout << "Start Rom At Path: " << fullname << "\n";
-		
-		if(running == true)
-		{
-		
-		}
-			StartProgram(fullname);
-		
+		_timer.Stop();
+		StartProgram(fullname);
 	}
 }
 
+void MainWindow::LaunchRom()
+{
+	// Get the item index
+	int item = _listBox->GetSelection();
+	
+	if (item != wxNOT_FOUND )
+	{
+		const wxString str = _listBox->GetString(item);
+		std::ostringstream stream;
+		stream << _filePath << "/" << str.c_str();
+		const std::string fullname = stream.str();
+		std::cout << "Start Rom At Path: " << fullname << "\n";
+		//if(running != true)
+		_timer.Stop();
+		StartProgram(fullname);
+	}
+}
 
 void MainWindow::OnStartRom(wxCommandEvent &event)
 {
@@ -157,9 +173,10 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
+	_timer.Stop();
 	closing = true;
 	Destroy();
-	// Cleanup here
+	// Cleanup here}
 }
 
 void MainWindow::LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq)
@@ -211,22 +228,7 @@ void MainWindow::LoadList(const std::string &text, const std::string &fps, std::
 
 
 
-void MainWindow::LaunchRom() 
-{
-	// Get the item index
-	int item = _listBox->GetSelection();
-    
-	if (item != wxNOT_FOUND ) 
-	{
-		const wxString str = _listBox->GetString(item);
-		std::ostringstream stream;
-		stream << _filePath << "/" << str.c_str();
-		const std::string fullname = stream.str();
-		std::cout << "Start Rom At Path: " << fullname << "\n";
-		if(running != true)
-			StartProgram(fullname);
-	}
-}
+
 
 
 
@@ -245,6 +247,8 @@ void MainWindow::OnChip(wxCommandEvent& event)
 	LoadList(std::string(value.c_str()), fps, cpu);
 }
 
+
+
 void MainWindow::StartProgram(const std::string &rom)
 {
 	using xchip::Emulator;
@@ -255,20 +259,21 @@ void MainWindow::StartProgram(const std::string &rom)
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
 	using xchip::utility::make_unique;
+
 	
 	UniqueRender render;
 	UniqueInput input;
 	UniqueSound sound;
-	std::unique_ptr<Emulator> emu;
-	
+		
 	
 	try {
 		render = make_unique<SdlRender>();
 		input = make_unique<SdlInput>();
 		sound = make_unique<SdlSound>();
-		emu = make_unique<Emulator>();
+		//emu = make_unique<Emulator>();
 	}
-	catch (std::exception& e) {
+	catch (std::exception& e)
+ 	{
 		std::cout << e.what() << std::endl;
 		return;
 	}
@@ -336,34 +341,37 @@ void MainWindow::StartProgram(const std::string &rom)
 	
 	
 	
+
 	
 	// before running the emulator
 	// we need to load a game
-	if (!emu->LoadRom(rom.c_str()))
+	if (!emu->LoadRom(rom))
 	{
 		// could not load this rom
 		return;
 	}
 	
-	running = true;
-
-	
+	/*
 	while (!emu->GetExitFlag() && closing == false)
 	{
-		emu->UpdateSystems(); // update window events / input events / timers / flags
-		emu->HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE
-		
-		if (emu->GetInstrFlag()) // if instrFLag is true, is time to execute one instruction
-			emu->ExecuteInstr();
-		if (emu->GetDrawFlag()) // if drawFlag is true, is time to the frame
-			emu->Draw();
 		
 	}
 	
 	running = false;
+	closing = false;
+	 */
+	_timer.Start(1);
 }
 
 void MainWindow::OnTimer(wxTimerEvent &te)
 {
-
+	if(emu->GetExitFlag()) return;
+	if(closing == true) return;
+	emu->UpdateSystems(); // update window events / input events / timers / flags
+	emu->HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE
+	
+	if (emu->GetInstrFlag()) // if instrFLag is true, is time to execute one instruction
+		emu->ExecuteInstr();
+	if (emu->GetDrawFlag()) // if drawFlag is true, is time to the frame
+		emu->Draw();
 }
