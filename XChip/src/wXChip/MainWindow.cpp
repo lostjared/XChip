@@ -191,7 +191,9 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
-	_emuTr->Stop();
+	if(_emuTr)
+		_emuTr->Stop();
+	
 	closing = true;
 	Update();
 	Destroy();
