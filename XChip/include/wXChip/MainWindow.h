@@ -42,9 +42,9 @@ private:
 	void LoadSettings(wxCommandEvent& event);
 	void LaunchRom();
 	void StartProgram(const std::string& rom);
-
-
+	
 	std::unique_ptr<EmulatorThread> _emuTr;
+	
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
 	std::unique_ptr<wxListBox> _listBox;

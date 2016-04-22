@@ -46,6 +46,8 @@ public:
 	void Draw();
 	void Reset();
 
+	void SetDrawFlag(const bool val);
+	void SetExitFlag(const bool val);
 	void SetCpuFreq(const uint16_t value);
 	void SetFps(const uint16_t value);
 	bool LoadRom(const std::string& fileName);
@@ -97,6 +99,10 @@ inline uint16_t Emulator::GetFps() const {
 	using namespace utility::literals;
 	return static_cast<uint16_t>(1_sec / _frameTimer.GetTarget());
 }
+
+
+inline void Emulator::SetDrawFlag(const bool val) { _drawf = val; }
+inline void Emulator::SetExitFlag(const bool val) { _exitf = val; }
 
 inline void Emulator::SetCpuFreq(const uint16_t value) { 
 	_instrTimer.SetTargetTime(utility::literals::operator""_hz(value));

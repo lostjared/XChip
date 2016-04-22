@@ -12,7 +12,6 @@ public:
 private:
 	xchip::Emulator _emu;
 	std::thread _tr;
-	volatile bool _run = false;
 	volatile bool _isRunning = false;
 	
 };

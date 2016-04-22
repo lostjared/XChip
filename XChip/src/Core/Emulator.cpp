@@ -178,6 +178,7 @@ void Emulator::Reset()
 	if(_manager.GetSound()->IsPlaying())
 		_manager.GetSound()->Stop();
 
+	CleanFlags();
 	_manager.CleanGfx();
 	_manager.CleanStack();
 	_manager.CleanRegisters();

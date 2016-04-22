@@ -10,12 +10,12 @@ void EmulatorThread::Stop()
 
 	if(_isRunning)
 	{	
-		_run = false;
+		_emu.SetExitFlag(true);
 		while(_isRunning != false) 
-			std::this_thread::yield();
+			Timer::Halt(150_milli);
 	}
 
-//	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	Timer::Halt(100_milli);
 }
 
 
@@ -33,7 +33,7 @@ void EmulatorThread::Run()
 
 		emu.GetRender()->ShowWindow();
 
-		while(!emu.GetExitFlag() && emuTr->_run)
+		while(!emu.GetExitFlag())
 		{
 			emu.UpdateSystems();
 			emu.HaltForNextFlag();
@@ -48,8 +48,6 @@ void EmulatorThread::Run()
 
 	};
 
-
-	_run = true;
 	_tr = std::thread(loop, this);
 	_tr.detach();
 }
