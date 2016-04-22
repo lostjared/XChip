@@ -2,14 +2,13 @@
    (c) 2016
 */
 
+#include <sstream>
+
 #if defined(__APPLE__) || defined(__linux__)
 #include <dirent.h>
 #elif defined(_WIN32)
 #include <wXChip/dirent.h>
 #endif
-
-#include <sstream>
-#include <thread>
 
 #include <XChip/Media/SDLMedia/SdlRender.h>
 #include <XChip/Media/SDLMedia/SdlInput.h>
@@ -110,16 +109,16 @@ void MainWindow::CreateEmulator()
 	using xchip::SdlSound;
 	using xchip::utility::make_unique;
 
-	if(_emulator) 
+	if(_emuTr) 
 	{
-		_emulator->Stop();
-		_emulator.reset();
+		_emuTr->Stop();
+		_emuTr.reset();
 	}
 
-	_emulator = make_unique<EmulatorThread>();
-	_emulator->GetEmulator().Initialize(make_unique<xchip::SdlRender>(),
-			                            make_unique<SdlInput>(),
-			                            make_unique<SdlSound>());
+	_emuTr = make_unique<EmulatorThread>();
+	_emuTr->GetEmulator().Initialize(make_unique<xchip::SdlRender>(),
+                                          make_unique<SdlInput>(),
+                                          make_unique<SdlSound>());
 }
 
 
@@ -190,7 +189,7 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
-	_emulator->Stop();
+	_emuTr->Stop();
 	closing = true;
 	Update();
 	Destroy();
@@ -268,10 +267,10 @@ void MainWindow::StartProgram(const std::string &rom)
 		emuCreated = true;
 	}
 
-	_emulator->Stop();
-	_emulator->GetEmulator().Reset();
-	_emulator->GetEmulator().LoadRom(rom);
-	_emulator->Run();
+	_emuTr->Stop();
+	_emuTr->GetEmulator().Reset();
+	_emuTr->GetEmulator().LoadRom(rom);
+	_emuTr->Run();
 }
 
 void MainWindow::OnTimer(wxTimerEvent &te)
