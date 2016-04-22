@@ -116,9 +116,12 @@ void MainWindow::CreateEmulator()
 	}
 
 	_emuTr = make_unique<EmulatorThread>();
-	_emuTr->GetEmulator().Initialize(make_unique<xchip::SdlRender>(),
+	if (!_emuTr->GetEmulator().Initialize(make_unique<xchip::SdlRender>(),
                                           make_unique<SdlInput>(),
-                                          make_unique<SdlSound>());
+                                          make_unique<SdlSound>()))
+	{
+		throw std::bad_alloc();
+	}
 }
 
 

@@ -5,6 +5,8 @@
 #include <wXChip/SettingsWindow.h>
 #include <wXChip/EmulatorThread.h>
 
+
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>

@@ -24,7 +24,7 @@
     <ClCompile Include="..\..\..\XChip\src\wXChip\SettingsWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XChip\src\wXChip\RunEmulator.cpp">
+    <ClCompile Include="..\..\..\XChip\src\wXChip\EmulatorThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="..\..\..\XChip\include\wXChip\SettingsWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XChip\include\wXChip\RunEmulator.h">
+    <ClInclude Include="..\..\..\XChip\include\wXChip\EmulatorThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
