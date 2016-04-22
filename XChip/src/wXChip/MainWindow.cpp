@@ -16,7 +16,6 @@
 #include <XChip/Media/SDLMedia/SdlSound.h>
 #include <XChip/Utility/Log.h>
 #include <wXChip/MainWindow.h>
-#include <wXChip/RunEmulator.h>
 #include <wXChip/SaveList.h>
 
 
@@ -85,7 +84,6 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	SetStatusText( "Welcome to wXChip" );
 	
 	CreateControls();
-	
 
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
@@ -118,7 +116,7 @@ void MainWindow::CreateEmulator()
 		_emulator.reset();
 	}
 
-	_emulator = make_unique<XChipEmulator>();
+	_emulator = make_unique<EmulatorThread>();
 	_emulator->GetEmulator().Initialize(make_unique<xchip::SdlRender>(),
 			                            make_unique<SdlInput>(),
 			                            make_unique<SdlSound>());
@@ -192,6 +190,7 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
+	_emulator->Stop();
 	closing = true;
 	Update();
 	Destroy();
@@ -262,11 +261,17 @@ void MainWindow::OnChip(wxCommandEvent& event)
 
 void MainWindow::StartProgram(const std::string &rom)
 {
-	CreateEmulator();
+	static bool emuCreated = false;
+	if(!emuCreated)
+	{
+		CreateEmulator();
+		emuCreated = true;
+	}
+
 	_emulator->Stop();
+	_emulator->GetEmulator().Reset();
 	_emulator->GetEmulator().LoadRom(rom);
-	std::thread tr(XChipEmulator::Run, _emulator.get());
-	tr.detach();
+	_emulator->Run();
 }
 
 void MainWindow::OnTimer(wxTimerEvent &te)

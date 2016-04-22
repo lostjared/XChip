@@ -147,6 +147,16 @@ void SdlRender::DrawBuffer() noexcept
 }
 
 
+void SdlRender::HideWindow() noexcept
+{
+	SDL_HideWindow(_window);
+}
+
+void SdlRender::ShowWindow() noexcept
+{
+
+	SDL_ShowWindow(_window);
+}
 
 
 

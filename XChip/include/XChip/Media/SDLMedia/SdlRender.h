@@ -25,6 +25,8 @@ public:
 	bool SetColorFilter(const utility::Color& color) noexcept override;
 	void SetBuffer(const uint32_t* gfx) noexcept override;
 	void DrawBuffer() noexcept override;
+	void HideWindow() noexcept override;
+	void ShowWindow() noexcept override;
 	bool UpdateEvents() noexcept override;
 
 	virtual void SetWinCloseCallback(const void* arg, WinCloseCallback callback) noexcept override;

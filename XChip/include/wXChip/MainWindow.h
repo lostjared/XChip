@@ -3,7 +3,7 @@
 
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>
-#include <wXChip/RunEmulator.h>
+#include <wXChip/EmulatorThread.h>
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -25,6 +25,7 @@ public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq);
 	void CreateControls();
+	void CreateEmulator();
 	bool running, closing;
 private:
 	wxTimer _timer;
@@ -41,9 +42,9 @@ private:
 	void LoadSettings(wxCommandEvent& event);
 	void LaunchRom();
 	void StartProgram(const std::string& rom);
-	void CreateEmulator();
 
-	std::unique_ptr<XChipEmulator> _emulator;
+
+	std::unique_ptr<EmulatorThread> _emulator;
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
 	std::unique_ptr<wxListBox> _listBox;
