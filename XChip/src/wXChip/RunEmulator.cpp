@@ -1,102 +1,38 @@
 #include <wXChip/RunEmulator.h>
-#include <XChip/Utility/Memory.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Media/SDLMedia/SdlRender.h>
-#include <XChip/Media/SDLMedia/SdlInput.h>
-#include <XChip/Media/SDLMedia/SdlSound.h>
+#include <XChip/Utility/Timer.h>
 
 
-volatile bool RunEmulator::s_isRunning = false;
-volatile bool RunEmulator::s_close = true;
 
-
-std::unique_ptr<RunEmulator> RunEmulator::create()
+void XChipEmulator::Stop()
 {
-	if (!s_isRunning)
-		return std::unique_ptr<RunEmulator>(new RunEmulator());
-
-	return nullptr;
+	using namespace xchip::utility;
+	using namespace xchip::utility::literals;
+	
+	_run = false;
+	while(_isRunning != false) 
+		Timer::Halt(150_milli);
 }
 
 
 
-bool RunEmulator::isRunning() { return s_isRunning; }
-void RunEmulator::stop() { s_close = true; }
-void RunEmulator::unstop() { s_close = false; }
-
-
-
-
-RunEmulator::RunEmulator()
+void XChipEmulator::Run(XChipEmulator* xchipEmu)
 {
-	
-}
 
-RunEmulator::~RunEmulator()
-{
-	stop();
-}
+	xchipEmu->_run = true;
+	xchipEmu->_isRunning = true;
 
 
-bool RunEmulator::init()
-{
-	using xchip::Emulator;
-	using xchip::SdlRender;
-	using xchip::SdlInput;
-	using xchip::SdlSound;
-	using xchip::UniqueRender;
-	using xchip::UniqueInput;
-	using xchip::UniqueSound;
-	using xchip::utility::make_unique;
-	
-	if (s_isRunning)
-		return false;
-	
-	try {
+	auto& emu = xchipEmu->GetEmulator();
 
-		render = make_unique<SdlRender>();
-		input = make_unique<SdlInput>();
-		sound = make_unique<SdlSound>();
-
-	}
-	catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
-		return false;
-	}
-
-
-	
-	if (!emu.Initialize(std::move(render), std::move(input), std::move(sound)))
+	while(!emu.GetExitFlag() && xchipEmu->_run)
 	{
-		return false;
-	}
-	
-	return true;
-}
-
-
-
-void RunEmulator::update() 
-{
-	s_isRunning = true;
-
-	while (!emu.GetExitFlag() && s_close == false)
-	{
-		
-		emu.UpdateSystems(); // update window events / input events / timers / flags
-		emu.HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE
-		
-		if (emu.GetInstrFlag()) // if instrFLag is true, is time to execute one instruction
+		emu.UpdateSystems();
+		emu.HaltForNextFlag();
+		if(emu.GetInstrFlag())
 			emu.ExecuteInstr();
-		if (emu.GetDrawFlag()) // if drawFlag is true, is time to the frame
+		if(emu.GetDrawFlag())
 			emu.Draw();
 	}
 
-	s_isRunning = false;
+	xchipEmu->_isRunning = false;
 }
-
-bool RunEmulator::load(const std::string& romName) 
-{
-	return emu.LoadRom(romName);
-}
-

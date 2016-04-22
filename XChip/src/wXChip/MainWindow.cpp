@@ -11,6 +11,9 @@
 #include <sstream>
 #include <thread>
 
+#include <XChip/Media/SDLMedia/SdlRender.h>
+#include <XChip/Media/SDLMedia/SdlInput.h>
+#include <XChip/Media/SDLMedia/SdlSound.h>
 #include <XChip/Utility/Log.h>
 #include <wXChip/MainWindow.h>
 #include <wXChip/RunEmulator.h>
@@ -83,6 +86,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	
 	CreateControls();
 	
+
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
 }
@@ -99,6 +103,25 @@ void MainWindow::CreateControls()
 	_settings = make_unique<wxButton>(_panel.get(), ID_LOADROM, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
 	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 	_settingsWin = make_unique<SettingsWindow>("wXChip - Settings", wxPoint(150, 150), wxSize(430, 220));
+}
+
+void MainWindow::CreateEmulator()
+{
+	using xchip::SdlRender;
+	using xchip::SdlInput;
+	using xchip::SdlSound;
+	using xchip::utility::make_unique;
+
+	if(_emulator) 
+	{
+		_emulator->Stop();
+		_emulator.reset();
+	}
+
+	_emulator = make_unique<XChipEmulator>();
+	_emulator->GetEmulator().Initialize(make_unique<xchip::SdlRender>(),
+			                            make_unique<SdlInput>(),
+			                            make_unique<SdlSound>());
 }
 
 
@@ -237,36 +260,12 @@ void MainWindow::OnChip(wxCommandEvent& event)
 }
 
 
-void testProg(const std::string text) 
-{
-	std::unique_ptr<RunEmulator> emu;
-	
-	try {
-		emu = RunEmulator::create();
-
-		if (!emu->init()
-			|| !emu->load(text))
-			return;
-	}
-	catch (std::exception& err) {
-		std::cout << err.what() << std::endl;
-		return;
-	}
-
-	emu->update();
-}
-
 void MainWindow::StartProgram(const std::string &rom)
 {
-	if (RunEmulator::isRunning()) 
-	{
-		RunEmulator::stop();
-		while (RunEmulator::isRunning())
-			std::this_thread::yield();
-	}
-
-	RunEmulator::unstop();
-	std::thread tr(testProg, rom);
+	CreateEmulator();
+	_emulator->Stop();
+	_emulator->GetEmulator().LoadRom(rom);
+	std::thread tr(XChipEmulator::Run, _emulator.get());
 	tr.detach();
 }
 

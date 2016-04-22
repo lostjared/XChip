@@ -3,32 +3,30 @@
 #include <XChip/Core/Emulator.h>
 
 
-class RunEmulator
+class XChipEmulator
 {
-public:
-	static std::unique_ptr<RunEmulator> create();
-	~RunEmulator();
 	
-	bool load(const std::string &text);
-	bool init();
-	void update();
+public:
+	xchip::Emulator& GetEmulator();
+	void Stop();
 
-	static bool isRunning();
-	static void stop();
-	static void unstop();
-
+	static void Run(XChipEmulator* xchipEmu);
 
 private:
-	RunEmulator();
-
-	static volatile bool s_isRunning;
-	static volatile bool s_close;
-	xchip::Emulator emu;
-	xchip::UniqueRender render;
-	xchip::UniqueInput input;
-	xchip::UniqueSound sound;
+	xchip::Emulator _emu;
+	volatile bool _run = false;
+	volatile bool _isRunning = false;
 	
 };
+
+
+
+
+
+
+inline xchip::Emulator& XChipEmulator::GetEmulator() { return _emu; }
+
+
 
 
 
