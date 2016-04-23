@@ -1,8 +1,8 @@
 #ifndef _WXCHIP_MAINWINDOW_H_
 #define _WXCHIP_MAINWINDOW_H_
+#include <XChip/Core/Emulator.h>
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>
-#include <wXChip/EmulatorThread.h>
 
 
 
@@ -37,9 +37,11 @@ private:
 	void LoadSettings(wxCommandEvent& event);
 	void LaunchRom();
 	void StartProgram(const std::string& rom);
-	
-	std::unique_ptr<EmulatorThread> _emuTr;
-	
+	void OnIdle(wxIdleEvent& event);
+
+
+	bool _emuLoopOn = false;
+	std::unique_ptr<xchip::Emulator> _emu;
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
 	std::unique_ptr<wxListBox> _listBox;
