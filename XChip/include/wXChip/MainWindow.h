@@ -13,6 +13,7 @@ class wXChip: public wxApp
 {
 public:
 	virtual bool OnInit();
+	virtual int FilterEvent(wxEvent& event);
 };
 
 
@@ -34,15 +35,13 @@ private:
 	void OnSize(wxSizeEvent& event);
 	void OnWindowClose(wxCloseEvent& event);
 	void OnStartRom(wxCommandEvent& event);
-	void OnKeyUp(wxKeyEvent &key);
-	void OnKeyDown(wxKeyEvent &key);
 	void LoadSettings(wxCommandEvent& event);
 	void LaunchRom();
 	void StartProgram(const std::string& rom);
 	void OnIdle(wxIdleEvent& event);
 	void StartEmulatorLoop();
 	void StopEmulatorLoop();
-
+	
 
 	bool _emuLoopOn = false;
 	std::unique_ptr<xchip::Emulator> _emu;

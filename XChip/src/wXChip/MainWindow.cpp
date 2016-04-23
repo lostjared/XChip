@@ -38,8 +38,6 @@ EVT_MOTION(MainWindow::OnMouseOver)
 EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
 EVT_BUTTON(ID_LOADROM, MainWindow::OnChip)
 EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
-EVT_KEY_DOWN(MainWindow::OnKeyDown)
-EVT_KEY_UP(MainWindow::OnKeyUp)
 wxEND_EVENT_TABLE()
 wxIMPLEMENT_APP(wXChip);
 
@@ -63,6 +61,18 @@ bool wXChip::OnInit()
 		return false;
 	}
 	return true;
+}
+
+int wXChip::FilterEvent(wxEvent& event)
+{
+	if ((event.GetEventType() == wxEVT_KEY_DOWN) &&
+		(((wxKeyEvent&)event).GetKeyCode() == WXK_ESCAPE))
+	{
+		std::cout << "Exit..\n";
+		return true;
+	}
+ 
+	return -1;
 }
 
 
@@ -109,6 +119,7 @@ void MainWindow::CreateControls()
 	_settings = make_unique<wxButton>(_panel.get(), ID_LOADROM, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
 	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 	_settingsWin = make_unique<SettingsWindow>("wXChip - Settings", wxPoint(150, 150), wxSize(430, 220));
+	
 }
 
 void MainWindow::CreateEmulator()
@@ -209,16 +220,6 @@ void MainWindow::OnWindowClose(wxCloseEvent &event)
 	closing = true;
 	Update();
 	Destroy();
-}
-
-void MainWindow::OnKeyUp(wxKeyEvent &key)
-{
-	
-}
-
-void MainWindow::OnKeyDown(wxKeyEvent &key)
-{
-	
 }
 
 
