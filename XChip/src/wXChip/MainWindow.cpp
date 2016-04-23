@@ -288,6 +288,7 @@ void MainWindow::OnIdle(wxIdleEvent& event)
 {
 	if (!_emu->GetExitFlag())
 	{
+		
 		_emu->UpdateSystems();
 		_emu->HaltForNextFlag();
 		
@@ -295,6 +296,9 @@ void MainWindow::OnIdle(wxIdleEvent& event)
 			_emu->ExecuteInstr();
 		if (_emu->GetDrawFlag())
 			_emu->Draw();
+		
+		
+		event.RequestMore();
 	}
 	else
 	{
