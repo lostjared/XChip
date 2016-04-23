@@ -90,7 +90,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	SetStatusText( "Welcome to wXChip" );
 	
 	CreateControls();
-	CreateEmulator();
+//	CreateEmulator();
 
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
@@ -117,20 +117,23 @@ void MainWindow::CreateEmulator()
 	using xchip::SdlSound;
 	using xchip::utility::make_unique;
 
-	if(_emu) 
+	if(!_emu) 
 	{
-		_emu->Dispose();
-	}
 
-	_emu = make_unique<xchip::Emulator>();
+		_emu = make_unique<xchip::Emulator>();
 
-	if (!_emu->Initialize(make_unique<SdlRender>(),
-                          make_unique<SdlInput>(),
-                          make_unique<SdlSound>())) 
-	{
-		throw std::bad_alloc();
+		if (!_emu->Initialize(make_unique<SdlRender>(),
+                                      make_unique<SdlInput>(),
+                                      make_unique<SdlSound>())) 
+		{
+			throw std::bad_alloc();
+		}
+		
+		_emu->GetRender()->HideWindow();
+		_emu->GetInput()->SetWaitKeyCallback(nullptr, nullptr);
 	}
-	_emu->GetRender()->HideWindow();
+	
+
 }
 
 
@@ -272,6 +275,7 @@ void MainWindow::OnChip(wxCommandEvent& event)
 
 void MainWindow::StartProgram(const std::string &rom)
 {
+	CreateEmulator();
 	_emu->Reset();
 	_emu->LoadRom(rom);
 	StartEmulatorLoop();
