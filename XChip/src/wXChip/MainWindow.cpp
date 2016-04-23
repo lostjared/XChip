@@ -296,13 +296,11 @@ void MainWindow::OnIdle(wxIdleEvent& event)
 			_emu->ExecuteInstr();
 		if (_emu->GetDrawFlag())
 			_emu->Draw();
-		
-		
+
 		event.RequestMore();
 	}
 	else
 	{
-		
 		Disconnect(wxEVT_IDLE, wxIdleEventHandler(MainWindow::OnIdle));
 		_emuLoopOn = false;
 		_emu->GetRender()->HideWindow();
