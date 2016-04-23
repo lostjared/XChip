@@ -30,7 +30,6 @@ EVT_MOTION(MainWindow::OnMouseOver)
 EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
 EVT_BUTTON(ID_LOADROM, MainWindow::OnChip)
 EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
-EVT_TIMER(ID_TIMER1, MainWindow::OnTimer)
 wxEND_EVENT_TABLE()
 wxIMPLEMENT_APP(wXChip);
 
@@ -59,7 +58,7 @@ bool wXChip::OnInit()
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
-	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX), _timer(this, ID_TIMER1)
+	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 	using xchip::utility::make_unique;
 	running = false, closing = false;
@@ -274,23 +273,4 @@ void MainWindow::StartProgram(const std::string &rom)
 	_emuTr->GetEmulator().Reset();
 	_emuTr->GetEmulator().LoadRom(rom);
 	_emuTr->Run();
-}
-
-void MainWindow::OnTimer(wxTimerEvent &te)
-{
-	/*
-	if(emu->GetExitFlag()) {
-		emu->Dispose();
-		_timer.Stop();
-		return;
-	}
-	if(closing == true) return;
-	emu->UpdateSystems(); // update window events / input events / timers / flags
-	emu->HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE
-	
-	if (emu->GetInstrFlag()) // if instrFLag is true, is time to execute one instruction
-		emu->ExecuteInstr();
-	if (emu->GetDrawFlag()) // if drawFlag is true, is time to the frame
-		emu->Draw();
-	 */
 }

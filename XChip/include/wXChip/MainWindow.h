@@ -30,7 +30,6 @@ public:
 	void CreateEmulator();
 	bool running, closing;
 private:
-	wxTimer _timer;
 	
 	void OnChip(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
@@ -39,7 +38,6 @@ private:
 	void OnMouseOver(wxMouseEvent& event);
 	void OnSize(wxSizeEvent& event);
 	void OnWindowClose(wxCloseEvent& event);
-	void OnTimer(wxTimerEvent& event);
 	void OnStartRom(wxCommandEvent& event);
 	void LoadSettings(wxCommandEvent& event);
 	void LaunchRom();
