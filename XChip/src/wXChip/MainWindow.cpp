@@ -201,8 +201,10 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {	
-	closing = true;
-	Update();
+	
+	Disconnect(wxEVT_IDLE, wxIdleEventHandler(MainWindow::OnIdle));
+	_emuLoopOn = false;
+	_emu->GetRender()->HideWindow();
 	Destroy();
 }
 
