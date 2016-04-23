@@ -38,6 +38,8 @@ EVT_MOTION(MainWindow::OnMouseOver)
 EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
 EVT_BUTTON(ID_LOADROM, MainWindow::OnChip)
 EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
+EVT_KEY_DOWN(MainWindow::OnKeyDown)
+EVT_KEY_UP(MainWindow::OnKeyUp)
 wxEND_EVENT_TABLE()
 wxIMPLEMENT_APP(wXChip);
 
@@ -90,7 +92,6 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	SetStatusText( "Welcome to wXChip" );
 	
 	CreateControls();
-//	CreateEmulator();
 
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
@@ -209,6 +210,17 @@ void MainWindow::OnWindowClose(wxCloseEvent &event)
 	Update();
 	Destroy();
 }
+
+void MainWindow::OnKeyUp(wxKeyEvent &key)
+{
+	
+}
+
+void MainWindow::OnKeyDown(wxKeyEvent &key)
+{
+	
+}
+
 
 void MainWindow::LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq)
 {

@@ -34,6 +34,8 @@ private:
 	void OnSize(wxSizeEvent& event);
 	void OnWindowClose(wxCloseEvent& event);
 	void OnStartRom(wxCommandEvent& event);
+	void OnKeyUp(wxKeyEvent &key);
+	void OnKeyDown(wxKeyEvent &key);
 	void LoadSettings(wxCommandEvent& event);
 	void LaunchRom();
 	void StartProgram(const std::string& rom);
