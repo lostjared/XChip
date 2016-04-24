@@ -1,11 +1,10 @@
 #ifndef _WXCHIP_MAINWINDOW_H_
 #define _WXCHIP_MAINWINDOW_H_
 
-
-#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+
 #include <wx/listbox.h>
 
 

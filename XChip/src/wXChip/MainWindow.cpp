@@ -1,6 +1,7 @@
 /* wXChip
    (c) 2016
 */
+#include <wx/wxprec.h>
 
 #include <sstream>
 #include <regex>

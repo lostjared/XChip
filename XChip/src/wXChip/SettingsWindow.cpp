@@ -1,3 +1,5 @@
+#include <wx/wxprec.h>
+
 #include <cstdlib>
 #include <string>
 #include <wXChip/SettingsWindow.h>

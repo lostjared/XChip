@@ -1,7 +1,7 @@
 #ifndef _WXCHIP_SETTINGS_WINDOW_H_
 #define _WXCHIP_SETTINGS_WINDOW_H_
 
-#include <wx/wxprec.h>
+
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
