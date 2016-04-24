@@ -122,31 +122,7 @@ void MainWindow::CreateControls()
 	
 }
 
-void MainWindow::CreateEmulator()
-{
-	using xchip::SdlRender;
-	using xchip::SdlInput;
-	using xchip::SdlSound;
-	using xchip::utility::make_unique;
 
-	if(!_emu) 
-	{
-
-		_emu = make_unique<xchip::Emulator>();
-
-		if (!_emu->Initialize(make_unique<SdlRender>(),
-                                      make_unique<SdlInput>(),
-                                      make_unique<SdlSound>())) 
-		{
-			throw std::bad_alloc();
-		}
-		
-		_emu->GetRender()->HideWindow();
-		_emu->GetInput()->SetWaitKeyCallback(nullptr, nullptr);
-	}
-	
-
-}
 
 
 void MainWindow::OnLDown(wxMouseEvent& event)
@@ -161,7 +137,6 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 		stream << _filePath << "/" << str.c_str();
 		std::string fullname = stream.str();
 		std::cout << "Start Rom At Path: " << fullname << "\n";
-		//_timer.Stop();
 		StartProgram(fullname);
 	}
 }
@@ -292,6 +267,32 @@ void MainWindow::StartProgram(const std::string &rom)
 	_emu->Reset();
 	_emu->LoadRom(rom);
 	StartEmulatorLoop();
+}
+
+
+void MainWindow::CreateEmulator()
+{
+	using xchip::SdlRender;
+	using xchip::SdlInput;
+	using xchip::SdlSound;
+	using xchip::utility::make_unique;
+
+	if (!_emu)
+	{
+
+		_emu = make_unique<xchip::Emulator>();
+
+		if (!_emu->Initialize(make_unique<SdlRender>(),
+			make_unique<SdlInput>(),
+			make_unique<SdlSound>()))
+		{
+			throw std::bad_alloc();
+		}
+
+		_emu->GetInput()->SetWaitKeyCallback(nullptr, nullptr);
+	}
+
+
 }
 
 
