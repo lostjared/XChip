@@ -236,7 +236,7 @@ void MainWindow::LoadList(const std::string &text, const std::string &fps, std::
 		if(e->d_type == DT_REG)
 		{
 			std::regex exp1("([0-9a-zA-Z\\._]+)\\.ch8", std::regex_constants::icase);
-			std::regex exp2("([0-9a-zA-Z\\._]+)", std::regex_constants::icase);
+			std::regex exp2("([0-9a-zA-Z_]+)", std::regex_constants::icase);
 			bool isTag = std::regex_match(e->d_name, exp1);
 			bool isTag2 = std::regex_match(e->d_name, exp2);
 			if(isTag||isTag2)
