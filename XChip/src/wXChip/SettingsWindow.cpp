@@ -1,8 +1,16 @@
-#include <wXChip/SettingsWindow.h>
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+#include <wx/valnum.h>
+
+#include <cstdlib>
+#include <string>
+
 #include <wXChip/SaveList.h>
-#include<wx/valnum.h>
-#include<cstdlib>
-#include<string>
+#include <wXChip/SettingsWindow.h>
+
+
 
 
 enum { ID_TEXT1 = 1, ID_TEXTCTRL1, ID_TEXT2, ID_TEXTCTRL2, ID_TEXT3, ID_TEXTCTRL3 , ID_BTN_OK, ID_BTN_CANCEL, ID_BTN_DEFAULT };

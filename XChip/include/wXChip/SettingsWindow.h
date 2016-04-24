@@ -1,11 +1,5 @@
 #ifndef __SETTINGS__H__
 #define __SETTINGS__H__
-
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
-
 #include <XChip/Utility/Memory.h>
 
 class SettingsWindow: public wxFrame

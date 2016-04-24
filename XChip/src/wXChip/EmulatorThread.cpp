@@ -10,9 +10,14 @@ void EmulatorThread::Stop()
 
 	if(_isRunning)
 	{	
-		_emu.SetExitFlag(true);
-		while(_isRunning != false) 
-			Timer::Halt(150_milli);
+		_endTr = true;
+		
+		if (_tr.joinable())
+			_tr.join();
+
+		else
+			while (_isRunning != false);
+				Timer::Halt(150_milli);
 	}
 
 	Timer::Halt(100_milli);
@@ -24,16 +29,16 @@ void EmulatorThread::Run()
 {
 
 	
-	static const auto loop = [] ( EmulatorThread * emuTr )
+	static const auto loop = [this] ()
 	{
-		emuTr->_isRunning = true;
+		this->_isRunning = true;
 
 
-		auto& emu = emuTr->GetEmulator();
+		auto& emu = this->GetEmulator();
 
 		emu.GetRender()->ShowWindow();
 
-		while(!emu.GetExitFlag())
+		while(!emu.GetExitFlag() && !this->_endTr)
 		{
 			emu.UpdateSystems();
 			emu.HaltForNextFlag();
@@ -44,10 +49,10 @@ void EmulatorThread::Run()
 		}
 		
 		emu.GetRender()->HideWindow();
-		emuTr->_isRunning = false;
+		this->_isRunning = false;
 
 	};
 
-	_tr = std::thread(loop, this);
+	_tr = std::thread(loop);
 	_tr.detach();
 }
