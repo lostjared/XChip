@@ -113,7 +113,7 @@ void MainWindow::CreateControls()
 	wxArrayString strings;
 	_panel = make_unique<wxPanel>(this, wxID_ANY);
 	_text = make_unique<wxStaticText>(_panel.get(), ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
-	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
+	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE|wxLB_SORT);
 	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
 	_startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
 	_settings = make_unique<wxButton>(_panel.get(), ID_LOADROM, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
@@ -197,6 +197,16 @@ void MainWindow::OnWindowClose(wxCloseEvent &event)
 	Destroy();
 }
 
+int wxCALLBACK CompareFunction(wxIntPtr item1, wxIntPtr item2, wxIntPtr
+				  WXUNUSED(sortData))
+{
+	if (item1 < item2)
+		return 1;
+	if (item1 > item2)
+		return -1;
+	return 0;
+}
+
 
 void MainWindow::LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq)
 {
@@ -236,7 +246,6 @@ void MainWindow::LoadList(const std::string &text, const std::string &fps, std::
 		_listBox->InsertItems(strings, 0);
 		_filePath = text;
 		_settingsWin->setRomPath(text, fps, cpu_freq);
-
 	}
 	else
  	{
