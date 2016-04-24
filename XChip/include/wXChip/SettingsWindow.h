@@ -1,6 +1,6 @@
 #ifndef _WXCHIP_SETTINGS_WINDOW_H_
 #define _WXCHIP_SETTINGS_WINDOW_H_
-#include <wx/valnum.h>
+
 #include <XChip/Utility/Memory.h>
 
 class SettingsWindow: public wxFrame
