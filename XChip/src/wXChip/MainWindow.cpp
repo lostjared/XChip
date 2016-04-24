@@ -273,7 +273,7 @@ void MainWindow::StartProgram(const std::string &rom)
 void MainWindow::CreateEmulator()
 {
 	using xchip::SdlRender;
-	using xchip::SdlInput;
+	using xchip::wxInput;
 	using xchip::SdlSound;
 	using xchip::utility::make_unique;
 
@@ -283,7 +283,7 @@ void MainWindow::CreateEmulator()
 		_emu = make_unique<xchip::Emulator>();
 
 		if (!_emu->Initialize(make_unique<SdlRender>(),
-			make_unique<SdlInput>(),
+			make_unique<wxInput>(),
 			make_unique<SdlSound>()))
 		{
 			throw std::bad_alloc();
