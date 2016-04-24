@@ -5,9 +5,7 @@
 #include <wXChip/SettingsWindow.h>
 
 
-
-
-
+class MainWindow;
 
 class wXChip: public wxApp
 {

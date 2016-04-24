@@ -54,8 +54,6 @@ bool wXChip::OnInit()
 		if(file != "nolist")
 			frame->LoadList(file, fps_val, cpu_freq);
 	
-		
-		main = frame.get();
 		frame->Show( true );
 		frame.release();
 	} catch(std::exception &e) {
