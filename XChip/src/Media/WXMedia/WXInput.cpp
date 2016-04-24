@@ -1,3 +1,9 @@
+
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
 #include <XChip/Media/WXMedia/WXInput.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
@@ -8,10 +14,7 @@ namespace xchip {
 using namespace utility;
 
 
-
-
-
-WXInput::WXInput() noexcept 
+WXInput::WXInput() noexcept
 	: _keyPairs
 	{
 		{ Key::KEY_0, WXK_NUMPAD0},{ Key::KEY_1, WXK_NUMPAD1 },{ Key::KEY_2, WXK_NUMPAD2 },
