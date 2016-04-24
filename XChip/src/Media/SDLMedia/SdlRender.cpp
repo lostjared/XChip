@@ -139,8 +139,8 @@ bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
 void SdlRender::DrawBuffer() noexcept
 {
 	_INITIALIZED_ASSERT_;
-
 	ASSERT_MSG(_buffer != nullptr, "attempt to draw null buffer");
+
 	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
 	SDL_RenderCopy(_rend, _texture, nullptr, nullptr);
 	SDL_RenderPresent(_rend);

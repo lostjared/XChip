@@ -2,8 +2,15 @@
    (c) 2016
 */
 
-#include <sstream>
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
 
+#include <wx/listbox.h>
+
+
+#include <sstream>
 #if defined(__APPLE__) || defined(__linux__)
 #include <dirent.h>
 #elif defined(_WIN32)
@@ -14,8 +21,9 @@
 #include <XChip/Media/SDLMedia/SdlInput.h>
 #include <XChip/Media/SDLMedia/SdlSound.h>
 #include <XChip/Utility/Log.h>
-#include <wXChip/MainWindow.h>
+
 #include <wXChip/SaveList.h>
+#include <wXChip/MainWindow.h>
 
 
 enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET, ID_TIMER1};
@@ -115,6 +123,7 @@ void MainWindow::CreateEmulator()
 	}
 
 	_emuTr = make_unique<EmulatorThread>();
+
 	if (!_emuTr->GetEmulator().Initialize(make_unique<xchip::SdlRender>(),
                                           make_unique<SdlInput>(),
                                           make_unique<SdlSound>()))
