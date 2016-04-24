@@ -200,7 +200,8 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
-{	
+{
+	StopEmulatorLoop();
 	closing = true;
 	Update();
 	Destroy();
@@ -273,14 +274,7 @@ void MainWindow::StartProgram(const std::string &rom)
 {
 	_emu->Reset();
 	_emu->LoadRom(rom);
-	if (!_emuLoopOn) 
-	{
-		
-		Connect(wxID_ANY, wxEVT_IDLE, wxIdleEventHandler(MainWindow::OnIdle));
-		_emuLoopOn = true;
-		_emu->GetRender()->ShowWindow();
-	}
-
+	StartEmulatorLoop();
 }
 
 
@@ -300,8 +294,27 @@ void MainWindow::OnIdle(wxIdleEvent& event)
 	}
 	else
 	{
+		StopEmulatorLoop();
+	}
+}
+
+
+
+void MainWindow::StartEmulatorLoop()
+{
+	if (!_emuLoopOn)
+	{
+		Connect(wxID_ANY, wxEVT_IDLE, wxIdleEventHandler(MainWindow::OnIdle));
+		_emu->GetRender()->ShowWindow();
+		_emuLoopOn = true;
+	}
+}
+void MainWindow::StopEmulatorLoop()
+{
+	if (_emuLoopOn)
+	{
 		Disconnect(wxEVT_IDLE, wxIdleEventHandler(MainWindow::OnIdle));
-		_emuLoopOn = false;
 		_emu->GetRender()->HideWindow();
+		_emuLoopOn = false;
 	}
 }

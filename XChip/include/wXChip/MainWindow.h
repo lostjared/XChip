@@ -38,6 +38,8 @@ private:
 	void LaunchRom();
 	void StartProgram(const std::string& rom);
 	void OnIdle(wxIdleEvent& event);
+	void StartEmulatorLoop();
+	void StopEmulatorLoop();
 
 
 	bool _emuLoopOn = false;
