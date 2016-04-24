@@ -2,15 +2,10 @@
    (c) 2016
 */
 
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
-
-#include <wx/listbox.h>
-
-
 #include <sstream>
+#include <regex>
+
+
 #if defined(__APPLE__) || defined(__linux__)
 #include <dirent.h>
 #elif defined(_WIN32)
@@ -18,14 +13,13 @@
 #endif
 
 #include <XChip/Media/SDLMedia/SdlRender.h>
-#include <XChip/Media/SDLMedia/SdlInput.h>
 #include <XChip/Media/SDLMedia/SdlSound.h>
+#include <XChip/Media/WXMedia/WXInput.h>
 #include <XChip/Utility/Log.h>
-#include <wXChip/wxInput.h>
 #include <wXChip/SaveList.h>
 #include <wXChip/MainWindow.h>
 
-#include <regex>
+
 
 
 enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET, ID_TIMER1};
@@ -291,7 +285,7 @@ void MainWindow::StartProgram(const std::string &rom)
 void MainWindow::CreateEmulator()
 {
 	using xchip::SdlRender;
-	using xchip::wxInput;
+	using xchip::WXInput;
 	using xchip::SdlSound;
 	using xchip::utility::make_unique;
 
@@ -301,7 +295,7 @@ void MainWindow::CreateEmulator()
 		_emu = make_unique<xchip::Emulator>();
 
 		if (!_emu->Initialize(make_unique<SdlRender>(),
-			make_unique<wxInput>(),
+			make_unique<WXInput>(),
 			make_unique<SdlSound>()))
 		{
 			throw std::bad_alloc();
