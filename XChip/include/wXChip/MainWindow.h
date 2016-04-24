@@ -5,14 +5,13 @@
 #include <wXChip/SettingsWindow.h>
 
 
-
-
-
+class MainWindow;
 
 class wXChip: public wxApp
 {
 public:
 	virtual bool OnInit();
+	virtual int FilterEvent(wxEvent& event);
 };
 
 
@@ -40,7 +39,7 @@ private:
 	void OnIdle(wxIdleEvent& event);
 	void StartEmulatorLoop();
 	void StopEmulatorLoop();
-
+	
 
 	bool _emuLoopOn = false;
 	std::unique_ptr<xchip::Emulator> _emu;

@@ -21,9 +21,11 @@
 #include <XChip/Media/SDLMedia/SdlInput.h>
 #include <XChip/Media/SDLMedia/SdlSound.h>
 #include <XChip/Utility/Log.h>
-
+#include <wXChip/wxInput.h>
 #include <wXChip/SaveList.h>
 #include <wXChip/MainWindow.h>
+
+#include <regex>
 
 
 enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET, ID_TIMER1};
@@ -61,6 +63,18 @@ bool wXChip::OnInit()
 		return false;
 	}
 	return true;
+}
+
+int wXChip::FilterEvent(wxEvent& event)
+{
+	if ((event.GetEventType() == wxEVT_KEY_DOWN) &&
+		(((wxKeyEvent&)event).GetKeyCode() == WXK_ESCAPE))
+	{
+		std::cout << "Exit..\n";
+		return true;
+	}
+ 
+	return -1;
 }
 
 
@@ -101,12 +115,13 @@ void MainWindow::CreateControls()
 	wxArrayString strings;
 	_panel = make_unique<wxPanel>(this, wxID_ANY);
 	_text = make_unique<wxStaticText>(_panel.get(), ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
-	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
+	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE|wxLB_SORT);
 	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
 	_startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
 	_settings = make_unique<wxButton>(_panel.get(), ID_LOADROM, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
 	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 	_settingsWin = make_unique<SettingsWindow>("wXChip - Settings", wxPoint(150, 150), wxSize(430, 220));
+	
 }
 
 
@@ -184,6 +199,17 @@ void MainWindow::OnWindowClose(wxCloseEvent &event)
 	Destroy();
 }
 
+int wxCALLBACK CompareFunction(wxIntPtr item1, wxIntPtr item2, wxIntPtr
+				  WXUNUSED(sortData))
+{
+	if (item1 < item2)
+		return 1;
+	if (item1 > item2)
+		return -1;
+	return 0;
+}
+
+
 void MainWindow::LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq)
 {
 
@@ -209,8 +235,15 @@ void MainWindow::LoadList(const std::string &text, const std::string &fps, std::
 	{
 		if(e->d_type == DT_REG)
 		{
-			wxString w(e->d_name);
-			strings.Add(w);
+			std::regex exp1("([0-9a-zA-Z\\._]+)\\.ch8", std::regex_constants::icase);
+			std::regex exp2("([0-9a-zA-Z_]+)", std::regex_constants::icase);
+			bool isTag = std::regex_match(e->d_name, exp1);
+			bool isTag2 = std::regex_match(e->d_name, exp2);
+			if(isTag||isTag2)
+			{
+				wxString w(e->d_name);
+				strings.Add(w);
+			}
 		}
 	}
     
@@ -222,7 +255,6 @@ void MainWindow::LoadList(const std::string &text, const std::string &fps, std::
 		_listBox->InsertItems(strings, 0);
 		_filePath = text;
 		_settingsWin->setRomPath(text, fps, cpu_freq);
-
 	}
 	else
  	{
@@ -259,7 +291,7 @@ void MainWindow::StartProgram(const std::string &rom)
 void MainWindow::CreateEmulator()
 {
 	using xchip::SdlRender;
-	using xchip::SdlInput;
+	using xchip::wxInput;
 	using xchip::SdlSound;
 	using xchip::utility::make_unique;
 
@@ -269,7 +301,7 @@ void MainWindow::CreateEmulator()
 		_emu = make_unique<xchip::Emulator>();
 
 		if (!_emu->Initialize(make_unique<SdlRender>(),
-			make_unique<SdlInput>(),
+			make_unique<wxInput>(),
 			make_unique<SdlSound>()))
 		{
 			throw std::bad_alloc();
@@ -277,8 +309,6 @@ void MainWindow::CreateEmulator()
 
 		_emu->GetInput()->SetWaitKeyCallback(nullptr, nullptr);
 	}
-
-
 }
 
 
@@ -286,6 +316,7 @@ void MainWindow::OnIdle(wxIdleEvent& event)
 {
 	if (!_emu->GetExitFlag())
 	{
+		
 		_emu->UpdateSystems();
 		_emu->HaltForNextFlag();
 		
