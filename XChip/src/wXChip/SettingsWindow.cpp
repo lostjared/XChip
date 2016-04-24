@@ -1,14 +1,8 @@
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
-#include <wx/valnum.h>
-
 #include <cstdlib>
 #include <string>
-
-#include <wXChip/SaveList.h>
 #include <wXChip/SettingsWindow.h>
+#include <wXChip/SaveList.h>
+
 
 
 

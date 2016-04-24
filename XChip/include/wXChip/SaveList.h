@@ -1,5 +1,5 @@
-#ifndef __SAVELIST__H__
-#define __SAVELIST__H__
+#ifndef _WXCHIP_SAVELIST_H_
+#define _WXCHIP_SAVELIST_H_
 
 #include <iostream>
 #include <fstream>
