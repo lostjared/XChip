@@ -21,7 +21,7 @@
 #include <XChip/Media/SDLMedia/SdlInput.h>
 #include <XChip/Media/SDLMedia/SdlSound.h>
 #include <XChip/Utility/Log.h>
-
+#include <wXChip/wxInput.h>
 #include <wXChip/SaveList.h>
 #include <wXChip/MainWindow.h>
 
