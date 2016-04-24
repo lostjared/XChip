@@ -13,6 +13,8 @@ namespace xchip {
 // subsystem flag and name
 using FlagAndName = std::pair<Uint32, const char*>;
 FlagAndName get_sdl_subsystem(const SdlSystem::System sys) noexcept;
+template<class T, const size_t sz>
+bool _all_of(const T(&arr)[sz], const T val);
 constexpr size_t toSizeT(SdlSystem::System sys) noexcept;
 
 
@@ -56,6 +58,12 @@ SdlSystem::~SdlSystem()
 
 		SDL_QuitSubSystem(flagAndName.first);
 		s_SubSystems[toSizeT(_sys)] = false;
+	}
+	
+	if ( _all_of(s_SubSystems, false) )
+	{
+		LOG("Quitting SDL...");
+		SDL_Quit();
 	}
 }
 
@@ -128,6 +136,16 @@ constexpr size_t toSizeT(SdlSystem::System sys) noexcept {
 	return static_cast<size_t>(sys);
 }
 
+
+template<class T, const size_t sz>
+bool _all_of(const T(&arr)[sz], const T val)
+{
+	for (const auto it : arr) 
+		if (it != val) 
+			return false;
+
+	return true;
+}
 
 
 
