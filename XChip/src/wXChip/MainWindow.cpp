@@ -90,6 +90,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	SetStatusText( "Welcome to wXChip" );
 	
 	CreateControls();
+	CreateEmulator();
 
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
@@ -116,20 +117,20 @@ void MainWindow::CreateEmulator()
 	using xchip::SdlSound;
 	using xchip::utility::make_unique;
 
-	if(_emuTr) 
+	if(_emu) 
 	{
-		_emuTr->Stop();
-		_emuTr.reset();
+		_emu->Dispose();
 	}
 
-	_emuTr = make_unique<EmulatorThread>();
+	_emu = make_unique<xchip::Emulator>();
 
-	if (!_emuTr->GetEmulator().Initialize(make_unique<xchip::SdlRender>(),
-                                          make_unique<SdlInput>(),
-                                          make_unique<SdlSound>()))
+	if (!_emu->Initialize(make_unique<SdlRender>(),
+                          make_unique<SdlInput>(),
+                          make_unique<SdlSound>())) 
 	{
 		throw std::bad_alloc();
 	}
+	_emu->GetRender()->HideWindow();
 }
 
 
@@ -199,10 +200,7 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
-{
-	if(_emuTr)
-		_emuTr->Stop();
-	
+{	
 	closing = true;
 	Update();
 	Destroy();
@@ -273,15 +271,36 @@ void MainWindow::OnChip(wxCommandEvent& event)
 
 void MainWindow::StartProgram(const std::string &rom)
 {
-	static bool emuCreated = false;
-	if(!emuCreated)
+	_emu->Reset();
+	_emu->LoadRom(rom);
+	if (!_emuLoopOn) 
 	{
-		CreateEmulator();
-		emuCreated = true;
+		
+		Connect(wxID_ANY, wxEVT_IDLE, wxIdleEventHandler(MainWindow::OnIdle));
+		_emuLoopOn = true;
+		_emu->GetRender()->ShowWindow();
 	}
 
-	_emuTr->Stop();
-	_emuTr->GetEmulator().Reset();
-	_emuTr->GetEmulator().LoadRom(rom);
-	_emuTr->Run();
+}
+
+
+void MainWindow::OnIdle(wxIdleEvent& event)
+{
+	if (!_emu->GetExitFlag())
+	{
+		_emu->UpdateSystems();
+		_emu->HaltForNextFlag();
+		
+		if (_emu->GetInstrFlag())
+			_emu->ExecuteInstr();
+		if (_emu->GetDrawFlag())
+			_emu->Draw();
+	}
+	else
+	{
+		
+		Disconnect(wxEVT_IDLE, wxIdleEventHandler(MainWindow::OnIdle));
+		_emuLoopOn = false;
+		_emu->GetRender()->HideWindow();
+	}
 }
