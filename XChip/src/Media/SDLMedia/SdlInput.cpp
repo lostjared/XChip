@@ -74,23 +74,22 @@ bool SdlInput::UpdateKeys() noexcept
 {
 	 _INITIALIZED_ASSERT_;
 
-	PollEvent();
-	if (g_sdlEvent.type == SDL_KEYDOWN)
+	 PollEvent();
+	_keyboardState = SDL_GetKeyboardState(NULL);
+
+
+	if (_keyboardState[SDL_SCANCODE_RETURN])
 	{
-		if (g_sdlEvent.key.keysym.scancode == SDL_SCANCODE_RETURN)
-		{
-			if (_resetClbk) 
-				_resetClbk(_resetClbkArg);
-		}
+		if (_resetClbk) 
+			_resetClbk(_resetClbkArg);
+	}
 
 
-		else if (g_sdlEvent.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
-		{
-			if (_escapeClbk) 
-				_escapeClbk(_escapeClbkArg);
-		}
+	else if (_keyboardState[SDL_SCANCODE_ESCAPE])
+	{
+		if (_escapeClbk) 
+			_escapeClbk(_escapeClbkArg);
 
-		return true;
 	}
 
 	return false;
