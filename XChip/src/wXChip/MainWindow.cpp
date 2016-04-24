@@ -2,6 +2,11 @@
    (c) 2016
 */
 #include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+
 
 #include <sstream>
 #include <regex>
@@ -13,12 +18,13 @@
 #include <wXChip/dirent.h>
 #endif
 
+#include <wXChip/MainWindow.h>
 #include <XChip/Media/SDLMedia/SdlRender.h>
 #include <XChip/Media/SDLMedia/SdlSound.h>
 #include <XChip/Media/WXMedia/WXInput.h>
 #include <XChip/Utility/Log.h>
 #include <wXChip/SaveList.h>
-#include <wXChip/MainWindow.h>
+
 
 
 
