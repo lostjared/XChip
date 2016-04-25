@@ -256,10 +256,11 @@ void MainWindow::OnChip(wxCommandEvent& event)
 void MainWindow::StartProgram(const std::string &rom)
 {
 	char path[256];
+	char *rt;
 #ifdef _WIN32
-	_getcwd(path, 255);
+	rt = _getcwd(path, 255);
 #elif defined(__APPLE__) || defined(__linux__)
-	getcwd(path, 255);
+	rt = getcwd(path, 255);
 #endif
 	std::ostringstream stream;
 	stream << "\"" << path << "/" << "XChip\" \"" << rom << "\"";
