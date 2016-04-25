@@ -276,7 +276,7 @@ void MainWindow::StartProgram(const std::string &rom)
 		return;
 	}
 	Show(false);
-	wxGetApp().Dispatch();
+	wxYield();
 #if defined(__APPLE__) || defined(__linux__)
 	if(pclose(fptr) != 0)
 #elif defined(_WIN32)
