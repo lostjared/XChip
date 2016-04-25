@@ -1,7 +1,6 @@
 #ifndef _WXCHIP_MAINWINDOW_H_
 #define _WXCHIP_MAINWINDOW_H_
-#include <XChip/Core/Emulator.h>
-#include <XChip/Utility/Memory.h>
+
 #include <wXChip/SettingsWindow.h>
 
 
@@ -21,8 +20,6 @@ public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	void LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq);
 	void CreateControls();
-	void CreateEmulator();
-	bool running, closing;
 private:
 	
 	void OnChip(wxCommandEvent& event);
@@ -36,13 +33,7 @@ private:
 	void LoadSettings(wxCommandEvent& event);
 	void LaunchRom();
 	void StartProgram(const std::string& rom);
-	void OnIdle(wxIdleEvent& event);
-	void StartEmulatorLoop();
-	void StopEmulatorLoop();
-	
 
-	bool _emuLoopOn = false;
-	std::unique_ptr<xchip::Emulator> _emu;
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
 	std::unique_ptr<wxListBox> _listBox;

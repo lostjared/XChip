@@ -9,6 +9,8 @@
 
 #include <sstream>
 #include <regex>
+#include <thread>
+
 
 #if defined(__APPLE__) || defined(__linux__)
 #include <dirent.h>
@@ -17,9 +19,6 @@
 #endif
 
 #include <wXChip/MainWindow.h>
-#include <XChip/Media/SDLMedia/SdlRender.h>
-#include <XChip/Media/SDLMedia/SdlSound.h>
-#include <XChip/Media/WXMedia/WXInput.h>
 #include <XChip/Utility/Log.h>
 #include <wXChip/SaveList.h>
 
@@ -62,18 +61,6 @@ bool wXChip::OnInit()
 
 int wXChip::FilterEvent(wxEvent& event)
 {
-	if ((event.GetEventType() == wxEVT_KEY_DOWN) &&
-		(((wxKeyEvent&)event).GetKeyCode() == WXK_NUMPAD_ENTER))
-	{
-		std::cout << "WXK_NUMPAD_ENTER Num pad Enter..\n";
-		return true;
-	}
-	if ((event.GetEventType() == wxEVT_KEY_DOWN) &&
-		(((wxKeyEvent&)event).GetKeyCode() == WXK_RETURN))
-
-	 {
-		std::cout << "WXK_RETURN Return..\n";
-	}
 	
  
 	return -1;
@@ -82,10 +69,9 @@ int wXChip::FilterEvent(wxEvent& event)
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
-	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+	: wxFrame(NULL, wxID_ANY, title, pos, size, wxSTAY_ON_TOP | wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 	using xchip::utility::make_unique;
-	running = false, closing = false;
 	auto menuFile = make_unique<wxMenu>();
 	menuFile->Append(ID_Chip, "&Load Roms...\tCtrl-L", 
                          "Load Roms");
@@ -192,20 +178,7 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
-	StopEmulatorLoop();
-	closing = true;
-	Update();
 	Destroy();
-}
-
-int wxCALLBACK CompareFunction(wxIntPtr item1, wxIntPtr item2, wxIntPtr
-				  WXUNUSED(sortData))
-{
-	if (item1 < item2)
-		return 1;
-	if (item1 > item2)
-		return -1;
-	return 0;
 }
 
 
@@ -278,77 +251,41 @@ void MainWindow::OnChip(wxCommandEvent& event)
 }
 
 
+
+
 void MainWindow::StartProgram(const std::string &rom)
 {
-	CreateEmulator();
-	_emu->Reset();
-	_emu->LoadRom(rom);
-	StartEmulatorLoop();
+	char path[256];
+#ifdef _WIN32
+	_getcwd(path, 255);
+#elif defined(__APPLE__) || defined(__linux__)
+	getcwd(path, 255);
+#endif
+	std::ostringstream stream;
+	stream << "\"" << path << "/" << "XChip\" \"" << rom << "\"";
+	std::cout << stream.str() << "\n";
+	FILE *fptr;
+#if defined(__APPLE__) || defined(__linux__)
+	 fptr = popen(stream.str().c_str(), "w");
+#elif defined(_WIN32)
+	fptr = _popen(stream.str(), "w");
+#endif
+	if(!fptr)
+	{
+		std::cerr << "Error opening process.\n";
+		return;
+	}
+	Show(false);
+	wxGetApp().Dispatch();
+#if defined(__APPLE__) || defined(__linux__)
+	if(pclose(fptr) != 0)
+#elif defined(_WIN32)
+	if(_pclose(fptr) != 0)
+#endif
+	{
+		std::cerr << "Program execution failed.\n";
+	}
+	Show(true);
 }
 
 
-void MainWindow::CreateEmulator()
-{
-	using xchip::SdlRender;
-	using xchip::WXInput;
-	using xchip::SdlSound;
-	using xchip::utility::make_unique;
-
-	if (!_emu)
-	{
-
-		_emu = make_unique<xchip::Emulator>();
-
-		if (!_emu->Initialize(make_unique<SdlRender>(),
-			make_unique<WXInput>(),
-			make_unique<SdlSound>()))
-		{
-			throw std::bad_alloc();
-		}
-
-		_emu->GetInput()->SetWaitKeyCallback(nullptr, nullptr);
-	}
-}
-
-
-void MainWindow::OnIdle(wxIdleEvent& event)
-{
-	if (!_emu->GetExitFlag())
-	{
-		
-		_emu->UpdateSystems();
-		_emu->HaltForNextFlag();
-		
-		if (_emu->GetInstrFlag())
-			_emu->ExecuteInstr();
-		if (_emu->GetDrawFlag())
-			_emu->Draw();
-
-		event.RequestMore();
-	}
-	else
-	{
-		StopEmulatorLoop();
-	}
-}
-
-
-
-void MainWindow::StartEmulatorLoop()
-{
-	if (!_emuLoopOn)
-	{
-		Connect(wxID_ANY, wxEVT_IDLE, wxIdleEventHandler(MainWindow::OnIdle));
-		_emu->GetRender()->ShowWindow();
-		_emuLoopOn = true;
-	}
-}
-void MainWindow::StopEmulatorLoop()
-{
-	if (_emuLoopOn)
-	{
-		Disconnect(wxEVT_IDLE, wxIdleEventHandler(MainWindow::OnIdle));
-		_emu->GetRender()->HideWindow();
-		_emuLoopOn = false;
-	}
-}
