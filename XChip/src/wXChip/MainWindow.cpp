@@ -63,11 +63,18 @@ bool wXChip::OnInit()
 int wXChip::FilterEvent(wxEvent& event)
 {
 	if ((event.GetEventType() == wxEVT_KEY_DOWN) &&
-		(((wxKeyEvent&)event).GetKeyCode() == WXK_ESCAPE))
+		(((wxKeyEvent&)event).GetKeyCode() == WXK_NUMPAD_ENTER))
 	{
-		std::cout << "Exit..\n";
+		std::cout << "WXK_NUMPAD_ENTER Num pad Enter..\n";
 		return true;
 	}
+	if ((event.GetEventType() == wxEVT_KEY_DOWN) &&
+		(((wxKeyEvent&)event).GetKeyCode() == WXK_RETURN))
+
+	 {
+		std::cout << "WXK_RETURN Return..\n";
+	}
+	
  
 	return -1;
 }
