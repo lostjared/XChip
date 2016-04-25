@@ -1,6 +1,5 @@
 #ifndef _WXCHIP_MAINWINDOW_H_
 #define _WXCHIP_MAINWINDOW_H_
-#include <wx/listbox.h>
 #include <XChip/Core/Emulator.h>
 #include <XChip/Utility/Memory.h>
 #include <wXChip/SettingsWindow.h>

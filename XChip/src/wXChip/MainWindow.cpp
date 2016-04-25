@@ -5,12 +5,10 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-
-
+#include <wx/listbox.h>
 
 #include <sstream>
 #include <regex>
-
 
 #if defined(__APPLE__) || defined(__linux__)
 #include <dirent.h>
@@ -24,10 +22,6 @@
 #include <XChip/Media/WXMedia/WXInput.h>
 #include <XChip/Utility/Log.h>
 #include <wXChip/SaveList.h>
-
-
-
-
 
 enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET, ID_TIMER1};
 
@@ -116,7 +110,7 @@ void MainWindow::CreateControls()
 	wxArrayString strings;
 	_panel = make_unique<wxPanel>(this, wxID_ANY);
 	_text = make_unique<wxStaticText>(_panel.get(), ID_TEXT, _T("Chip8 Roms"), wxPoint(10,10), wxSize(100,25));
-	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE|wxLB_SORT);
+	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), strings, wxLB_SINGLE);
 	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
 	_startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), wxPoint(10, 400), wxSize(100,25));
 	_settings = make_unique<wxButton>(_panel.get(), ID_LOADROM, _T("Load Roms"), wxPoint(120, 400), wxSize(100,25));
@@ -124,9 +118,6 @@ void MainWindow::CreateControls()
 	_settingsWin = make_unique<SettingsWindow>("wXChip - Settings", wxPoint(150, 150), wxSize(430, 220));
 	
 }
-
-
-
 
 void MainWindow::OnLDown(wxMouseEvent& event)
 {

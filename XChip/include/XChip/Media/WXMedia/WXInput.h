@@ -3,15 +3,7 @@
 #include <vector>
 #include <XChip/Media/iInput.h>
 
-
 namespace xchip {
-
-
-
-
-
-
-
 
 class WXInput final : public iInput
 {

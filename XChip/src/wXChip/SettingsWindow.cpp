@@ -2,7 +2,7 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-
+#include <wx/valnum.h>
 #include <cstdlib>
 #include <string>
 #include <wXChip/SettingsWindow.h>

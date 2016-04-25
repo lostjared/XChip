@@ -13,10 +13,7 @@ namespace xchip {
 using namespace utility;
 
 
-
-
-
-WXInput::WXInput() noexcept 
+WXInput::WXInput() noexcept
 	: _keyPairs
 	{
 		{ Key::KEY_0, WXK_NUMPAD0},{ Key::KEY_1, WXK_NUMPAD1 },{ Key::KEY_2, WXK_NUMPAD2 },
