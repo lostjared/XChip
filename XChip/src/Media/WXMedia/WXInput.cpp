@@ -1,3 +1,8 @@
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
 #include <XChip/Media/WXMedia/WXInput.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>

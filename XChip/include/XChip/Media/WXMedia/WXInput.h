@@ -1,12 +1,5 @@
 #ifndef _XCHIP_MEDIA_WXINPUT_H_
 #define _XCHIP_MEDIA_WXINPUT_H_
-
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
-
-
 #include <vector>
 #include <XChip/Media/iInput.h>
 
