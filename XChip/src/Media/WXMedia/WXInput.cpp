@@ -68,17 +68,19 @@ void WXInput::Dispose() noexcept
 
 bool WXInput::UpdateKeys() noexcept
 {
+
 	if (wxGetKeyState(WXK_RETURN))
 	{
 		if (_resetClbk)
 			_resetClbk(_resetClbkArg);
 	}
+	
 	else if (wxGetKeyState(WXK_ESCAPE))
 	{
 		if (_escapeClbk)
-			_escapeClbk(_escapeClbkArg);
-			
+			_escapeClbk(_escapeClbkArg);		
 	}
+	
 	return false;
 }
 
@@ -109,7 +111,18 @@ Key WXInput::GetPressedKey() const noexcept
 
 Key WXInput::WaitKeyPress() noexcept
 {
-	
+	if (_waitClbk)
+	{
+		const auto begin = _keyPairs.crbegin();
+		const auto end = _keyPairs.crend();
+
+		while (_waitClbk(_waitClbkArg))
+		{
+			for (auto itr = begin; itr != end; ++itr)
+				if (wxGetKeyState(itr->second))
+					return itr->first;
+		}
+	}
 	
 	
 	return Key::NO_KEY_PRESSED;
