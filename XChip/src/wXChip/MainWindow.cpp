@@ -69,7 +69,7 @@ int wXChip::FilterEvent(wxEvent& event)
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
-	: wxFrame(NULL, wxID_ANY, title, pos, size, wxSTAY_ON_TOP | wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 	using xchip::utility::make_unique;
 	auto menuFile = make_unique<wxMenu>();
