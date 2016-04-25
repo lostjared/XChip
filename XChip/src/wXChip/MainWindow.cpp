@@ -263,7 +263,7 @@ void MainWindow::StartProgram(const std::string &rom)
 	rt = getcwd(path, 255);
 #endif
 	std::ostringstream stream;
-	stream << "\"" << path << "/" << "XChip\" \"" << rom << "\"";
+	stream << "\"" << rt << "/" << "XChip\" \"" << rom << "\"";
 	std::cout << stream.str() << "\n";
 	FILE *fptr;
 #if defined(__APPLE__) || defined(__linux__)
