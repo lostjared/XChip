@@ -1,5 +1,5 @@
 project(WXMedia)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 FIND_PACKAGE(wxWidgets REQUIRED html adv core base net aui xrc qa richtext )
 INCLUDE(${wxWidgets_USE_FILE})

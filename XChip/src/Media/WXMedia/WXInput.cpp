@@ -14,16 +14,6 @@ using namespace utility;
 
 
 WXInput::WXInput() noexcept
-	: _keyPairs
-	{
-		{ Key::KEY_0, WXK_NUMPAD0},{ Key::KEY_1, WXK_NUMPAD1 },{ Key::KEY_2, WXK_NUMPAD2 },
-		{ Key::KEY_3, WXK_NUMPAD3 },{ Key::KEY_4, WXK_NUMPAD4},{ Key::KEY_5, WXK_NUMPAD5 },
-		{ Key::KEY_6, WXK_NUMPAD6 },{ Key::KEY_7, WXK_NUMPAD7 },{ Key::KEY_8, WXK_NUMPAD8 },
-		{ Key::KEY_9, WXK_NUMPAD9 },{ Key::KEY_A, WXK_DIVIDE },{ Key::KEY_B, WXK_MULTIPLY },
-		{ Key::KEY_C, WXK_SUBTRACT },{ Key::KEY_D, WXK_ADD },{ Key::KEY_E, WXK_DECIMAL},
-		{ Key::KEY_F, WXK_NUMPAD_ENTER },{ Key::RESET, WXK_RETURN }, { Key::ESCAPE, WXK_ESCAPE}
-	}
-
 {
 	
 	
@@ -45,10 +35,29 @@ WXInput::~WXInput()
 
 bool WXInput::Initialize() noexcept
 {
+	using namespace utility::literals;
+
 	if (_initialized)
 		this->Dispose();
 	
-		
+	try 
+	{
+		_keyPairs = std::vector<KeyPair>
+		{
+			{ Key::KEY_0, WXK_NUMPAD0 },{ Key::KEY_1, WXK_NUMPAD1 },{ Key::KEY_2, WXK_NUMPAD2 },
+			{ Key::KEY_3, WXK_NUMPAD3 },{ Key::KEY_4, WXK_NUMPAD4 },{ Key::KEY_5, WXK_NUMPAD5 },
+			{ Key::KEY_6, WXK_NUMPAD6 },{ Key::KEY_7, WXK_NUMPAD7 },{ Key::KEY_8, WXK_NUMPAD8 },
+			{ Key::KEY_9, WXK_NUMPAD9 },{ Key::KEY_A, WXK_DIVIDE },{ Key::KEY_B, WXK_MULTIPLY },
+			{ Key::KEY_C, WXK_SUBTRACT },{ Key::KEY_D, WXK_ADD },{ Key::KEY_E, WXK_DECIMAL },
+			{ Key::KEY_F, WXK_NUMPAD_ENTER },{ Key::RESET, WXK_RETURN },{ Key::ESCAPE, WXK_ESCAPE }
+		};
+	}
+	catch (const std::exception& err)
+	{
+		utility::LOGerr("Could not initialize WXInput::_keyPairs : "_s + err.what());
+		return false;
+	}
+
 		
 		_initialized = true;
 	return true;
@@ -67,8 +76,8 @@ void WXInput::Dispose() noexcept
 
 bool WXInput::UpdateKeys() noexcept
 {
-
-	if (wxGetKeyState(WXK_RETURN))
+	if (wxGetKeyState(WXK_RETURN) && 
+		!wxGetKeyState(WXK_NUMPAD_ENTER))
 	{
 		if (_resetClbk)
 			_resetClbk(_resetClbkArg);
