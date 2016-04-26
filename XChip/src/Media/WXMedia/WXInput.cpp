@@ -76,6 +76,18 @@ void WXInput::Dispose() noexcept
 
 bool WXInput::UpdateKeys() noexcept
 {
+	if (wxGetKeyState(WXK_RETURN))
+	{
+		std::cout << "RETURN PRESSED!" << std::endl;
+	}
+
+	if (wxGetKeyState(WXK_NUMPAD_ENTER))
+	{
+		std::cout << "ENTER PRESSED" << std::endl;
+	}
+
+
+
 	if (wxGetKeyState(WXK_RETURN) && 
 		!wxGetKeyState(WXK_NUMPAD_ENTER))
 	{
