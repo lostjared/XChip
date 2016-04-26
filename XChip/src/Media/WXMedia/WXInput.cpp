@@ -34,8 +34,8 @@ WXInput::WXInput() noexcept
 
 WXInput::~WXInput()
 {
-	//if (_keyboardState)
-	//	this->Dispose();
+	if (_initialized)
+		this->Dispose();
 	
 	LOG("Destroying WXInput object...");
 }
@@ -58,7 +58,6 @@ bool WXInput::Initialize() noexcept
 
 void WXInput::Dispose() noexcept
 {
-	//_keyboardState = nullptr;
 	_resetClbk = nullptr;
 	_escapeClbk = nullptr;
 	_waitClbk = nullptr;
