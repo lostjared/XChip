@@ -2,7 +2,7 @@
 #define _WXCHIP_MAINWINDOW_H_
 
 #include <wXChip/SettingsWindow.h>
-
+#include <wXChip/Process.h>
 
 class MainWindow;
 
@@ -21,9 +21,7 @@ public:
 	void LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq);
 	void CreateControls();
 private:
-	
-	FILE *fptr = nullptr;
-	
+	xchip::Process proc;
 	void OnChip(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);

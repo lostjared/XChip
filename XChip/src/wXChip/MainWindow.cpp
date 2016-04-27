@@ -178,12 +178,7 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
-#if defined(__APPLE__) || defined(__linux__)
-	if(fptr != nullptr) {
-		std::string s="pkill -9 -f XChip";
-		system(s.c_str());
-	}
-#endif
+	proc.Stop();
 	Destroy();
 }
 
@@ -241,7 +236,7 @@ void MainWindow::LoadList(const std::string &text, const std::string &fps, std::
 	}
 }
 
-void MainWindow::OnChip(wxCommandEvent& event)
+void MainWindow::OnChip(wxCommandEvent& WXUNUSED(event))
 {
 	wxDirDialog dlg(NULL, "Choose input directory", "",
                         wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
@@ -261,15 +256,6 @@ void MainWindow::OnChip(wxCommandEvent& event)
 
 void MainWindow::StartProgram(const std::string &rom)
 {
-	
-#if defined(__APPLE__) || defined(__linux__)
-	if(fptr != nullptr) {
-	/*	std::string s="pkill -9 -f XChip";
-		system(s.c_str());
-		fptr = nullptr; */
-	}
-#endif
-	
 	char path[256];
 	char *rt;
 #ifdef _WIN32
@@ -280,27 +266,8 @@ void MainWindow::StartProgram(const std::string &rom)
 	std::ostringstream stream;
 	stream << "\"" << rt << "/" << "XChip\" \"" << rom << "\"";
 	std::cout << stream.str() << "\n";
-#if defined(__APPLE__) || defined(__linux__)
-	 fptr = popen(stream.str().c_str(), "w");
-#elif defined(_WIN32)
-	fptr = _popen(stream.str(), "w");
-#endif
-	if(!fptr)
-	{
-		std::cerr << "Error opening process.\n";
-		return;
-	}
+	proc.Run(stream.str());
 
-/*
-#if defined(__APPLE__) || defined(__linux__)
-	if(pclose(fptr) != 0)
-#elif defined(_WIN32)
-	if(_pclose(fptr) != 0)
-#endif
-	{
-		std::cerr << "Program execution failed.\n";
-	}
-*/
 
 }
 
