@@ -1,9 +1,11 @@
 #ifndef __WXRENDER__H__
-#deifne __WXRENDER__H__
+#define __WXRENDER__H__
+
+#include <XChip/Media/iRender.h>
 
 namespace xchip {
 
-class WXRender final : public iRender, private SdlSystem
+class WXRender final : public iRender
 {
 	
 public:
@@ -32,12 +34,6 @@ inline bool WXRender::IsInitialized() const noexcept { return _initialized; }
 inline void WXRender::SetBuffer(const uint32_t* gfx) noexcept { /*_buffer = gfx;*/ }
 
 }
-
-}
-
-
-
-
 
 #endif
 

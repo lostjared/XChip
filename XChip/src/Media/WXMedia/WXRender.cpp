@@ -1,7 +1,10 @@
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+
 #include <XChip/Media/WXMedia/WXRender.h>
-
-
-#include <XChip/Media/SDLMedia/WXRender.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
 #include <XChip/Utility/Assert.h>
@@ -11,8 +14,18 @@
 namespace xchip {
 	
 	
+	class WXRenderFrame : public wxFrame {
+	public:
+		WXRenderFrame() :  wxFrame(NULL, wxID_ANY, "XChip", wxPoint(0,0), wxSize(320, 240), wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+		{
+			
+		}
+		
+	};
+	
+	
+	
 	WXRender::WXRender() noexcept
-	: SdlSystem(System::Render)
 	
 	{
 		utility::LOG("Creating WXRenderer object...");
@@ -80,8 +93,7 @@ namespace xchip {
 	
 	void WXRender::SetWinCloseCallback(const void* arg, WinCloseCallback callback) noexcept
 	{
-		_closeClbkArg = arg;
-		_closeClbk = callback;
+		
 	}
 	
 	
@@ -89,8 +101,7 @@ namespace xchip {
 	
 	void WXRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback) noexcept
 	{
-		_resizeClbkArg = arg;
-		_resizeClbk = callback;
+	
 	}
 	
 	
