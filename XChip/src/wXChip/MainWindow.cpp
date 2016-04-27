@@ -178,6 +178,12 @@ void MainWindow::OnSize(wxSizeEvent& event)
 
 void MainWindow::OnWindowClose(wxCloseEvent &event)
 {
+#if defined(__APPLE__) || defined(__linux__)
+	if(fptr != nullptr) {
+		std::string s="pkill -9 -f XChip";
+		system(s.c_str());
+	}
+#endif
 	Destroy();
 }
 
@@ -255,6 +261,15 @@ void MainWindow::OnChip(wxCommandEvent& event)
 
 void MainWindow::StartProgram(const std::string &rom)
 {
+	
+#if defined(__APPLE__) || defined(__linux__)
+	if(fptr != nullptr) {
+		std::string s="pkill -9 -f XChip";
+		system(s.c_str());
+		fptr = nullptr;
+	}
+#endif
+	
 	char path[256];
 	char *rt;
 #ifdef _WIN32
@@ -265,7 +280,6 @@ void MainWindow::StartProgram(const std::string &rom)
 	std::ostringstream stream;
 	stream << "\"" << rt << "/" << "XChip\" \"" << rom << "\"";
 	std::cout << stream.str() << "\n";
-	FILE *fptr;
 #if defined(__APPLE__) || defined(__linux__)
 	 fptr = popen(stream.str().c_str(), "w");
 #elif defined(_WIN32)
@@ -276,8 +290,8 @@ void MainWindow::StartProgram(const std::string &rom)
 		std::cerr << "Error opening process.\n";
 		return;
 	}
-	Show(false);
-	wxYield();
+
+/*
 #if defined(__APPLE__) || defined(__linux__)
 	if(pclose(fptr) != 0)
 #elif defined(_WIN32)
@@ -286,7 +300,8 @@ void MainWindow::StartProgram(const std::string &rom)
 	{
 		std::cerr << "Program execution failed.\n";
 	}
-	Show(true);
+*/
+
 }
 
 

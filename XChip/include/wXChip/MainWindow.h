@@ -22,6 +22,8 @@ public:
 	void CreateControls();
 private:
 	
+	FILE *fptr = nullptr;
+	
 	void OnChip(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
