@@ -39,8 +39,9 @@ void WXRenderFrame::OnPaint(wxPaintEvent &e) {
  	{
 		
 		wxImage _image(_width, _height,(uint8_t *)_buffer, true);
+		_image.Scale(_width*4, _height*4);
 		wxBitmap bmp(_image);
-	
+		
 		wxBufferedPaintDC dc(this, bmp);
 	}
 	
