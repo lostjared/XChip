@@ -16,13 +16,15 @@ namespace xchip {
 	
 	class WXRenderFrame : public wxFrame {
 	public:
-		WXRenderFrame() :  wxFrame(NULL, wxID_ANY, "XChip", wxPoint(0,0), wxSize(320, 240), wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+		WXRenderFrame() :  wxFrame(NULL, wxID_ANY, "XChip", wxPoint(640,480), wxSize(320, 240), wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 		{
 			
 		}
 		
 	};
 	
+	
+	WXRenderFrame *render_frame = 0;
 	
 	
 	WXRender::WXRender() noexcept
@@ -46,6 +48,9 @@ namespace xchip {
 			this->Dispose();
 			
 		
+			render_frame = new WXRenderFrame();
+			
+			
 		_initialized = true;
 		
 		return true;
@@ -54,7 +59,12 @@ namespace xchip {
 	
 	void WXRender::Dispose() noexcept
 	{
-
+		if(render_frame)
+		{
+			delete render_frame;
+			render_frame = nullptr;
+		}
+		
 	}
 	
 	
@@ -64,6 +74,9 @@ namespace xchip {
 	bool WXRender::UpdateEvents() noexcept
 	{
 		_INITIALIZED_ASSERT_;
+		
+		if(render_frame) render_frame->Update();
+		
 		return false;
 	}
 	
@@ -82,11 +95,12 @@ namespace xchip {
 	
 	void WXRender::HideWindow() noexcept
 	{
+		if(render_frame) render_frame->Show(false);
 	}
 	
 	void WXRender::ShowWindow() noexcept
 	{
-
+		if(render_frame) render_frame->Show(true);
 	}
 	
 	
@@ -95,8 +109,6 @@ namespace xchip {
 	{
 		
 	}
-	
-	
 	
 	
 	void WXRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback) noexcept
