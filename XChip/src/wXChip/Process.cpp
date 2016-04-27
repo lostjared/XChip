@@ -49,7 +49,7 @@ namespace xchip {
 	void Process::Stop() {
 #if defined(__APPLE__) || defined(__unix__)
 		if(pid != 0) {
-			kill(pid, SIGKILL);
+			kill(pid, SIGQUIT);
 			pid = 0;
 		}
 #endif

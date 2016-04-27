@@ -13,6 +13,24 @@
 
 #include <XChip/Utility/Memory.h> // make_unique as C++14
 
+#if defined(__APPLE__) || defined(__linux__)
+#include<signal.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<cstdio>
+
+void  SIGQUIT_handler(int sig)
+{
+	signal(sig, SIG_IGN);
+	printf("From SIGQUIT: just got a %d (SIGQUIT ^\\) signal"
+		   " and is about to quit\n", sig);
+	
+	exit(3);
+}
+
+#endif
+
+
 // ok . now lets run it
 
 int main(int argc, char **argv)
@@ -34,6 +52,12 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
+	
+	if (signal(SIGQUIT, SIGQUIT_handler) == SIG_ERR) {
+		printf("SIGQUIT install error\n");
+		exit(2);
+	}
+	
 	
 	// lets create our  objects
 	
