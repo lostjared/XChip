@@ -2,7 +2,8 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-
+#include <wx/dcbuffer.h>
+#include <wx/image.h>
 
 #include <XChip/Media/WXMedia/WXRender.h>
 #include <XChip/Utility/Log.h>
@@ -11,24 +12,31 @@
 
 #define _INITIALIZED_ASSERT_ ASSERT_MSG(_initialized == true, "WXRender is not initialized");
 
-
-
+uint32_t *_buffer = nullptr;
 
 
 class WXRenderFrame : public wxFrame {
 public:
-	WXRenderFrame();
+	WXRenderFrame(int width, int height);
 	void OnPaint(wxPaintEvent &e);
+
+	int width() const { return _width; }
+	int height() const { return _height; }
+	int _width, _height;
+	
 private:
 	wxDECLARE_EVENT_TABLE();
 };
 
-WXRenderFrame::WXRenderFrame() :  wxFrame(NULL, wxID_ANY, "XChip", wxPoint(640,480), wxSize(320, 240), wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+WXRenderFrame::WXRenderFrame(int width, int height) :  wxFrame(NULL, wxID_ANY, "XChip", wxPoint(640,480), wxSize(width, height), wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX), _width(width), _height(height)
 {
 	
 }
 
 void WXRenderFrame::OnPaint(wxPaintEvent &e) {
+	wxBitmap bmp(wxImage(_width, _height,
+						 reinterpret_cast<unsigned char *>(_buffer), true));
+	wxBufferedPaintDC dc(this, bmp);
 	
 }
 
@@ -67,7 +75,7 @@ namespace xchip {
 			this->Dispose();
 			
 		
-			render_frame = new WXRenderFrame();
+			render_frame = new WXRenderFrame(width, height);
 			
 			
 		_initialized = true;

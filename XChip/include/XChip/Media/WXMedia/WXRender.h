@@ -3,6 +3,10 @@
 
 #include <XChip/Media/iRender.h>
 
+
+extern uint32_t *_buffer;
+
+
 namespace xchip {
 
 class WXRender final : public iRender
@@ -29,9 +33,9 @@ public:
 private:
 	bool _initialized = false;
 };
-
+	
 inline bool WXRender::IsInitialized() const noexcept { return _initialized; }
-inline void WXRender::SetBuffer(const uint32_t* gfx) noexcept { /*_buffer = gfx;*/ }
+inline void WXRender::SetBuffer(const uint32_t* gfx) noexcept { _buffer = const_cast<uint32_t*>(gfx); }
 
 }
 
