@@ -8,7 +8,7 @@ set(UNDEFINED_SANITIZER "OFF" CACHE STRING "-fsanitize=undefined")
 
 #set on media libraries
 set(USING_SDL_MEDIA "OFF" CACHE STRING "")
-
+set(USING_WX_MEDIA "OFF" CACHE STRING "")
 
 #build Test ?
 set(TEST_BUILD "OFF" CACHE STRING "")
