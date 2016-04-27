@@ -6,12 +6,24 @@
 
 #endif
 
+void  Quit_handler(int sig)
+{
+	std::cout << "EXITING...\n\n";
+	exit(0);
+}
+
+
 
 namespace xchip {
 	
 	
 	Process::Process() : pid(0) {
-		
+		struct sigaction act;
+		memset (&act, '\0', sizeof(act));
+		act.sa_handler = &Quit_handler;
+		if (sigaction(SIGTERM, &act, NULL) < 0) {
+			perror ("sigaction");
+		}
 	}
 	
 	void Process::Run(const std::string &app) {
