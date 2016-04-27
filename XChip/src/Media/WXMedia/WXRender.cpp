@@ -11,17 +11,36 @@
 
 #define _INITIALIZED_ASSERT_ ASSERT_MSG(_initialized == true, "WXRender is not initialized");
 
+
+
+
+
+class WXRenderFrame : public wxFrame {
+public:
+	WXRenderFrame();
+	void OnPaint(wxPaintEvent &e);
+private:
+	wxDECLARE_EVENT_TABLE();
+};
+
+WXRenderFrame::WXRenderFrame() :  wxFrame(NULL, wxID_ANY, "XChip", wxPoint(640,480), wxSize(320, 240), wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+{
+	
+}
+
+void WXRenderFrame::OnPaint(wxPaintEvent &e) {
+	
+}
+
+wxBEGIN_EVENT_TABLE(WXRenderFrame, wxFrame)
+EVT_PAINT(WXRenderFrame::OnPaint)
+wxEND_EVENT_TABLE()
+
+
 namespace xchip {
 	
 	
-	class WXRenderFrame : public wxFrame {
-	public:
-		WXRenderFrame() :  wxFrame(NULL, wxID_ANY, "XChip", wxPoint(640,480), wxSize(320, 240), wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
-		{
-			
-		}
-		
-	};
+	
 	
 	
 	WXRenderFrame *render_frame = 0;
