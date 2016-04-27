@@ -44,6 +44,11 @@ int main(int argc, char **argv)
 	using xchip::UniqueSound;
 	using xchip::utility::make_unique;
 
+	
+	if (signal(SIGQUIT, SIGQUIT_handler) == SIG_ERR) {
+		printf("SIGQUIT install error\n");
+		exit(2);
+	}
 
 
 
@@ -52,11 +57,6 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	
-	if (signal(SIGQUIT, SIGQUIT_handler) == SIG_ERR) {
-		printf("SIGQUIT install error\n");
-		exit(2);
-	}
 	
 	
 	// lets create our  objects
