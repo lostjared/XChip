@@ -23,7 +23,7 @@
 #include <XChip/Media/WXMedia/WXInput.h>
 #include <XChip/Utility/Log.h>
 #include <wXChip/SaveList.h>
-//#include <XChip/Media/WXMedia/WXRender.h>
+#include <XChip/Media/WXMedia/WXRender.h>
 
 enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET, ID_TIMER1};
 
@@ -299,9 +299,11 @@ void MainWindow::CreateEmulator()
 {
 	using xchip::SdlRender;
 	using xchip::WXInput;
+	using xchip::WXRender;
 	using xchip::SdlSound;
 	using xchip::SdlInput;
 	using xchip::SdlRender;
+	
 	using xchip::utility::make_unique;
 
 	if (!_emu)
@@ -309,7 +311,7 @@ void MainWindow::CreateEmulator()
 
 		_emu = make_unique<xchip::Emulator>();
 
-		if (!_emu->Initialize(make_unique<SdlRender>(),
+		if (!_emu->Initialize(make_unique<WXRender>(),
 			make_unique<WXInput>(),
 			make_unique<SdlSound>()))
 		{

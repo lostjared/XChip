@@ -28,15 +28,21 @@ private:
 	wxDECLARE_EVENT_TABLE();
 };
 
-WXRenderFrame::WXRenderFrame(int width, int height) :  wxFrame(NULL, wxID_ANY, "XChip", wxPoint(640,480), wxSize(width, height), wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX), _width(width), _height(height)
+WXRenderFrame::WXRenderFrame(int width, int height) :  wxFrame(NULL, wxID_ANY, "XChip", wxPoint(640,480), wxSize(320, 240), wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX), _width(width), _height(height)
 {
 	
 }
 
 void WXRenderFrame::OnPaint(wxPaintEvent &e) {
-	wxBitmap bmp(wxImage(_width, _height,
-						 reinterpret_cast<unsigned char *>(_buffer), true));
-	wxBufferedPaintDC dc(this, bmp);
+	
+	if(_buffer != nullptr)
+ 	{
+		
+		wxImage _image(_width, _height,(uint8_t *)_buffer, true);
+		wxBitmap bmp(_image);
+	
+		wxBufferedPaintDC dc(this, bmp);
+	}
 	
 }
 
@@ -116,7 +122,7 @@ namespace xchip {
 	
 	void WXRender::DrawBuffer() noexcept
 	{
-	
+		if(render_frame) render_frame->Refresh();
 	}
 	
 	
