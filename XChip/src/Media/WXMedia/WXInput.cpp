@@ -77,7 +77,7 @@ void WXInput::Dispose() noexcept
 
 bool WXInput::UpdateKeys() noexcept
 {
- 	_WXINPUT_INITIALIZED_ASSERT_()
+ 	_WXINPUT_INITIALIZED_ASSERT_();
 	
 
 	if (wxGetKeyState(WXK_RETURN))
@@ -116,14 +116,14 @@ bool WXInput::IsInitialized() const noexcept
 
 bool WXInput::IsKeyPressed(const Key key) const noexcept
 {
-	_WXINPUT_INITIALIZED_ASSERT_()
+	_WXINPUT_INITIALIZED_ASSERT_();
 	return wxGetKeyState(_keyPairs[static_cast<size_t>(key)].second);
 }
 
 
 Key WXInput::GetPressedKey() const noexcept
 {
-	_WXINPUT_INITIALIZED_ASSERT_()
+	_WXINPUT_INITIALIZED_ASSERT_();
 	for (const auto& keyPair : _keyPairs)
 	{
 		if (wxGetKeyState(keyPair.second))
@@ -137,7 +137,7 @@ Key WXInput::GetPressedKey() const noexcept
 
 Key WXInput::WaitKeyPress() noexcept
 {
-	_WXINPUT_INITIALIZED_ASSERT_()
+	_WXINPUT_INITIALIZED_ASSERT_();
 	
 	if (_waitClbk)
 	{
