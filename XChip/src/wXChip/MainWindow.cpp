@@ -264,9 +264,9 @@ void MainWindow::StartProgram(const std::string &rom)
 	
 #if defined(__APPLE__) || defined(__linux__)
 	if(fptr != nullptr) {
-		std::string s="pkill -9 -f XChip";
+	/*	std::string s="pkill -9 -f XChip";
 		system(s.c_str());
-		fptr = nullptr;
+		fptr = nullptr; */
 	}
 #endif
 	
