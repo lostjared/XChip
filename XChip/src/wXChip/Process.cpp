@@ -19,7 +19,6 @@ namespace xchip {
 #if defined(__APPLE__) || defined(__linux__)
 		
 		if(pid == 0) {
-		
 			int fd[2];
 			int read_fd, write_fd;
 			pipe(fd);
@@ -50,7 +49,7 @@ namespace xchip {
 #if defined(__APPLE__) || defined(__linux__)
 		if(pid != 0) {
 			std::cout << "Sent kill signal.\n";
-			kill(pid, SIGQUIT);
+			kill(pid, SIGTERM);
 			pid = 0;
 		}
 #endif

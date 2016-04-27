@@ -19,13 +19,12 @@
 #include<sys/types.h>
 #include<cstdio>
 
-void  SIGQUIT_handler(int sig)
+bool stop_prog = false;
+
+void  Quit_handler(int sig)
 {
-	signal(sig, SIG_IGN);
-	printf("From SIGQUIT: just got a %d (SIGQUIT ^\\) signal"
-		   " and is about to quit\n", sig);
-	
-	exit(3);
+	stop_prog = true;
+	std::cout << "Quit..\n";
 }
 
 #endif
@@ -45,11 +44,13 @@ int main(int argc, char **argv)
 	using xchip::utility::make_unique;
 
 	
-	if (signal(SIGQUIT, SIGQUIT_handler) == SIG_ERR) {
-		printf("SIGQUIT install error\n");
-		exit(2);
+	struct sigaction act;
+	memset (&act, '\0', sizeof(act));
+	act.sa_handler = &Quit_handler;
+	if (sigaction(SIGTERM, &act, NULL) < 0) {
+		perror ("sigaction");
+		return 1;
 	}
-
 
 
 	if (argc < 2) {
@@ -183,7 +184,7 @@ int main(int argc, char **argv)
 
 	// finally the simple main loop
 
-	while (!emu->GetExitFlag())
+	while (!emu->GetExitFlag() && stop_prog == false)
 	{
 		emu->UpdateSystems(); // update window events / input events / timers / flags
 		emu->HaltForNextFlag(); // sleep until instrFlag or drawFlag is TRUE
