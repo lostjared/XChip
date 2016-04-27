@@ -16,7 +16,7 @@ namespace xchip {
 	
 	void Process::Run(const std::string &app) {
 
-#if defined(__APPLE__) || defined(__unix__)
+#if defined(__APPLE__) || defined(__linux__)
 		
 		if(pid == 0) {
 		
@@ -47,8 +47,9 @@ namespace xchip {
 	}
 
 	void Process::Stop() {
-#if defined(__APPLE__) || defined(__unix__)
+#if defined(__APPLE__) || defined(__linux__)
 		if(pid != 0) {
+			std::cout << "Sent kill signal.\n";
 			kill(pid, SIGQUIT);
 			pid = 0;
 		}
