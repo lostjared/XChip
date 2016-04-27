@@ -12,17 +12,20 @@
 #include <XChip/Utility/ScopeExit.h>
 #include <XChip/Utility/Assert.h>
  
-#define _INITIALIZED_ASSERT_ ASSERT_MSG(_initialized == true, "SdlSound is not initialized")
+#define _SDLSOUND_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlSound is not initialized")
 
 namespace xchip {
 
 inline float SdlSound::GetFreq() const { return _freq * _specs[Have].freq; }
-inline bool SdlSound::IsPlaying() const  noexcept { return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING; }
-inline float SdlSound::GetCountdownFreq() const noexcept { return _specs[Have].freq / _cycleTime; }
-inline void SdlSound::SetCountdownFreq(const float hertz) noexcept { _cycleTime = _specs[Have].freq / hertz; }
 inline void SdlSound::SetCycleTime(const float hz) { _cycleTime = _specs[Have].freq / hz; }
 inline void SdlSound::SetFreq(const float hz) { _freq = hz / _specs[Have].freq; }
 inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * len; }
+
+
+
+inline float SdlSound::GetCountdownFreq() const noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); return _specs[Have].freq / _cycleTime; }
+inline bool SdlSound::IsPlaying() const  noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING; }
+inline void SdlSound::SetCountdownFreq(const float hertz) noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); _cycleTime = _specs[Have].freq / hertz; }
 
 
 
@@ -63,12 +66,14 @@ bool SdlSound::Initialize() noexcept
 	_specs = new(std::nothrow) SDL_AudioSpec[2];
 
 	
-	if (!_specs)
+	if (!_specs) {
+		utility::LOGerr("Could not allocate memory for SDL_AudioSpecs");
 		return false;
+	}
 
-	else if (!InitDevice(_specs[Want], _specs[Have]))
+	else if (!InitDevice(_specs[Want], _specs[Have])) {
 		return false;
-
+	}
 
 	_len = 0.f;
 	_pos = 0u;
@@ -105,7 +110,7 @@ void SdlSound::Dispose() noexcept
 
 void SdlSound::Play(const uint8_t soundTimer) noexcept
 {
-	_INITIALIZED_ASSERT_; 
+	_SDLSOUND_INITIALIZED_ASSERT_();
 	if (!this->IsPlaying()) 
 	{
 		SetFreq(defaultFreq + 2 * soundTimer);
@@ -129,7 +134,7 @@ void SdlSound::Play(const uint8_t soundTimer) noexcept
 
 void SdlSound::Stop() noexcept
 {
-	_INITIALIZED_ASSERT_; 
+ 	_SDLSOUND_INITIALIZED_ASSERT_();
 	if (this->IsPlaying())
 	{
 		SDL_LockAudioDevice(_dev);

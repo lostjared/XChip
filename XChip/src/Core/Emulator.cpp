@@ -4,6 +4,8 @@
 #include <XChip/Utility/ScopeExit.h>
 
 
+
+
 namespace xchip {
 using utility::literals::operator""_hz;
 
@@ -187,95 +189,6 @@ void Emulator::Reset()
 
 
 
-bool Emulator::InitRender()
-{
-	iRender* const rend = _manager.GetRender();
-
-	if (!rend)  {
-		utility::LOGerr("Cannot Initialize iRender: nullptr");
-		return false;
-	} 
-	else if (rend->IsInitialized()) {
-		return true;
-	} 
-	else if (!rend->Initialize(64, 32)) {
-		return false;
-	}
-
-	rend->SetBuffer(_manager.GetGfx());
-	rend->SetWinCloseCallback(&_exitf, [](const void* exitf) { *(bool*)exitf = true; });
-	return true;
-}
-
-
-
-
-bool Emulator::InitInput()
-{
-	iInput* const input = _manager.GetInput();
-
-	if (!input) {
-		utility::LOGerr("Cannot Initialize iInput: nullptr");
-		return false;
-	}
-	else if (input->IsInitialized()) {
-		return true;
-	}
-	else if (!input->Initialize()) {
-		return false;
-	}
-
-
-	input->SetEscapeKeyCallback(&_exitf, [](const void* exitf) { *(bool*)exitf = true; });
-	input->SetResetKeyCallback(this, [](const void* _this) { ((Emulator*)_this)->Reset(); });
-	input->SetWaitKeyCallback(this, [](const void* emu)
-	{
-		auto* const emulator = (Emulator*) emu;
-		do
-		{
-			emulator->UpdateSystems();
-			
-			if (emulator->GetExitFlag())
-				return false;
-
-			emulator->HaltForNextFlag();
-
-			if (emulator->GetDrawFlag())
-				emulator->Draw();
-
-		} while (! emulator->GetInstrFlag());
-
-		return true;
-	});
-
-	return true;
-}
-
-
-
-
-
-bool Emulator::InitSound()
-{
-	iSound* const sound = _manager.GetSound();
-
-	if (!sound)  {
-		utility::LOGerr("Cannot Initialize iSound: nullptr");
-		return false;
-	}
-	else if (sound->IsInitialized()) {
-		return true;
-	}
-	else if (!sound->Initialize()) {
-		return false;
-	}
-
-	sound->SetCountdownFreq(60);
-	return true;
-}
-
-
-
 
 
 bool Emulator::SetRender(UniqueRender rend) 
@@ -393,6 +306,112 @@ UniqueSound Emulator::SwapSound(UniqueSound sound)
 	utility::LOG("Swapping iSound to nullptr...");
 	return UniqueSound(_manager.SwapSound(nullptr));
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bool Emulator::InitRender()
+{
+	iRender* const rend = _manager.GetRender();
+
+	if (!rend)  {
+		utility::LOGerr("Cannot Initialize iRender: nullptr");
+		return false;
+	} 
+	else if (rend->IsInitialized()) {
+		return true;
+	} 
+	else if (!rend->Initialize(64, 32)) {
+		return false;
+	}
+
+	rend->SetBuffer(_manager.GetGfx());
+	rend->SetWinCloseCallback(&_exitf, [](const void* exitf) { *(bool*)exitf = true; });
+	return true;
+}
+
+
+
+
+bool Emulator::InitInput()
+{
+	iInput* const input = _manager.GetInput();
+
+	if (!input) {
+		utility::LOGerr("Cannot Initialize iInput: nullptr");
+		return false;
+	}
+	else if (input->IsInitialized()) {
+		return true;
+	}
+	else if (!input->Initialize()) {
+		return false;
+	}
+
+
+	input->SetEscapeKeyCallback(&_exitf, [](const void* exitf) { *(bool*)exitf = true; });
+	input->SetResetKeyCallback(this, [](const void* _this) { ((Emulator*)_this)->Reset(); });
+	input->SetWaitKeyCallback(this, [](const void* emu)
+	{
+		auto* const emulator = (Emulator*) emu;
+		do
+		{
+			emulator->UpdateSystems();
+			
+			if (emulator->GetExitFlag())
+				return false;
+
+			emulator->HaltForNextFlag();
+
+			if (emulator->GetDrawFlag())
+				emulator->Draw();
+
+		} while (! emulator->GetInstrFlag());
+
+		return true;
+	});
+
+	return true;
+}
+
+
+
+
+
+bool Emulator::InitSound()
+{
+	iSound* const sound = _manager.GetSound();
+
+	if (!sound)  {
+		utility::LOGerr("Cannot Initialize iSound: nullptr");
+		return false;
+	}
+	else if (sound->IsInitialized()) {
+		return true;
+	}
+	else if (!sound->Initialize()) {
+		return false;
+	}
+
+	sound->SetCountdownFreq(60);
+	return true;
+}
+
+
+
+
+
 
 
 
