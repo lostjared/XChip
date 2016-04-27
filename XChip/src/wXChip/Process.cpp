@@ -1,4 +1,6 @@
 #include<wXChip/Process.h>
+#include<string>
+#include<sstream>
 #if defined(__APPLE__) || defined(__linux__)
 #include<signal.h>
 #include<unistd.h>
@@ -58,13 +60,24 @@ namespace xchip {
 	}
 
 	void Process::Stop() {
-#if defined(__APPLE__) || defined(__linux__)
+#if defined(__APPLE__)
 		if(pid != 0) {
 			std::cout << "Sent kill signal.\n";
 			kill(pid, SIGTERM);
 			pid = 0;
 		}
+
+#elif defined(__linux__)
+		if(pid != 0) {
+			std::ostringstream stream;
+			stream << "kill -9 " << (int)pid;
+			std::cout << stream.str() << "\n";
+			system(stream.str().c_str());
+		}
 #endif
+		
+
+		
 	}
 	
 }

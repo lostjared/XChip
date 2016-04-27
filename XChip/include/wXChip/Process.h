@@ -14,7 +14,9 @@ namespace xchip {
 		void Run(const std::string &app);
 		void Stop();
 	private:
+#if defined(__APPLE__) || defined(__linux__)
 		int pid;
+#endif
 	};
 	
 	
