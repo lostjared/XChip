@@ -74,7 +74,7 @@ namespace xchip {
 		if (_initialized)
 			this->Dispose();
 			
-		
+			std::cout << width << "x" << height << "\n";
 			render_frame = new WXRenderFrame(width, height);
 			
 			

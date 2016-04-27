@@ -39,7 +39,7 @@ private:
 	void OnIdle(wxIdleEvent& event);
 	void StartEmulatorLoop();
 	void StopEmulatorLoop();
-	
+	void OnKeyDown(wxKeyEvent &e);
 
 	bool _emuLoopOn = false;
 	std::unique_ptr<xchip::Emulator> _emu;

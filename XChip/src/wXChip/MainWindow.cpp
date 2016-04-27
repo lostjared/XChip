@@ -19,9 +19,11 @@
 #include <wXChip/MainWindow.h>
 #include <XChip/Media/SDLMedia/SdlRender.h>
 #include <XChip/Media/SDLMedia/SdlSound.h>
+#include <XChip/Media/SDLMedia/SdlInput.h>
 #include <XChip/Media/WXMedia/WXInput.h>
 #include <XChip/Utility/Log.h>
 #include <wXChip/SaveList.h>
+//#include <XChip/Media/WXMedia/WXRender.h>
 
 enum { ID_Chip = 1, ID_LISTBOX = 2, ID_STARTROM = 3, ID_LOADROM = 4, ID_TEXT = 5, ID_EMUSET, ID_TIMER1};
 
@@ -35,6 +37,7 @@ EVT_MOTION(MainWindow::OnMouseOver)
 EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
 EVT_BUTTON(ID_LOADROM, MainWindow::OnChip)
 EVT_BUTTON(ID_EMUSET, MainWindow::LoadSettings)
+EVT_KEY_DOWN(MainWindow::OnKeyDown)
 wxEND_EVENT_TABLE()
 wxIMPLEMENT_APP(wXChip);
 
@@ -124,6 +127,11 @@ void MainWindow::CreateControls()
 	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), wxPoint(230, 400), wxSize(100,25));
 	_settingsWin = make_unique<SettingsWindow>("wXChip - Settings", wxPoint(150, 150), wxSize(430, 220));
 	
+}
+
+void MainWindow::OnKeyDown(wxKeyEvent &e)
+{
+	e.Skip();
 }
 
 void MainWindow::OnLDown(wxMouseEvent& event)
@@ -292,6 +300,8 @@ void MainWindow::CreateEmulator()
 	using xchip::SdlRender;
 	using xchip::WXInput;
 	using xchip::SdlSound;
+	using xchip::SdlInput;
+	using xchip::SdlRender;
 	using xchip::utility::make_unique;
 
 	if (!_emu)
