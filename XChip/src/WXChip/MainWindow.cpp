@@ -45,7 +45,21 @@ void MainWindow::OnExit(wxCommandEvent&)
 
 void MainWindow::OnLoadRom(wxCommandEvent&)
 {
-	std::cout << "loading some rom" << std::endl;
+
+	wxFileDialog openDialog(this, "","","", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+
+	// the user didn't select any file ?
+	if(openDialog.ShowModal() == wxID_CANCEL)
+		return;
+
+	
+	// the user selected some file:
+	std::cout << "loading rom: " << openDialog.GetPath().c_str() << std::endl;
+
+
+
+
+
 }
 
 
