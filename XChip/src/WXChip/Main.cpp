@@ -13,6 +13,7 @@
 
 wxIMPLEMENT_APP(WXChip);
 
+MainWindow* mainwin;
 
 
 bool WXChip::OnInit()
@@ -20,9 +21,8 @@ bool WXChip::OnInit()
 	using xchip::utility::make_unique;
 
 	try {
-		auto frame = make_unique<MainWindow>("WXChip", wxPoint(50,50), wxSize(800, 600));
-		frame->Show(true);
-		frame.release();
+		mainwin = make_unique<MainWindow>("WXChip", wxPoint(50,50), wxSize(800, 600)).release();
+		mainwin->Show(true);
 	}
 	catch(std::exception& err) {
 		std::cout << err.what() << std::endl;
