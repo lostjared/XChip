@@ -14,7 +14,7 @@ public:
 
 
 
-
+	wxDECLARE_EVENT_TABLE();
 };
 
 
