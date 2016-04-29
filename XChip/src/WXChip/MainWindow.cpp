@@ -4,6 +4,7 @@
 #endif
 
 #include <iostream>
+#include <stdexcept>
 #include <XChip/Utility/Memory.h>
 #include <WXChip/MainWindow.h>
 
@@ -18,6 +19,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 	using xchip::utility::make_unique;
+
 	std::cout << "Creating MainWindow..." << std::endl;
 
 	auto menuFile = make_unique<wxMenu>();
@@ -29,7 +31,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	auto menuBar = make_unique<wxMenuBar>();
 
 	if (!menuBar->Append(menuFile.get(), "&File"))
-		throw std::exception("could not append a menu into wxMenuBar");
+		throw std::runtime_error("could not append a menu into wxMenuBar");
 
 	
 	menuFile.release();
@@ -59,7 +61,6 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 	if(openDialog.ShowModal() == wxID_CANCEL)
 		return;
 
-	
 	// the user selected some file:
 	std::cout << "loading rom: " << openDialog.GetPath().c_str() << std::endl;
 }
