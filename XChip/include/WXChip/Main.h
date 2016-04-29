@@ -3,15 +3,17 @@
 
 #include <wx/app.h>
 
+class MainWindow;
 
 class WXChip final : public wxApp
 {
 public:
 	bool OnInit() override;
 	int OnExit() override;
+	int FilterEvent(wxEvent& ev) override;
 
-
-
+private:
+	MainWindow* _mainwin;
 
 };
 

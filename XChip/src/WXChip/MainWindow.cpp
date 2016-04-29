@@ -10,7 +10,6 @@
 
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
-EVT_KEY_DOWN(MainWindow::OnKeyDown)
 EVT_MENU(MainWindow::ID_LOADROM, MainWindow::OnLoadRom)
 EVT_MENU(wxID_EXIT, MainWindow::OnExit)
 wxEND_EVENT_TABLE()
@@ -34,6 +33,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	if (!menuBar->Append(menuFile.get(), "&File"))
 		throw std::runtime_error("could not append a menu into wxMenuBar");
 
+	
 	menuFile.release();
 	SetMenuBar(menuBar.release());
 }
@@ -41,15 +41,16 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
 MainWindow::~MainWindow()
 {
+	Destroy();
 	std::cout << "Destroying MainWindow..." << std::endl;
-	this->Destroy();
 }
 
 
 void MainWindow::OnExit(wxCommandEvent&)
 {
-	Close( true );	
+	Close( true );
 }
+
 
 
 void MainWindow::OnLoadRom(wxCommandEvent&)

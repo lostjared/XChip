@@ -22,12 +22,15 @@ bool WXChip::OnInit()
 	try {
 		auto mainwin = make_unique<MainWindow>("WXChip", wxPoint(50,50), wxSize(800, 600));
 		mainwin->Show(true);
-		mainwin.release();
+		mainwin->SetFocus();
+		_mainwin = mainwin.release();
+
 	}
 	catch(std::exception& err) {
 		std::cout << err.what() << std::endl;
 		return false;
 	}
+
 
 	return true;
 }
@@ -41,7 +44,19 @@ int WXChip::OnExit()
 
 
 
+int WXChip::FilterEvent(wxEvent& event)
+{
+	const auto eventType = event.GetEventType();
+	
+	if(eventType == wxEVT_KEY_DOWN) 
+	{
+		std::cout << "!KEY DOWN EVENT!" << std::endl;
+		_mainwin->OnKeyDown(static_cast<wxKeyEvent&>(event));
+		return true;
+	}
 
+	return wxApp::FilterEvent(event);
+}
 
 
 

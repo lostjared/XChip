@@ -9,6 +9,7 @@
 
 class MainWindow final : public wxFrame
 {
+	friend class WXChip;
 public:
 	enum { ID_LOADROM };
 
