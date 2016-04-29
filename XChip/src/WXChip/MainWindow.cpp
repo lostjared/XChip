@@ -26,10 +26,13 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	menuFile->AppendSeparator();
 	menuFile->Append(wxID_EXIT);	
 
-	auto menuBar = make_unique<wxMenuBar>();	
-	menuBar->Append(menuFile.release(), "&File");
+	auto menuBar = make_unique<wxMenuBar>();
+
+	if (!menuBar->Append(menuFile.get(), "&File"))
+		throw std::exception("could not append a menu into wxMenuBar");
 
 	
+	menuFile.release();
 	SetMenuBar(menuBar.release());
 }
 
