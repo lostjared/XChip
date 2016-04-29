@@ -3,6 +3,7 @@
 #include <wx/wx.h>
 #endif
 
+
 #include <XChip/Utility/Memory.h>
 
 #include <WXChip/Main.h>
@@ -13,16 +14,15 @@
 
 wxIMPLEMENT_APP(WXChip);
 
-MainWindow* mainwin;
-
 
 bool WXChip::OnInit()
 {
 	using xchip::utility::make_unique;
 
 	try {
-		mainwin = make_unique<MainWindow>("WXChip", wxPoint(50,50), wxSize(800, 600)).release();
+		auto mainwin = make_unique<MainWindow>("WXChip", wxPoint(50,50), wxSize(800, 600));
 		mainwin->Show(true);
+		mainwin.release();
 	}
 	catch(std::exception& err) {
 		std::cout << err.what() << std::endl;

@@ -3,8 +3,10 @@
 #include <wx/wx.h>
 #endif
 
+#include <iostream>
 #include <XChip/Utility/Memory.h>
 #include <WXChip/MainWindow.h>
+
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(MainWindow::ID_LOADROM, MainWindow::OnLoadRom)
@@ -16,7 +18,8 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 	using xchip::utility::make_unique;
-	
+	std::cout << "Creating MainWindow..." << std::endl;
+
 	auto menuFile = make_unique<wxMenu>();
 
 	menuFile->Append(ID_LOADROM, "&LoadRom...\tCtrl-L", "Load a game rom");
@@ -26,13 +29,14 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	auto menuBar = make_unique<wxMenuBar>();	
 	menuBar->Append(menuFile.release(), "&File");
 
-
+	
 	SetMenuBar(menuBar.release());
 }
 
 
 MainWindow::~MainWindow()
 {
+	std::cout << "Destroying MainWindow..." << std::endl;
 	this->Destroy();
 }
 
@@ -55,11 +59,6 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 	
 	// the user selected some file:
 	std::cout << "loading rom: " << openDialog.GetPath().c_str() << std::endl;
-
-
-
-
-
 }
 
 
