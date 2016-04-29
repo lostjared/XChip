@@ -16,7 +16,7 @@ public:
 };
 
 
-// DECLARE_APP(WXChip)
+
 
 
 
