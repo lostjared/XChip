@@ -19,21 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\XChip\src\WXChip\Main.cpp" />
     <ClCompile Include="..\..\..\XChip\src\wXChip\MainWindow.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\wXChip\SaveList.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\wXChip\SettingsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\wXChip\dirent.h" />
+    <ClInclude Include="..\..\..\XChip\include\WXChip\Main.h" />
     <ClInclude Include="..\..\..\XChip\include\wXChip\MainWindow.h" />
-    <ClInclude Include="..\..\..\XChip\include\wXChip\SaveList.h" />
-    <ClInclude Include="..\..\..\XChip\include\wXChip\SettingsWindow.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{06119663-17F2-4F7B-B49D-1B11E280EC5F}</ProjectGuid>
     <RootNamespace>wXChip_GUI</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
-    <ProjectName>wXChip</ProjectName>
+    <ProjectName>WXChip</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

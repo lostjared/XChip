@@ -3,8 +3,11 @@
 #include <wx/wx.h>
 #endif
 
+#include <iostream>
+#include <stdexcept>
 #include <XChip/Utility/Memory.h>
 #include <WXChip/MainWindow.h>
+
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(MainWindow::ID_LOADROM, MainWindow::OnLoadRom)
@@ -13,34 +16,41 @@ wxEND_EVENT_TABLE()
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
-	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX | wxWANTS_CHARS)
 {
 	using xchip::utility::make_unique;
-	
+
+	std::cout << "Creating MainWindow..." << std::endl;
+
 	auto menuFile = make_unique<wxMenu>();
 
 	menuFile->Append(ID_LOADROM, "&LoadRom...\tCtrl-L", "Load a game rom");
 	menuFile->AppendSeparator();
 	menuFile->Append(wxID_EXIT);	
 
-	auto menuBar = make_unique<wxMenuBar>();	
-	menuBar->Append(menuFile.release(), "&File");
+	auto menuBar = make_unique<wxMenuBar>();
 
+	if (!menuBar->Append(menuFile.get(), "&File"))
+		throw std::runtime_error("could not append a menu into wxMenuBar");
 
+	
+	menuFile.release();
 	SetMenuBar(menuBar.release());
 }
 
 
 MainWindow::~MainWindow()
 {
-	this->Destroy();
+	Destroy();
+	std::cout << "Destroying MainWindow..." << std::endl;
 }
 
 
 void MainWindow::OnExit(wxCommandEvent&)
 {
-	Close( true );	
+	Close( true );
 }
+
 
 
 void MainWindow::OnLoadRom(wxCommandEvent&)
@@ -52,17 +62,14 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 	if(openDialog.ShowModal() == wxID_CANCEL)
 		return;
 
-	
 	// the user selected some file:
 	std::cout << "loading rom: " << openDialog.GetPath().c_str() << std::endl;
-
-
-
-
-
 }
 
 
-
+void MainWindow::OnKeyDown(wxKeyEvent& key)
+{
+	std::cout << "Key code: " << key.GetKeyCode() << std::endl;
+}
 
 
