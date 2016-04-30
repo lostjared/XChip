@@ -110,9 +110,12 @@ std::thread _emuTr;
 
 void MainWindow::StartGame()
 {
+
+	this->Hide();
+	
 	const auto loop  = [this]()
 	{	
-		this->Hide();
+
 		_emulator.CleanFlags();
 		_emulator.GetRender()->ShowWindow();
 
