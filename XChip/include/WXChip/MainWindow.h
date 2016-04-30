@@ -19,9 +19,9 @@ public:
 private:
 	void OnExit(wxCommandEvent& ev);
 	void OnLoadRom(wxCommandEvent& ev);
-	void MainWindow::RunEmulator();
-	void MainWindow::StopEmulator();
-	void MainWindow::EmulatorLoop(wxIdleEvent&);
+	void RunEmulator();
+	void StopEmulator();
+	void EmulatorLoop(wxIdleEvent&);
 
 	bool _emuLoopOn;
 	xchip::Emulator _emulator;
