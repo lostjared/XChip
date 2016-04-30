@@ -50,7 +50,7 @@ int WXChip::FilterEvent(wxEvent& event)
 	
 	if(eventType == wxEVT_KEY_DOWN) 
 	{
-		if(static_cast<wxObject*>(_mainwin) == static_cast<wxFrame*>(event.GetEventObject()))
+		if(static_cast<wxObject*>(_mainwin) == event.GetEventObject())
 			std::cout << "event is on mainwin" << std::endl;
 		
 		std::cout << "!KEY DOWN EVENT!" << std::endl;
