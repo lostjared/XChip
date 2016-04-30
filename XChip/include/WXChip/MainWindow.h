@@ -16,13 +16,14 @@ public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	~MainWindow();
 
-
 private:
 	void OnExit(wxCommandEvent& ev);
 	void OnLoadRom(wxCommandEvent& ev);
-	void StartGame();
+	void MainWindow::RunEmulator();
+	void MainWindow::StopEmulator();
+	void MainWindow::EmulatorLoop(wxIdleEvent&);
 
-
+	bool _emuLoopOn;
 	xchip::Emulator _emulator;
 	wxDECLARE_EVENT_TABLE();
 };

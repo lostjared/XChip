@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <thread>
 
 #include <XChip/Utility/Memory.h>
 #include <XChip/Media/SDLMedia.h>
@@ -20,7 +19,7 @@ wxEND_EVENT_TABLE()
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
-	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX | wxWANTS_CHARS)
+	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 	using xchip::UniqueRender;
 	using xchip::UniqueInput;
@@ -85,7 +84,7 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 	std::cout << "loading rom: " << fileName.c_str()  << std::endl;
 
 
-	if(_emulator.GetExitFlag())
+	if(!_emulator.IsInitialized())
 	{
 		auto render = make_unique<xchip::SdlRender>();
 		auto input = make_unique<xchip::SdlInput>();
@@ -100,45 +99,59 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 	{
 
 		std::cout << "Could not load the game!" << std::endl;
+		return;
 	}
 
 
-	StartGame();
+	RunEmulator();
 }
 
-std::thread _emuTr;
 
-void MainWindow::StartGame()
+void MainWindow::RunEmulator()
 {
-
-	this->Hide();
-	
-	const auto loop  = [this]()
-	{	
-
+	if (!_emuLoopOn)
+	{
+		this->Hide();
+		Connect(wxID_ANY, wxEVT_IDLE, wxIdleEventHandler(MainWindow::EmulatorLoop));
 		_emulator.CleanFlags();
 		_emulator.GetRender()->ShowWindow();
+		_emuLoopOn = true;
+	}
+}
 
-		while( !_emulator.GetExitFlag() )
-		{
 
-			_emulator.UpdateSystems();
-			_emulator.HaltForNextFlag();
-
-			if(_emulator.GetInstrFlag())
-				_emulator.ExecuteInstr();
-			if(_emulator.GetDrawFlag())
-				_emulator.Draw();
-		
-
-		}
-		
+void MainWindow::StopEmulator()
+{
+	if (_emuLoopOn)
+	{
+		Disconnect(wxEVT_IDLE, wxIdleEventHandler(MainWindow::EmulatorLoop));
 		_emulator.GetRender()->HideWindow();
+		_emuLoopOn = false;
+
+		this->Show();
+	}
+}
+
+
+void MainWindow::EmulatorLoop(wxIdleEvent& event)
+{
+
+	if (!_emulator.GetExitFlag())
+	{
+		_emulator.UpdateSystems();
+		_emulator.HaltForNextFlag();
 		
-		this->Raise();
-	};
+		if (_emulator.GetInstrFlag())
+			_emulator.ExecuteInstr();
+		
+		if (_emulator.GetDrawFlag())
+			_emulator.Draw();
 
+		event.RequestMore();
+	}
 
-	_emuTr = std::thread(loop);
-	_emuTr.detach();
+	else
+	{
+		StopEmulator();
+	}
 }
