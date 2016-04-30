@@ -44,22 +44,3 @@ int WXChip::OnExit()
 
 
 
-int WXChip::FilterEvent(wxEvent& event)
-{
-	const auto eventType = event.GetEventType();
-	
-	if(eventType == wxEVT_KEY_DOWN) 
-	{
-		if(static_cast<wxObject*>(_mainwin) == event.GetEventObject())
-			std::cout << "event is on mainwin" << std::endl;
-		
-		std::cout << "!KEY DOWN EVENT!" << std::endl;
-		_mainwin->OnKeyDown(static_cast<wxKeyEvent&>(event));
-		return true;
-	}
-
-	return wxApp::FilterEvent(event);
-}
-
-
-
