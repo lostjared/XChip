@@ -17,7 +17,7 @@ wxEND_EVENT_TABLE()
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
-	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX | wxWANTS_CHARS)
 {
 	using xchip::utility::make_unique;
 
