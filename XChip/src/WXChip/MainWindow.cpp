@@ -103,11 +103,7 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 	}
 
 
-	this->Show(false);
-
 	StartGame();
-
-	this->Show(true);
 }
 
 std::thread _emuTr;
