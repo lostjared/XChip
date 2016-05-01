@@ -54,15 +54,21 @@ void Process::Run(const std::string &app)
 
 void Process::Stop()
 {
+#if defined(__APPLE__) || defined(__linux__)
+	
+	
 	if(pid != 0)
 	{
 		std::cout << "Sent kill signal.\n";
-		kill(pid, SIGINT);
+		int rt_val = kill(pid, SIGINT);
+		
+		if(rt_val == ESRCH) {
+			std::cout << "Process not fuond.\n";
+		}
+		
 		pid = 0;
 	}
-
-
-	
+#endif
 }
 
 
