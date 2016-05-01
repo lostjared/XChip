@@ -15,7 +15,8 @@
 namespace xchip {
 	
 	
-	class Process {
+	class Process
+	{
 	public:
 		Process();
 		void Run(const std::string &app);
