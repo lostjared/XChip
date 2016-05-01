@@ -12,8 +12,12 @@
 namespace xchip {
 	
 	
-	Process::Process() : pid(0) {
+	Process::Process() {
 	
+#if defined(__APPLE__) || defined(__linux__)
+		pid = 0;
+#endif
+		
 	}
 	
 	void Process::Run(const std::string &app) {

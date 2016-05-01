@@ -15,7 +15,7 @@ namespace xchip {
 		void Stop();
 	private:
 #if defined(__APPLE__) || defined(__linux__)
-		int pid;
+		pid_t pid;
 #endif
 	};
 	
