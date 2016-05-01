@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 		emu.SetExitFlag(true);
 	}) == SIG_ERR )
 	{
-		std::cout << "Could not intall signal handler!" << std::endl;
+		std::cout << "Could not install signal handler!" << std::endl;
 		return EXIT_FAILURE;
 	}
 
