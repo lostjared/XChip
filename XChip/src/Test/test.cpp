@@ -1,14 +1,9 @@
-
 #include <csignal>
 #include <iostream>
-
 
 #include <XChip/Core/Emulator.h> 
 #include <XChip/Media/SDLMedia.h>
 #include <XChip/Utility/Memory.h>
-
-
-
 
 
 
@@ -61,12 +56,16 @@ int main(int argc, char **argv)
 
 
 
-	signal(SIGINT, [](int signum)
+	if(signal(SIGINT, [](int signum)
 	{
 		std::cout << "Received signal: " << signum << std::endl;
 		std::cout << "Closing Application!" << std::endl;
 		emu.SetExitFlag(true);
-	});
+	}) == SIG_ERR )
+	{
+		std::cout << "Could not intall signal handler!" << std::endl;
+		return EXIT_FAILURE;
+	}
 
 
 	while (!emu.GetExitFlag())
@@ -84,7 +83,7 @@ int main(int argc, char **argv)
 
 
 
-
+	return EXIT_SUCCESS;
 
 
 }
