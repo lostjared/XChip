@@ -31,7 +31,7 @@ public:
 	bool Initialize(UniqueRender render, UniqueInput input, UniqueSound sound) noexcept;
 
 	void Dispose() noexcept;
-
+	bool IsInitialized() const;
 	bool GetInstrFlag() const;
 	bool GetDrawFlag() const;
 	bool GetExitFlag() const;
@@ -84,7 +84,7 @@ private:
 
 
 
-
+inline bool Emulator::IsInitialized() const { return _initialized; }
 inline bool Emulator::GetInstrFlag() const { return _instrf; }
 inline bool Emulator::GetDrawFlag() const { return _drawf; }
 inline bool Emulator::GetExitFlag() const { return _exitf || _manager.GetErrorFlag(); }

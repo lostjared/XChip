@@ -10,7 +10,7 @@ class WXChip final : public wxApp
 public:
 	bool OnInit() override;
 	int OnExit() override;
-
+	int FilterEvent(wxEvent& event) override;
 
 private:
 	MainWindow* _mainwin;

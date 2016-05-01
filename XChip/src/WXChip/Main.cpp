@@ -43,4 +43,15 @@ int WXChip::OnExit()
 }
 
 
+int WXChip::FilterEvent(wxEvent& event) 
+{
+	const auto eventType = event.GetEventType();
+	if (eventType == wxEVT_KEY_DOWN
+		|| eventType == wxEVT_KEY_UP)
+	{
+		std::cout << "key event" << std::endl;
+		return -1;
+	}
 
+	return wxApp::FilterEvent(event);
+}
