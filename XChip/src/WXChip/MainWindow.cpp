@@ -7,9 +7,7 @@
 #include <stdexcept>
 
 #include <XChip/Utility/Memory.h>
-#include <XChip/Media/SDLMedia.h>
 #include <WXChip/MainWindow.h>
-
 
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
@@ -21,9 +19,6 @@ wxEND_EVENT_TABLE()
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
 	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
-	using xchip::UniqueRender;
-	using xchip::UniqueInput;
-	using xchip::UniqueSound;
 	using xchip::utility::make_unique;
 
 	std::cout << "Creating MainWindow..." << std::endl;
@@ -65,11 +60,10 @@ void MainWindow::OnExit(wxCommandEvent&)
 
 void MainWindow::OnLoadRom(wxCommandEvent&)
 {
-	using xchip::UniqueRender;
-	using xchip::UniqueInput;
-	using xchip::UniqueSound;
 	using xchip::utility::make_unique;
 
+	if(_emuProcOn)
+		StopEmulator();
 
 
 	wxFileDialog openDialog(this, "","","", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -79,79 +73,28 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 		return;
 
 
-	const auto fileName = openDialog.GetPath();
-	// the user selected some file:
-	std::cout << "loading rom: " << fileName.c_str()  << std::endl;
-
-
-	if(!_emulator.IsInitialized())
-	{
-		auto render = make_unique<xchip::SdlRender>();
-		auto input = make_unique<xchip::SdlInput>();
-		auto sound = make_unique<xchip::SdlSound>();
-
-		if(! _emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
-			throw std::runtime_error("could not initialize xchip::Emulator");
-	}
+	std::string filePath { openDialog.GetPath().c_str() };
 
 	
-	if(!_emulator.LoadRom(static_cast<const char*>(fileName.c_str())))
-	{
+	std::cout << "Loading : " << filePath << std::endl;
 
-		std::cout << "Could not load the game!" << std::endl;
-		return;
-	}
-
-
-	RunEmulator();
+	StartEmulator(filePath);
+	
 }
 
 
-void MainWindow::RunEmulator()
+void MainWindow::StartEmulator(std::string& arg)
 {
-	if (!_emuLoopOn)
-	{
-		this->Hide();
-		Connect(wxID_ANY, wxEVT_IDLE, wxIdleEventHandler(MainWindow::EmulatorLoop));
-		_emulator.CleanFlags();
-		_emulator.GetRender()->ShowWindow();
-		_emuLoopOn = true;
-	}
+	arg.insert(0, std::string("./XChipTest \""));
+	arg.insert(arg.size()-1, std::string("\""));
+
+	_process.Run(arg);
+	_emuProcOn = true;
 }
 
 
 void MainWindow::StopEmulator()
 {
-	if (_emuLoopOn)
-	{
-		Disconnect(wxEVT_IDLE, wxIdleEventHandler(MainWindow::EmulatorLoop));
-		_emulator.GetRender()->HideWindow();
-		_emuLoopOn = false;
-
-		this->Show();
-	}
-}
-
-
-void MainWindow::EmulatorLoop(wxIdleEvent& event)
-{
-
-	if (!_emulator.GetExitFlag())
-	{
-		_emulator.UpdateSystems();
-		_emulator.HaltForNextFlag();
-		
-		if (_emulator.GetInstrFlag())
-			_emulator.ExecuteInstr();
-		
-		if (_emulator.GetDrawFlag())
-			_emulator.Draw();
-
-		event.RequestMore();
-	}
-
-	else
-	{
-		StopEmulator();
-	}
+	_process.Stop();
+	_emuProcOn = false;
 }
