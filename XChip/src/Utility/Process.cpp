@@ -19,72 +19,20 @@ Process::Process()
 
 Process::~Process()
 {
-
+	if(IsRunning())
+		Terminate();
 }
 
 
 bool Process::IsRunning() const
 {
-	return _pthread != 0;
+	return pid != 0;
 }
-
-
-bool Process::Run(const std::string &app)
-{
-	return false;
-	/*
-	if (pid != 0)
-		Terminate();
-	
-	
-	int fd[2];
-	int read_fd, write_fd;
-	pipe(fd);
-	read_fd = fd[0];
-	write_fd = fd[1];
-	pid = fork();
-
-	if (pid == 0)
-	{
-
-		close(read_fd);
-		dup2(write_fd,1);
-		close(write_fd);
-		execl("/bin/sh", "sh", "-c", app.c_str(), NULL);
-		exit(1);
-		return true;
-	}
-	
-	else
-	{
-		close(write_fd);
-		LOG("In Parent...");
-	}
-
-	return true;
-	*/
-}
-
-
-
-
 
 
 bool Process::Run(ProcFunc pfunc, void* arg)
 {
 	
-
-
-	if(pthread_create(&_pthread, NULL, (void*(*)(void*)) pfunc, arg) != 0 )
-	{
-		LOGerr("Could not create new pthread!");
-		return false;
-	}
-
-
-
-	return true;
-/*
 	if (pid != 0)
 		Terminate();
 	
@@ -111,15 +59,22 @@ bool Process::Run(ProcFunc pfunc, void* arg)
 	}
 
 	return true;	
-*/
 
 }
 
 int Process::Join()
 {
-	pthread_join(_pthread, nullptr);
-	_pthread = 0;
-	return 0;
+	int status;
+	
+	waitpid(pid, &status, 0);
+	
+	if(WIFEXITED(status))
+		return WEXITSTATUS(status);
+
+
+	pid = 0;
+
+	return -1;
 
 }
 
@@ -127,10 +82,6 @@ int Process::Join()
 void Process::Terminate()
 {	
 
-	pthread_kill(_pthread, 0);
-	_pthread = 0;
-
-/*
 	if(pid != 0)
 	{
 		LOG("Sent signal.");
@@ -140,7 +91,7 @@ void Process::Terminate()
 
 		pid = 0;
 	}
-*/
+
 }
 
 
@@ -169,12 +120,6 @@ Process::~Process()
 }
 
 
-
-
-bool Run(const std::string &app)
-{
-
-}
 
 
 
