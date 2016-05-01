@@ -17,14 +17,19 @@ namespace xchip { namespace utility {
 	
 class Process
 {
-
 public:
+	using ProcFunc = int(*)(void*);
 	Process();
+	~Process();
+	Process(const Process&) = delete;
+	const Process& operator=(const Process&) = delete;
+
 	void Run(const std::string &app);
+	void Run(ProcFunc pfunc, void* arg = nullptr);
 	void Stop();
 private:
 #if defined(__APPLE__) || defined(__linux__)
-	pid_t pid;
+	pid_t pid = 0;
 #endif
 
 };

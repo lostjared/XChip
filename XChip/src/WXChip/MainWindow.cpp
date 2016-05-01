@@ -10,6 +10,11 @@
 #include <WXChip/MainWindow.h>
 
 
+
+extern int start_emulator(void*);
+
+
+
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(MainWindow::ID_LoadRom, MainWindow::OnLoadRom)
 EVT_MENU(wxID_EXIT, MainWindow::OnExit)
@@ -83,11 +88,7 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 void MainWindow::StartEmulator(std::string& arg)
 {
 	StopEmulator();
-
-	arg.insert(0, std::string("./XChipTest \""));
-	arg.insert(arg.size()-1, std::string("\""));
-	_process.Run(arg);
-
+	_process.Run(start_emulator, (void*)arg.c_str());
 	_emuProcOn = true;
 }
 

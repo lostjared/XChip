@@ -1,17 +1,18 @@
+
 #include <csignal>
 #include <iostream>
+#include <string>
 
 #include <XChip/Core/Emulator.h> 
 #include <XChip/Media/SDLMedia.h>
 #include <XChip/Utility/Memory.h>
 
 
-
 static xchip::Emulator emu;
 
-
-int main(int argc, char **argv)
+int start_emulator(void* arg)
 {
+	
 	using xchip::Emulator;
 	using xchip::SdlRender;
 	using xchip::SdlInput;
@@ -20,17 +21,8 @@ int main(int argc, char **argv)
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
 	using xchip::utility::make_unique;
-
-
-
-
-	if (argc < 2) {
-		std::cout << "No game to load..." << std::endl;
-		return EXIT_SUCCESS;
-	}
-
-
-
+	
+	auto rom = static_cast<const char*>(arg);
 
 	UniqueRender render;
 	UniqueInput input;
@@ -51,11 +43,11 @@ int main(int argc, char **argv)
 	if (!emu.Initialize(std::move(render), std::move(input), std::move(sound)))
 		return EXIT_FAILURE;
 
-	if (!emu.LoadRom(argv[1]))
+	if (!emu.LoadRom(rom))
 		return EXIT_FAILURE;
 
 
-
+	
 	if(signal(SIGINT, [](int signum)
 	{
 		std::cout << "Received signal: " << signum << std::endl;
@@ -67,6 +59,7 @@ int main(int argc, char **argv)
 		std::cout << "Could not install signal handler!" << std::endl;
 		return EXIT_FAILURE;
 	}
+
 
 
 	while (!emu.GetExitFlag())
@@ -82,23 +75,6 @@ int main(int argc, char **argv)
 
 
 
-
-
 	return EXIT_SUCCESS;
 
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
