@@ -7,7 +7,9 @@
 #if defined(__APPLE__) || defined(__linux__)
 #include <signal.h>
 #include <unistd.h>
-#include <sys/types.h>
+//#include <sys/types.h>
+//#include <sys/wait.h>
+#include <pthread.h>
 #include <cstring>
 
 #elif defined(_WIN32)
@@ -31,18 +33,20 @@ public:
 	Process(const Process&) = delete;
 	const Process& operator=(const Process&) = delete;
 
-	void Run(const std::string &app);
-	void Run(ProcFunc pfunc, void* arg = nullptr);
-	void Stop();
+	bool IsRunning() const;
+
+	bool Run(const std::string &app);
+	bool Run(ProcFunc pfunc, void* arg = nullptr);
+	int Join();
+	void Terminate();
 private:
 
 #if defined(__APPLE__) || defined(__linux__)
-	pid_t pid = 0;
-
+	//pid_t pid = 0;
+	pthread_t _pthread = 0;
 
 #elif defined(_WIN32)
 
-	bool _isRunning;
 	unsigned int _threadId;
 	HANDLE _threadHandle;
 

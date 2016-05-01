@@ -100,6 +100,7 @@ void MainWindow::StopEmulator()
 {
 	if(_process.IsRunning())
 	{
+		std::cout << "Stopping the emulator!" << std::endl;
 		g_emulator.SetExitFlag(true);
 		_process.Join();
 	}

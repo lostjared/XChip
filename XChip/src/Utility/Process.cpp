@@ -4,7 +4,8 @@
 
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Process.h>
-
+#include <XChip/Utility/ScopeExit.h>
+#include <XChip/Utility/Timer.h>
 
 namespace xchip { namespace utility { 
 	
@@ -18,12 +19,20 @@ Process::Process()
 
 Process::~Process()
 {
-	if (pid != 0)
-		Terminate();
+
 }
+
+
+bool Process::IsRunning() const
+{
+	return _pthread != 0;
+}
+
 
 bool Process::Run(const std::string &app)
 {
+	return false;
+	/*
 	if (pid != 0)
 		Terminate();
 	
@@ -43,7 +52,7 @@ bool Process::Run(const std::string &app)
 		close(write_fd);
 		execl("/bin/sh", "sh", "-c", app.c_str(), NULL);
 		exit(1);
-		return;
+		return true;
 	}
 	
 	else
@@ -52,6 +61,8 @@ bool Process::Run(const std::string &app)
 		LOG("In Parent...");
 	}
 
+	return true;
+	*/
 }
 
 
@@ -61,6 +72,19 @@ bool Process::Run(const std::string &app)
 
 bool Process::Run(ProcFunc pfunc, void* arg)
 {
+	
+
+
+	if(pthread_create(&_pthread, NULL, (void*(*)(void*)) pfunc, arg) != 0 )
+	{
+		LOGerr("Could not create new pthread!");
+		return false;
+	}
+
+
+
+	return true;
+/*
 	if (pid != 0)
 		Terminate();
 	
@@ -77,7 +101,7 @@ bool Process::Run(ProcFunc pfunc, void* arg)
 		dup2(write_fd,1);
 		close(write_fd);
 		exit(pfunc(arg));
-		return;
+		return true;
 	}
 
 	else
@@ -86,25 +110,37 @@ bool Process::Run(ProcFunc pfunc, void* arg)
 		LOG("In Parent...");
 	}
 
-	
+	return true;	
+*/
+
 }
 
+int Process::Join()
+{
+	pthread_join(_pthread, nullptr);
+	_pthread = 0;
+	return 0;
 
+}
 
 
 void Process::Terminate()
 {	
+
+	pthread_kill(_pthread, 0);
+	_pthread = 0;
+
+/*
 	if(pid != 0)
 	{
-		LOG("Sent signal.")
+		LOG("Sent signal.");
 
-		int rt_val = kill(pid, SIGINT);
-		
-		if(rt_val == ESRCH)
-			LOG("Process not fuond");
+		if(kill(pid, SIGINT) == ESRCH )
+			LOG("Process not found");
 
 		pid = 0;
 	}
+*/
 }
 
 
