@@ -21,7 +21,7 @@ private:
 
 
 	bool _emuProcOn = false;
-	xchip::Process _process;
+	xchip::utility::Process _process;
 	wxDECLARE_EVENT_TABLE();
 };
 

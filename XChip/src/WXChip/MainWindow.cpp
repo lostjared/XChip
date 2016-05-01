@@ -46,6 +46,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
 MainWindow::~MainWindow()
 {
+	StopEmulator();
 	Destroy();
 	std::cout << "Destroying MainWindow..." << std::endl;
 }
@@ -53,7 +54,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::OnExit(wxCommandEvent&)
 {
-	StopEmulator();
 	Close( true );
 }
 
@@ -86,10 +86,11 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 void MainWindow::StartEmulator(std::string& arg)
 {
 	StopEmulator();
+
 	arg.insert(0, std::string("./XChipTest \""));
 	arg.insert(arg.size()-1, std::string("\""));
-
 	_process.Run(arg);
+
 	_emuProcOn = true;
 }
 

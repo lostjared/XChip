@@ -5,32 +5,48 @@
 #include <string>
 
 #if defined(__APPLE__) || defined(__linux__)
-#include<signal.h>
-#include<unistd.h>
-#include<sys/types.h>
-#include<cstring>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <cstring>
 #endif
 
 
-namespace xchip {
+namespace xchip { namespace utility {
 	
 	
-	class Process
-	{
-	public:
-		Process();
-		void Run(const std::string &app);
-		void Stop();
-	private:
+class Process
+{
+
+public:
+	Process();
+	void Run(const std::string &app);
+	void Stop();
+private:
 #if defined(__APPLE__) || defined(__linux__)
-		pid_t pid;
+	pid_t pid;
 #endif
-	};
+
+};
 	
 	
 	
 	
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}}
 
 
 
