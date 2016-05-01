@@ -4,6 +4,13 @@
 #include <iostream>
 #include <string>
 
+#if defined(__APPLE__) || defined(__linux__)
+#include<signal.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<cstring>
+#endif
+
 
 namespace xchip {
 	
