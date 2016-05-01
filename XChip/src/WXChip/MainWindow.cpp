@@ -53,6 +53,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::OnExit(wxCommandEvent&)
 {
+	StopEmulator();
 	Close( true );
 }
 
@@ -62,8 +63,7 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 {
 	using xchip::utility::make_unique;
 
-	if(_emuProcOn)
-		StopEmulator();
+	StopEmulator();
 
 
 	wxFileDialog openDialog(this, "","","", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -85,6 +85,7 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 
 void MainWindow::StartEmulator(std::string& arg)
 {
+	StopEmulator();
 	arg.insert(0, std::string("./XChipTest \""));
 	arg.insert(arg.size()-1, std::string("\""));
 
@@ -95,6 +96,9 @@ void MainWindow::StartEmulator(std::string& arg)
 
 void MainWindow::StopEmulator()
 {
-	_process.Stop();
-	_emuProcOn = false;
+	if(_emuProcOn)
+	{
+		_process.Stop();
+		_emuProcOn = false;
+	}
 }
