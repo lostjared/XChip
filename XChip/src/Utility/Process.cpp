@@ -117,7 +117,11 @@ void Process::Stop()
 
 
 
+
+
+
 #if defined(_WIN32)
+
 
 
 Process::Process()
@@ -126,11 +130,13 @@ Process::Process()
 }
 
 
+
 Process::~Process()
 {
 	if(_isRunning)
 		Stop();
 }
+
 
 
 void Process::Run(const std::string &app)
@@ -146,8 +152,14 @@ void Process::Run(ProcFunc pfunc, void* arg)
 		Stop();
 
 	
-	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)pfunc, arg, 0, _threadId);
-	//CreateThread(0, 0, (LPTHREAD_START_ROUTINE)pfunc, arg, 0, _threadId);
+	_threadHandle = (HANDLE) _beginthreadex(nullptr, 0, (_beginthreadex_proc_type)pfunc, arg, 0, &_threadId);
+	
+	if (_threadHandle == nullptr)
+	{
+		LOGerr("Could not create Process!");
+		return;
+	}
+
 	_isRunning = true;
 }
 
@@ -155,9 +167,9 @@ void Process::Run(ProcFunc pfunc, void* arg)
 
 void Process::Stop()
 {
-	
-	if (TerminateThread(_threadHandle, EXIT_FAILURE) == 0)
-		LOG("Could not terminate Emulator process...");
+
+	if (TerminateThread(_threadHandle, EXIT_SUCCESS) == 0)
+		LOGerr("Could not terminate Emulator process...");
 
 	_isRunning = false;
 }

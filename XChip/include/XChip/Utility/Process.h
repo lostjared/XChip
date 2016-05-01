@@ -12,6 +12,7 @@
 
 #elif defined(_WIN32)
 #include <Windows.h>
+#include <process.h>
 
 #endif
 
@@ -23,6 +24,8 @@ class Process
 {
 public:
 	using ProcFunc = int(*)(void*);
+
+
 	Process();
 	~Process();
 	Process(const Process&) = delete;
@@ -40,7 +43,7 @@ private:
 #elif defined(_WIN32)
 
 	bool _isRunning;
-	LPDWORD _threadId;
+	unsigned int _threadId;
 	HANDLE _threadHandle;
 
 

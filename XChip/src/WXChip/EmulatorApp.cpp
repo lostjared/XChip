@@ -8,7 +8,7 @@
 #include <XChip/Utility/Memory.h>
 
 
-static xchip::Emulator emu;
+static xchip::Emulator* s_emuPtr = nullptr;
 
 int start_emulator(void* arg)
 {
@@ -23,6 +23,9 @@ int start_emulator(void* arg)
 	using xchip::utility::make_unique;
 	
 	auto rom = static_cast<const char*>(arg);
+
+	xchip::Emulator emu;
+	s_emuPtr = &emu;
 
 	UniqueRender render;
 	UniqueInput input;
@@ -52,7 +55,7 @@ int start_emulator(void* arg)
 	{
 		std::cout << "Received signal: " << signum << std::endl;
 		std::cout << "Closing Application!" << std::endl;
-		emu.SetExitFlag(true);
+		s_emuPtr->SetExitFlag(true);
 
 	}) == SIG_ERR )
 	{
