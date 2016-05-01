@@ -20,7 +20,6 @@ private:
 	void StopEmulator();
 
 	std::string _romPath;
-	bool _emuProcOn = false;
 	xchip::utility::Process _process;
 	wxDECLARE_EVENT_TABLE();
 };

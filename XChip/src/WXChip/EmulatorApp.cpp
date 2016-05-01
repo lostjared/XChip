@@ -1,4 +1,3 @@
-
 #include <csignal>
 #include <iostream>
 #include <string>
@@ -6,9 +5,11 @@
 #include <XChip/Core/Emulator.h> 
 #include <XChip/Media/SDLMedia.h>
 #include <XChip/Utility/Memory.h>
+#include <XChip/Utility/ScopeExit.h>
+#include <XChip/Utility/Process.h>
 
 
-static xchip::Emulator* s_emuPtr = nullptr;
+xchip::Emulator g_emulator;
 
 int start_emulator(void* arg)
 {
@@ -21,11 +22,19 @@ int start_emulator(void* arg)
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
 	using xchip::utility::make_unique;
-	
+	using xchip::utility::Process;
+
+
 	auto rom = static_cast<const char*>(arg);
 
-	xchip::Emulator emu;
-	s_emuPtr = &emu;
+	const auto cleanup = xchip::utility::make_scope_exit([]() noexcept
+	{
+		g_emulator.Dispose();
+	});
+
+
+	if (g_emulator.IsInitialized())
+		g_emulator.Dispose();
 
 	UniqueRender render;
 	UniqueInput input;
@@ -42,11 +51,11 @@ int start_emulator(void* arg)
 		return EXIT_FAILURE;
 	}
 
-	
-	if (!emu.Initialize(std::move(render), std::move(input), std::move(sound)))
+
+	if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
 		return EXIT_FAILURE;
 
-	if (!emu.LoadRom(rom))
+	if (!g_emulator.LoadRom(rom))
 		return EXIT_FAILURE;
 
 
@@ -55,7 +64,7 @@ int start_emulator(void* arg)
 	{
 		std::cout << "Received signal: " << signum << std::endl;
 		std::cout << "Closing Application!" << std::endl;
-		s_emuPtr->SetExitFlag(true);
+		g_emulator.SetExitFlag(true);
 
 	}) == SIG_ERR )
 	{
@@ -64,20 +73,18 @@ int start_emulator(void* arg)
 	}
 
 
-
-	while (!emu.GetExitFlag())
+	while (!g_emulator.GetExitFlag())
 	{
-		emu.UpdateSystems(); 
-		emu.HaltForNextFlag();		
-		if (emu.GetInstrFlag()) 			
-			emu.ExecuteInstr();
-		if (emu.GetDrawFlag())
-			emu.Draw();
+		g_emulator.UpdateSystems(); 
+		g_emulator.HaltForNextFlag();		
+		if (g_emulator.GetInstrFlag()) 			
+			g_emulator.ExecuteInstr();
+		if (g_emulator.GetDrawFlag())
+			g_emulator.Draw();
 
 	}
 
 
-
 	return EXIT_SUCCESS;
-
+	
 }

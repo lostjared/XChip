@@ -6,11 +6,13 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <XChip/Core/Emulator.h>
+#include <XChip/Media/SDLMedia.h>
 #include <XChip/Utility/Memory.h>
 #include <WXChip/MainWindow.h>
 
 
-
+extern xchip::Emulator g_emulator;
 extern int start_emulator(void*);
 
 
@@ -68,6 +70,8 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 {
 	using xchip::utility::make_unique;
 
+	StopEmulator(); // testing
+
 	wxFileDialog openDialog(this, "","","", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	// the user didn't select any file ?
@@ -89,15 +93,14 @@ void MainWindow::StartEmulator()
 {
 	StopEmulator();
 	_process.Run(start_emulator, (void*)_romPath.c_str());
-	_emuProcOn = true;
 }
 
 
 void MainWindow::StopEmulator()
 {
-	if(_emuProcOn)
+	if(_process.IsRunning())
 	{
-		_process.Stop();
-		_emuProcOn = false;
+		g_emulator.SetExitFlag(true);
+		_process.Join();
 	}
 }

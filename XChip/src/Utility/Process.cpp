@@ -1,12 +1,12 @@
+#include <csignal>
 #include <string>
-#include <sstream>
+#include <algorithm>
 
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Process.h>
 
 
 namespace xchip { namespace utility { 
-
 	
 #if defined(__APPLE__) || defined(__linux__)
 	
@@ -18,14 +18,14 @@ Process::Process()
 
 Process::~Process()
 {
-	if(pid != 0)
-		Stop();
+	if (pid != 0)
+		Terminate();
 }
 
-void Process::Run(const std::string &app)
+bool Process::Run(const std::string &app)
 {
-	if(pid != 0)
-		Stop();
+	if (pid != 0)
+		Terminate();
 	
 	
 	int fd[2];
@@ -59,10 +59,10 @@ void Process::Run(const std::string &app)
 
 
 
-void Process::Run(ProcFunc pfunc, void* arg)
+bool Process::Run(ProcFunc pfunc, void* arg)
 {
-	if(pid != 0)
-		Stop();	
+	if (pid != 0)
+		Terminate();
 	
 	int fd[2];
 	int read_fd, write_fd;
@@ -92,7 +92,7 @@ void Process::Run(ProcFunc pfunc, void* arg)
 
 
 
-void Process::Stop()
+void Process::Terminate()
 {	
 	if(pid != 0)
 	{
@@ -115,11 +115,6 @@ void Process::Stop()
 
 
 
-
-
-
-
-
 #if defined(_WIN32)
 
 
@@ -133,45 +128,69 @@ Process::Process()
 
 Process::~Process()
 {
-	if(_isRunning)
-		Stop();
+	if (_threadHandle)
+		Terminate();
 }
 
 
 
-void Process::Run(const std::string &app)
+
+bool Run(const std::string &app)
 {
 
 }
 
 
 
-void Process::Run(ProcFunc pfunc, void* arg)
+bool Process::Run(ProcFunc pfunc, void* arg)
 {
-	if (_isRunning)
-		Stop();
+	if (_threadHandle) {
+		LOGerr("Previous process isn't finished yet!");
+		return false;
+	}
 
-	
 	_threadHandle = (HANDLE) _beginthreadex(nullptr, 0, (_beginthreadex_proc_type)pfunc, arg, 0, &_threadId);
 	
 	if (_threadHandle == nullptr)
 	{
 		LOGerr("Could not create Process!");
-		return;
+		return false;
 	}
 
-	_isRunning = true;
+	return true;
+}
+
+
+int Process::Join()
+{
+	DWORD pfuncReturnCode = 0;
+
+	WaitForSingleObject((HANDLE)_threadHandle, INFINITE);
+	GetExitCodeThread(_threadHandle, &pfuncReturnCode);
+	CloseHandle(_threadHandle);
+	_threadHandle = nullptr;
+
+	return pfuncReturnCode;
+}
+
+
+void Process::Terminate()
+{
+	if (TerminateThread(_threadHandle, 0) == 0)
+		LOGerr("Could not terminate Emulator process...");
+
+	CloseHandle(_threadHandle);
+	_threadHandle = nullptr;
 }
 
 
 
-void Process::Stop()
+bool Process::IsRunning() const
 {
+	if (_threadHandle)
+		return GetExitCodeThread(_threadHandle, nullptr) == STILL_ACTIVE;
 
-	if (TerminateThread(_threadHandle, EXIT_SUCCESS) == 0)
-		LOGerr("Could not terminate Emulator process...");
-
-	_isRunning = false;
+	return false;
 }
 
 

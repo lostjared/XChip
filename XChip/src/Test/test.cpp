@@ -7,7 +7,7 @@
 
 
 
-static xchip::Emulator emu;
+static xchip::Emulator g_emulator;
 
 
 int main(int argc, char **argv)
@@ -48,10 +48,10 @@ int main(int argc, char **argv)
 	}
 
 	
-	if (!emu.Initialize(std::move(render), std::move(input), std::move(sound)))
+	if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
 		return EXIT_FAILURE;
 
-	if (!emu.LoadRom(argv[1]))
+	if (!g_emulator.LoadRom(argv[1]))
 		return EXIT_FAILURE;
 
 
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 	{
 		std::cout << "Received signal: " << signum << std::endl;
 		std::cout << "Closing Application!" << std::endl;
-		emu.SetExitFlag(true);
+		g_emulator.SetExitFlag(true);
 
 	}) == SIG_ERR )
 	{
@@ -69,14 +69,14 @@ int main(int argc, char **argv)
 	}
 
 
-	while (!emu.GetExitFlag())
+	while (!g_emulator.GetExitFlag())
 	{
-		emu.UpdateSystems(); 
-		emu.HaltForNextFlag();		
-		if (emu.GetInstrFlag()) 			
-			emu.ExecuteInstr();
-		if (emu.GetDrawFlag())
-			emu.Draw();
+		g_emulator.UpdateSystems(); 
+		g_emulator.HaltForNextFlag();		
+		if (g_emulator.GetInstrFlag()) 			
+			g_emulator.ExecuteInstr();
+		if (g_emulator.GetDrawFlag())
+			g_emulator.Draw();
 
 	}
 

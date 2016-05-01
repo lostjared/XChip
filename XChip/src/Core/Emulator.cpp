@@ -43,6 +43,8 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	if (_initialized) 
 		this->Dispose();
 
+	
+
 	const auto scope = utility::make_scope_exit([this]() noexcept 
 	{
 		if (!this->_initialized)
@@ -71,7 +73,7 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	}
 
 
-	_exitf = false;
+	CleanFlags();
 	_initialized = true;
 	return true;
 }
@@ -362,9 +364,9 @@ bool Emulator::InitInput()
 
 	input->SetEscapeKeyCallback(&_exitf, [](const void* exitf) { *(bool*)exitf = true; });
 	input->SetResetKeyCallback(this, [](const void* _this) { ((Emulator*)_this)->Reset(); });
-	input->SetWaitKeyCallback(this, [](const void* emu)
+	input->SetWaitKeyCallback(this, [](const void* g_emulator)
 	{
-		auto* const emulator = (Emulator*) emu;
+		auto* const emulator = (Emulator*) g_emulator;
 		do
 		{
 			emulator->UpdateSystems();
