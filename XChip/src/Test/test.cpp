@@ -59,8 +59,11 @@ int main(int argc, char **argv)
 	if(signal(SIGINT, [](int signum)
 	{
 		std::cout << "Received signal: " << signum << std::endl;
-		std::cout << "Closing Application!" << std::endl;
-		emu.SetExitFlag(true);
+		if( signum >= 1 )
+		{	std::cout << "Closing Application!" << std::endl;
+			emu.SetExitFlag(true);
+		}
+
 	}) == SIG_ERR )
 	{
 		std::cout << "Could not install signal handler!" << std::endl;

@@ -59,11 +59,15 @@ void Process::Stop()
 	
 	if(pid != 0)
 	{
-		std::cout << "Sent kill signal.\n";
-		int rt_val = kill(pid, SIGINT);
+		int rt_val = kill(pid, 0);
 		
-		if(rt_val == ESRCH) {
+		if(rt_val == ESRCH)
 			std::cout << "Process not fuond.\n";
+
+		else 
+		{
+			std::cout << "Sent kill signal.\n";
+			kill(pid, SIGINT);
 		}
 		
 		pid = 0;
