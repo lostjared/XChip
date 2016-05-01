@@ -75,20 +75,20 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 		return;
 
 
-	std::string filePath { openDialog.GetPath().c_str() };
+	_romPath = openDialog.GetPath().c_str();
 
 	
-	std::cout << "Loading : " << filePath << std::endl;
+	std::cout << "Loading : " << _romPath << std::endl;
 
-	StartEmulator(filePath);
+	StartEmulator();
 	
 }
 
 
-void MainWindow::StartEmulator(std::string& arg)
+void MainWindow::StartEmulator()
 {
 	StopEmulator();
-	_process.Run(start_emulator, (void*)arg.c_str());
+	_process.Run(start_emulator, (void*)_romPath.c_str());
 	_emuProcOn = true;
 }
 

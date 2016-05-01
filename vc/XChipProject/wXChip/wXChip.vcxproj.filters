@@ -21,6 +21,9 @@
     <ClCompile Include="..\..\..\XChip\src\WXChip\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\XChip\src\WXChip\EmulatorApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\wXChip\dirent.h">

@@ -9,6 +9,10 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <cstring>
+
+#elif defined(_WIN32)
+#include <Windows.h>
+
 #endif
 
 
@@ -28,8 +32,18 @@ public:
 	void Run(ProcFunc pfunc, void* arg = nullptr);
 	void Stop();
 private:
+
 #if defined(__APPLE__) || defined(__linux__)
 	pid_t pid = 0;
+
+
+#elif defined(_WIN32)
+
+	bool _isRunning;
+	LPDWORD _threadId;
+	HANDLE _threadHandle;
+
+
 #endif
 
 };

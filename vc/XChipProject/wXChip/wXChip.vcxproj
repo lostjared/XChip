@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\XChip\src\WXChip\EmulatorApp.cpp" />
     <ClCompile Include="..\..\..\XChip\src\WXChip\Main.cpp" />
     <ClCompile Include="..\..\..\XChip\src\wXChip\MainWindow.cpp" />
   </ItemGroup>

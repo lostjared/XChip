@@ -16,10 +16,10 @@ public:
 private:
 	void OnExit(wxCommandEvent& ev);
 	void OnLoadRom(wxCommandEvent& ev);
-	void StartEmulator(std::string& arg);
+	void StartEmulator();
 	void StopEmulator();
 
-
+	std::string _romPath;
 	bool _emuProcOn = false;
 	xchip::utility::Process _process;
 	wxDECLARE_EVENT_TABLE();

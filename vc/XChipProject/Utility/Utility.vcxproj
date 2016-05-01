@@ -24,6 +24,7 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\BaseTraits.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Log.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Memory.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Process.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\ScopeExit.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\StdintDef.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Timer.h" />
@@ -31,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\Utility\Alloc.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\Utility\Process.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1C423C1C-5AE6-43A5-9B82-90257927A0ED}</ProjectGuid>

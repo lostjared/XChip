@@ -1,6 +1,9 @@
-#include <XChip/Utility/Process.h>
 #include <string>
 #include <sstream>
+
+#include <XChip/Utility/Log.h>
+#include <XChip/Utility/Process.h>
+
 
 namespace xchip { namespace utility { 
 
@@ -46,7 +49,7 @@ void Process::Run(const std::string &app)
 	else
 	{
 		close(write_fd);
-		std::cout << "In Parent..\n";
+		LOG("In Parent...");
 	}
 
 }
@@ -80,7 +83,7 @@ void Process::Run(ProcFunc pfunc, void* arg)
 	else
 	{
 		close(write_fd);
-		std::cout << "In Parent..\n";
+		LOG("In Parent...");
 	}
 
 	
@@ -93,12 +96,12 @@ void Process::Stop()
 {	
 	if(pid != 0)
 	{
-		std::cout << "Sent signal.\n";
+		LOG("Sent signal.")
 
 		int rt_val = kill(pid, SIGINT);
 		
 		if(rt_val == ESRCH)
-			std::cout << "Process not fuond.\n";
+			LOG("Process not fuond");
 
 		pid = 0;
 	}
@@ -109,6 +112,59 @@ void Process::Stop()
 
 
 #endif // __APPLE__ || __linux__
+
+
+
+
+
+#if defined(_WIN32)
+
+
+Process::Process()
+{
+
+}
+
+
+Process::~Process()
+{
+	if(_isRunning)
+		Stop();
+}
+
+
+void Process::Run(const std::string &app)
+{
+
+}
+
+
+
+void Process::Run(ProcFunc pfunc, void* arg)
+{
+	if (_isRunning)
+		Stop();
+
+	
+	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)pfunc, arg, 0, _threadId);
+	//CreateThread(0, 0, (LPTHREAD_START_ROUTINE)pfunc, arg, 0, _threadId);
+	_isRunning = true;
+}
+
+
+
+void Process::Stop()
+{
+	
+	if (TerminateThread(_threadHandle, EXIT_FAILURE) == 0)
+		LOG("Could not terminate Emulator process...");
+
+	_isRunning = false;
+}
+
+
+
+#endif // _WIN32
 
 
 
