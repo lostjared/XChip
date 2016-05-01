@@ -63,9 +63,6 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 {
 	using xchip::utility::make_unique;
 
-	StopEmulator();
-
-
 	wxFileDialog openDialog(this, "","","", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	// the user didn't select any file ?
