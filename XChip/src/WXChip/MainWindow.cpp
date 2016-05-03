@@ -92,6 +92,7 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 void MainWindow::StartEmulator()
 {
 	StopEmulator();
+	// here should be Run(romPath)
 	_process.Run(start_emulator, (void*)_romPath.c_str());
 }
 
@@ -100,6 +101,7 @@ void MainWindow::StopEmulator()
 {
 	if(_process.IsRunning())
 	{
+		// should be _process.Terminate();
 		std::cout << "Stopping the emulator!" << std::endl;
 		g_emulator.SetExitFlag(true);
 		_process.Join();
