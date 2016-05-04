@@ -39,6 +39,7 @@ public:
 	bool IsRunning() const;
 
 	bool Run(ProcFunc pfunc, void* arg = nullptr);
+	bool Run(const std::string &app);
 	int Join();
 	void Terminate();
 private:
