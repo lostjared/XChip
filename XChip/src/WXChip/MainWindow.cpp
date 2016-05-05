@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include <stdexcept>
-
+#include <sstream>
 #include <XChip/Core/Emulator.h>
 #include <XChip/Media/SDLMedia.h>
 #include <XChip/Utility/Memory.h>
@@ -78,22 +78,27 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 	if(openDialog.ShowModal() == wxID_CANCEL)
 		return;
 
-
 	_romPath = openDialog.GetPath().c_str();
-
-	
 	std::cout << "Loading : " << _romPath << std::endl;
-
-	StartEmulator();
+	StartEmulator(_romPath);
 	
 }
 
 
-void MainWindow::StartEmulator()
+void MainWindow::StartEmulator(const std::string &rom)
 {
 	StopEmulator();
-	// here should be Run(romPath)
-	_process.Run(start_emulator, (void*)_romPath.c_str());
+	char path[256];
+	char *rt;
+#ifdef _WIN32
+	rt = _getcwd(path, 255);
+#elif defined(__APPLE__) || defined(__linux__)
+	rt = getcwd(path, 255);
+#endif
+	std::ostringstream stream;
+	stream << "\"" << rt << "/" << "XChip\" \"" << rom << "\"";
+	std::cout << stream.str() << "\n";
+	_process.Run(stream.str());
 }
 
 
@@ -101,9 +106,6 @@ void MainWindow::StopEmulator()
 {
 	if(_process.IsRunning())
 	{
-		// should be _process.Terminate();
-		std::cout << "Stopping the emulator!" << std::endl;
-		g_emulator.SetExitFlag(true);
-		_process.Join();
+		_process.Terminate();
 	}
 }
