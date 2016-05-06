@@ -1,14 +1,35 @@
 #include <csignal>
+#include <utility>
 #include <iostream>
 
 #include <XChip/Core/Emulator.h> 
 #include <XChip/Media/SDLMedia.h>
 #include <XChip/Utility/Memory.h>
-
+#include <XChip/Utility/Color.h>
 
 
 static xchip::Emulator g_emulator;
 
+
+struct EmulatorConfig
+{
+/*
+	-RES  WidthxHeight ex: -RES 200x300
+	-CFQ  Cpu Frequency in hz ex: -CFQ 600
+	-SFQ  Sound Tone in hz ex: -SFQ 400
+	-COL  Color in RGB ex: -COL 100x200x400
+	-FPS  Frame Rate ex: -FPS 30
+*/
+	std::unique_ptr<xchip::utility::Color> color = nullptr;
+	std::unique_ptr<std::pair<int, int>> res = nullptr;
+	unsigned cfq = 0;
+	float sfq = 0;
+	unsigned fps = 0;
+
+};
+
+
+EmulatorConfig* create_configuration(const std::vector<std::string>& arguments);
 
 int main(int argc, char **argv)
 {
@@ -21,7 +42,7 @@ int main(int argc, char **argv)
 	using xchip::UniqueSound;
 	using xchip::utility::make_unique;
 
-
+	
 
 
 	if (argc < 2) {
@@ -29,7 +50,7 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-
+	const auto* const emuconfig = create_configuration(std::vector<std::string>(argv, argv+argc));
 
 
 	UniqueRender render;
@@ -100,5 +121,14 @@ int main(int argc, char **argv)
 
 
 
+EmulatorConfig* create_configuration(const std::vector<std::string>& arguments)
+{
+	using xchip::utility::make_unique;
 
+	std::cout << "arguments to create_configuration: " << std::endl;
+	for( auto& it : arguments)
+		std::cout << it << std::endl;
+
+	return nullptr;
+}
 
