@@ -20,7 +20,7 @@ private:
 
 
 
-
+wxDECLARE_APP(WXChip);
 
 
 

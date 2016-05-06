@@ -1,19 +1,17 @@
 #include <csignal>
 #include <iostream>
-#include <string>
 
 #include <XChip/Core/Emulator.h> 
 #include <XChip/Media/SDLMedia.h>
 #include <XChip/Utility/Memory.h>
-#include <XChip/Utility/ScopeExit.h>
-#include <XChip/Utility/Process.h>
 
 
-xchip::Emulator g_emulator;
 
-int start_emulator(void* arg)
+static xchip::Emulator g_emulator;
+
+
+int main(int argc, char **argv)
 {
-	
 	using xchip::Emulator;
 	using xchip::SdlRender;
 	using xchip::SdlInput;
@@ -22,19 +20,17 @@ int start_emulator(void* arg)
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
 	using xchip::utility::make_unique;
-	using xchip::utility::Process;
 
 
-	auto rom = static_cast<const char*>(arg);
-
-	const auto cleanup = xchip::utility::make_scope_exit([]() noexcept
-	{
-		g_emulator.Dispose();
-	});
 
 
-	if (g_emulator.IsInitialized())
-		g_emulator.Dispose();
+	if (argc < 2) {
+		std::cout << "No game to load..." << std::endl;
+		return EXIT_SUCCESS;
+	}
+
+
+
 
 	UniqueRender render;
 	UniqueInput input;
@@ -51,15 +47,15 @@ int start_emulator(void* arg)
 		return EXIT_FAILURE;
 	}
 
-
+	
 	if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
 		return EXIT_FAILURE;
 
-	if (!g_emulator.LoadRom(rom))
+	if (!g_emulator.LoadRom(argv[1]))
 		return EXIT_FAILURE;
 
 
-	
+
 	if(signal(SIGINT, [](int signum)
 	{
 		std::cout << "Received signal: " << signum << std::endl;
@@ -85,6 +81,24 @@ int start_emulator(void* arg)
 	}
 
 
+
+
+
 	return EXIT_SUCCESS;
-	
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

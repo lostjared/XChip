@@ -3,18 +3,13 @@
 #include <wx/wx.h>
 #endif
 
+
 #include <iostream>
 #include <stdexcept>
-#include <sstream>
-#include <XChip/Core/Emulator.h>
-#include <XChip/Media/SDLMedia.h>
+
 #include <XChip/Utility/Memory.h>
+#include <WXChip/Main.h>
 #include <WXChip/MainWindow.h>
-
-
-extern xchip::Emulator g_emulator;
-extern int start_emulator(void*);
-
 
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
@@ -41,13 +36,8 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	if (!menuBar->Append(menuFile.get(), "&File"))
 		throw std::runtime_error("could not append a menu into wxMenuBar");
 
-
-
 	menuFile.release();
-	SetMenuBar(menuBar.release());
-
-	
-	
+	SetMenuBar(menuBar.release());	
 }
 
 
@@ -88,17 +78,22 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 void MainWindow::StartEmulator(const std::string &rom)
 {
 	StopEmulator();
+
 	char path[256];
-	char *rt;
+	char *cwd;
 #ifdef _WIN32
-	rt = _getcwd(path, 255);
+	cwd = _getcwd(path, 255);
 #elif defined(__APPLE__) || defined(__linux__)
-	rt = getcwd(path, 255);
+	cwd = getcwd(path, 255);
 #endif
-	std::ostringstream stream;
-	stream << "\"" << rt << "/" << "XChip\" \"" << rom << "\"";
-	std::cout << stream.str() << "\n";
-	_process.Run(stream.str());
+	
+	std::string emuApp(cwd);	
+ 	emuApp += "/bin/";
+	emuApp += "Emulator \"";
+	emuApp += rom + "\"";
+
+
+	_process.Run(emuApp);
 }
 
 
