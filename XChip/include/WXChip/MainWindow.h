@@ -16,7 +16,7 @@ public:
 private:
 	void OnExit(wxCommandEvent& ev);
 	void OnLoadRom(wxCommandEvent& ev);
-	void StartEmulator();
+	void StartEmulator(const std::string &path);
 	void StopEmulator();
 
 	std::string _romPath;
