@@ -29,7 +29,7 @@ struct EmulatorConfig
 };
 
 
-EmulatorConfig* create_configuration(const std::vector<std::string>& arguments);
+std::unique_ptr<EmulatorConfig> create_configuration(const std::vector<std::string>& arguments);
 
 int main(int argc, char **argv)
 {
@@ -49,8 +49,6 @@ int main(int argc, char **argv)
 		std::cout << "No game to load..." << std::endl;
 		return EXIT_SUCCESS;
 	}
-
-	const auto* const emuconfig = create_configuration(std::vector<std::string>(argv, argv+argc));
 
 
 	UniqueRender render;
@@ -90,6 +88,22 @@ int main(int argc, char **argv)
 	}
 
 
+
+
+
+	if( argc >= 3 )
+	{
+		const auto emuConfig = create_configuration(std::vector<std::string>(argv, argv+argc));
+		
+		if( emuConfig )
+		{
+			// configure 
+
+		}
+	}
+
+
+
 	while (!g_emulator.GetExitFlag())
 	{
 		g_emulator.UpdateSystems(); 
@@ -121,14 +135,17 @@ int main(int argc, char **argv)
 
 
 
-EmulatorConfig* create_configuration(const std::vector<std::string>& arguments)
+std::unique_ptr<EmulatorConfig> create_configuration(const std::vector<std::string>& arguments)
 {
 	using xchip::utility::make_unique;
+
+	auto emuConfig = make_unique<EmulatorConfig>();
 
 	std::cout << "arguments to create_configuration: " << std::endl;
 	for( auto& it : arguments)
 		std::cout << it << std::endl;
 
-	return nullptr;
+
+	return emuConfig;
 }
 
