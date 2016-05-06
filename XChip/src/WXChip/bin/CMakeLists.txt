@@ -1,5 +1,5 @@
 
-project(Emulator)
+project(EmuApp)
 FILE(GLOB_RECURSE SRC ./*.cpp)
 ADD_EXECUTABLE(${PROJECT_NAME} ${SRC})
 ADD_DEPENDENCIES(${PROJECT_NAME} Utility Core SDLMedia)

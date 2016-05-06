@@ -58,24 +58,23 @@ void MainWindow::OnExit(wxCommandEvent&)
 
 void MainWindow::OnLoadRom(wxCommandEvent&)
 {
-	using xchip::utility::make_unique;
-
-	StopEmulator(); // testing
+	StopEmulator();
 
 	wxFileDialog openDialog(this, "","","", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-
+	
 	// the user didn't select any file ?
 	if(openDialog.ShowModal() == wxID_CANCEL)
 		return;
 
 	_romPath = openDialog.GetPath().c_str();
-	std::cout << "Loading : " << _romPath << std::endl;
-	StartEmulator(_romPath);
+	std::cout << "Selected File: " << _romPath << std::endl;
+
+	StartEmulator();
 	
 }
 
 
-void MainWindow::StartEmulator(const std::string &rom)
+void MainWindow::StartEmulator()
 {
 	StopEmulator();
 
@@ -88,9 +87,8 @@ void MainWindow::StartEmulator(const std::string &rom)
 #endif
 	
 	std::string emuApp(cwd);	
- 	emuApp += "/bin/";
-	emuApp += "Emulator \"";
-	emuApp += rom + "\"";
+ 	emuApp += defaultEmuAppPath;
+	emuApp += " \"" + _romPath + "\"";
 
 
 	_process.Run(emuApp);
