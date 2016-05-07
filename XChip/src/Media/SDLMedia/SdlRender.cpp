@@ -142,6 +142,13 @@ bool SdlRender::SetResolution(const int w, const int h) noexcept
 {
 
 	_SDLRENDER_INITIALIZED_ASSERT_();
+	
+	if( w <= 0 || h <= 0 )
+	{
+		xchip::utility::LOGerr("SetResolution: w and h must be greater than 0.");
+		return false;
+	}
+
 
 	SDL_DisplayMode displayMode;
 
