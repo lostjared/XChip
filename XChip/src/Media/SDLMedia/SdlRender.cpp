@@ -136,6 +136,36 @@ bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
 	return true;
 }
 
+
+
+bool SdlRender::SetResolution(const int w, const int h) noexcept
+{
+
+	_SDLRENDER_INITIALIZED_ASSERT_();
+
+	SDL_DisplayMode displayMode;
+
+	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
+	{
+		xchip::utility::LOGerr(SDL_GetError());
+		return false;
+	}
+
+	displayMode.w = w;
+	displayMode.h = h;
+
+	if( SDL_SetWindowDisplayMode(_window, &displayMode) )
+	{
+		xchip::utility::LOGerr(SDL_GetError());
+		return false;
+	}
+
+	SDL_SetWindowSize(_window, w, h);
+
+	return true;
+}
+
+
 void SdlRender::DrawBuffer() noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();

@@ -16,11 +16,15 @@ public:
 	
 	virtual bool Initialize(const int w, const int h) noexcept = 0;
 	
+	virtual const uint32_t* GetBuffer() const noexcept = 0;
 	virtual utility::Color GetColorFilter() const noexcept = 0;
 	
+
 	virtual bool UpdateEvents() noexcept = 0;
 	virtual bool SetColorFilter(const utility::Color& color) noexcept = 0;
+	virtual bool SetResolution(const int w, const int h) noexcept = 0;
 	virtual void SetBuffer(const uint32_t* gfx) noexcept = 0;
+
 	virtual void DrawBuffer() noexcept = 0;
 	virtual void HideWindow() noexcept = 0;
 	virtual void ShowWindow() noexcept = 0;

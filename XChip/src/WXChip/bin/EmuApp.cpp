@@ -173,16 +173,18 @@ void configure_emulator(const std::vector<std::string>& arguments)
 void res_config(const std::string& arg)
 {
 	std::cout << "Setting Resolution... to: " << arg << std::endl;
-	auto separatorIndex = arg.find('x');
+	const auto separatorIndex = arg.find('x');
 	
-	auto wStr = arg.substr(0, separatorIndex);
-	auto hStr = arg.substr(separatorIndex+1, arg.size()); 
+	const auto wStr = arg.substr(0, separatorIndex);
+	const auto hStr = arg.substr(separatorIndex+1, arg.size()); 
 
 	try
 	{
-		auto w = std::stoul(wStr);
-		auto h = std::stoul(hStr);
-
+		const auto w = std::stoul(wStr);
+		const auto h = std::stoul(hStr);
+	
+		g_emulator.GetRender()->SetResolution(w, h);
+	
 		std::cout << "W: " << w << std::endl;
 		std::cout << "H: " << h << std::endl; 
 		std::cout << "Done." << std::endl;

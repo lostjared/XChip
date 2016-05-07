@@ -21,7 +21,11 @@ public:
 	void Dispose() noexcept override;
 	
 	bool IsInitialized() const noexcept override;
+	const uint32_t* GetBuffer() const noexcept override;
 	utility::Color GetColorFilter() const noexcept override;
+
+
+	bool SetResolution(const int w, const int h) noexcept override;
 	bool SetColorFilter(const utility::Color& color) noexcept override;
 	void SetBuffer(const uint32_t* gfx) noexcept override;
 	void DrawBuffer() noexcept override;
@@ -53,7 +57,20 @@ private:
 
 
 inline bool SdlRender::IsInitialized() const noexcept { return _initialized; }
+inline const uint32_t* SdlRender::GetBuffer() const noexcept { return _buffer; }
+
 inline void SdlRender::SetBuffer(const uint32_t* gfx) noexcept { _buffer = gfx; }
+
+
+
+
+
+
+
+
+
+
+
 
 }
 #endif
