@@ -172,23 +172,28 @@ void configure_emulator(const std::vector<std::string>& arguments)
 
 void res_config(const std::string& arg)
 {
-	std::cout << "Setting Resolution... to: " << arg << std::endl;
-	const auto separatorIndex = arg.find('x');
-	if(separatorIndex == std::string::npos)
-		throw std::invalid_argument("missing the \'x\' separator for widghtxheight");
-	
-	const auto wStr = arg.substr(0, separatorIndex);
-	const auto hStr = arg.substr(separatorIndex+1, arg.size()); 
 
 	try
 	{
+		std::cout << "Setting Resolution..." << std::endl;
+		const auto separatorIndex = arg.find('x');
+		
+		if(separatorIndex == std::string::npos)
+			throw std::invalid_argument("missing the \'x\' separator for widthxheight");
+	
+		const auto wStr = arg.substr(0, separatorIndex);
+		const auto hStr = arg.substr(separatorIndex+1, arg.size()); 
+
 		const auto w = std::stoul(wStr);
 		const auto h = std::stoul(hStr);
-	
-		g_emulator.GetRender()->SetResolution(w, h);
+
 	
 		std::cout << "W: " << w << std::endl;
 		std::cout << "H: " << h << std::endl; 
+
+		if(!g_emulator.GetRender()->SetResolution(w, h))
+			return;
+	
 		std::cout << "Done." << std::endl;
 
 	}
@@ -197,6 +202,7 @@ void res_config(const std::string& arg)
 		std::cerr << "Invalid -RES argument syntax: " << arg << std::endl;
 		std::cerr << e.what() << std::endl;
 	}
+
 
 }
 
