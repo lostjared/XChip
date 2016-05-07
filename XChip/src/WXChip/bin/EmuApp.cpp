@@ -1,4 +1,5 @@
 #include <csignal>
+#include <algorithm>
 #include <utility>
 #include <iostream>
 
@@ -6,30 +7,24 @@
 #include <XChip/Media/SDLMedia.h>
 #include <XChip/Utility/Memory.h>
 #include <XChip/Utility/Color.h>
-
+#include <XChip/Utility/Log.h>
 
 static xchip::Emulator g_emulator;
+void configure_emulator(const std::vector<std::string>& arguments);
 
 
-struct EmulatorConfig
-{
-/*
-	-RES  WidthxHeight ex: -RES 200x300
-	-CFQ  Cpu Frequency in hz ex: -CFQ 600
-	-SFQ  Sound Tone in hz ex: -SFQ 400
-	-COL  Color in RGB ex: -COL 100x200x400
-	-FPS  Frame Rate ex: -FPS 30
-*/
-	std::unique_ptr<xchip::utility::Color> color = nullptr;
-	std::unique_ptr<std::pair<int, int>> res = nullptr;
-	unsigned cfq = 0;
-	float sfq = 0;
-	unsigned fps = 0;
-
-};
 
 
-std::unique_ptr<EmulatorConfig> create_configuration(const std::vector<std::string>& arguments);
+/*********************************************************
+ *	-RES  WidthxHeight ex: -RES 200x300
+ *	-CFQ  Cpu Frequency in hz ex: -CFQ 600
+ *	-SFQ  Sound Tone in hz ex: -SFQ 400
+ *	-COL  Color in RGB ex: -COL 100x200x400
+ *	-FPS  Frame Rate ex: -FPS 30
+ *********************************************************/
+
+
+
 
 int main(int argc, char **argv)
 {
@@ -91,18 +86,8 @@ int main(int argc, char **argv)
 
 
 
-	if( argc >= 3 )
-	{
-		const auto emuConfig = create_configuration(std::vector<std::string>(argv, argv+argc));
-		
-		if( emuConfig )
-		{
-			// configure 
-
-		}
-	}
-
-
+	if( argc >= 3)
+		configure_emulator(std::vector<std::string>(argv+2, argv+argc));
 
 	while (!g_emulator.GetExitFlag())
 	{
@@ -129,23 +114,108 @@ int main(int argc, char **argv)
 
 
 
+void res_config(const std::string& arg);
+void cfq_config(const std::string& arg);
+void sfq_config(const std::string& arg);
+void col_config(const std::string& arg);
+void fps_config(const std::string& arg);
 
-
-
-
-
-
-std::unique_ptr<EmulatorConfig> create_configuration(const std::vector<std::string>& arguments)
+void configure_emulator(const std::vector<std::string>& arguments)
 {
 	using xchip::utility::make_unique;
 
-	auto emuConfig = make_unique<EmulatorConfig>();
-
-	std::cout << "arguments to create_configuration: " << std::endl;
+	std::cout << "arguments to configure_emulator: " << std::endl;
 	for( auto& it : arguments)
 		std::cout << it << std::endl;
 
 
-	return emuConfig;
+	using ConfigFunc = void(*)(const std::string&);
+	using ConfigPair = std::pair<const char*, ConfigFunc>;
+
+	ConfigPair configTable[5] = 
+	{
+		{"-RES", res_config},
+		{"-CFQ", cfq_config},
+		{"-SFQ", sfq_config},
+		{"-COL", col_config},
+		{"-FPS", fps_config}
+	};
+
+
+
+	const auto begin = arguments.cbegin(), end = arguments.cend();
+	for(auto arg = begin; arg != end; ++arg)
+	{
+		bool validArg = std::any_of(std::begin(configTable), std::end(configTable),
+						[&arg](const ConfigPair& cpair) 
+						{
+							if(*arg == cpair.first) {
+								cpair.second(*++arg);
+								return true;
+							}
+							else {
+								return false;
+							}
+						});
+
+		if(!validArg)
+			std::cout << "Unkown argument: " << *arg << std::endl;
+	}
+
 }
+
+
+
+
+
+
+
+void res_config(const std::string& arg)
+{
+	std::cout << "Setting Resolution... to: " << arg << std::endl;
+	auto separatorIndex = arg.find('x');
+	
+	auto wStr = arg.substr(0, separatorIndex);
+	auto hStr = arg.substr(separatorIndex+1, arg.size()); 
+
+	try
+	{
+		auto w = std::stoul(wStr);
+		auto h = std::stoul(hStr);
+
+		std::cout << "W: " << w << std::endl;
+		std::cout << "H: " << h << std::endl; 
+		std::cout << "Done." << std::endl;
+
+	}
+	catch(std::invalid_argument& e)
+	{
+		std::cerr << "Invalid resolution syntax: " << arg << std::endl;		
+	}
+
+}
+
+void cfq_config(const std::string& arg)
+{
+	std::cout << "Setting Cpu Frequency... to: " << arg << std::endl;
+}
+
+void sfq_config(const std::string& arg)
+{
+	std::cout << "Setting Sound Tone... to: " << arg << std::endl;
+}
+
+void col_config(const std::string& arg)
+{
+	std::cout << "Setting Color... to: " << arg << std::endl;
+}
+
+void fps_config(const std::string& arg)
+{
+	std::cout << "Setting FPS... to: " << arg << std::endl;
+}
+
+
+
+
 
