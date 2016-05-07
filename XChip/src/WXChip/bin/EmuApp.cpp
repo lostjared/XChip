@@ -217,8 +217,7 @@ void res_config(const std::string& arg)
 	}
 	catch(std::exception& e)
 	{
-		std::cerr << "Failed to set Render resolution: " << std::endl;
-		std::cerr << e.what() << std::endl;
+		std::cerr << "Failed to set Render resolution: " << e.what() << std::endl;
 	}
 
 
@@ -237,9 +236,7 @@ void cfq_config(const std::string& arg)
 	}
 	catch(std::exception& e)
 	{
-		std::cerr << "Failed to set Cpu Frequency: " << std::endl;
-		std::cerr << e.what() << std::endl;
-
+		std::cerr << "Failed to set Cpu Frequency: " << e.what() << std::endl;
 	}
 }
 
