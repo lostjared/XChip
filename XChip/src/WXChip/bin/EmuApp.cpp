@@ -174,6 +174,8 @@ void res_config(const std::string& arg)
 {
 	std::cout << "Setting Resolution... to: " << arg << std::endl;
 	const auto separatorIndex = arg.find('x');
+	if(separatorIndex == std::string::npos)
+		throw std::invalid_argument("missing the \'x\' separator for widghtxheight");
 	
 	const auto wStr = arg.substr(0, separatorIndex);
 	const auto hStr = arg.substr(separatorIndex+1, arg.size()); 
@@ -192,7 +194,8 @@ void res_config(const std::string& arg)
 	}
 	catch(std::invalid_argument& e)
 	{
-		std::cerr << "Invalid resolution syntax: " << arg << std::endl;		
+		std::cerr << "Invalid -RES argument syntax: " << arg << std::endl;
+		std::cerr << e.what() << std::endl;
 	}
 
 }
