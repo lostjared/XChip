@@ -26,8 +26,9 @@ public:
 	bool IsInitialized() const noexcept override;
 	bool IsPlaying() const noexcept override;
 	float GetCountdownFreq() const noexcept override;	
-
+	float GetSoundFreq() const noexcept override;
 	void SetCountdownFreq(const float hertz) noexcept override;
+	void SetSoundFreq(const float hz) noexcept override;
 	void Play(const uint8_t soundTimer) noexcept override;
 	void Stop() noexcept override;
 
@@ -56,7 +57,8 @@ private:
 
 
 inline bool SdlSound::IsInitialized() const noexcept { return _initialized; }
-
+inline float SdlSound::GetSoundFreq() const noexcept { return GetFreq(); }
+inline void SdlSound::SetSoundFreq(const float hz) noexcept { SetFreq(hz); }
 
 
 

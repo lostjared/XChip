@@ -89,6 +89,7 @@ int main(int argc, char **argv)
 	if(argc >= 3)
 		configure_emulator(std::vector<std::string>(argv+2, argv+argc));
 
+	g_emulator.GetSound()->SetSoundFreq(100.f);
 
 	while (!g_emulator.GetExitFlag())
 	{
@@ -125,9 +126,7 @@ void configure_emulator(const std::vector<std::string>& arguments)
 {
 	using xchip::utility::make_unique;
 
-	std::cout << "arguments to configure_emulator: " << std::endl;
-	for( auto& it : arguments)
-		std::cout << it << std::endl;
+	std::cout << "\n\n\tconfigure_emulator: \n\n";
 
 
 	using ConfigFunc = void(*)(const std::string&);
@@ -144,7 +143,9 @@ void configure_emulator(const std::vector<std::string>& arguments)
 
 
 
-	const auto begin = arguments.cbegin(), end = arguments.cend();
+	const auto begin = arguments.cbegin();
+	const auto end = arguments.cend();
+
 	for(auto arg = begin; arg != end; ++arg)
 	{
 		bool validArg = std::any_of(std::begin(configTable), std::end(configTable),
@@ -180,6 +181,8 @@ void configure_emulator(const std::vector<std::string>& arguments)
 			std::cout << "Unkown argument: " << *arg << std::endl;
 	}
 
+
+	std::cout << "\n\n\tconfigure_emulator done.\n\n";
 }
 
 
@@ -199,19 +202,16 @@ void res_config(const std::string& arg)
 		if(separatorIndex == std::string::npos)
 			throw std::invalid_argument("missing the \'x\' separator for widthxheight");
 	
-		const auto wStr = arg.substr(0, separatorIndex);
-		const auto hStr = arg.substr(separatorIndex+1, arg.size()); 
+		const auto w = std::stoul(arg.substr(0, separatorIndex));
+		const auto h = std::stoul(arg.substr(separatorIndex+1, arg.size()));
 
-		const auto w = std::stoul(wStr);
-		const auto h = std::stoul(hStr);
-
-	
-		std::cout << "W: " << w << std::endl;
-		std::cout << "H: " << h << std::endl; 
+		if(!g_emulator.GetRender())
+			throw std::runtime_error("null Render");
 
 		if(!g_emulator.GetRender()->SetResolution(w, h))
-			return;
-	
+			throw std::runtime_error("iRender internal error");
+
+		std::cout << "Render Resolution: " << "W: " << w << " H: " << h << std::endl; 
 		std::cout << "Done." << std::endl;
 
 	}
@@ -226,14 +226,14 @@ void res_config(const std::string& arg)
 
 void cfq_config(const std::string& arg)
 {
-	std::cout << "Setting Cpu Frequency..." << std::endl;
+
 	try
 	{
-		
-
-
-
-
+		std::cout << "Setting Cpu Frequency..." << std::endl;		
+		const auto cfq = std::stoul(arg);
+		g_emulator.SetCpuFreq(cfq);
+		std::cout << "Cpu Frequency: " << +cfq << std::endl;
+		std::cout << "Done." << std::endl;
 	}
 	catch(std::exception& e)
 	{
@@ -243,19 +243,98 @@ void cfq_config(const std::string& arg)
 	}
 }
 
+
+
 void sfq_config(const std::string& arg)
 {
-	std::cout << "Setting Sound Tone... to: " << arg << std::endl;
+	try
+	{
+		std::cout << "Setting Sound Tone..." << std::endl;
+		const auto sfq = std::stof(arg);
+
+		if(!g_emulator.GetSound())
+			throw std::runtime_error("null Sound");
+
+		g_emulator.GetSound()->SetSoundFreq(sfq);
+		std::cout << "Sound Freq: " << sfq << std::endl;
+		std::cout << "Done." << std::endl;
+	}
+	catch(std::exception& e)
+	{
+		std::cerr << "Failed to set Sound Tone: " << e.what() << std::endl;
+	}
+	
 }
+
+
+
+
+
 
 void col_config(const std::string& arg)
 {
-	std::cout << "Setting Color... to: " << arg << std::endl;
+	try
+	{
+		std::cout << "Setting Render Color..." << std::endl;
+		const auto firstSeparator = arg.find('x');
+
+		if(firstSeparator == std::string::npos)
+			throw std::invalid_argument("missing the \'x\' separator");
+
+		const auto secondSeparator = arg.find('x', firstSeparator+1);
+
+		if(secondSeparator == std::string::npos)
+			throw std::invalid_argument("missing the second \'x\' separator");
+
+		decltype(std::stoul("1")) rgb[3] = 
+		{
+			std::stoul(arg.substr(0, firstSeparator)),
+			std::stoul(arg.substr(firstSeparator+1, secondSeparator)),
+			std::stoul(arg.substr(secondSeparator+1, arg.size()))
+		};
+
+		for(auto& col : rgb)
+		{
+			if(col > 255)
+				col = 255;
+		}
+
+		xchip::utility::Color color(rgb[0], rgb[1], rgb[2]);
+
+		if(!g_emulator.GetRender())
+			throw std::runtime_error("null Render");
+
+		if(!g_emulator.GetRender()->SetColorFilter(color))
+			throw std::runtime_error("iRender internal error");
+
+		std::cout << "Render Color: " << color << std::endl;
+		std::cout << "Done." << std::endl;
+		
+	}
+	catch(std::exception& e)
+	{
+		std::cerr << "Failed to set Render Color: " << e.what() << std::endl;
+	}
 }
+
+
+
+
 
 void fps_config(const std::string& arg)
 {
-	std::cout << "Setting FPS... to: " << arg << std::endl;
+	try
+	{
+		std::cout << "Setting Emulator FPS..." << std::endl;
+		const auto fps = std::stoul(arg);
+		g_emulator.SetFps(fps);
+		std::cout << "Emulator FPS: " << +fps << std::endl;
+		std::cout << "Done." << std::endl;
+	}
+	catch(std::exception& e)
+	{
+		std::cerr << "Failed to set Emulator FPS: " << e.what() << std::endl;
+	}
 }
 
 
