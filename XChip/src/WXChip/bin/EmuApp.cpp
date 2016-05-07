@@ -86,8 +86,9 @@ int main(int argc, char **argv)
 
 
 
-	if( argc >= 3)
+	if(argc >= 3)
 		configure_emulator(std::vector<std::string>(argv+2, argv+argc));
+
 
 	while (!g_emulator.GetExitFlag())
 	{
@@ -149,13 +150,30 @@ void configure_emulator(const std::vector<std::string>& arguments)
 		bool validArg = std::any_of(std::begin(configTable), std::end(configTable),
 						[&arg](const ConfigPair& cpair) 
 						{
-							if(*arg == cpair.first) {
-								cpair.second(*++arg);
-								return true;
+							const auto argSize = (*arg).size();
+							const auto cmdSize = strlen(cpair.first);
+
+							if(argSize == cmdSize)
+							{
+								if(*arg == cpair.first) 
+								{
+									cpair.second(*++arg);
+									return true;
+								}
 							}
-							else {
-								return false;
+
+							else if(argSize > cmdSize)
+							{
+
+								if((*arg).compare(0, cmdSize, cpair.first) == 0)
+								{
+									cpair.second((*arg).substr(cmdSize, argSize - cmdSize));
+									return true;
+								}
+
 							}
+
+							return false;
 						});
 
 		if(!validArg)
@@ -197,9 +215,9 @@ void res_config(const std::string& arg)
 		std::cout << "Done." << std::endl;
 
 	}
-	catch(std::invalid_argument& e)
+	catch(std::exception& e)
 	{
-		std::cerr << "Invalid -RES argument syntax: " << arg << std::endl;
+		std::cerr << "Failed to set Render resolution: " << std::endl;
 		std::cerr << e.what() << std::endl;
 	}
 
@@ -208,7 +226,21 @@ void res_config(const std::string& arg)
 
 void cfq_config(const std::string& arg)
 {
-	std::cout << "Setting Cpu Frequency... to: " << arg << std::endl;
+	std::cout << "Setting Cpu Frequency..." << std::endl;
+	try
+	{
+		
+
+
+
+
+	}
+	catch(std::exception& e)
+	{
+		std::cerr << "Failed to set Cpu Frequency: " << std::endl;
+		std::cerr << e.what() << std::endl;
+
+	}
 }
 
 void sfq_config(const std::string& arg)
