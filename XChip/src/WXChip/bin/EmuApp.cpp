@@ -192,6 +192,7 @@ void configure_emulator(const std::vector<std::string>& arguments)
 
 void res_config(const std::string& arg)
 {
+	using xchip::utility::Resolution;
 
 	try
 	{
@@ -201,16 +202,16 @@ void res_config(const std::string& arg)
 		if(separatorIndex == std::string::npos)
 			throw std::invalid_argument("missing the \'x\' separator for widthxheight");
 	
-		const auto w = std::stoul(arg.substr(0, separatorIndex));
-		const auto h = std::stoul(arg.substr(separatorIndex+1, arg.size()));
+		const Resolution res( std::stoul(arg.substr(0, separatorIndex)),
+                                      std::stoul(arg.substr(separatorIndex+1, arg.size())) );
 
 		if(!g_emulator.GetRender())
 			throw std::runtime_error("null Render");
 
-		if(!g_emulator.GetRender()->SetResolution(w, h))
+		if(!g_emulator.GetRender()->SetResolution(res))
 			throw std::runtime_error("iRender internal error");
 
-		std::cout << "Render Resolution: " << "W: " << w << " H: " << h << std::endl; 
+		std::cout << "Render Resolution: " << res << std::endl; 
 		std::cout << "Done." << std::endl;
 
 	}

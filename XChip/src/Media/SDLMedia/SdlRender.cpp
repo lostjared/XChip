@@ -138,12 +138,14 @@ bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
 
 
 
-bool SdlRender::SetResolution(const int w, const int h) noexcept
+
+
+bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 {
 
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	
-	if( w <= 0 || h <= 0 )
+	if( res.w <= 0 || res.h <= 0 )
 	{
 		xchip::utility::LOGerr("SetResolution: w and h must be greater than 0.");
 		return false;
@@ -158,8 +160,8 @@ bool SdlRender::SetResolution(const int w, const int h) noexcept
 		return false;
 	}
 
-	displayMode.w = w;
-	displayMode.h = h;
+	displayMode.w = res.w;
+	displayMode.h = res.h;
 
 	if( SDL_SetWindowDisplayMode(_window, &displayMode) )
 	{
@@ -167,7 +169,7 @@ bool SdlRender::SetResolution(const int w, const int h) noexcept
 		return false;
 	}
 
-	SDL_SetWindowSize(_window, w, h);
+	SDL_SetWindowSize(_window, res.w, res.h);
 
 	return true;
 }
@@ -224,6 +226,25 @@ utility::Color SdlRender::GetColorFilter() const noexcept
 	return color;
 
 }
+
+
+
+
+utility::Resolution SdlRender::GetResolution() const noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	
+	SDL_DisplayMode displayMode;
+
+	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
+	{
+		xchip::utility::LOGerr(SDL_GetError());
+		return {0, 0};
+	}
+
+	return {displayMode.w, displayMode.h};
+}
+
 
 
 
