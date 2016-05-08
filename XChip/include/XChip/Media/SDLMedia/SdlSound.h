@@ -36,8 +36,10 @@ public:
 
 private:
 	bool InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have);
-	float GetFreq() const;
-	void SetFreq(const float hz);
+	float GetPlayFreq() const;
+	float GetCurFreq() const;
+	void SetPlayFreq(const float hz);
+	void SetCurFreq(const float hz);
 	void SetCycleTime(const float hz);
 	void SetLenght(const unsigned int len);
 	template<class T>
@@ -47,7 +49,8 @@ private:
 	SDL_AudioSpec* _specs = nullptr;
 	SDL_AudioDeviceID _dev = 0;
 	float _cycleTime;
-	float _freq;
+	float _playFreq;
+	float _curFreq;
 	float _len;
 	unsigned int _pos;
 	int _amplitude;
@@ -57,8 +60,8 @@ private:
 
 
 inline bool SdlSound::IsInitialized() const noexcept { return _initialized; }
-inline float SdlSound::GetSoundFreq() const noexcept { return GetFreq(); }
-inline void SdlSound::SetSoundFreq(const float hz) noexcept { SetFreq(hz); }
+inline float SdlSound::GetSoundFreq() const noexcept { return this->GetCurFreq(); }
+inline void SdlSound::SetSoundFreq(const float hz) noexcept { this->SetCurFreq(hz); }
 
 
 

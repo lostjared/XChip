@@ -89,7 +89,6 @@ int main(int argc, char **argv)
 	if(argc >= 3)
 		configure_emulator(std::vector<std::string>(argv+2, argv+argc));
 
-	g_emulator.GetSound()->SetSoundFreq(100.f);
 
 	while (!g_emulator.GetExitFlag())
 	{

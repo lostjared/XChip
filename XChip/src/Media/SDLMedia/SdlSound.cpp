@@ -16,9 +16,11 @@
 
 namespace xchip {
 
-inline float SdlSound::GetFreq() const { return _freq * _specs[Have].freq; }
+inline float SdlSound::GetCurFreq() const { return _curFreq * _specs[Have].freq; }
+inline float SdlSound::GetPlayFreq() const { return _playFreq * _specs[Have].freq; }
 inline void SdlSound::SetCycleTime(const float hz) { _cycleTime = _specs[Have].freq / hz; }
-inline void SdlSound::SetFreq(const float hz) { _freq = hz / _specs[Have].freq; }
+inline void SdlSound::SetCurFreq(const float hz) { _curFreq = hz / _specs[Have].freq; }
+inline void SdlSound::SetPlayFreq(const float hz) { _playFreq = hz / _specs[Have].freq; }
 inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * len; }
 
 
@@ -79,7 +81,7 @@ bool SdlSound::Initialize() noexcept
 	_pos = 0u;
 	_amplitude = 16000;
 	_cycleTime = _specs[Have].freq / 60.f;
-	this->SetFreq(defaultFreq);
+	this->SetCurFreq(defaultFreq);
 
 	_initialized = true;
 	return true;
@@ -113,14 +115,14 @@ void SdlSound::Play(const uint8_t soundTimer) noexcept
 	_SDLSOUND_INITIALIZED_ASSERT_();
 	if (!this->IsPlaying()) 
 	{
-		SetFreq(defaultFreq + 2 * soundTimer);
+		SetPlayFreq(GetCurFreq() + 2 * soundTimer);
 		SetLenght(soundTimer);
 	}
 	
 	else
 	{
 		SDL_LockAudioDevice(_dev);
-		SetFreq(defaultFreq + 2 * soundTimer);
+		SetPlayFreq(GetCurFreq() + 2 * soundTimer);
 		SetLenght(soundTimer);
 		SDL_UnlockAudioDevice(_dev);
 	}
@@ -188,7 +190,7 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 
 	constexpr auto _2pi = static_cast<float>(2 * M_PI);
 	const auto ampl = _this->_amplitude;
-	const auto freq = _this->_freq;
+	const auto freq = _this->_playFreq;
 	auto pos = _this->_pos;
 
 
