@@ -30,7 +30,8 @@ bool Process::IsRunning() const
 }
 
 	
-bool Process::Run(const std::string &app) {
+bool Process::Run(const std::string &app) 
+{
 
 	
 	if (pid != 0)
@@ -62,37 +63,6 @@ bool Process::Run(const std::string &app) {
 	return true;
 }
 
-bool Process::Run(ProcFunc pfunc, void* arg)
-{
-	
-	if (pid != 0)
-		Terminate();
-	
-	int fd[2];
-	int read_fd, write_fd;
-	pipe(fd);
-	read_fd = fd[0];
-	write_fd = fd[1];
-	pid = fork();
-
-	if (pid == 0)
-	{
-		close(read_fd);
-		dup2(write_fd,1);
-		close(write_fd);
-		exit(pfunc(arg));
-		return true;
-	}
-
-	else
-	{
-		close(write_fd);
-		LOG("In Parent...");
-	}
-
-	return true;	
-
-}
 
 int Process::Join()
 {
@@ -147,62 +117,37 @@ Process::Process()
 
 Process::~Process()
 {
-	if (_threadHandle)
+	if (IsRunning())
 		Terminate();
 }
 
 
-
-
-
-bool Process::Run(ProcFunc pfunc, void* arg)
+bool Process::Run(const std::string &app)
 {
-	if (_threadHandle) {
-		LOGerr("Previous process isn't finished yet!");
-		return false;
-	}
-
-	_threadHandle = (HANDLE) _beginthreadex(nullptr, 0, (_beginthreadex_proc_type)pfunc, arg, 0, &_threadId);
+	std::string appCpy = app;
+	CreateProcess(nullptr, (LPSTR)appCpy.c_str(), nullptr,
+		          nullptr, false, 0, nullptr,
+		          nullptr, nullptr, nullptr);
 	
-	if (_threadHandle == nullptr)
-	{
-		LOGerr("Could not create Process!");
-		return false;
-	}
-
-	return true;
+	return false;
 }
 
 
 int Process::Join()
 {
-	DWORD pfuncReturnCode = 0;
-
-	WaitForSingleObject((HANDLE)_threadHandle, INFINITE);
-	GetExitCodeThread(_threadHandle, &pfuncReturnCode);
-	CloseHandle(_threadHandle);
-	_threadHandle = nullptr;
-
-	return pfuncReturnCode;
+	return 0;
 }
 
 
 void Process::Terminate()
 {
-	if (TerminateThread(_threadHandle, 0) == 0)
-		LOGerr("Could not terminate Emulator process...");
-
-	CloseHandle(_threadHandle);
-	_threadHandle = nullptr;
+	
 }
 
 
 
 bool Process::IsRunning() const
 {
-	if (_threadHandle)
-		return GetExitCodeThread(_threadHandle, nullptr) == STILL_ACTIVE;
-
 	return false;
 }
 

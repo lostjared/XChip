@@ -1,13 +1,12 @@
 #include <csignal>
 #include <algorithm>
 #include <utility>
-#include <limits>
 
 #include <XChip/Core/Emulator.h> 
 #include <XChip/Media/SDLMedia.h>
 #include <XChip/Utility/Memory.h>
-#include <XChip/Utility/Color.h>
 #include <XChip/Utility/Log.h>
+#include <XChip/Utility/Assert.h>
 
 static xchip::Emulator g_emulator;
 void configure_emulator(const std::vector<std::string>& arguments);
@@ -74,7 +73,7 @@ int main(int argc, char **argv)
 
 
   
-	if(signal(SIGINT, signals_sigint) == SIG_ERR )
+	if(signal(SIGINT, signals_sigint) == SIG_ERR)
 	{
 		std::cout << "Could not install signal handler!" << std::endl;
 		return EXIT_FAILURE;
@@ -235,6 +234,8 @@ void cfq_config(const std::string& arg)
 	{
 		std::cerr << "Failed to set Cpu Frequency: " << e.what() << std::endl;
 	}
+
+
 }
 
 
@@ -267,6 +268,7 @@ void sfq_config(const std::string& arg)
 
 void col_config(const std::string& arg)
 {
+
 	try
 	{
 		std::cout << "Setting Render Color..." << std::endl;
@@ -309,6 +311,8 @@ void col_config(const std::string& arg)
 	{
 		std::cerr << "Failed to set Render Color: " << e.what() << std::endl;
 	}
+
+
 }
 
 
@@ -317,6 +321,7 @@ void col_config(const std::string& arg)
 
 void fps_config(const std::string& arg)
 {
+
 	try
 	{
 		std::cout << "Setting Emulator FPS..." << std::endl;
@@ -329,6 +334,7 @@ void fps_config(const std::string& arg)
 	{
 		std::cerr << "Failed to set Emulator FPS: " << e.what() << std::endl;
 	}
+
 }
 
 

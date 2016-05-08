@@ -86,10 +86,11 @@ void MainWindow::StartEmulator()
 	cwd = getcwd(path, 255);
 #endif
 	
-	std::string emuApp(cwd);	
+	std::string emuApp(cwd);
  	emuApp += defaultEmuAppPath;
+	emuApp.insert(0, "\"");
+	emuApp += "\"";
 	emuApp += " \"" + _romPath + "\"";
-
 
 	_process.Run(emuApp);
 }
