@@ -25,6 +25,7 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Log.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Memory.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Process.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Resolution.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\ScopeExit.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\StdintDef.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Timer.h" />

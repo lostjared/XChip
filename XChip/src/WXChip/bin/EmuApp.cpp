@@ -1,6 +1,7 @@
 #include <csignal>
 #include <algorithm>
 #include <utility>
+#include <limits>
 
 #include <XChip/Core/Emulator.h> 
 #include <XChip/Media/SDLMedia.h>
@@ -72,13 +73,12 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 
 
-
+  
 	if(signal(SIGINT, signals_sigint) == SIG_ERR )
 	{
 		std::cout << "Could not install signal handler!" << std::endl;
 		return EXIT_FAILURE;
 	}
-
 
 
 
@@ -199,8 +199,8 @@ void res_config(const std::string& arg)
 		if(separatorIndex == std::string::npos)
 			throw std::invalid_argument("missing the \'x\' separator for widthxheight");
 	
-		const Resolution res( std::stoul(arg.substr(0, separatorIndex)),
-                                      std::stoul(arg.substr(separatorIndex+1, arg.size())) );
+		const Resolution res(std::stoi(arg.substr(0, separatorIndex)), 
+                               std::stoi(arg.substr(separatorIndex+1, arg.size())) );
 
 		if(!g_emulator.GetRender())
 			throw std::runtime_error("null Render");
@@ -208,7 +208,7 @@ void res_config(const std::string& arg)
 		if(!g_emulator.GetRender()->SetResolution(res))
 			throw std::runtime_error("iRender internal error");
 
-		std::cout << "Render Resolution: " << res << std::endl; 
+		std::cout << "Render Resolution: " << g_emulator.GetRender()->GetResolution() << std::endl; 
 		std::cout << "Done." << std::endl;
 
 	}
@@ -226,9 +226,9 @@ void cfq_config(const std::string& arg)
 	try
 	{
 		std::cout << "Setting Cpu Frequency..." << std::endl;		
-		const auto cfq = std::stoul(arg);
+		const auto cfq = std::stoi(arg);
 		g_emulator.SetCpuFreq(cfq);
-		std::cout << "Cpu Frequency: " << +cfq << std::endl;
+		std::cout << "Cpu Frequency: " << g_emulator.GetCpuFreq() << std::endl;
 		std::cout << "Done." << std::endl;
 	}
 	catch(std::exception& e)
@@ -250,7 +250,7 @@ void sfq_config(const std::string& arg)
 			throw std::runtime_error("null Sound");
 
 		g_emulator.GetSound()->SetSoundFreq(sfq);
-		std::cout << "Sound Freq: " << sfq << std::endl;
+		std::cout << "Sound Freq: " << g_emulator.GetSound()->GetSoundFreq() << std::endl;
 		std::cout << "Done." << std::endl;
 	}
 	catch(std::exception& e)
@@ -280,7 +280,7 @@ void col_config(const std::string& arg)
 		if(secondSeparator == std::string::npos)
 			throw std::invalid_argument("missing the second \'x\' separator");
 
-		decltype(std::stoul("1")) rgb[3] = 
+		unsigned long rgb[3] = 
 		{
 			std::stoul(arg.substr(0, firstSeparator)),
 			std::stoul(arg.substr(firstSeparator+1, secondSeparator)),
@@ -293,7 +293,7 @@ void col_config(const std::string& arg)
 				col = 255;
 		}
 
-		xchip::utility::Color color(rgb[0], rgb[1], rgb[2]);
+		xchip::utility::Color color((uint8_t)rgb[0], (uint8_t)rgb[1], (uint8_t)rgb[2]);
 
 		if(!g_emulator.GetRender())
 			throw std::runtime_error("null Render");
@@ -320,9 +320,9 @@ void fps_config(const std::string& arg)
 	try
 	{
 		std::cout << "Setting Emulator FPS..." << std::endl;
-		const auto fps = std::stoul(arg);
+		const auto fps = std::stoi(arg);
 		g_emulator.SetFps(fps);
-		std::cout << "Emulator FPS: " << +fps << std::endl;
+		std::cout << "Emulator FPS: " << g_emulator.GetFps() << std::endl;
 		std::cout << "Done." << std::endl;
 	}
 	catch(std::exception& e)

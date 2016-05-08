@@ -45,6 +45,9 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Process.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Resolution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\Utility\Alloc.cpp">
