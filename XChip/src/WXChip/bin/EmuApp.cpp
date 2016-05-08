@@ -1,7 +1,6 @@
 #include <csignal>
 #include <algorithm>
 #include <utility>
-#include <iostream>
 
 #include <XChip/Core/Emulator.h> 
 #include <XChip/Media/SDLMedia.h>
@@ -11,10 +10,6 @@
 
 static xchip::Emulator g_emulator;
 void configure_emulator(const std::vector<std::string>& arguments);
-
-
-
-
 /*********************************************************
  *	-RES  WidthxHeight ex: -RES 200x300
  *	-CFQ  Cpu Frequency in hz ex: -CFQ 600
@@ -22,6 +17,14 @@ void configure_emulator(const std::vector<std::string>& arguments);
  *	-COL  Color in RGB ex: -COL 100x200x400
  *	-FPS  Frame Rate ex: -FPS 30
  *********************************************************/
+
+void signals_sigint(const int signum);
+/*********************************************************
+ * SIGNALS:
+ * SIGINT - set g_emulator exitflag
+ *********************************************************/
+
+
 
 
 
@@ -70,13 +73,7 @@ int main(int argc, char **argv)
 
 
 
-	if(signal(SIGINT, [](int signum)
-	{
-		std::cout << "Received signal: " << signum << std::endl;
-		std::cout << "Closing Application!" << std::endl;
-		g_emulator.SetExitFlag(true);
-
-	}) == SIG_ERR )
+	if(signal(SIGINT, signals_sigint) == SIG_ERR )
 	{
 		std::cout << "Could not install signal handler!" << std::endl;
 		return EXIT_FAILURE;
@@ -333,6 +330,25 @@ void fps_config(const std::string& arg)
 		std::cerr << "Failed to set Emulator FPS: " << e.what() << std::endl;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+void signals_sigint(const int signum)
+{
+	std::cout << "Received signal: " << signum << std::endl;
+	std::cout << "Closing Application!" << std::endl;
+	g_emulator.SetExitFlag(true);
+}
+
+
 
 
 
