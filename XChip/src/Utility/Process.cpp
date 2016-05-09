@@ -42,7 +42,7 @@ bool Process::Run(const std::string &app)
 	pipe(fd);
 	read_fd = fd[0];
 	write_fd = fd[1];
-	pid = fork();
+	pid = vfork();
 	
 	if (pid == 0)
 	{
