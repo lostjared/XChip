@@ -110,7 +110,9 @@ void Process::Terminate()
 
 Process::Process()
 {
-
+	ZeroMemory(&_si, sizeof(_si));
+	_si.cb = sizeof(_si);
+	ZeroMemory(&_pi, sizeof(_pi));
 }
 
 
@@ -125,30 +127,62 @@ Process::~Process()
 bool Process::Run(const std::string &app)
 {
 	std::string appCpy = app;
-	CreateProcess(nullptr, (LPSTR)appCpy.c_str(), nullptr,
-		          nullptr, false, 0, nullptr,
-		          nullptr, nullptr, nullptr);
+
+	ZeroMemory(&_si, sizeof(_si));
+	_si.cb = sizeof(_si);
+	ZeroMemory(&_pi, sizeof(_pi));
+
+	// Start the child process. 
+	if (
+		!CreateProcess(nullptr, // No module name (use command line)
+		(LPSTR)appCpy.c_str(),  // Command line
+		nullptr,                // Process handle not inheritable
+		nullptr,                // Thread handle not inheritable
+		false,                  // Set handle inheritance to FALSE
+		CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE,       // No creation flags
+		nullptr,                // Use parent's environment block
+		nullptr,                // Use parent's starting directory 
+		&_si,                   // Pointer to STARTUPINFO structure
+		&_pi)                   // Pointer to PROCESS_INFORMATION structure
+		)
+	{
+		LOGerr("Could not create a new process!");
+		return false;
+	}
 	
-	return false;
+
+	return true;
 }
 
 
 int Process::Join()
 {
-	return 0;
+	DWORD exitCode;
+	WaitForSingleObject(_pi.hProcess, INFINITE);
+	if (!GetExitCodeProcess(_pi.hProcess, &exitCode))
+	{
+		LOGerr("Could not get process exit code.");
+		return -1;
+	}
+
+	CloseHandle(_pi.hProcess);
+	CloseHandle(_pi.hThread);
+
+	return exitCode;
 }
 
 
 void Process::Terminate()
 {
-	
+	GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, _pi.dwProcessId);
+	Join();
 }
 
 
 
 bool Process::IsRunning() const
 {
-	return false;
+	return true;
 }
 
 

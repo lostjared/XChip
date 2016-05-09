@@ -1,3 +1,4 @@
+
 #include <csignal>
 #include <algorithm>
 #include <utility>
@@ -72,14 +73,11 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 
 
-  
 	if(signal(SIGINT, signals_sigint) == SIG_ERR)
 	{
 		std::cout << "Could not install signal handler!" << std::endl;
 		return EXIT_FAILURE;
 	}
-
-
 
 
 	if(argc >= 3)
