@@ -91,13 +91,17 @@ int main(int argc, char **argv)
 
 	if(signal(SIGINT, signals_sigint) == SIG_ERR)
 	{
-		std::cout << "Could not install signal handler!" << std::endl;
+		std::cerr << "Could not install signal handler!" << std::endl;
 		return EXIT_FAILURE;
 	}
 
 #elif defined(_WIN32)
 
-	SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrl_handler, true);
+	if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrl_handler, true))
+	{
+		std::cerr << "Could not install Console Ctrl Handler" << std::endl;
+		return EXIT_FAILURE;
+	}
 
 #endif
 
