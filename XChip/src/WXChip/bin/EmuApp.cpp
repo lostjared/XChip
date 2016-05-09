@@ -85,17 +85,21 @@ int main(int argc, char **argv)
 	if (!g_emulator.LoadRom(argv[1]))
 		return EXIT_FAILURE;
 
+
+
 #if defined(__linux__) || defined(__APPLE__) 
+
 	if(signal(SIGINT, signals_sigint) == SIG_ERR)
 	{
 		std::cout << "Could not install signal handler!" << std::endl;
 		return EXIT_FAILURE;
 	}
-#endif
+
+#elif defined(_WIN32)
 
 	SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrl_handler, true);
 
-
+#endif
 
 	if(argc >= 3)
 		configure_emulator(std::vector<std::string>(argv+2, argv+argc));
