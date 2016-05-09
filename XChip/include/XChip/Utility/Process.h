@@ -43,6 +43,7 @@ private:
 	pid_t pid = 0;
 
 #elif defined(_WIN32)
+	void ZeroInf();
 	STARTUPINFO _si;
 	PROCESS_INFORMATION _pi;
 

@@ -1,7 +1,15 @@
 
+
+#if defined(__linux__) || defined(__APPLE__)
 #include <csignal>
+#elif defined( _WIN32 )
+#include <Windows.h>
+#endif
+
 #include <algorithm>
 #include <utility>
+#include <fstream>
+
 
 #include <XChip/Core/Emulator.h> 
 #include <XChip/Media/SDLMedia.h>
@@ -19,7 +27,12 @@ void configure_emulator(const std::vector<std::string>& arguments);
  *	-FPS  Frame Rate ex: -FPS 30
  *********************************************************/
 
+#if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum);
+#elif defined(_WIN32)
+bool ctrl_handler(DWORD ctrlType);
+#endif
+
 /*********************************************************
  * SIGNALS:
  * SIGINT - set g_emulator exitflag
@@ -72,12 +85,16 @@ int main(int argc, char **argv)
 	if (!g_emulator.LoadRom(argv[1]))
 		return EXIT_FAILURE;
 
-
+#if defined(__linux__) || defined(__APPLE__) 
 	if(signal(SIGINT, signals_sigint) == SIG_ERR)
 	{
 		std::cout << "Could not install signal handler!" << std::endl;
 		return EXIT_FAILURE;
 	}
+#endif
+
+	SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrl_handler, true);
+
 
 
 	if(argc >= 3)
@@ -96,7 +113,8 @@ int main(int argc, char **argv)
 	}
 
 
-
+	std::ofstream f("test.dat");
+	f << "Hello";
 
 
 	return EXIT_SUCCESS;
@@ -344,7 +362,7 @@ void fps_config(const std::string& arg)
 
 
 
-
+#if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum)
 {
 	std::cout << "Received signal: " << signum << std::endl;
@@ -352,9 +370,19 @@ void signals_sigint(const int signum)
 	g_emulator.SetExitFlag(true);
 }
 
-
-
-
+#elif defined(_WIN32)
+bool ctrl_handler(DWORD ctrlType)
+{
+	if (ctrlType == CTRL_C_EVENT) 
+	{
+		std::cout << "Received CTRL_C_EVENT!" << std::endl;
+		std::cout << "Closing Application!" << std::endl;
+		g_emulator.SetExitFlag(true);
+		return true;
+	}
+	return false;
+}
+#endif
 
 
 

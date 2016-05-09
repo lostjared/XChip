@@ -110,9 +110,7 @@ void Process::Terminate()
 
 Process::Process()
 {
-	ZeroMemory(&_si, sizeof(_si));
-	_si.cb = sizeof(_si);
-	ZeroMemory(&_pi, sizeof(_pi));
+	ZeroInf();
 }
 
 
@@ -128,29 +126,32 @@ bool Process::Run(const std::string &app)
 {
 	std::string appCpy = app;
 
-	ZeroMemory(&_si, sizeof(_si));
-	_si.cb = sizeof(_si);
-	ZeroMemory(&_pi, sizeof(_pi));
+	if (IsRunning())
+		Terminate();
 
 	// Start the child process. 
 	if (
+		
 		!CreateProcess(nullptr, // No module name (use command line)
-		(LPSTR)appCpy.c_str(),  // Command line
-		nullptr,                // Process handle not inheritable
-		nullptr,                // Thread handle not inheritable
-		false,                  // Set handle inheritance to FALSE
-		CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE,       // No creation flags
-		nullptr,                // Use parent's environment block
-		nullptr,                // Use parent's starting directory 
-		&_si,                   // Pointer to STARTUPINFO structure
-		&_pi)                   // Pointer to PROCESS_INFORMATION structure
-		)
+		               (LPSTR)appCpy.c_str(),  // Command line
+		               nullptr,                // Process handle not inheritable
+		               nullptr,                // Thread handle not inheritable
+		               true,                  // Set handle inheritance to FALSE
+		               CREATE_NEW_CONSOLE,     // creation flags
+		               nullptr,                // Use parent's environment block
+		               nullptr,                // Use parent's starting directory 
+		               &_si,                   // Pointer to STARTUPINFO structure
+		               &_pi)                   // Pointer to PROCESS_INFORMATION structure
+	  )
+
 	{
 		LOGerr("Could not create a new process!");
+		ZeroInf();
 		return false;
 	}
 	
-
+	CloseHandle(_pi.hThread);
+	
 	return true;
 }
 
@@ -165,27 +166,35 @@ int Process::Join()
 		return -1;
 	}
 
-	CloseHandle(_pi.hProcess);
-	CloseHandle(_pi.hThread);
-
+	ZeroInf();
 	return exitCode;
 }
 
 
 void Process::Terminate()
 {
-	GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, _pi.dwProcessId);
+	GenerateConsoleCtrlEvent(CTRL_C_EVENT, _pi.dwProcessId);
 	Join();
 }
 
 
 
+
 bool Process::IsRunning() const
 {
-	return true;
+	return _pi.dwProcessId != 0;
 }
 
 
+
+void Process::ZeroInf()
+{
+	CloseHandle(_pi.hProcess);
+	CloseHandle(_pi.hThread);
+	ZeroMemory(&_si, sizeof(_si));
+	_si.cb = sizeof(_si);
+	ZeroMemory(&_pi, sizeof(_pi));
+}
 
 #endif // _WIN32
 
