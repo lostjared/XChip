@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
 	if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrl_handler, true))
 	{
-		std::cerr << "Could not install Console Ctrl Handler" << std::endl;
+		std::cerr << "Could not install Console Ctrl Handler: " << GetLastError() << std::endl;
 		return EXIT_FAILURE;
 	}
 
