@@ -367,19 +367,23 @@ bool Emulator::InitInput()
 	input->SetWaitKeyCallback(this, [](const void* g_emulator)
 	{
 		auto* const emulator = (Emulator*) g_emulator;
+		
+
 		do
-		{
+		{		
 			emulator->UpdateSystems();
-			
+
 			if (emulator->GetExitFlag())
 				return false;
-
-			emulator->HaltForNextFlag();
 
 			if (emulator->GetDrawFlag())
 				emulator->Draw();
 
-		} while (! emulator->GetInstrFlag());
+
+			emulator->HaltForNextFlag();
+
+		}while(!emulator->GetInstrFlag());
+
 
 		return true;
 	});

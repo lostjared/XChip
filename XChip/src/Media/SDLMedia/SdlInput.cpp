@@ -99,6 +99,8 @@ bool SdlInput::UpdateKeys() noexcept
 	{
 		if (_resetClbk) 
 			_resetClbk(_resetClbkArg);
+
+		return false;
 	}
 
 
@@ -107,9 +109,10 @@ bool SdlInput::UpdateKeys() noexcept
 		if (_escapeClbk) 
 			_escapeClbk(_escapeClbkArg);
 
+		return false;
 	}
 
-	return false;
+	return g_sdlEvent.type == SDL_KEYDOWN;
 }
 
 
