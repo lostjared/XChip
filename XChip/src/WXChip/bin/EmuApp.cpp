@@ -121,9 +121,10 @@ int main(int argc, char **argv)
 	}
 
 
-	std::ofstream f("test.dat");
-	f << "Hello";
 
+	// test
+	std::ofstream f("test.dat");
+	f << "EXIT_SUCCESS";
 
 	return EXIT_SUCCESS;
 
