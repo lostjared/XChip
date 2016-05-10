@@ -373,7 +373,7 @@ void fps_config(const std::string& arg)
 #if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum)
 {
-	std::cout << "Received signal: " << signum << std::endl;
+	std::cout << "Received sigint! signum: " << signum << std::endl;
 	std::cout << "Closing Application!" << std::endl;
 	g_emulator.SetExitFlag(true);
 }
@@ -383,7 +383,7 @@ bool ctrl_handler(DWORD ctrlType)
 {
 	if (ctrlType == CTRL_C_EVENT) 
 	{
-		std::cout << "Received CTRL_C_EVENT!" << std::endl;
+		std::cout << "Received CTRL_C_EVENT! ctrlType: " << ctrlType << std::endl;
 		std::cout << "Closing Application!" << std::endl;
 		g_emulator.SetExitFlag(true);
 		return true;
