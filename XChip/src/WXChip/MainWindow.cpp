@@ -3,7 +3,7 @@
 #include <wx/wx.h>
 #endif
 
-
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 
@@ -92,6 +92,10 @@ void MainWindow::StartEmulator()
 
 	std::string wxchipPath = static_cast<const char*>(wxTheApp->argv[0].c_str());
 
+	std::ofstream of("wd");
+	of << "Argv[0]: " << wxchipPath << std::endl;
+	of << "cwd: " << cwd << std::endl;
+
 
 #ifdef _WIN32 
 	const auto lastSep = wxchipPath.find_last_of('\\');
@@ -101,10 +105,20 @@ void MainWindow::StartEmulator()
 		emuApp += wxchipPath.substr(0, lastSep);
 	}
 
+
 #elif defined(__APPLE__) || defined(__linux__)
 	const auto lastSep = wxchipPath.find_last_of('/');
 	if(lastSep > 1)
-		emuApp += wxchipPath.substr(1, lastSep);
+	{
+		const auto wxchipDir = wxchipPath.substr(0, lastSep);
+		of << "wxchipDir: " << wxchipDir << std::endl;
+		if(wxchipDir != cwd)
+		{
+			
+			emuApp += "/";
+			emuApp += wxchipDir;
+		}
+	}
 #endif
 
  	emuApp += defaultEmuAppPath;
