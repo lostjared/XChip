@@ -96,7 +96,7 @@ void MainWindow::StartEmulator()
 	const auto lastSep = wxchipPath.find_last_of('\\');
 #elif defined(__APPLE__) || defined(__linux__)
 	const auto lastSep = wxchipPath.find_last_of('/');
-
+#endif
 
 	if(lastSep > 1)
 		emuApp += wxchipPath.substr(1, lastSep);
