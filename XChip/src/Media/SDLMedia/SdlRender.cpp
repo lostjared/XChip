@@ -169,7 +169,15 @@ bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 		return false;
 	}
 
-	SDL_SetWindowSize(_window, res.w, res.h);
+	// Get the actual evaluated width and height:
+	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
+	{
+		xchip::utility::LOGerr(SDL_GetError());
+		return false;
+	}
+
+	// set window size
+	SDL_SetWindowSize(_window, displayMode.w, displayMode.h);
 
 	return true;
 }
