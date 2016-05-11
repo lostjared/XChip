@@ -37,7 +37,75 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 		throw std::runtime_error("could not append a menu into wxMenuBar");
 
 	menuFile.release();
-	SetMenuBar(menuBar.release());	
+	SetMenuBar(menuBar.release());
+
+
+
+	// get _emuApp path:
+	char path[256];
+	char *cwd;
+
+#ifdef _WIN32
+	cwd = _getcwd(path, 255);
+#elif defined(__APPLE__) || defined(__linux__)
+	cwd = getcwd(path, 255);
+#endif
+
+	_emuApp += "\"";
+	_emuApp += cwd;
+
+
+#ifdef _WIN32 
+
+	std::string wxchipPath = static_cast<const char*>(wxTheApp->argv[0].c_str());
+	const auto firstSep = wxchipPath.find_first_of('\\');
+	const auto isFullPath = firstSep != std::string::npos && wxchipPath[firstSep - 1] == ':';
+
+	// isn't the full path like C:\ ... ?
+	// then we need to complete the path
+	if (!isFullPath)
+	{
+		const auto lastSep = wxchipPath.find_last_of('\\');
+		if (lastSep != std::string::npos)
+		{
+			const auto wxchipDir = wxchipPath.substr(0, lastSep);
+
+			if (wxchipDir != cwd)
+			{
+				_emuApp += "\\";
+				_emuApp += wxchipDir;
+			}
+		}
+	}
+
+
+#elif defined(__APPLE__) || defined(__linux__)
+
+	std::string wxchipPath = static_cast<const char*>(wxTheApp->argv[0].c_str());
+
+	std::ofstream of("wd");
+	of << "Argv[0]: " << wxchipPath << std::endl;
+	of << "cwd: " << cwd << std::endl;
+
+
+	const auto lastSep = wxchipPath.find_last_of('/');
+	if (lastSep > 1)
+	{
+		const auto wxchipDir = wxchipPath.substr(0, lastSep);
+		of << "wxchipDir: " << wxchipDir << std::endl;
+		if (wxchipDir != cwd)
+		{
+
+			emuApp += "/";
+			emuApp += wxchipDir;
+		}
+	}
+
+
+#endif
+
+	_emuApp += defaultEmuAppPath;
+	_emuApp += "\"";
 }
 
 
@@ -66,66 +134,19 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 	if(openDialog.ShowModal() == wxID_CANCEL)
 		return;
 
+
 	_romPath = openDialog.GetPath().c_str();
+	
 	std::cout << "Selected File: " << _romPath << std::endl;
 
 	StartEmulator();
-	
 }
 
 
 void MainWindow::StartEmulator()
 {
 	StopEmulator();
-
-	char path[256];
-	char *cwd;
-#ifdef _WIN32
-	cwd = _getcwd(path, 255);
-#elif defined(__APPLE__) || defined(__linux__)
-	cwd = getcwd(path, 255);
-#endif
-	
-	std::string emuApp;
-	emuApp += "\"";
-	emuApp += cwd;
-
-	std::string wxchipPath = static_cast<const char*>(wxTheApp->argv[0].c_str());
-
-	std::ofstream of("wd");
-	of << "Argv[0]: " << wxchipPath << std::endl;
-	of << "cwd: " << cwd << std::endl;
-
-
-#ifdef _WIN32 
-	const auto lastSep = wxchipPath.find_last_of('\\');
-	if (lastSep != std::string::npos)
-	{
-		emuApp += '\\';
-		emuApp += wxchipPath.substr(0, lastSep);
-	}
-
-
-#elif defined(__APPLE__) || defined(__linux__)
-	const auto lastSep = wxchipPath.find_last_of('/');
-	if(lastSep > 1)
-	{
-		const auto wxchipDir = wxchipPath.substr(0, lastSep);
-		of << "wxchipDir: " << wxchipDir << std::endl;
-		if(wxchipDir != cwd)
-		{
-			
-			emuApp += "/";
-			emuApp += wxchipDir;
-		}
-	}
-#endif
-
- 	emuApp += defaultEmuAppPath;
-	emuApp += "\"";
-	emuApp += " \"" + _romPath + "\"";
-
-	_process.Run(emuApp);
+	_process.Run(_emuApp + " \"" + _romPath + "\"");
 }
 
 

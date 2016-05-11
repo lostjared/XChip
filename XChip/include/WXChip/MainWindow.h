@@ -25,6 +25,7 @@ private:
 	void StartEmulator();
 	void StopEmulator();
 
+	std::string _emuApp;
 	std::string _romPath;
 	xchip::utility::Process _process;
 	wxDECLARE_EVENT_TABLE();
