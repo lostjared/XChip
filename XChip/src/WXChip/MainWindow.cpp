@@ -93,12 +93,7 @@ void MainWindow::StartEmulator()
 	std::string wxchipPath = static_cast<const char*>(wxTheApp->argv[0].c_str());
 
 
-#if defined(__APPLE__) || defined(__linux__)
-	const auto lastSep = wxchipPath.find_last_of('/');
-	if(lastSep > 1)
-		emuApp += wxchipPath.substr(1, lastSep);
-
-#elif defined(_WIN32)
+#ifdef _WIN32 
 	const auto lastSep = wxchipPath.find_last_of('\\');
 	if (lastSep != std::string::npos)
 	{
@@ -106,6 +101,10 @@ void MainWindow::StartEmulator()
 		emuApp += wxchipPath.substr(0, lastSep);
 	}
 
+#elif defined(__APPLE__) || defined(__linux__)
+	const auto lastSep = wxchipPath.find_last_of('/');
+	if(lastSep > 1)
+		emuApp += wxchipPath.substr(1, lastSep);
 #endif
 
  	emuApp += defaultEmuAppPath;
