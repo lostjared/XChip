@@ -4,6 +4,7 @@
 #endif
 
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 
 #include <XChip/Utility/Memory.h>
@@ -37,67 +38,9 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
 	menuFile.release();
 	SetMenuBar(menuBar.release());
+	if(!ComputeEmuAppPath())
+		throw std::runtime_error("could not find EmuApp executable!");
 
-
-
-	// get _emuApp path:
-	char path[256];
-	char *cwd;
-
-#ifdef _WIN32
-	cwd = _getcwd(path, 255);
-#elif defined(__APPLE__) || defined(__linux__)
-	cwd = getcwd(path, 255);
-#endif
-
-	_emuApp += "\"";
-	_emuApp += cwd;
-
-
-#ifdef _WIN32 
-
-	std::string wxchipPath = static_cast<const char*>(wxTheApp->argv[0].c_str());
-	const auto firstSep = wxchipPath.find_first_of('\\');
-	const auto isFullPath = firstSep != std::string::npos && wxchipPath[firstSep - 1] == ':';
-
-	// isn't the full path like C:\ ... ?
-	// then we need to complete the path
-	if (!isFullPath)
-	{
-		const auto lastSep = wxchipPath.find_last_of('\\');
-		if (lastSep != std::string::npos)
-		{
-			const auto wxchipDir = wxchipPath.substr(0, lastSep);
-
-			if (wxchipDir != cwd)
-			{
-				_emuApp += "\\";
-				_emuApp += wxchipDir;
-			}
-		}
-	}
-
-
-#elif defined(__APPLE__) || defined(__linux__)
-
-	std::string wxchipPath = static_cast<const char*>(wxTheApp->argv[0].c_str());
-	const auto lastSep = wxchipPath.find_last_of('/');
-
-	if (lastSep > 1)
-	{
-		const auto wxchipDir = wxchipPath.substr(0, lastSep);
-		if (wxchipDir != cwd)
-		{
-			_emuApp += "/";
-			_emuApp += wxchipDir;
-		}
-	}
-
-
-#endif
-
-	_emuApp += defaultEmuAppPath;
-	_emuApp += "\"";
 }
 
 
@@ -148,4 +91,76 @@ void MainWindow::StopEmulator()
 	{
 		_process.Terminate();
 	}
+}
+
+
+
+bool MainWindow::ComputeEmuAppPath()
+{
+
+#ifdef _WIN32
+
+	constexpr const char dirSlash = '\\';
+	constexpr const char* const defaultEmuAppPath = "\\bin\\EmuApp";
+
+#elif defined(__APPLE__) || defined(__linux__)
+
+	constexpr const char dirSlash = '/';
+	constexpr const char* const defaultEmuAppPath = "/bin/EmuApp";
+#endif
+
+
+	std::string wxchipPath = static_cast<const char*>(wxTheApp->argv[0].c_str());
+	const auto firstSlash = wxchipPath.find_first_of(dirSlash);
+
+
+#ifdef _WIN32
+
+	const auto isFullPath = firstSlash != std::string::npos && wxchipPath[firstSlash - 1] == ':'; // like C:\WXChip.exe instead of WXChip.exe
+
+#elif defined(__APPLE__) || defined(__linux__)
+
+	const auto isFullPath = firstSlash == 0; // like /home/WXChip instead of ./WXChip
+#endif
+
+	std::cout << "wxchipPath: " << wxchipPath << std::endl;
+	std::cout << "firstSlash: " << firstSlash << std::endl;
+	std::cout << "isFullPath: " << isFullPath << std::endl;
+
+
+	if(isFullPath)
+	{
+		_emuApp += wxchipPath.substr(0, wxchipPath.find_last_of(dirSlash));
+	}
+
+	else
+	{
+		const auto wxchipDir = wxchipPath.substr(0, wxchipPath.find_last_of(dirSlash));
+		char cwd[256];
+#ifdef _WIN32
+		_getcwd(cwd, 255);
+#elif defined(__APPLE__) || defined(__linux__)
+		getcwd(cwd, 255);
+#endif
+		_emuApp += cwd;
+		_emuApp += dirSlash;
+		_emuApp += wxchipDir;
+	}
+	
+	_emuApp += defaultEmuAppPath;
+
+
+	if(!std::ifstream(_emuApp).good())
+	{
+		std::cerr << "EmuApp executable not found!" << std::endl;
+		return false;
+	}
+
+
+	_emuApp.insert(0, "\"");
+	_emuApp += "\"";
+
+	std::cout << "_emuApp after compute: " << _emuApp << std::endl;
+
+	return true;
 }

@@ -7,12 +7,6 @@
 class MainWindow final : public wxFrame
 {
 	friend class WXChip;
-#ifdef _WIN32
-	static constexpr const char* const defaultEmuAppPath = "\\bin\\EmuApp";
-#elif defined(__APPLE__) || defined(__linux__)
-	static constexpr const char* const defaultEmuAppPath = "/bin/EmuApp";
-#endif
-
 public:
 	enum { ID_LoadRom };
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
@@ -24,6 +18,8 @@ private:
 	void OnLoadRom(wxCommandEvent& ev);
 	void StartEmulator();
 	void StopEmulator();
+	bool ComputeEmuAppPath();	
+
 
 	std::string _emuApp;
 	std::string _romPath;
