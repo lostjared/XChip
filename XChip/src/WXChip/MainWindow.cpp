@@ -3,7 +3,6 @@
 #include <wx/wx.h>
 #endif
 
-#include <fstream>
 #include <iostream>
 #include <stdexcept>
 
