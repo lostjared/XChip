@@ -88,10 +88,6 @@ void op_0xxx(Cpu* const _cpu)
 {
 	switch (_cpu->opcode)
 	{
-		default: // 0NNN " calls RCA 1802 program at address NNN. not necessary for most ROMs. "
-			unknown_opcode(_cpu);
-			break;
-
 		case 0x00E0: // clear screen
 			std::fill_n(_cpu->gfx, arr_size(_cpu->gfx), 0);
 			break;
@@ -101,6 +97,22 @@ void op_0xxx(Cpu* const _cpu)
 
 			_cpu->pc = _cpu->stack[--_cpu->sp];
 			break;
+
+		default: // 0NNN or 00CN
+		{
+			if( ((_cpu->opcode & 0x00F0) >> 4) == 0xC )
+			{
+				// 00CN: Scroll display N lines down:
+				const auto n = N;
+				utility::LOG("Not Implemented SChip8 Opcode: 0x00CN");
+			}
+			else
+			{
+				unknown_opcode(_cpu);
+			}
+
+			break;
+		}
 	}
 }
 
