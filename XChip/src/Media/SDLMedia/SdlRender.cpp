@@ -50,8 +50,12 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	});
 
 	_pitch = width * 4;
+
+	const auto winW = width * 4;
+	const auto winH = height * 6;
+
 	_window = SDL_CreateWindow("Chip8 Emulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-                                   width * 4, height * 6, SDL_WINDOW_RESIZABLE);
+                                   winW, winH, SDL_WINDOW_RESIZABLE);
 
 	if (!_window) 
 		return false;
@@ -69,7 +73,18 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	if(SDL_SetTextureColorMod(_texture, 255, 255, 255))
 		return false;
 
-	
+
+
+	_camera = static_cast<SDL_Rect*> ( std::malloc(sizeof(SDL_Rect)) );
+
+	if(!_camera)
+		return false;
+
+	_camera->x = 0;
+	_camera->y = 0;
+	_camera->w = winW;
+	_camera->h = winH;
+
 	SDL_RenderClear(_rend);
 	SDL_RenderPresent(_rend);
 
@@ -81,6 +96,7 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 
 void SdlRender::Dispose() noexcept
 {
+	std::free(_camera);
 	SDL_DestroyTexture(_texture);
 	SDL_DestroyRenderer(_rend);
 	SDL_DestroyWindow(_window);
@@ -104,6 +120,9 @@ bool SdlRender::UpdateEvents() noexcept
 		switch (g_sdlEvent.window.event)
 		{
 			case SDL_WINDOWEVENT_RESIZED: /* fall */
+				SDL_GetWindowSize(_window, &_camera->w, &_camera->h);
+
+
 			case SDL_WINDOWEVENT_RESTORED: 
 				if (_resizeClbk) 
 					_resizeClbk(_resizeClbkArg);  
@@ -178,6 +197,8 @@ bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 
 	// set window size
 	SDL_SetWindowSize(_window, displayMode.w, displayMode.h);
+	_camera->w = displayMode.w;
+	_camera->h = displayMode.h;
 
 	return true;
 }
@@ -215,15 +236,36 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 	return true;
 }
 
+void SdlRender::SetScroll(const int *x, const int *y, bool lines) noexcept
+{
+	if(lines)
+	{
+		if(x)
+			_camera->x = (*x) * 22;
+		if(y)
+			_camera->y = (*y) * 22;
+	}
 
+	else
+	{
+		if(x)
+			_camera->x = *x;
+		if(y)
+			_camera->y = *y;
+	}
+}
 
 void SdlRender::DrawBuffer() noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	ASSERT_MSG(_buffer != nullptr, "attempt to draw null buffer");
 
+	SDL_RenderClear(_rend);
+
 	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
-	SDL_RenderCopy(_rend, _texture, nullptr, nullptr);
+	
+	SDL_RenderCopyEx(_rend, _texture, nullptr, _camera, 0.0, nullptr, SDL_FLIP_NONE);
+
 	SDL_RenderPresent(_rend);
 }
 

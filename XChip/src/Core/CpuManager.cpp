@@ -157,12 +157,11 @@ bool CpuManager::ResizeGfx(const size_t size)
 
 
 
-void CpuManager::SetFont(const uint8_t* font, const size_t size)
+void CpuManager::LoadFont(const uint8_t* font, const size_t size, const size_t at)
 {
 	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
-	ASSERT_MSG(arr_size(_cpu.memory) > size, "font size greater than Cpu::memory");
-
-	memcpy(_cpu.memory, font, size);
+	ASSERT_MSG( (arr_size(_cpu.memory) - at) > size, "font size greater than Cpu::memory");
+	memcpy(_cpu.memory + at, font, size);
 }
 
 
