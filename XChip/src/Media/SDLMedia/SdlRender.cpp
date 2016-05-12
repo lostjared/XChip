@@ -183,6 +183,35 @@ bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 }
 
 
+bool SdlRender::SetFullScreen(const bool val) noexcept
+{
+	using namespace utility::literals;
+
+	if(val)
+	{
+		if(SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP))
+		{
+			utility::LOGerr("Error while setting SdlRender Fullscreen: "_s + SDL_GetError());
+			return false;
+		}
+	}
+
+	else
+	{
+
+		if(SDL_SetWindowFullscreen(_window, 0))
+		{
+			utility::LOGerr("Error while setting SdlRender Windowed: "_s + SDL_GetError());
+			return false;
+		}
+	}
+
+
+	return true;
+}
+
+
+
 void SdlRender::DrawBuffer() noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();

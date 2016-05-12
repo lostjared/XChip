@@ -25,6 +25,7 @@ public:
 	utility::Color GetColorFilter() const noexcept override;
 	utility::Resolution GetResolution() const noexcept override;
 
+	bool SetFullScreen(const bool val) noexcept override;
 	bool SetResolution(const utility::Resolution& res) noexcept override;
 	bool SetColorFilter(const utility::Color& color) noexcept override;
 	void SetBuffer(const uint32_t* gfx) noexcept override;

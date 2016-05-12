@@ -21,6 +21,7 @@ static xchip::Emulator g_emulator;
 void configure_emulator(const std::vector<std::string>& arguments);
 /*********************************************************
  *	-RES  WidthxHeight ex: -RES 200x300
+ *	-FSC  fullscreen ex: -FSC
  *	-CFQ  Cpu Frequency in hz ex: -CFQ 600
  *	-SFQ  Sound Tone in hz ex: -SFQ 400
  *	-COL  Color in RGB ex: -COL 100x200x400
@@ -137,6 +138,7 @@ int main(int argc, char **argv)
 
 
 void res_config(const std::string& arg);
+void fsc_config(const std::string& arg);
 void cfq_config(const std::string& arg);
 void sfq_config(const std::string& arg);
 void col_config(const std::string& arg);
@@ -152,9 +154,10 @@ void configure_emulator(const std::vector<std::string>& arguments)
 	using ConfigFunc = void(*)(const std::string&);
 	using ConfigPair = std::pair<const char*, ConfigFunc>;
 
-	ConfigPair configTable[5] = 
+	ConfigPair configTable[6] = 
 	{
 		{"-RES", res_config},
+		{"-FSC", fsc_config},
 		{"-CFQ", cfq_config},
 		{"-SFQ", sfq_config},
 		{"-COL", col_config},
@@ -169,7 +172,7 @@ void configure_emulator(const std::vector<std::string>& arguments)
 	for(auto arg = begin; arg != end; ++arg)
 	{
 		bool validArg = std::any_of(std::begin(configTable), std::end(configTable),
-						[&arg](const ConfigPair& cpair) 
+						[&arg, &end](const ConfigPair& cpair) 
 						{
 							const auto argSize = (*arg).size();
 							const auto cmdSize = strlen(cpair.first);
@@ -178,7 +181,18 @@ void configure_emulator(const std::vector<std::string>& arguments)
 							{
 								if(*arg == cpair.first) 
 								{
-									cpair.second(*++arg);
+									const auto next = arg+1;
+
+									if(next != end && (*next)[0] != '-')
+									{
+										cpair.second(*next);
+										++arg;
+									}
+									else
+									{
+										cpair.second(*arg);
+									}
+
 									return true;
 								}
 							}
@@ -243,6 +257,29 @@ void res_config(const std::string& arg)
 
 
 }
+
+
+void fsc_config(const std::string&)
+{
+	try
+	{
+		std::cout << "Setting Render Fullscreen..." << std::endl;
+		if(!g_emulator.GetRender())
+			throw std::runtime_error("null Render");
+		if(!g_emulator.GetRender()->SetFullScreen(true))
+			throw std::runtime_error("iRender internal error");
+
+
+		std::cout << "Done." << std::endl;
+	}
+	catch(std::exception& e)
+	{
+		std::cerr << "Erro while setting Render fullscreen: " << e.what() << std::endl;
+	}
+
+}
+
+
 
 void cfq_config(const std::string& arg)
 {
