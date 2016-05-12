@@ -194,6 +194,11 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 			utility::LOGerr("Error while setting SdlRender Fullscreen: "_s + SDL_GetError());
 			return false;
 		}
+
+		if(SDL_ShowCursor(0) < 0)
+		{
+			utility::LOGerr("Error while hiding cursor: "_s + SDL_GetError());
+		}
 	}
 
 	else
