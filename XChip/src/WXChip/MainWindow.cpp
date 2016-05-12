@@ -25,6 +25,9 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
 	std::cout << "Creating MainWindow..." << std::endl;
 
+	if(!ComputeEmuAppPath())
+		throw std::runtime_error("could not find EmuApp executable!");
+
 	auto menuFile = make_unique<wxMenu>();
 
 	menuFile->Append(ID_LoadRom, "&LoadRom...\tCtrl-L", "Load a game rom");
@@ -38,9 +41,6 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
 	menuFile.release();
 	SetMenuBar(menuBar.release());
-	if(!ComputeEmuAppPath())
-		throw std::runtime_error("could not find EmuApp executable!");
-
 }
 
 
@@ -101,18 +101,18 @@ bool MainWindow::ComputeEmuAppPath()
 #ifdef _WIN32
 
 	constexpr const char dirSlash = '\\';
-	constexpr const char* const defaultEmuAppPath = "\\bin\\EmuApp";
+	constexpr const char* const finalEmuAppPath = "\\bin\\EmuApp";
 
 #elif defined(__APPLE__) || defined(__linux__)
 
 	constexpr const char dirSlash = '/';
-	constexpr const char* const defaultEmuAppPath = "/bin/EmuApp";
+	constexpr const char* const finalEmuAppPath = "/bin/EmuApp";
 #endif
 
 
-	std::string wxchipPath = static_cast<const char*>(wxTheApp->argv[0].c_str());
+	const std::string wxchipPath = static_cast<const char*>(wxTheApp->argv[0].c_str());
 	const auto firstSlash = wxchipPath.find_first_of(dirSlash);
-
+	const auto lastSlash = wxchipPath.find_last_of(dirSlash);
 
 #ifdef _WIN32
 
@@ -130,12 +130,11 @@ bool MainWindow::ComputeEmuAppPath()
 
 	if(isFullPath)
 	{
-		_emuApp += wxchipPath.substr(0, wxchipPath.find_last_of(dirSlash));
+		_emuApp += wxchipPath.substr(0, lastSlash);
 	}
 
 	else
 	{
-		const auto wxchipDir = wxchipPath.substr(0, wxchipPath.find_last_of(dirSlash));
 		char cwd[256];
 #ifdef _WIN32
 		_getcwd(cwd, 255);
@@ -144,10 +143,11 @@ bool MainWindow::ComputeEmuAppPath()
 #endif
 		_emuApp += cwd;
 		_emuApp += dirSlash;
-		_emuApp += wxchipDir;
+		_emuApp += wxchipPath.substr(0, lastSlash);
 	}
 	
-	_emuApp += defaultEmuAppPath;
+
+	_emuApp += finalEmuAppPath;
 
 
 	if(!std::ifstream(_emuApp).good())
@@ -156,9 +156,8 @@ bool MainWindow::ComputeEmuAppPath()
 		return false;
 	}
 
-
 	_emuApp.insert(0, "\"");
-	_emuApp += "\"";
+	_emuApp += "\" ";
 
 	std::cout << "_emuApp after compute: " << _emuApp << std::endl;
 
