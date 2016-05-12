@@ -181,17 +181,14 @@ void configure_emulator(const std::vector<std::string>& arguments)
 							{
 								if(*arg == cpair.first) 
 								{
-									const auto next = arg+1;
+									
+									++arg;
 
-									if(next != end && (*next)[0] != '-')
-									{
-										cpair.second(*next);
-										++arg;
-									}
-									else
-									{
+									if(arg != end && (*arg)[0] != '-')
 										cpair.second(*arg);
-									}
+
+									else
+										cpair.second(*(--arg));
 
 									return true;
 								}
@@ -199,17 +196,17 @@ void configure_emulator(const std::vector<std::string>& arguments)
 
 							else if(argSize > cmdSize)
 							{
-
+								
 								if((*arg).compare(0, cmdSize, cpair.first) == 0)
 								{
 									cpair.second((*arg).substr(cmdSize, argSize - cmdSize));
 									return true;
 								}
-
 							}
 
 							return false;
 						});
+
 
 		if(!validArg)
 			std::cout << "Unkown argument: " << *arg << std::endl;
