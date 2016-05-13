@@ -39,6 +39,10 @@ public:
 	const uint8_t* GetRegisters() const;
 	const size_t* GetStack() const;
 	const uint32_t* GetGfx() const;
+	const uint8_t& GetMemory(const size_t offset) const;
+	const uint8_t& GetRegisters(const size_t offset) const;
+	const size_t& GetStack(const size_t offset) const;
+	const uint32_t& GetGfx(const size_t offset) const;
 	const Cpu& GetCpu() const;
 
 	iRender* GetRender();
@@ -110,6 +114,10 @@ inline const uint8_t* CpuManager::GetMemory() const { return _cpu.memory; }
 inline const uint8_t* CpuManager::GetRegisters() const { return _cpu.registers; }
 inline const size_t* CpuManager::GetStack() const { return _cpu.stack; }
 inline const uint32_t* CpuManager::GetGfx() const { return _cpu.gfx; }
+inline const uint8_t& CpuManager::GetMemory(const size_t offset) const { ASSERT_MSG(GetMemorySize() > offset, "memory overflow"); return _cpu.memory[offset]; }
+inline const uint8_t& CpuManager::GetRegisters(const size_t offset) const{ ASSERT_MSG(GetRegistersSize() > offset, "registers overflow"); return _cpu.registers[offset]; }
+inline const size_t& CpuManager::GetStack(const size_t offset) const { ASSERT_MSG(GetStackSize() > offset, "stack overflow"); return _cpu.stack[offset]; }
+inline const uint32_t& CpuManager::GetGfx(const size_t offset) const { ASSERT_MSG(GetGfxSize() > offset, "GFX overflow"); return _cpu.gfx[offset]; }
 inline const Cpu& CpuManager::GetCpu() const { return _cpu; }
 
 inline iRender* CpuManager::GetRender() { return _cpu.render; }
