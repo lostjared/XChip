@@ -64,6 +64,7 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 
 	_manager.SetPC(0x200);
 	_manager.LoadFont(chip8DefaultFont, arr_size(chip8DefaultFont), 0);
+	_manager.LoadFont(chip8HiResFont, arr_size(chip8HiResFont), arr_size(chip8DefaultFont));
 	_manager.SetRender(render.release());
 	_manager.SetInput(input.release());
 	_manager.SetSound(sound.release());

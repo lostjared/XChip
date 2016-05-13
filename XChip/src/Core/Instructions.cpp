@@ -75,12 +75,10 @@ void execute_instruction(CpuManager& cpuMan)
 	auto& cpu = cpuMan.GetCpu();
 	cpu.opcode =  (cpu.memory[cpu.pc] << 8) | cpu.memory[cpu.pc + 1];
 	cpu.pc += 2;
-
-	const auto opmsn = static_cast<size_t>((cpu.opcode & 0xf000)>>12);
 	
-	ASSERT_MSG(opmsn < arr_size(instrTable), "Instruction Table Overflow!");
+	ASSERT_MSG(OPMSN < arr_size(instrTable), "Instruction Table Overflow!");
 	
-	instrTable[opmsn](cpuMan);
+	instrTable[OPMSN](cpuMan);
 }
 
 
@@ -97,20 +95,19 @@ void op_0xxx(CpuManager& cpuMan)
 		case 0x00EE: // return from a subroutine ( unwind stack )
 		{
 			ASSERT_MSG((cpuMan.GetSP() - 1) < cpuMan.GetStackSize(), "Stack Underflow");
-	
 			auto& cpu = cpuMan.GetCpu();
 			cpu.pc = cpu.stack[--cpu.sp];
 			break;
 		}
 
-		case 0x00FB: // 0x00FB scrolls display 4 pixels right:
+		case 0x00FB: // 0x00FB* SuperChip: scrolls display 4 pixels right:
 		{
 			const auto x = 4;
 			cpuMan.GetRender()->SetScroll( &x, nullptr);
 			break;
 		}
 
-		case 0x00FC: // 0x00FC scrolls display 4 pixels left:
+		case 0x00FC: // 0x00FC* SuperChip: scrolls display 4 pixels left:
 		{
 			const auto x = -4;
 			cpuMan.GetRender()->SetScroll(&x, nullptr);
@@ -118,9 +115,13 @@ void op_0xxx(CpuManager& cpuMan)
 			break;
 		}
 
+		case 0x00FD: // 0x00FD* SuperChip : exit CHIP interpreter
+			// set error flag to exit
+			cpuMan.SetErrorFlag(true);
+			break;
 
 
-		case 0x00FF: // Enable extended screen mode 
+		case 0x00FF: // 0x00FF* SuperChip: Enable extended screen mode 
 		{
 			cpuMan.SetGfx(64 * 128);
 			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
@@ -130,13 +131,17 @@ void op_0xxx(CpuManager& cpuMan)
 				utility::LOGerr("Could not set extended resolution mode!");
 				cpuMan.SetErrorFlag(true);
 			}
-			
+			cpuMan.GetRender()->DrawBuffer();
+	
 			break;
 		}
 
-		case 0x00FE: //    Disable extended screen mode
+
+		case 0x00FE: // 0x00FE* SuperChip:  Disable extended screen mode
 		{
 			cpuMan.SetGfx(64 * 32);
+			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
+
 			if(!cpuMan.GetRender()->SetResolution( { 64, 32 } ))
 			{
 				utility::LOGerr("Could not set extended resolution mode!");
@@ -151,7 +156,7 @@ void op_0xxx(CpuManager& cpuMan)
 		{
 			if( ((cpuMan.GetOpcode() & 0x00F0) >> 4 ) == 0xC )
 			{
-				// 00CN: Scroll display N lines down:
+				// 00CN* SuperChip: Scroll display N lines down:
 				const auto n = N;
 				cpuMan.GetRender()->SetScroll(nullptr, &n);
 			}
@@ -429,12 +434,14 @@ void op_DXYN(CpuManager& cpuMan)
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
-	const int height = N;
+	const int height = ( cpuMan.GetRender()->GetResolution().w > 32 && N == 0 ) ? 16 : N;
+	const int width = (height == 16) ? 16 : 8;
+
 	const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 
 	for (int i = 0; i < height; ++i, ++_8bitRow)
 	{
-		for (int j = 0; j < 8; ++j)
+		for (int j = 0; j < width; ++j)
 		{
 			const int px = ((vx + j) & 63);
 			const int py = ((vy + i) & 31);
@@ -513,9 +520,11 @@ void op_FXxx(CpuManager& cpuMan) // 9 instructions.
 }
 
 
+// Set I to the Hi Res font corresponding the digit in VX
 void op_FX30(CpuManager& cpuMan)
 {
-	cpuMan.SetIndexRegister( reinterpret_cast<size_t> ( fonts::chip8HiResFont + (VX * 10) )  );
+	using utility::arr_size;
+	cpuMan.SetIndexRegister(  arr_size(fonts::chip8DefaultFont) + ( VX * 10 )  );
 }
 
 
@@ -563,6 +572,15 @@ void op_FXx5(CpuManager& cpuMan)
 				"registers overflow");
 
 			std::copy_n(cpuMan.GetMemory() + cpuMan.GetIndexRegister(), X + 1, cpuMan.GetRegisters());
+			break;
+
+		case 0x75: // 0xFX75* SuperChip: Store V0...VX in RPL user flags ( X <= 7 )
+			utility::LOGerr("opcode 0xFX75 not implemented.");
+			break;
+
+
+		case 0x85: // 0xFX85* SuperChip: Read V0...VX from RPL user flags ( X <= 7 )
+			utility::LOGerr("opcode 0xFX85 not implemented.");
 			break;
 
 		default: 

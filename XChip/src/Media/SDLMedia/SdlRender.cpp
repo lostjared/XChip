@@ -162,8 +162,7 @@ bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
 bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 {
 
-	_SDLRENDER_INITIALIZED_ASSERT_();
-	
+	_SDLRENDER_INITIALIZED_ASSERT_();	
 	if( res.w <= 0 || res.h <= 0 )
 	{
 		xchip::utility::LOGerr("SetResolution: w and h must be greater than 0.");
@@ -188,6 +187,7 @@ bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 		return false;
 	}
 
+/*
 	// Get the actual evaluated width and height:
 	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
 	{
@@ -196,10 +196,9 @@ bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 	}
 
 	// set window size
-	SDL_SetWindowSize(_window, displayMode.w, displayMode.h);
-	_camera->w = displayMode.w;
-	_camera->h = displayMode.h;
-
+	SDL_SetWindowSize(_window, res.w, res.h);
+	SDL_GetWindowSize(_window, &_camera->w, &_camera->h);
+*/
 	return true;
 }
 
