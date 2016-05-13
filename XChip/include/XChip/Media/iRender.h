@@ -25,8 +25,8 @@ public:
 	virtual bool SetColorFilter(const utility::Color& color) noexcept = 0;
 	virtual bool SetResolution(const utility::Resolution& res) noexcept = 0;
 	virtual bool SetFullScreen(const bool value) noexcept = 0;
+	virtual void SetScroll(const int *x, const int *y, bool lines = false) noexcept = 0;
 	virtual void SetBuffer(const uint32_t* gfx) noexcept = 0;
-
 	virtual void DrawBuffer() noexcept = 0;
 	virtual void HideWindow() noexcept = 0;
 	virtual void ShowWindow() noexcept = 0;

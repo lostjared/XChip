@@ -10,7 +10,7 @@ namespace xchip { namespace fonts {
 
 extern uint8_t chip8DefaultFont[80];
 
-
+extern uint8_t chip8HiResFont[160];
 
 
 

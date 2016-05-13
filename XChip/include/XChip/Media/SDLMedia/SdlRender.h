@@ -6,7 +6,7 @@
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
-
+struct SDL_Rect;
 
 namespace xchip {
 
@@ -28,6 +28,10 @@ public:
 	bool SetFullScreen(const bool val) noexcept override;
 	bool SetResolution(const utility::Resolution& res) noexcept override;
 	bool SetColorFilter(const utility::Color& color) noexcept override;
+	void SetScroll(const int *x, const int *y, bool lines = false) noexcept override;
+
+
+
 	void SetBuffer(const uint32_t* gfx) noexcept override;
 	void DrawBuffer() noexcept override;
 	void HideWindow() noexcept override;
@@ -41,6 +45,7 @@ private:
 	SDL_Window* _window = nullptr;
 	SDL_Renderer* _rend = nullptr;
 	SDL_Texture* _texture = nullptr;
+	SDL_Rect* _camera     = nullptr;
 	const uint32_t* _buffer = nullptr;
 	WinCloseCallback _closeClbk = nullptr;
 	WinResizeCallback _resizeClbk = nullptr;

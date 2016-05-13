@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <XChip/Core/Fonts.h>
 #include <XChip/Core/CpuManager.h>
 #include <XChip/Core/Instructions.h>
+#include <XChip/Media/iRender.h>
 #include <XChip/Media/iInput.h>
 #include <XChip/Media/iSound.h>
 #include <XChip/Utility/Alloc.h>
@@ -14,15 +16,15 @@ namespace xchip { namespace instructions {
 using utility::arr_size;
 
 
-#define OPMSN ((_cpu->opcode & 0xf000) >> 12) // opcode most significant nibble
-#define X   ((_cpu->opcode & 0x0f00) >> 8)
-#define Y   ((_cpu->opcode & 0x00f0) >> 4)
-#define N   (_cpu->opcode & 0x000f)
-#define NN  (_cpu->opcode & 0x00ff)
-#define NNN (_cpu->opcode & 0x0fff)
-#define VF  (_cpu->registers [0xF])
-#define VX  (_cpu->registers [X])
-#define VY  (_cpu->registers [Y])
+#define OPMSN ((cpuMan.GetOpcode() & 0xf000) >> 12) // opcode most significant nibble
+#define X   ((cpuMan.GetOpcode() & 0x0f00) >> 8)
+#define Y   ((cpuMan.GetOpcode() & 0x00f0) >> 4)
+#define N   (cpuMan.GetOpcode() & 0x000f)
+#define NN  (cpuMan.GetOpcode() & 0x00ff)
+#define NNN (cpuMan.GetOpcode() & 0x0fff)
+#define VF  (cpuMan.GetRegisters()[0xF])
+#define VX  (cpuMan.GetRegisters()[X])
+#define VY  (cpuMan.GetRegisters()[Y])
 
 
 InstrTable instrTable[16] =
@@ -36,131 +38,196 @@ InstrTable instrTable[16] =
 
 
 
-void unknown_opcode(Cpu* const _cpu)
+void unknown_opcode(CpuManager& cpuMan)
 {
 	using namespace utility;
 	using namespace utility::literals;
 	LOGerr("Unknown Opcode: ", Endl::No);
-	LOGerr(_cpu->opcode, Fmt::Hex);
-	_cpu->errorFlag = true;
+	LOGerr(cpuMan.GetOpcode(), Fmt::Hex);
+	cpuMan.SetErrorFlag(true);
 }
 
 
 
 
-void execute_instruction(Cpu& _cpu)
+void execute_instruction(CpuManager& cpuMan)
 {
-	ASSERT_MSG(_cpu.memory != nullptr && arr_size(_cpu.memory) >= 0x0FFF, 
+	ASSERT_MSG(cpuMan.GetMemory() != nullptr && cpuMan.GetMemorySize() >= 0x0FFF, 
                    "Cpu::memory, null or size is too low!");
 
 	
-	ASSERT_MSG(_cpu.registers != nullptr && arr_size(_cpu.registers) >= 0x10,
+	ASSERT_MSG(cpuMan.GetRegisters() != nullptr && cpuMan.GetRegistersSize() >= 0x10,
                    "Cpu::registers, null or size is too low!");
 
 
-	ASSERT_MSG(_cpu.stack != nullptr && arr_size(_cpu.stack) >= 0x10,
+	ASSERT_MSG(cpuMan.GetStack() != nullptr && cpuMan.GetStackSize() >= 0x10,
                    "Cpu::stack, null or size is too low!");
 
 
-	ASSERT_MSG(_cpu.gfx != nullptr && arr_size(_cpu.gfx) >= (64 * 32),
+	ASSERT_MSG(cpuMan.GetGfx() != nullptr && cpuMan.GetGfxSize() >= (64 * 32),
                    "Cpu::Gfx, null or size is too low!");
 
 
-	ASSERT_MSG((_cpu.pc + 1) < arr_size(_cpu.memory), 
+	ASSERT_MSG((cpuMan.GetPC() + 1) < cpuMan.GetMemorySize(), 
                    "Cpu::pc greater than Cpu::memory");
 
 
-
-	_cpu.opcode =  (_cpu.memory[_cpu.pc] << 8) | _cpu.memory[_cpu.pc + 1];
-	_cpu.pc += 2;
-
-	const auto opmsn = static_cast<size_t>((_cpu.opcode & 0xf000)>>12);
+	auto& cpu = cpuMan.GetCpu();
+	cpu.opcode =  (cpu.memory[cpu.pc] << 8) | cpu.memory[cpu.pc + 1];
+	cpu.pc += 2;
 	
-	ASSERT_MSG(opmsn < arr_size(instrTable), "Instruction Table Overflow!");
+	ASSERT_MSG(OPMSN < arr_size(instrTable), "Instruction Table Overflow!");
 	
-	instrTable[opmsn](&_cpu);
+	instrTable[OPMSN](cpuMan);
 }
 
 
 
 
-void op_0xxx(Cpu* const _cpu)
+void op_0xxx(CpuManager& cpuMan)
 {
-	switch (_cpu->opcode)
+	switch (cpuMan.GetOpcode())
 	{
-		default: // 0NNN " calls RCA 1802 program at address NNN. not necessary for most ROMs. "
-			unknown_opcode(_cpu);
-			break;
-
 		case 0x00E0: // clear screen
-			std::fill_n(_cpu->gfx, arr_size(_cpu->gfx), 0);
+			cpuMan.CleanGfx();
 			break;
 
 		case 0x00EE: // return from a subroutine ( unwind stack )
-			ASSERT_MSG((_cpu->sp - 1) < arr_size(_cpu->stack), "Stack Underflow");
-
-			_cpu->pc = _cpu->stack[--_cpu->sp];
+		{
+			ASSERT_MSG((cpuMan.GetSP() - 1) < cpuMan.GetStackSize(), "Stack Underflow");
+			auto& cpu = cpuMan.GetCpu();
+			cpu.pc = cpu.stack[--cpu.sp];
 			break;
+		}
+
+		case 0x00FB: // 0x00FB* SuperChip: scrolls display 4 pixels right:
+		{
+			const auto x = 4;
+			cpuMan.GetRender()->SetScroll( &x, nullptr);
+			break;
+		}
+
+		case 0x00FC: // 0x00FC* SuperChip: scrolls display 4 pixels left:
+		{
+			const auto x = -4;
+			cpuMan.GetRender()->SetScroll(&x, nullptr);
+
+			break;
+		}
+
+		case 0x00FD: // 0x00FD* SuperChip : exit CHIP interpreter
+			// set error flag to exit
+			cpuMan.SetErrorFlag(true);
+			break;
+
+
+		case 0x00FF: // 0x00FF* SuperChip: Enable extended screen mode 
+		{
+			cpuMan.SetGfx(64 * 128);
+			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
+
+			if(!cpuMan.GetRender()->SetResolution( { 64, 128 } ))
+			{
+				utility::LOGerr("Could not set extended resolution mode!");
+				cpuMan.SetErrorFlag(true);
+			}
+			cpuMan.GetRender()->DrawBuffer();
+	
+			break;
+		}
+
+
+		case 0x00FE: // 0x00FE* SuperChip:  Disable extended screen mode
+		{
+			cpuMan.SetGfx(64 * 32);
+			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
+
+			if(!cpuMan.GetRender()->SetResolution( { 64, 32 } ))
+			{
+				utility::LOGerr("Could not set extended resolution mode!");
+				cpuMan.SetErrorFlag(true);
+			}
+			
+			break;
+
+		}
+
+		default: // 0NNN or 00CN
+		{
+			if( ((cpuMan.GetOpcode() & 0x00F0) >> 4 ) == 0xC )
+			{
+				// 00CN* SuperChip: Scroll display N lines down:
+				const auto n = N;
+				cpuMan.GetRender()->SetScroll(nullptr, &n);
+			}
+
+			else
+			{
+				unknown_opcode(cpuMan);
+			}
+
+			break;
+		}
 	}
 }
 
 
 
 // 1NNN:  jumps to address NNN
-void op_1NNN(Cpu *const _cpu)
+void op_1NNN(CpuManager& cpuMan)
 {
-	_cpu->pc = NNN;
+	cpuMan.SetPC( NNN );
 }
 
 
 
 
 // 2NNN: Calls subroutine at address NNN
-void op_2NNN(Cpu *const _cpu)
+void op_2NNN(CpuManager& cpuMan)
 {
+	ASSERT_MSG(cpuMan.GetSP() < cpuMan.GetStackSize(), "Stack Overflow");
 
-	ASSERT_MSG(_cpu->sp < arr_size(_cpu->stack), "Stack Overflow");
-	
-	_cpu->stack[_cpu->sp++] = _cpu->pc;
-	_cpu->pc = NNN;
+	auto& cpu = cpuMan.GetCpu();
+	cpu.stack[cpu.sp++] = cpu.pc;
+	cpu.pc = NNN;
 }
 
 
 
 // 3XNN: Skips the next instruction if VX equals NN
-void op_3XNN(Cpu *const _cpu)
+void op_3XNN(CpuManager& cpuMan)
 {
 	if (VX == NN)
-		_cpu->pc += 2;
+		cpuMan.SetPC( cpuMan.GetPC() + 2 );
 }
 
 
 
 // 4XNN: Skips the next instruction if VX doesn't equal NN
-void op_4XNN(Cpu *const _cpu)
+void op_4XNN(CpuManager& cpuMan)
 {
 	if (VX != NN)
-		_cpu->pc += 2;
+		cpuMan.SetPC( cpuMan.GetPC() + 2 );
 }
 
 
 
 // 5XY0: Skips the next instruction if VX equals VY
-void op_5XY0(Cpu *const _cpu)
+void op_5XY0(CpuManager& cpuMan)
 {
 	if (VX == VY)
-		_cpu->pc += 2;
+		cpuMan.SetPC( cpuMan.GetPC() + 2 );
 }
 
 
 // 6XNN: store number NN in register VX
-void op_6XNN(Cpu *const _cpu)
+void op_6XNN(CpuManager& cpuMan)
 {
 	VX = NN;
 }
 
 // 7XNN: add the value NN to register VX
-void op_7XNN(Cpu *const _cpu)
+void op_7XNN(CpuManager& cpuMan)
 {
 	auto& vx = VX;
 	vx = ((vx + NN) & 0xFF);
@@ -185,13 +252,13 @@ static InstrTable op_8XYx_Table[16] =
 	op_8XYE, unknown_opcode
 };
 
-void op_8XYx(Cpu* const _cpu)
+void op_8XYx(CpuManager& cpuMan)
 {
 	ASSERT_MSG(static_cast<size_t>(N) < arr_size(op_8XYx_Table),
 		"op_8XYx_Table Overflow!");
 
 	// call it
-	op_8XYx_Table[N](_cpu);
+	op_8XYx_Table[N](cpuMan);
 
 }
 
@@ -199,7 +266,7 @@ void op_8XYx(Cpu* const _cpu)
 
 
 // 8XY0: store the value of register VY in register VX
-void op_8XY0(Cpu *const _cpu)
+void op_8XY0(CpuManager& cpuMan)
 {
 	VX = VY;
 }
@@ -210,7 +277,7 @@ void op_8XY0(Cpu *const _cpu)
 
 
 // 8XY1: set VX to VX | VY
-void op_8XY1(Cpu *const _cpu)
+void op_8XY1(CpuManager& cpuMan)
 {
 	auto& vx = VX;
 	vx = (VY | vx);
@@ -223,7 +290,7 @@ void op_8XY1(Cpu *const _cpu)
 
 
 // 8XY2: sets VX to VX and VY
-void op_8XY2(Cpu *const _cpu)
+void op_8XY2(CpuManager& cpuMan)
 {
 	auto& vx = VX;
 	vx = (VY & vx);
@@ -235,7 +302,7 @@ void op_8XY2(Cpu *const _cpu)
 
 
 // 8XY3: sets VX to VX xor VY
-void op_8XY3(Cpu *const _cpu)
+void op_8XY3(CpuManager& cpuMan)
 {
 	auto& vx = VX;
 	vx = ((VY ^ vx) & 0xFF);
@@ -247,7 +314,7 @@ void op_8XY3(Cpu *const _cpu)
 
 
 // 8XY4: Adds VY to VX . VF is set to 1 when theres a carry, and to 0 when there isn't
-void op_8XY4(Cpu *const _cpu)
+void op_8XY4(CpuManager& cpuMan)
 {
 	auto& vx = VX;
 	uint16_t result = vx + VY; // compute sum
@@ -262,7 +329,7 @@ void op_8XY4(Cpu *const _cpu)
 
 
 // 8XY5: VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-void op_8XY5(Cpu *const _cpu)
+void op_8XY5(CpuManager& cpuMan)
 {
 	auto const vy = VY;
 	auto& vx = VX;
@@ -278,7 +345,7 @@ void op_8XY5(Cpu *const _cpu)
 
 
 // 8XY6: Shifts VX right by one. VF is set to the value of the least significant bit of VX before the shift.
-void op_8XY6(Cpu *const _cpu)
+void op_8XY6(CpuManager& cpuMan)
 {
 	auto& vx = VX;
 	VF = vx & 0x1; // check the least significant bit
@@ -292,7 +359,7 @@ void op_8XY6(Cpu *const _cpu)
 
 
 // 8XY7: Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-void op_8XY7(Cpu *const _cpu)
+void op_8XY7(CpuManager& cpuMan)
 {
 	const auto vy = VY;
 	auto &vx = VX; 
@@ -307,7 +374,7 @@ void op_8XY7(Cpu *const _cpu)
 
 
 // 8XYE Shifts VX left by one. VF is set to the value of the most significant bit of VX before the shift.
-void op_8XYE(Cpu *const _cpu)
+void op_8XYE(CpuManager& cpuMan)
 {
 	auto& vx = VX;
 	VF = (vx & 0x80) >> 7;  // check the most significant bit
@@ -327,32 +394,32 @@ void op_8XYE(Cpu *const _cpu)
 
 
 // 9XY0: skips the next instruction if VX doesn't equal VY
-void op_9XY0(Cpu *const _cpu)
+void op_9XY0(CpuManager& cpuMan)
 {
 	if (VX != VY)
-		_cpu->pc += 2;
+		cpuMan.SetPC(cpuMan.GetPC() + 2 );
 }
 
 
 
 // ANNN: sets I to the address NNN
-void op_ANNN(Cpu *const _cpu)
+void op_ANNN(CpuManager& cpuMan)
 {
-	_cpu->I = NNN;
+	cpuMan.SetIndexRegister( NNN );
 }
 
 
 
 // BNNN: jumps to the address NNN plus V0
-void op_BNNN(Cpu *const _cpu)
+void op_BNNN(CpuManager& cpuMan)
 {
-	_cpu->pc = ((NNN + _cpu->registers[0]) & 0xFFFF);
+	cpuMan.SetPC(  ((NNN + cpuMan.GetRegisters()[0]) & 0xFFFF)  );
 }
 
 
 
 // CXNN: Sets VX to a bitwise operation AND ( & ) between NN and a random number
-void op_CXNN(Cpu *const _cpu)
+void op_CXNN(CpuManager& cpuMan)
 {
 	VX = ((std::rand() % 0xff) & NN);
 }
@@ -361,18 +428,20 @@ void op_CXNN(Cpu *const _cpu)
 
 
 // DXYN: DRAW INSTRUCTION
-void op_DXYN(Cpu *const _cpu)
+void op_DXYN(CpuManager& cpuMan)
 {
 
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
-	const int height = N;
-	const uint8_t* _8bitRow = _cpu->memory + _cpu->I;
+	const int height = ( cpuMan.GetRender()->GetResolution().w > 32 && N == 0 ) ? 16 : N;
+	const int width = (height == 16) ? 16 : 8;
+
+	const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 
 	for (int i = 0; i < height; ++i, ++_8bitRow)
 	{
-		for (int j = 0; j < 8; ++j)
+		for (int j = 0; j < width; ++j)
 		{
 			const int px = ((vx + j) & 63);
 			const int py = ((vy + i) & 31);
@@ -381,9 +450,9 @@ void op_DXYN(Cpu *const _cpu)
 
 			const bool pixel = (*_8bitRow & (1 << (7 - j))) != 0;
 
-			VF |= ((_cpu->gfx[pixelPos] > 0) & pixel);
+			VF |= ((cpuMan.GetGfx()[pixelPos] > 0) & pixel);
 
-			_cpu->gfx[pixelPos] ^= (pixel) ? ~0 : 0;
+			cpuMan.GetGfx()[pixelPos] ^= (pixel) ? ~0 : 0;
 		}
 	}
 }
@@ -394,26 +463,30 @@ void op_DXYN(Cpu *const _cpu)
 
 
 // 2 instruction EX9E, EXA1
-void op_EXxx(Cpu *const _cpu)
+void op_EXxx(CpuManager& cpuMan)
 {
-	ASSERT_MSG(_cpu->input != nullptr && _cpu->input->IsInitialized(),
+	ASSERT_MSG(cpuMan.GetInput() != nullptr && cpuMan.GetInput()->IsInitialized(),
                "Cpu::Input, null or not initialized!");
 
 
 	switch (N)
 	{
-		default: unknown_opcode(_cpu); break;
-
 		case 0xE: // EX9E  Skips the next instruction if the key stored in VX is pressed.
-			if (_cpu->input->IsKeyPressed((Key)VX))
-				_cpu->pc += 2;
+			if (cpuMan.GetInput()->IsKeyPressed((Key)VX))
+				cpuMan.SetPC( cpuMan.GetPC() + 2 );
 			break;
 
 
 		case 0x1: // 0xEXA1  Skips the next instruction if the key stored in VX isn't pressed.
-			if (!_cpu->input->IsKeyPressed((Key)VX))
-				_cpu->pc += 2;
+			if (!cpuMan.GetInput()->IsKeyPressed((Key)VX))
+				cpuMan.SetPC( cpuMan.GetPC() + 2 );
 			break;
+
+		default: 
+			unknown_opcode(cpuMan); 
+			break;
+
+
 	}
 }
 
@@ -429,7 +502,7 @@ void op_EXxx(Cpu *const _cpu)
 // FXxxx subtable start
 static InstrTable op_FXxx_Table[] =
 {
-	unknown_opcode, unknown_opcode, unknown_opcode,
+	op_FX30, unknown_opcode, unknown_opcode,
 	op_FX33, unknown_opcode, op_FXx5, unknown_opcode,
 	op_FX07, op_FX18, op_FX29, op_FX0A, unknown_opcode,
 	unknown_opcode, unknown_opcode, op_FX1E
@@ -438,63 +511,83 @@ static InstrTable op_FXxx_Table[] =
 
 
 
-void op_FXxx(Cpu *const _cpu) // 9 instructions.
+void op_FXxx(CpuManager& cpuMan) // 9 instructions.
 {
 	ASSERT_MSG(static_cast<size_t>(N) < arr_size(op_FXxx_Table),
 		"op_FXxx_Table overflow...");
 
-	op_FXxx_Table[N](_cpu);
+	op_FXxx_Table[N](cpuMan);
+}
+
+
+// Set I to the Hi Res font corresponding the digit in VX
+void op_FX30(CpuManager& cpuMan)
+{
+	using utility::arr_size;
+	cpuMan.SetIndexRegister(  arr_size(fonts::chip8DefaultFont) + ( VX * 10 )  );
 }
 
 
 
-
 // FX07   Sets VX to the value of the delay timer.
-void op_FX07(Cpu *const _cpu)
+void op_FX07(CpuManager& cpuMan)
 {
-	VX = _cpu->delayTimer;
+	VX = cpuMan.GetDelayTimer();
 }
 
 
 
 
 // FX0A   A key press is awaited, and then stored in VX.
-void op_FX0A(Cpu *const _cpu)
+void op_FX0A(CpuManager& cpuMan)
 {
-	ASSERT_MSG(_cpu->input != nullptr && _cpu->input->IsInitialized(),
+	ASSERT_MSG(cpuMan.GetInput() != nullptr && cpuMan.GetInput()->IsInitialized(),
                "Cpu::input, null or not initialized!");
 
-	VX = static_cast<uint8_t>(_cpu->input->WaitKeyPress());
+	VX = static_cast<uint8_t>(cpuMan.GetInput()->WaitKeyPress());
 }
 
 
 
 
 
-void op_FXx5(Cpu *const _cpu)
+void op_FXx5(CpuManager& cpuMan)
 {
-	switch (_cpu->opcode & 0x00ff)
+	switch (NN)
 	{
-		default: unknown_opcode(_cpu); break;
-
 		case 0x15: // FX15  Sets the delay timer to VX.
-			_cpu->delayTimer = VX;
+			cpuMan.SetDelayTimer( VX );
 			break;
 
 
 		case 0x55: //FX55  Stores V0 to VX in memory starting at address I
-			ASSERT_MSG(static_cast<size_t>(X+1) < (arr_size(_cpu->memory) - _cpu->I),
+			ASSERT_MSG(static_cast<size_t>(X+1) < (cpuMan.GetMemorySize() - cpuMan.GetIndexRegister()),
 				"memory overflow");
 
-			std::copy_n(_cpu->registers, X + 1, _cpu->memory + _cpu->I);
+			std::copy_n(cpuMan.GetRegisters(), X + 1, cpuMan.GetMemory() + cpuMan.GetIndexRegister());
 			break;
 
 		case 0x65: //FX65  Fills V0 to VX with values from memory starting at address I.
-			ASSERT_MSG(static_cast<size_t>(X+1) < arr_size(_cpu->registers),
+			ASSERT_MSG(static_cast<size_t>(X+1) < cpuMan.GetRegistersSize(),
 				"registers overflow");
 
-			std::copy_n(_cpu->memory + _cpu->I, X + 1, _cpu->registers);
+			std::copy_n(cpuMan.GetMemory() + cpuMan.GetIndexRegister(), X + 1, cpuMan.GetRegisters());
 			break;
+
+		case 0x75: // 0xFX75* SuperChip: Store V0...VX in RPL user flags ( X <= 7 )
+			utility::LOGerr("opcode 0xFX75 not implemented.");
+			break;
+
+
+		case 0x85: // 0xFX85* SuperChip: Read V0...VX from RPL user flags ( X <= 7 )
+			utility::LOGerr("opcode 0xFX85 not implemented.");
+			break;
+
+		default: 
+			unknown_opcode(cpuMan); 
+			break;
+
+
 	}
 }
 
@@ -503,19 +596,19 @@ void op_FXx5(Cpu *const _cpu)
 
 
 // FX18   Sets the sound timer to VX.
-void op_FX18(Cpu *const _cpu)
+void op_FX18(CpuManager& cpuMan)
 {
-	ASSERT_MSG(_cpu->sound != nullptr && _cpu->sound->IsInitialized(),
+	ASSERT_MSG(cpuMan.GetSound() != nullptr && cpuMan.GetSound()->IsInitialized(),
                "Cpu::sound, null or not initialized");
 
-	_cpu->soundTimer = VX;
+	cpuMan.SetSoundTimer(VX);
 
-	if (_cpu->soundTimer > 0) {
-		_cpu->sound->Play(_cpu->soundTimer);
+	if (cpuMan.GetSoundTimer() > 0) {
+		cpuMan.GetSound()->Play(cpuMan.GetSoundTimer());
 	}
 	else {
-		if (_cpu->sound->IsPlaying())
-			_cpu->sound->Stop();
+		if (cpuMan.GetSound()->IsPlaying())
+			cpuMan.GetSound()->Stop();
 	}
 }
 
@@ -523,18 +616,18 @@ void op_FX18(Cpu *const _cpu)
 
 
 // FX1E   Adds VX to I.
-void op_FX1E(Cpu *const _cpu)
+void op_FX1E(CpuManager& cpuMan)
 {
-	_cpu->I = ((_cpu->I + VX) & 0xFFFF);
+	cpuMan.SetIndexRegister( ((cpuMan.GetIndexRegister() + VX) & 0xFFFF) );
 }
 
 
 
 // FX29  Sets I to the location of the sprite for the character in VX. 
-void op_FX29(Cpu *const _cpu)
+void op_FX29(CpuManager& cpuMan)
 {
 	// Characters 0-F (in hexadecimal) are represented by a 4x5 font.
-	_cpu->I = VX * 5;
+	cpuMan.SetIndexRegister( VX * 5 );
 }
 
 
@@ -545,15 +638,17 @@ void op_FX29(Cpu *const _cpu)
 // and the least significant digit at I plus 2. 
 // (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, 
 //  the tens digit at location I+1, and the ones digit at location I+2.)
-void op_FX33(Cpu *const _cpu)
+void op_FX33(CpuManager& cpuMan)
 {
-	ASSERT_MSG(arr_size(_cpu->memory) > (_cpu->I + 2),
+	ASSERT_MSG(cpuMan.GetMemorySize() > (cpuMan.GetIndexRegister() + 2),
 		"Cpu::I + 2 overflows Cpu::memory!");
 
+	auto* memory = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 	const uint8_t vx = VX;
-	_cpu->memory[_cpu->I + 2] = vx % 10;
-	_cpu->memory[_cpu->I + 1] = (vx / 10) % 10;
-	_cpu->memory[_cpu->I] = (vx / 100);
+	memory[2] = vx % 10;
+	memory[1] = (vx / 10) % 10;
+	memory[0] = (vx / 100);
+
 }
 
 
@@ -565,5 +660,13 @@ void op_FX33(Cpu *const _cpu)
 
 
 /******** OP_FXxx END *********/
+
+
+
+
+
+
+
+
 
 }}

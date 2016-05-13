@@ -118,7 +118,6 @@ int main(int argc, char **argv)
 			g_emulator.ExecuteInstr();
 		if (g_emulator.GetDrawFlag())
 			g_emulator.Draw();
-
 	}
 
 
