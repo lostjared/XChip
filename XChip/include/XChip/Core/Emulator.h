@@ -11,7 +11,7 @@
  
 
 namespace xchip {
-namespace instructions { extern void execute_instruction(Cpu&); }
+namespace instructions { extern void execute_instruction(CpuManager&); }
 using UniqueRender = std::unique_ptr<iRender>;
 using UniqueInput = std::unique_ptr<iInput>;
 using UniqueSound = std::unique_ptr<iSound>;
@@ -120,7 +120,7 @@ inline iSound* Emulator::GetSound() { return _manager.GetSound(); }
 
 inline void Emulator::ExecuteInstr()
 {
-	instructions::execute_instruction(_manager.GetCpu());
+	instructions::execute_instruction(_manager);
 	_instrf = false;
 }
 

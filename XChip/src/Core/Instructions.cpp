@@ -99,7 +99,7 @@ void op_0xxx(CpuManager& cpuMan)
 			ASSERT_MSG((cpuMan.GetSP() - 1) < cpuMan.GetStackSize(), "Stack Underflow");
 	
 			auto& cpu = cpuMan.GetCpu();
-			cpu.pc = cpu.stack[cpu.sp];
+			cpu.pc = cpu.stack[--cpu.sp];
 			break;
 		}
 
@@ -180,8 +180,8 @@ void op_1NNN(CpuManager& cpuMan)
 // 2NNN: Calls subroutine at address NNN
 void op_2NNN(CpuManager& cpuMan)
 {
-
 	ASSERT_MSG(cpuMan.GetSP() < cpuMan.GetStackSize(), "Stack Overflow");
+
 	auto& cpu = cpuMan.GetCpu();
 	cpu.stack[cpu.sp++] = cpu.pc;
 	cpu.pc = NNN;
@@ -400,7 +400,7 @@ void op_9XY0(CpuManager& cpuMan)
 // ANNN: sets I to the address NNN
 void op_ANNN(CpuManager& cpuMan)
 {
-	cpuMan.GetCpu().I = NNN;
+	cpuMan.SetIndexRegister( NNN );
 }
 
 
@@ -414,7 +414,7 @@ void op_BNNN(CpuManager& cpuMan)
 
 
 // CXNN: Sets VX to a bitwise operation AND ( & ) between NN and a random number
-void op_CXNN(Cpu *const _cpu)
+void op_CXNN(CpuManager& cpuMan)
 {
 	VX = ((std::rand() % 0xff) & NN);
 }
@@ -430,7 +430,7 @@ void op_DXYN(CpuManager& cpuMan)
 	const auto vx = VX;
 	const auto vy = VY;
 	const int height = N;
-	const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetCpu().I;
+	const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 
 	for (int i = 0; i < height; ++i, ++_8bitRow)
 	{
@@ -458,14 +458,12 @@ void op_DXYN(CpuManager& cpuMan)
 // 2 instruction EX9E, EXA1
 void op_EXxx(CpuManager& cpuMan)
 {
-	ASSERT_MSG(_cpu->input != nullptr && _cpu->input->IsInitialized(),
+	ASSERT_MSG(cpuMan.GetInput() != nullptr && cpuMan.GetInput()->IsInitialized(),
                "Cpu::Input, null or not initialized!");
 
 
 	switch (N)
 	{
-		default: unknown_opcode(cpuMan); break;
-
 		case 0xE: // EX9E  Skips the next instruction if the key stored in VX is pressed.
 			if (cpuMan.GetInput()->IsKeyPressed((Key)VX))
 				cpuMan.SetPC( cpuMan.GetPC() + 2 );
@@ -476,6 +474,12 @@ void op_EXxx(CpuManager& cpuMan)
 			if (!cpuMan.GetInput()->IsKeyPressed((Key)VX))
 				cpuMan.SetPC( cpuMan.GetPC() + 2 );
 			break;
+
+		default: 
+			unknown_opcode(cpuMan); 
+			break;
+
+
 	}
 }
 
@@ -511,8 +515,7 @@ void op_FXxx(CpuManager& cpuMan) // 9 instructions.
 
 void op_FX30(CpuManager& cpuMan)
 {
-	using utility::arr_size;
-	cpuMan.GetCpu().I = arr_size(fonts::chip8DefaultFont) + (VX * 10);
+	cpuMan.SetIndexRegister( reinterpret_cast<size_t> ( fonts::chip8HiResFont + (VX * 10) )  );
 }
 
 
@@ -543,8 +546,6 @@ void op_FXx5(CpuManager& cpuMan)
 {
 	switch (NN)
 	{
-		default: unknown_opcode(_cpu); break;
-
 		case 0x15: // FX15  Sets the delay timer to VX.
 			cpuMan.SetDelayTimer( VX );
 			break;
@@ -563,6 +564,12 @@ void op_FXx5(CpuManager& cpuMan)
 
 			std::copy_n(cpuMan.GetMemory() + cpuMan.GetIndexRegister(), X + 1, cpuMan.GetRegisters());
 			break;
+
+		default: 
+			unknown_opcode(cpuMan); 
+			break;
+
+
 	}
 }
 
@@ -583,7 +590,7 @@ void op_FX18(CpuManager& cpuMan)
 	}
 	else {
 		if (cpuMan.GetSound()->IsPlaying())
-			cpuManGetSound()->Stop();
+			cpuMan.GetSound()->Stop();
 	}
 }
 
@@ -618,13 +625,11 @@ void op_FX33(CpuManager& cpuMan)
 	ASSERT_MSG(cpuMan.GetMemorySize() > (cpuMan.GetIndexRegister() + 2),
 		"Cpu::I + 2 overflows Cpu::memory!");
 
-	const auto* memory = cpuMan.GetMemory();
-	const auto indexReg = cpuMan.GetIndexRegister();
+	auto* memory = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 	const uint8_t vx = VX;
-
-	memory[indexReg + 2] = vx % 10;
-	memory[indexReg + 1] = (vx / 10) % 10;
-	memory[indexReg] = (vx / 100);
+	memory[2] = vx % 10;
+	memory[1] = (vx / 10) % 10;
+	memory[0] = (vx / 100);
 
 }
 
@@ -637,5 +642,13 @@ void op_FX33(CpuManager& cpuMan)
 
 
 /******** OP_FXxx END *********/
+
+
+
+
+
+
+
+
 
 }}

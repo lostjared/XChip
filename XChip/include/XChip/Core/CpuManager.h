@@ -41,10 +41,15 @@ public:
 	const uint32_t* GetGfx() const;
 	const Cpu& GetCpu() const;
 
-	Cpu& GetCpu();
 	iRender* GetRender();
 	iInput* GetInput();
 	iSound* GetSound();
+	uint8_t* GetMemory();
+	uint8_t* GetRegisters();
+	size_t* GetStack();
+	uint32_t* GetGfx();
+	Cpu& GetCpu();
+
 
 	bool SetMemory(const size_t size);
 	bool SetRegisters(const size_t size);
@@ -107,11 +112,16 @@ inline const size_t* CpuManager::GetStack() const { return _cpu.stack; }
 inline const uint32_t* CpuManager::GetGfx() const { return _cpu.gfx; }
 inline const Cpu& CpuManager::GetCpu() const { return _cpu; }
 
-
-inline Cpu& CpuManager::GetCpu() { return _cpu; }
 inline iRender* CpuManager::GetRender() { return _cpu.render; }
 inline iInput* CpuManager::GetInput() { return _cpu.input; }
 inline iSound* CpuManager::GetSound() { return _cpu.sound; }
+inline uint8_t* CpuManager::GetMemory() { return _cpu.memory; }
+inline uint8_t* CpuManager::GetRegisters() { return _cpu.registers; }
+inline size_t* CpuManager::GetStack() { return _cpu.stack; }
+inline uint32_t* CpuManager::GetGfx() { return _cpu.gfx; }
+inline Cpu& CpuManager::GetCpu() { return _cpu; }
+
+
 inline void CpuManager::SetErrorFlag(const bool val) { _cpu.errorFlag = val; }
 inline void CpuManager::SetDelayTimer(const uint8_t val) { _cpu.delayTimer = val; }
 inline void CpuManager::SetSoundTimer(const uint8_t val) { _cpu.soundTimer = val; }
