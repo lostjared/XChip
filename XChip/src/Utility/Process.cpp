@@ -125,7 +125,7 @@ Process::~Process()
 bool Process::Run(const std::string &app)
 {
 	std::string appCpy = app;
-
+	
 	if (IsRunning())
 		Terminate();
 
@@ -137,7 +137,7 @@ bool Process::Run(const std::string &app)
 		               nullptr,                // Process handle not inheritable
 		               nullptr,                // Thread handle not inheritable
 		               true,                  // Set handle inheritance to FALSE
-		               CREATE_NEW_CONSOLE,     // creation flags
+		               CREATE_NEW_PROCESS_GROUP,     // creation flags
 		               nullptr,                // Use parent's environment block
 		               nullptr,                // Use parent's starting directory 
 		               &_si,                   // Pointer to STARTUPINFO structure
@@ -173,7 +173,12 @@ int Process::Join()
 
 void Process::Terminate()
 {
-	GenerateConsoleCtrlEvent(CTRL_C_EVENT, _pi.dwProcessId);
+	if (!GenerateConsoleCtrlEvent(CTRL_C_EVENT, _pi.dwProcessId))
+	{
+		LOGerr("Sending CTRL_C_EVENT failed, terminating process by force");
+		TerminateProcess(_pi.hProcess, -1);
+	}
+
 	Join();
 }
 
