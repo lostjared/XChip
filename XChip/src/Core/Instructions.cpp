@@ -136,7 +136,7 @@ void op_0xxx(CpuManager& cpuMan)
 
 		default: // 0NNN or 00CN
 		{
-			if( ((cpuMan.GetOpcode() & 0x00F0) >> 4 ) == 0xC )
+			if( (cpuMan.GetOpcode(0x00F0) >> 4) == 0xC )
 			{
 				// 00CN* SuperChip: Scroll display N lines down:
 				const auto n = static_cast<const int>(N);
