@@ -5,7 +5,7 @@
 #if !_DEBUG
 // if not debug build, includes nothing.
 #define NDEBUG 1
-#define ASSERT_MSG(...)
+#define ASSERT_MSG(cond, msg)
 
 
 

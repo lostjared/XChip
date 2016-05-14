@@ -56,7 +56,6 @@ void execute_instruction(CpuManager& cpuMan)
 	cpuMan.SetOpcode(( cpuMan.GetMemory( cpuMan.GetPC() ) << 8 ) | cpuMan.GetMemory(cpuMan.GetPC() + 1) );
 	cpuMan.SetPC( cpuMan.GetPC() + 2 );
 
-
 	ASSERT_MSG(static_cast<size_t>(OPMSN) < arr_size(instrTable), "Instruction Table Overflow!");
 	
 
@@ -203,7 +202,7 @@ void op_5XY0(CpuManager& cpuMan)
 // 6XNN: store number NN in register VX
 void op_6XNN(CpuManager& cpuMan)
 {
-	VX = NN;
+	VX = static_cast<uint8_t>(NN);
 }
 
 // 7XNN: add the value NN to register VX
