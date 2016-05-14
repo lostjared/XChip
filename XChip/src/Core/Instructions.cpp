@@ -16,15 +16,15 @@ namespace xchip { namespace instructions {
 using utility::arr_size;
 
 
-#define OPMSN ((cpuMan.GetOpcode() & 0xf000) >> 12) // opcode most significant nibble
-#define X   ((cpuMan.GetOpcode() & 0x0f00) >> 8)
-#define Y   ((cpuMan.GetOpcode() & 0x00f0) >> 4)
-#define N   (cpuMan.GetOpcode() & 0x000f)
-#define NN  (cpuMan.GetOpcode() & 0x00ff)
-#define NNN (cpuMan.GetOpcode() & 0x0fff)
-#define VF  (cpuMan.GetRegisters()[0xF])
-#define VX  (cpuMan.GetRegisters()[X])
-#define VY  (cpuMan.GetRegisters()[Y])
+#define OPMSN ((cpuMan.GetOpcode(0xf000) >> 12)) // opcode most significant nibble
+#define X   ((cpuMan.GetOpcode(0x0f00) >> 8))
+#define Y   ((cpuMan.GetOpcode(0x00f0) >> 4))
+#define N   (cpuMan.GetOpcode(0x000f))
+#define NN  (cpuMan.GetOpcode(0x00ff))
+#define NNN (cpuMan.GetOpcode(0x0fff))
+#define VF  (cpuMan.GetRegisters(0xF))
+#define VX  (cpuMan.GetRegisters(X))
+#define VY  (cpuMan.GetRegisters(Y))
 
 
 InstrTable instrTable[16] =
@@ -76,7 +76,7 @@ void execute_instruction(CpuManager& cpuMan)
 	cpu.opcode =  (cpu.memory[cpu.pc] << 8) | cpu.memory[cpu.pc + 1];
 	cpu.pc += 2;
 	
-	ASSERT_MSG(OPMSN < arr_size(instrTable), "Instruction Table Overflow!");
+	ASSERT_MSG(static_cast<size_t>(OPMSN) < arr_size(instrTable), "Instruction Table Overflow!");
 	
 	instrTable[OPMSN](cpuMan);
 }
@@ -94,9 +94,8 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00EE: // return from a subroutine ( unwind stack )
 		{
-			ASSERT_MSG((cpuMan.GetSP() - 1) < cpuMan.GetStackSize(), "Stack Underflow");
-			auto& cpu = cpuMan.GetCpu();
-			cpu.pc = cpu.stack[--cpu.sp];
+			cpuMan.SetSP( cpuMan.GetSP() - 1 );
+			cpuMan.SetPC( cpuMan.GetStack( cpuMan.GetSP() ) );
 			break;
 		}
 
@@ -157,7 +156,7 @@ void op_0xxx(CpuManager& cpuMan)
 			if( ((cpuMan.GetOpcode() & 0x00F0) >> 4 ) == 0xC )
 			{
 				// 00CN* SuperChip: Scroll display N lines down:
-				const auto n = N;
+				const auto n = static_cast<const int>(N);
 				cpuMan.GetRender()->SetScroll(nullptr, &n);
 			}
 
@@ -185,11 +184,9 @@ void op_1NNN(CpuManager& cpuMan)
 // 2NNN: Calls subroutine at address NNN
 void op_2NNN(CpuManager& cpuMan)
 {
-	ASSERT_MSG(cpuMan.GetSP() < cpuMan.GetStackSize(), "Stack Overflow");
-
-	auto& cpu = cpuMan.GetCpu();
-	cpu.stack[cpu.sp++] = cpu.pc;
-	cpu.pc = NNN;
+	cpuMan.GetStack(cpuMan.GetSP()) = cpuMan.GetPC();
+	cpuMan.SetSP( cpuMan.GetSP() + 1 );
+	cpuMan.SetPC( NNN );
 }
 
 
@@ -413,7 +410,7 @@ void op_ANNN(CpuManager& cpuMan)
 // BNNN: jumps to the address NNN plus V0
 void op_BNNN(CpuManager& cpuMan)
 {
-	cpuMan.SetPC(  ((NNN + cpuMan.GetRegisters()[0]) & 0xFFFF)  );
+	cpuMan.SetPC(  ((NNN + cpuMan.GetRegisters(0)) & 0xFFFF)  );
 }
 
 
@@ -437,7 +434,7 @@ void op_DXYN(CpuManager& cpuMan)
 	const int height = ( cpuMan.GetRender()->GetResolution().w > 32 && N == 0 ) ? 16 : N;
 	const int width = (height == 16) ? 16 : 8;
 
-	const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
+	const uint8_t* _8bitRow = & cpuMan.GetMemory(cpuMan.GetIndexRegister());
 
 	for (int i = 0; i < height; ++i, ++_8bitRow)
 	{
@@ -452,7 +449,7 @@ void op_DXYN(CpuManager& cpuMan)
 
 			VF |= ((cpuMan.GetGfx()[pixelPos] > 0) & pixel);
 
-			cpuMan.GetGfx()[pixelPos] ^= (pixel) ? ~0 : 0;
+			cpuMan.GetGfx(pixelPos) ^= (pixel) ? ~0 : 0;
 		}
 	}
 }
@@ -485,9 +482,10 @@ void op_EXxx(CpuManager& cpuMan)
 		default: 
 			unknown_opcode(cpuMan); 
 			break;
-
-
 	}
+
+
+
 }
 
 
@@ -564,14 +562,14 @@ void op_FXx5(CpuManager& cpuMan)
 			ASSERT_MSG(static_cast<size_t>(X+1) < (cpuMan.GetMemorySize() - cpuMan.GetIndexRegister()),
 				"memory overflow");
 
-			std::copy_n(cpuMan.GetRegisters(), X + 1, cpuMan.GetMemory() + cpuMan.GetIndexRegister());
+			std::copy_n(cpuMan.GetRegisters(), X + 1, &cpuMan.GetMemory(cpuMan.GetIndexRegister()));
 			break;
 
 		case 0x65: //FX65  Fills V0 to VX with values from memory starting at address I.
 			ASSERT_MSG(static_cast<size_t>(X+1) < cpuMan.GetRegistersSize(),
 				"registers overflow");
 
-			std::copy_n(cpuMan.GetMemory() + cpuMan.GetIndexRegister(), X + 1, cpuMan.GetRegisters());
+			std::copy_n(&cpuMan.GetMemory(cpuMan.GetIndexRegister()), X + 1, cpuMan.GetRegisters());
 			break;
 
 		case 0x75: // 0xFX75* SuperChip: Store V0...VX in RPL user flags ( X <= 7 )

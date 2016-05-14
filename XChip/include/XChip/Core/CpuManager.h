@@ -24,6 +24,7 @@ public:
 	uint8_t GetSoundTimer() const;
 	size_t GetIndexRegister() const;
 	uint16_t GetOpcode() const;
+	uint16_t GetOpcode(const uint16_t mask) const;
 	size_t GetPC() const;
 	size_t GetSP() const;
 	size_t GetMemorySize() const;
@@ -52,6 +53,10 @@ public:
 	uint8_t* GetRegisters();
 	size_t* GetStack();
 	uint32_t* GetGfx();
+	uint8_t& GetMemory(const size_t offset);
+	uint8_t& GetRegisters(const size_t offset);
+	size_t& GetStack(const size_t offset);
+	uint32_t& GetGfx(const size_t offset);
 	Cpu& GetCpu();
 
 
@@ -98,6 +103,7 @@ inline bool CpuManager::GetErrorFlag() const { return _cpu.errorFlag; }
 inline uint8_t CpuManager::GetDelayTimer() const { return _cpu.delayTimer; }
 inline uint8_t CpuManager::GetSoundTimer() const { return _cpu.soundTimer; }
 inline uint16_t CpuManager::GetOpcode() const { return _cpu.opcode; }
+inline uint16_t CpuManager::GetOpcode(const uint16_t mask) const { return _cpu.opcode & mask; }
 inline size_t CpuManager::GetIndexRegister() const { return _cpu.I; }
 inline size_t CpuManager::GetPC() const { return _cpu.pc; }
 inline size_t CpuManager::GetSP() const { return _cpu.sp; }
@@ -127,6 +133,10 @@ inline uint8_t* CpuManager::GetMemory() { return _cpu.memory; }
 inline uint8_t* CpuManager::GetRegisters() { return _cpu.registers; }
 inline size_t* CpuManager::GetStack() { return _cpu.stack; }
 inline uint32_t* CpuManager::GetGfx() { return _cpu.gfx; }
+inline uint8_t& CpuManager::GetMemory(const size_t offset) { ASSERT_MSG(GetMemorySize() > offset, "memory overflow"); return _cpu.memory[offset]; }
+inline uint8_t& CpuManager::GetRegisters(const size_t offset) { ASSERT_MSG(GetRegistersSize() > offset, "registers overflow"); return _cpu.registers[offset]; } 
+inline size_t& CpuManager::GetStack(const size_t offset)  { ASSERT_MSG(GetStackSize() > offset, "stack overflow"); return _cpu.stack[offset]; }
+inline uint32_t& CpuManager::GetGfx(const size_t offset) { ASSERT_MSG(GetGfxSize() > offset, "GFX overflow"); return _cpu.gfx[offset]; }
 inline Cpu& CpuManager::GetCpu() { return _cpu; }
 
 
