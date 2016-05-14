@@ -71,6 +71,7 @@ public:
 	void SetErrorFlag(const bool val);
 	void SetDelayTimer(const uint8_t val);
 	void SetSoundTimer(const uint8_t val);
+	void SetOpcode(const uint16_t val);
 	void SetIndexRegister(const size_t index);
 	void SetPC(const size_t offset);
 	void SetSP(const size_t offset);
@@ -143,6 +144,7 @@ inline Cpu& CpuManager::GetCpu() { return _cpu; }
 inline void CpuManager::SetErrorFlag(const bool val) { _cpu.errorFlag = val; }
 inline void CpuManager::SetDelayTimer(const uint8_t val) { _cpu.delayTimer = val; }
 inline void CpuManager::SetSoundTimer(const uint8_t val) { _cpu.soundTimer = val; }
+inline void CpuManager::SetOpcode(const uint16_t val) { _cpu.opcode = val; }
 inline void CpuManager::SetIndexRegister(const size_t index) { _cpu.I = index; }
 inline void CpuManager::SetPC(const size_t offset) { _cpu.pc = offset; }
 inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }

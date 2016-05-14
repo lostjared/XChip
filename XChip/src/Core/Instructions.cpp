@@ -52,32 +52,15 @@ void unknown_opcode(CpuManager& cpuMan)
 
 void execute_instruction(CpuManager& cpuMan)
 {
-	ASSERT_MSG(cpuMan.GetMemory() != nullptr && cpuMan.GetMemorySize() >= 0x0FFF, 
-                   "Cpu::memory, null or size is too low!");
-
-	
-	ASSERT_MSG(cpuMan.GetRegisters() != nullptr && cpuMan.GetRegistersSize() >= 0x10,
-                   "Cpu::registers, null or size is too low!");
+	// decode the next opcode 
+	cpuMan.SetOpcode(( cpuMan.GetMemory( cpuMan.GetPC() ) << 8 ) | cpuMan.GetMemory(cpuMan.GetPC() + 1) );
+	cpuMan.SetPC( cpuMan.GetPC() + 2 );
 
 
-	ASSERT_MSG(cpuMan.GetStack() != nullptr && cpuMan.GetStackSize() >= 0x10,
-                   "Cpu::stack, null or size is too low!");
-
-
-	ASSERT_MSG(cpuMan.GetGfx() != nullptr && cpuMan.GetGfxSize() >= (64 * 32),
-                   "Cpu::Gfx, null or size is too low!");
-
-
-	ASSERT_MSG((cpuMan.GetPC() + 1) < cpuMan.GetMemorySize(), 
-                   "Cpu::pc greater than Cpu::memory");
-
-
-	auto& cpu = cpuMan.GetCpu();
-	cpu.opcode =  (cpu.memory[cpu.pc] << 8) | cpu.memory[cpu.pc + 1];
-	cpu.pc += 2;
-	
 	ASSERT_MSG(static_cast<size_t>(OPMSN) < arr_size(instrTable), "Instruction Table Overflow!");
 	
+
+	// send the opcode most significant nibble to the first instruction table
 	instrTable[OPMSN](cpuMan);
 }
 
