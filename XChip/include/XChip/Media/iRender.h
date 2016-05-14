@@ -17,11 +17,13 @@ public:
 
 	virtual bool Initialize(const int w, const int h) noexcept = 0;
 	
+	virtual const char* GetWindowName() const noexcept = 0;
 	virtual const uint32_t* GetBuffer() const noexcept = 0;
 	virtual utility::Color GetColorFilter() const noexcept = 0;
 	virtual utility::Resolution GetResolution() const noexcept = 0;
 
 	virtual bool UpdateEvents() noexcept = 0;
+	virtual void SetWindowName(const char* name) noexcept = 0;
 	virtual bool SetColorFilter(const utility::Color& color) noexcept = 0;
 	virtual bool SetResolution(const utility::Resolution& res) noexcept = 0;
 	virtual bool SetFullScreen(const bool value) noexcept = 0;

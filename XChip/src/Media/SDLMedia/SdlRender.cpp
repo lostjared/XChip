@@ -54,7 +54,7 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	const auto winW = width * 4;
 	const auto winH = height * 6;
 
-	_window = SDL_CreateWindow("Chip8 Emulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+	_window = SDL_CreateWindow("Chip8 - SdlRender", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
                                    winW, winH, SDL_WINDOW_RESIZABLE);
 
 	if (!_window) 
@@ -143,6 +143,12 @@ bool SdlRender::UpdateEvents() noexcept
 	return false;
 }
 
+
+
+void SdlRender::SetWindowName(const char* name) noexcept
+{
+	SDL_SetWindowTitle(_window, name);
+}
 
 bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
 {
@@ -299,6 +305,11 @@ void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback
 }
 
 
+
+const char* SdlRender::GetWindowName() const noexcept
+{
+	return SDL_GetWindowTitle(_window);
+}
 
 
 utility::Color SdlRender::GetColorFilter() const noexcept

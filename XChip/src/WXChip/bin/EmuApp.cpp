@@ -87,6 +87,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 
 
+	g_emulator.GetRender()->SetWindowName("EmuApp");
 
 #if defined(__linux__) || defined(__APPLE__) 
 

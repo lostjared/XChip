@@ -175,8 +175,12 @@ void Process::Terminate()
 {
 	if (!GenerateConsoleCtrlEvent(CTRL_C_EVENT, _pi.dwProcessId))
 	{
-		LOGerr("Sending CTRL_C_EVENT failed, terminating process by force");
-		TerminateProcess(_pi.hProcess, -1);
+		LOGerr("Sending CTRL_C_EVENT failed. Try SendMessage WM_CLOSE");
+		if (!SendMessage(FindWindow(0, "EmuApp"), WM_CLOSE, 0, 0))
+		{
+			LOGerr("Sending Message failed, terminating process by force");
+			TerminateProcess(_pi.hProcess, -1);
+		}
 	}
 
 	Join();

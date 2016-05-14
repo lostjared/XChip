@@ -21,10 +21,14 @@ public:
 	void Dispose() noexcept override;
 	
 	bool IsInitialized() const noexcept override;
+	const char* GetWindowName() const noexcept override;
 	const uint32_t* GetBuffer() const noexcept override;
 	utility::Color GetColorFilter() const noexcept override;
 	utility::Resolution GetResolution() const noexcept override;
 
+
+
+	void SetWindowName(const char* name) noexcept override;
 	bool SetFullScreen(const bool val) noexcept override;
 	bool SetResolution(const utility::Resolution& res) noexcept override;
 	bool SetColorFilter(const utility::Color& color) noexcept override;
