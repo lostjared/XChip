@@ -101,7 +101,7 @@ bool MainWindow::ComputeEmuAppPath()
 #ifdef _WIN32
 
 	constexpr const char dirSlash = '\\';
-	constexpr const char* const finalEmuAppPath = "\\bin\\EmuApp";
+	constexpr const char* const finalEmuAppPath = "\\bin\\EmuApp.exe";
 
 #elif defined(__APPLE__) || defined(__linux__)
 
