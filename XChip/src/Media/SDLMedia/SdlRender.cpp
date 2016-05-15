@@ -13,6 +13,7 @@ namespace xchip {
 
 extern SDL_Event g_sdlEvent;
 
+
 SdlRender::SdlRender() noexcept
 	: SdlSystem(System::Render)
 
@@ -27,6 +28,68 @@ SdlRender::~SdlRender()
 	if (_initialized)
 		this->Dispose();
 }
+
+
+
+
+
+const char* SdlRender::GetWindowName() const noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	return SDL_GetWindowTitle(_window);
+}
+
+
+utility::Color SdlRender::GetColorFilter() const noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	utility::Color color;
+	SDL_GetTextureColorMod(_texture, &color.r, &color.g, &color.b);
+	return color;
+
+}
+
+
+
+
+utility::Resolution SdlRender::GetResolution() const noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	
+	SDL_DisplayMode displayMode;
+
+	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
+	{
+		xchip::utility::LOGerr(SDL_GetError());
+		return {0, 0};
+	}
+
+	return {displayMode.w, displayMode.h};
+}
+
+
+
+int SdlRender::GetScrollX(const ScrollType type) const noexcept
+{
+	if(type == ScrollType::InPixels )
+		return _camera->x;
+	else
+		return _camera->x / 22;
+}
+
+
+int SdlRender::GetScrollY(const ScrollType type) const noexcept
+{
+	if(type == ScrollType::InPixels )
+		return _camera->y;
+	else
+		return _camera->y / 22;
+}
+
+
+
+
+
 
 
 
@@ -70,11 +133,6 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	if (!_texture)
 		return false;
 
-	if(SDL_SetTextureColorMod(_texture, 255, 255, 255))
-		return false;
-
-
-
 	_camera = static_cast<SDL_Rect*> ( std::malloc(sizeof(SDL_Rect)) );
 
 	if(!_camera)
@@ -87,7 +145,6 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 
 	SDL_RenderClear(_rend);
 	SDL_RenderPresent(_rend);
-
 	_initialized = true;
 
 	return true;
@@ -111,6 +168,8 @@ void SdlRender::Dispose() noexcept
 
 
 
+
+
 bool SdlRender::UpdateEvents() noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
@@ -120,12 +179,11 @@ bool SdlRender::UpdateEvents() noexcept
 		switch (g_sdlEvent.window.event)
 		{
 			case SDL_WINDOWEVENT_RESIZED: /* fall */
-				SDL_GetWindowSize(_window, &_camera->w, &_camera->h);
-
-
 			case SDL_WINDOWEVENT_RESTORED: 
 				if (_resizeClbk) 
 					_resizeClbk(_resizeClbkArg);  
+				
+				SDL_GetWindowSize(_window, &_camera->w, &_camera->h);
 				
 				break;
 			
@@ -147,6 +205,7 @@ bool SdlRender::UpdateEvents() noexcept
 
 void SdlRender::SetWindowName(const char* name) noexcept
 {
+	_SDLRENDER_INITIALIZED_ASSERT_();
 	SDL_SetWindowTitle(_window, name);
 }
 
@@ -168,6 +227,20 @@ bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
 bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 {
 
+	const auto* const oldBuff = _buffer;
+	const auto oldRes = this->GetResolution();
+	if(!this->Initialize( res.w, res.h))
+	{
+		utility::LOGerr("Could not set new resolution. Setting previous resolution.");
+		if(!this->Initialize(oldRes.w, oldRes.h))
+			utility::LOGerr("Could not set old resolution. SdlRender is not usable.");
+
+		return false;
+	}
+
+	this->SetBuffer(oldBuff);
+	return true;
+/*
 	_SDLRENDER_INITIALIZED_ASSERT_();	
 	if( res.w <= 0 || res.h <= 0 )
 	{
@@ -184,8 +257,8 @@ bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 		return false;
 	}
 
-	displayMode.w = res.w;
-	displayMode.h = res.h;
+	displayMode.w = res.w * 4;
+	displayMode.h = res.h * 6;
 
 	if( SDL_SetWindowDisplayMode(_window, &displayMode) )
 	{
@@ -193,19 +266,11 @@ bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 		return false;
 	}
 
-/*
-	// Get the actual evaluated width and height:
-	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
-	{
-		xchip::utility::LOGerr(SDL_GetError());
-		return false;
-	}
-
-	// set window size
-	SDL_SetWindowSize(_window, res.w, res.h);
-	SDL_GetWindowSize(_window, &_camera->w, &_camera->h);
-*/
 	return true;
+
+*/
+
+
 }
 
 
@@ -241,24 +306,28 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 	return true;
 }
 
-void SdlRender::SetScroll(const int *x, const int *y, bool lines) noexcept
-{
-	if(lines)
-	{
-		if(x)
-			_camera->x = (*x) * 22;
-		if(y)
-			_camera->y = (*y) * 22;
-	}
 
+void SdlRender::SetScrollX(const int x, const ScrollType type) noexcept
+{
+	if(type == ScrollType::InPixels)
+		_camera->x = x;
 	else
-	{
-		if(x)
-			_camera->x = *x;
-		if(y)
-			_camera->y = *y;
-	}
+		_camera->x = x * 22;
 }
+
+
+
+void SdlRender::SetScrollY(const int y, const ScrollType type) noexcept
+{
+	if(type == ScrollType::InPixels)
+		_camera->y = y;
+	else
+		_camera->y = y * 22;
+}
+
+
+
+
 
 void SdlRender::DrawBuffer() noexcept
 {
@@ -304,38 +373,6 @@ void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback
 
 
 
-const char* SdlRender::GetWindowName() const noexcept
-{
-	return SDL_GetWindowTitle(_window);
-}
-
-
-utility::Color SdlRender::GetColorFilter() const noexcept
-{
-	_SDLRENDER_INITIALIZED_ASSERT_();
-	utility::Color color;
-	SDL_GetTextureColorMod(_texture, &color.r, &color.g, &color.b);
-	return color;
-
-}
-
-
-
-
-utility::Resolution SdlRender::GetResolution() const noexcept
-{
-	_SDLRENDER_INITIALIZED_ASSERT_();
-	
-	SDL_DisplayMode displayMode;
-
-	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
-	{
-		xchip::utility::LOGerr(SDL_GetError());
-		return {0, 0};
-	}
-
-	return {displayMode.w, displayMode.h};
-}
 
 
 

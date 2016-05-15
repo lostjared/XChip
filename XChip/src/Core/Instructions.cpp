@@ -75,26 +75,17 @@ void op_0xxx(CpuManager& cpuMan)
 			break;
 
 		case 0x00EE: // return from a subroutine ( unwind stack )
-		{
 			cpuMan.SetSP( cpuMan.GetSP() - 1 );
 			cpuMan.SetPC( cpuMan.GetStack( cpuMan.GetSP() ) );
 			break;
-		}
 
 		case 0x00FB: // 0x00FB* SuperChip: scrolls display 4 pixels right:
-		{
-			const auto x = 4;
-			cpuMan.GetRender()->SetScroll( &x, nullptr);
+			cpuMan.GetRender()->SetScrollX(cpuMan.GetRender()->GetScrollX() - 4);
 			break;
-		}
 
 		case 0x00FC: // 0x00FC* SuperChip: scrolls display 4 pixels left:
-		{
-			const auto x = -4;
-			cpuMan.GetRender()->SetScroll(&x, nullptr);
-
+			cpuMan.GetRender()->SetScrollX(cpuMan.GetRender()->GetScrollX() + 4);
 			break;
-		}
 
 		case 0x00FD: // 0x00FD* SuperChip : exit CHIP interpreter
 			// set error flag to exit
@@ -127,10 +118,10 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FF: // 0x00FF* SuperChip: Enable extended screen mode 
 		{
-			cpuMan.SetGfx(64 * 128);
+			cpuMan.SetGfx(128 * 64);
 			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
 
-			if(!cpuMan.GetRender()->SetResolution( { 64, 128 } ))
+			if(!cpuMan.GetRender()->SetResolution( { 128, 64 } ))
 			{
 				utility::LOGerr("Could not set extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
@@ -152,8 +143,8 @@ void op_0xxx(CpuManager& cpuMan)
 			if( (cpuMan.GetOpcode(0x00F0) >> 4) == 0xC )
 			{
 				// 00CN* SuperChip: Scroll display N lines down:
-				const auto n = static_cast<const int>(N);
-				cpuMan.GetRender()->SetScroll(nullptr, &n);
+				auto* const render = cpuMan.GetRender();
+				render->SetScrollY(render->GetScrollY() + static_cast<int>(-N), iRender::ScrollType::InLines);
 			}
 
 			else
