@@ -220,6 +220,117 @@ void op_7XNN(CpuManager& cpuMan)
 
 
 
+// 9XY0: skips the next instruction if VX doesn't equal VY
+void op_9XY0(CpuManager& cpuMan)
+{
+	if (VX != VY)
+		cpuMan.SetPC(cpuMan.GetPC() + 2 );
+}
+
+
+
+// ANNN: sets I to the address NNN
+void op_ANNN(CpuManager& cpuMan)
+{
+	cpuMan.SetIndexRegister( NNN );
+}
+
+
+
+// BNNN: jumps to the address NNN plus V0
+void op_BNNN(CpuManager& cpuMan)
+{
+	cpuMan.SetPC(  ((NNN + cpuMan.GetRegisters(0)) & 0xFFFF)  );
+}
+
+
+
+// CXNN: Sets VX to a bitwise operation AND ( & ) between NN and a random number
+void op_CXNN(CpuManager& cpuMan)
+{
+	VX = ((std::rand() % 0xff) & NN);
+}
+
+
+
+
+// DXYN: DRAW INSTRUCTION
+void op_DXYN(CpuManager& cpuMan)
+{
+
+	VF = 0;
+	const auto vx = VX;
+	const auto vy = VY;
+	const int height = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) && N == 0 ) ? 16 : N;
+	const int width = (height == 16) ? 16 : 8;
+
+	const uint8_t* _8bitRow = & cpuMan.GetMemory(cpuMan.GetIndexRegister());
+
+	for (int i = 0; i < height; ++i, ++_8bitRow)
+	{
+		for (int j = 0; j < width; ++j)
+		{
+			const int px = ((vx + j) & 63);
+			const int py = ((vy + i) & 31);
+
+			const int pixelPos = (64 * py) + px;
+
+			const bool pixel = (*_8bitRow & (1 << (7 - j))) != 0;
+
+			VF |= ((cpuMan.GetGfx()[pixelPos] > 0) & pixel);
+
+			cpuMan.GetGfx(pixelPos) ^= (pixel) ? ~0 : 0;
+		}
+	}
+}
+
+
+
+
+
+
+// 2 instruction EX9E, EXA1
+void op_EXxx(CpuManager& cpuMan)
+{
+	ASSERT_MSG(cpuMan.GetInput() != nullptr && cpuMan.GetInput()->IsInitialized(),
+               "Cpu::Input, null or not initialized!");
+
+
+	switch (N)
+	{
+		case 0xE: // EX9E  Skips the next instruction if the key stored in VX is pressed.
+			if (cpuMan.GetInput()->IsKeyPressed((Key)VX))
+				cpuMan.SetPC( cpuMan.GetPC() + 2 );
+			break;
+
+
+		case 0x1: // 0xEXA1  Skips the next instruction if the key stored in VX isn't pressed.
+			if (!cpuMan.GetInput()->IsKeyPressed((Key)VX))
+				cpuMan.SetPC( cpuMan.GetPC() + 2 );
+			break;
+
+		default: 
+			unknown_opcode(cpuMan); 
+			break;
+	}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /******** OP_8XYEx START *********/
 
 // 8XYx Subtable
@@ -367,113 +478,6 @@ void op_8XYE(CpuManager& cpuMan)
 
 
 /******** OP_8XYEx END *********/
-
-
-
-
-
-
-
-
-
-
-// 9XY0: skips the next instruction if VX doesn't equal VY
-void op_9XY0(CpuManager& cpuMan)
-{
-	if (VX != VY)
-		cpuMan.SetPC(cpuMan.GetPC() + 2 );
-}
-
-
-
-// ANNN: sets I to the address NNN
-void op_ANNN(CpuManager& cpuMan)
-{
-	cpuMan.SetIndexRegister( NNN );
-}
-
-
-
-// BNNN: jumps to the address NNN plus V0
-void op_BNNN(CpuManager& cpuMan)
-{
-	cpuMan.SetPC(  ((NNN + cpuMan.GetRegisters(0)) & 0xFFFF)  );
-}
-
-
-
-// CXNN: Sets VX to a bitwise operation AND ( & ) between NN and a random number
-void op_CXNN(CpuManager& cpuMan)
-{
-	VX = ((std::rand() % 0xff) & NN);
-}
-
-
-
-
-// DXYN: DRAW INSTRUCTION
-void op_DXYN(CpuManager& cpuMan)
-{
-
-	VF = 0;
-	const auto vx = VX;
-	const auto vy = VY;
-	const int height = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) && N == 0 ) ? 16 : N;
-	const int width = (height == 16) ? 16 : 8;
-
-	const uint8_t* _8bitRow = & cpuMan.GetMemory(cpuMan.GetIndexRegister());
-
-	for (int i = 0; i < height; ++i, ++_8bitRow)
-	{
-		for (int j = 0; j < width; ++j)
-		{
-			const int px = ((vx + j) & 63);
-			const int py = ((vy + i) & 31);
-
-			const int pixelPos = (64 * py) + px;
-
-			const bool pixel = (*_8bitRow & (1 << (7 - j))) != 0;
-
-			VF |= ((cpuMan.GetGfx()[pixelPos] > 0) & pixel);
-
-			cpuMan.GetGfx(pixelPos) ^= (pixel) ? ~0 : 0;
-		}
-	}
-}
-
-
-
-
-
-
-// 2 instruction EX9E, EXA1
-void op_EXxx(CpuManager& cpuMan)
-{
-	ASSERT_MSG(cpuMan.GetInput() != nullptr && cpuMan.GetInput()->IsInitialized(),
-               "Cpu::Input, null or not initialized!");
-
-
-	switch (N)
-	{
-		case 0xE: // EX9E  Skips the next instruction if the key stored in VX is pressed.
-			if (cpuMan.GetInput()->IsKeyPressed((Key)VX))
-				cpuMan.SetPC( cpuMan.GetPC() + 2 );
-			break;
-
-
-		case 0x1: // 0xEXA1  Skips the next instruction if the key stored in VX isn't pressed.
-			if (!cpuMan.GetInput()->IsKeyPressed((Key)VX))
-				cpuMan.SetPC( cpuMan.GetPC() + 2 );
-			break;
-
-		default: 
-			unknown_opcode(cpuMan); 
-			break;
-	}
-
-
-
-}
 
 
 
