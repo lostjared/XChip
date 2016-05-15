@@ -123,9 +123,7 @@ Process::~Process()
 
 
 bool Process::Run(const std::string &app)
-{
-	std::string appCpy = app;
-	
+{	
 	if (IsRunning())
 		Terminate();
 
@@ -133,7 +131,7 @@ bool Process::Run(const std::string &app)
 	if (
 		
 		!CreateProcess(nullptr, // No module name (use command line)
-		               (LPSTR)appCpy.c_str(),  // Command line
+		               (LPSTR)app.c_str(),  // Command line
 		               nullptr,                // Process handle not inheritable
 		               nullptr,                // Thread handle not inheritable
 		               true,                  // Set handle inheritance to FALSE
@@ -171,16 +169,31 @@ int Process::Join()
 }
 
 
+
+
+bool _stdcall enum_windows_callback(HWND hwnd, LPARAM neededId) 
+{
+	
+	DWORD procId;
+	GetWindowThreadProcessId(hwnd, &procId);
+	if (procId == static_cast<DWORD>(neededId))
+	{
+		SendMessage(hwnd, WM_CLOSE, 0, 0);
+		return false;
+	}
+
+	return true; 
+}
+
+
+
+
 void Process::Terminate()
 {
 	if (!GenerateConsoleCtrlEvent(CTRL_C_EVENT, _pi.dwProcessId))
 	{
 		LOGerr("Sending CTRL_C_EVENT failed. Try SendMessage WM_CLOSE");
-		if (!SendMessage(FindWindow(0, "EmuApp"), WM_CLOSE, 0, 0))
-		{
-			LOGerr("Sending Message failed, terminating process by force");
-			TerminateProcess(_pi.hProcess, -1);
-		}
+		EnumWindows((WNDENUMPROC)enum_windows_callback, _pi.dwProcessId);
 	}
 
 	Join();

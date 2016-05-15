@@ -31,7 +31,7 @@ void configure_emulator(const std::vector<std::string>& arguments);
 #if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum);
 #elif defined(_WIN32)
-bool ctrl_handler(DWORD ctrlType);
+bool _stdcall ctrl_handler(DWORD ctrlType);
 #endif
 
 /*********************************************************
@@ -414,7 +414,7 @@ void signals_sigint(const int signum)
 }
 
 #elif defined(_WIN32)
-bool ctrl_handler(DWORD ctrlType)
+bool _stdcall ctrl_handler(DWORD ctrlType)
 {
 	if (ctrlType == CTRL_C_EVENT) 
 	{
