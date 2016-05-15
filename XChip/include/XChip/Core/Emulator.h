@@ -87,7 +87,7 @@ private:
 inline bool Emulator::IsInitialized() const { return _initialized; }
 inline bool Emulator::GetInstrFlag() const { return _instrf; }
 inline bool Emulator::GetDrawFlag() const { return _drawf; }
-inline bool Emulator::GetExitFlag() const { return _exitf || _manager.GetFlag(Cpu::EXIT ); }
+inline bool Emulator::GetExitFlag() const { return _exitf || _manager.GetFlags(Cpu::EXIT); }
 
 
 inline int Emulator::GetCpuFreq() const {
