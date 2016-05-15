@@ -110,7 +110,7 @@ inline uint8_t CpuManager::GetSoundTimer() const { return _cpu.soundTimer; }
 inline uint16_t CpuManager::GetOpcode() const { return _cpu.opcode; }
 inline uint16_t CpuManager::GetOpcode(const uint16_t mask) const { return _cpu.opcode & mask; }
 inline uint32_t CpuManager::GetFlags() const { return _cpu.flags; }
-inline bool CpuManager::GetFlags(const Cpu::Flags flags) const { return _cpu.flags & flags; }
+inline bool CpuManager::GetFlags(const Cpu::Flags flags) const { return (_cpu.flags & flags) != 0; }
 inline size_t CpuManager::GetIndexRegister() const { return _cpu.I; }
 inline size_t CpuManager::GetPC() const { return _cpu.pc; }
 inline size_t CpuManager::GetSP() const { return _cpu.sp; }
