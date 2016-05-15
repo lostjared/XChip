@@ -79,12 +79,12 @@ void SettingsWindow::OnCloseWindow(wxCloseEvent &event)
 }
 
 
-void SettingsWindow::OnCancel(wxCommandEvent &event)
+void SettingsWindow::OnCancel(wxCommandEvent&)
 {
 	Show(false);
 }
 
-void SettingsWindow::OnOkay(wxCommandEvent &event)
+void SettingsWindow::OnOkay(wxCommandEvent&)
 {
 	
 	if(atoi(_cpu->GetLineText(0)) < 60)
@@ -98,7 +98,7 @@ void SettingsWindow::OnOkay(wxCommandEvent &event)
 	Show(false);
 }
 
-void SettingsWindow::OnDefault(wxCommandEvent &event)
+void SettingsWindow::OnDefault(wxCommandEvent&)
 {
 	_fps->Clear();
 	_cpu->Clear();
@@ -128,5 +128,5 @@ const std::string SettingsWindow::FPS() const
 
 const std::string SettingsWindow::GetRomPath() const
 {
-	return _romPath->GetLineText(0).c_str();
+	return static_cast<const char*>(_romPath->GetLineText(0).c_str());
 }

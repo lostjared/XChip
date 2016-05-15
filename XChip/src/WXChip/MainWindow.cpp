@@ -3,7 +3,12 @@
 #include <wx/wx.h>
 #endif
 
+#ifdef _WIN32
 #include <WXChip/dirent.h>
+#elif defined(__APPLE__) || defined(__linux__)
+#include <dirent.h>
+#endif
+
 
 #include <iostream>
 #include <fstream>

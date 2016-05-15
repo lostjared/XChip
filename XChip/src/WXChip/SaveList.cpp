@@ -1,6 +1,6 @@
 #include <string>
 #include <XChip/Utility/Log.h>
-#include <wXChip/SaveList.h>
+#include <WXChip/SaveList.h>
 
 void saveDirectory(const std::string &text, const std::string &fps, const std::string &cpufreq)
 {
