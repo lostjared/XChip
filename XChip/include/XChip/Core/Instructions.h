@@ -10,6 +10,9 @@ using InstrTable = void(*)(CpuManager&);
 extern InstrTable instrTable[16];
 
 extern void execute_instruction(CpuManager&);
+
+
+// Primary table
 extern void op_0xxx(CpuManager&); // 3 instructions switch
 extern void op_1NNN(CpuManager&); // jumps to address NNN
 extern void op_2NNN(CpuManager&); // calls subroutine at NNN
@@ -18,6 +21,17 @@ extern void op_4XNN(CpuManager&); // Skips the next instruction if VX doesn't eq
 extern void op_5XY0(CpuManager&); // Skips the next instruction if VX equals VY
 extern void op_6XNN(CpuManager&); // Sets VX to NN
 extern void op_7XNN(CpuManager&); // adds NN to VX
+extern void op_9XY0(CpuManager&); // Skips the next instruction if VX doesn't equal VY
+extern void op_ANNN(CpuManager&); // Sets I to the address NNN
+extern void op_BNNN(CpuManager&); // Jumps to the address NNN plus V0
+extern void op_CXNN(CpuManager&); // Sets VX to the result of a bitwise AND operation on a random number and NN
+extern void op_DXYN(CpuManager&); // DRAW Instruction .....
+extern void op_DXYN_ex(CpuManager&); // DRAW Instruction extended mode
+extern void op_EXxx(CpuManager&); // 2 instruction EX9E, EXA1
+// Primary table end
+
+
+
 
 // 8XYx subtable start
 extern void op_8XYx(CpuManager&); // 9 instructions , 8XY0 - 8XY7, + 8XYE
@@ -31,14 +45,6 @@ extern void op_8XY6(CpuManager&); // Shifts VX right by one. VF is set to the va
 extern void op_8XY7(CpuManager&); // Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
 extern void op_8XYE(CpuManager&); // Shifts VX left by one. VF is set to the value of the most significant bit of VX before the shift
 // 8XYx subtable end
-
-
-extern void op_9XY0(CpuManager&); // Skips the next instruction if VX doesn't equal VY
-extern void op_ANNN(CpuManager&); // Sets I to the address NNN
-extern void op_BNNN(CpuManager&); // Jumps to the address NNN plus V0
-extern void op_CXNN(CpuManager&); // Sets VX to the result of a bitwise AND operation on a random number and NN
-extern void op_DXYN(CpuManager&); // DRAW Instruction .....
-extern void op_EXxx(CpuManager&); // 2 instruction EX9E, EXA1
 
 
 

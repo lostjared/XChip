@@ -113,8 +113,13 @@ void op_0xxx(CpuManager& cpuMan)
 				utility::LOGerr("Could not set extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
-
+	
 			cpuMan.UnsetFlags(Cpu::EXTENDED_MODE);
+			
+			auto itr = std::find(std::begin(instrTable), std::end(instrTable), op_DXYN_ex);
+			if( itr != std::end(instrTable))
+				*itr = op_DXYN;
+
 			break;
 
 		}
@@ -132,6 +137,10 @@ void op_0xxx(CpuManager& cpuMan)
 			}
 			
 			cpuMan.SetFlags(Cpu::EXTENDED_MODE);
+			
+			auto itr = std::find(std::begin(instrTable), std::end(instrTable), op_DXYN);
+			if( itr != std::end(instrTable))
+				*itr = op_DXYN_ex;
 
 			break;
 		}
@@ -261,8 +270,49 @@ void op_DXYN(CpuManager& cpuMan)
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
-	const int height = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) && N == 0 ) ? 16 : N;
-	const int width = (height == 16) ? 16 : 8;
+	const int height = N;
+
+	const uint8_t* _8bitRow = & cpuMan.GetMemory(cpuMan.GetIndexRegister());
+
+	for (int i = 0; i < height; ++i, ++_8bitRow)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
+			const int px = ((vx + j) & 63);
+			const int py = ((vy + i) & 31);
+
+			const int pixelPos = (64 * py) + px;
+
+			const bool pixel = (*_8bitRow & (1 << (7 - j))) != 0;
+
+			VF |= ((cpuMan.GetGfx()[pixelPos] > 0) & pixel);
+
+			cpuMan.GetGfx(pixelPos) ^= (pixel) ? ~0 : 0;
+		}
+	}
+}
+
+
+
+// EXTENDED_MODE
+void op_DXYN_ex(CpuManager& cpuMan)
+{
+
+	VF = 0;
+	const auto vx = VX;
+	const auto vy = VY;
+	int height;
+	int width;
+	
+	if( N == 0 )
+	{
+		height = width = 16;
+	}
+	else
+	{
+		height = N;
+		width = 8;
+	}
 
 	const uint8_t* _8bitRow = & cpuMan.GetMemory(cpuMan.GetIndexRegister());
 
@@ -283,6 +333,7 @@ void op_DXYN(CpuManager& cpuMan)
 		}
 	}
 }
+
 
 
 
