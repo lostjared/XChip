@@ -19,12 +19,14 @@ public:
 
 	void Dispose() noexcept;
 
-	bool GetErrorFlag() const;
+
 	uint8_t GetDelayTimer() const;
 	uint8_t GetSoundTimer() const;
-	size_t GetIndexRegister() const;
 	uint16_t GetOpcode() const;
 	uint16_t GetOpcode(const uint16_t mask) const;
+	uint32_t GetFlags() const;
+	bool GetFlag(const Cpu::Flags flag) const;
+	size_t GetIndexRegister() const;
 	size_t GetPC() const;
 	size_t GetSP() const;
 	size_t GetMemorySize() const;
@@ -68,7 +70,9 @@ public:
 	bool ResizeRegisters(const size_t size);
 	bool ResizeStack(const size_t size);
 	bool ResizeGfx(const size_t size);
-	void SetErrorFlag(const bool val);
+	void SetFlags(const Cpu::Flags flags);
+	void UnsetFlags(const Cpu::Flags flags);
+	void CleanFlags();
 	void SetDelayTimer(const uint8_t val);
 	void SetSoundTimer(const uint8_t val);
 	void SetOpcode(const uint16_t val);
@@ -100,11 +104,13 @@ private:
 
 
 
-inline bool CpuManager::GetErrorFlag() const { return _cpu.errorFlag; }
+
 inline uint8_t CpuManager::GetDelayTimer() const { return _cpu.delayTimer; }
 inline uint8_t CpuManager::GetSoundTimer() const { return _cpu.soundTimer; }
 inline uint16_t CpuManager::GetOpcode() const { return _cpu.opcode; }
 inline uint16_t CpuManager::GetOpcode(const uint16_t mask) const { return _cpu.opcode & mask; }
+inline uint32_t CpuManager::GetFlags() const { return _cpu.flags; }
+inline bool CpuManager::GetFlag(const Cpu::Flags flag) const { return _cpu.flags & flag; }
 inline size_t CpuManager::GetIndexRegister() const { return _cpu.I; }
 inline size_t CpuManager::GetPC() const { return _cpu.pc; }
 inline size_t CpuManager::GetSP() const { return _cpu.sp; }
@@ -141,7 +147,9 @@ inline uint32_t& CpuManager::GetGfx(const size_t offset) { ASSERT_MSG(GetGfxSize
 inline Cpu& CpuManager::GetCpu() { return _cpu; }
 
 
-inline void CpuManager::SetErrorFlag(const bool val) { _cpu.errorFlag = val; }
+inline void CpuManager::SetFlags(const Cpu::Flags flags) { _cpu.flags |= flags; }
+inline void CpuManager::UnsetFlags(const Cpu::Flags flags) { _cpu.flags &= ~flags; }
+inline void CpuManager::CleanFlags() { _cpu.flags = 0; }
 inline void CpuManager::SetDelayTimer(const uint8_t val) { _cpu.delayTimer = val; }
 inline void CpuManager::SetSoundTimer(const uint8_t val) { _cpu.soundTimer = val; }
 inline void CpuManager::SetOpcode(const uint16_t val) { _cpu.opcode = val; }

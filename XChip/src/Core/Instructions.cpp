@@ -44,7 +44,7 @@ void unknown_opcode(CpuManager& cpuMan)
 	using namespace utility::literals;
 	LOGerr("Unknown Opcode: ", Endl::No);
 	LOGerr(cpuMan.GetOpcode(), Fmt::Hex);
-	cpuMan.SetErrorFlag(true);
+	cpuMan.SetFlags(Cpu::EXIT);
 }
 
 
@@ -98,7 +98,7 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FD: // 0x00FD* SuperChip : exit CHIP interpreter
 			// set error flag to exit
-			cpuMan.SetErrorFlag(true);
+			cpuMan.SetFlags(Cpu::EXIT);
 			break;
 
 
@@ -110,7 +110,7 @@ void op_0xxx(CpuManager& cpuMan)
 			if(!cpuMan.GetRender()->SetResolution( { 64, 128 } ))
 			{
 				utility::LOGerr("Could not set extended resolution mode!");
-				cpuMan.SetErrorFlag(true);
+				cpuMan.SetFlags(Cpu::EXIT);
 			}
 			cpuMan.GetRender()->DrawBuffer();
 	
@@ -126,7 +126,7 @@ void op_0xxx(CpuManager& cpuMan)
 			if(!cpuMan.GetRender()->SetResolution( { 64, 32 } ))
 			{
 				utility::LOGerr("Could not set extended resolution mode!");
-				cpuMan.SetErrorFlag(true);
+				cpuMan.SetFlags(Cpu::EXIT);
 			}
 			
 			break;

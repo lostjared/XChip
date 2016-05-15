@@ -49,7 +49,7 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 		}
 	});
 
-	_pitch = width * 4;
+	_pitch = width * sizeof(uint32_t);
 
 	const auto winW = width * 4;
 	const auto winH = height * 6;
@@ -265,12 +265,10 @@ void SdlRender::DrawBuffer() noexcept
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	ASSERT_MSG(_buffer != nullptr, "attempt to draw null buffer");
 
+
 	SDL_RenderClear(_rend);
-
 	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
-	
 	SDL_RenderCopyEx(_rend, _texture, nullptr, _camera, 0.0, nullptr, SDL_FLIP_NONE);
-
 	SDL_RenderPresent(_rend);
 }
 

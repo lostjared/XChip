@@ -172,7 +172,7 @@ void Emulator::CleanFlags()
 	_instrf = false;
 	_drawf = false;
 	_exitf = false;
-	_manager.SetErrorFlag(false);
+	_manager.CleanFlags();
 }
 
 
