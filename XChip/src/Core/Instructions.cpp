@@ -102,6 +102,24 @@ void op_0xxx(CpuManager& cpuMan)
 			break;
 
 
+
+		case 0x00FE: // 0x00FE* SuperChip:  Disable extended screen mode
+		{
+			cpuMan.SetGfx(64 * 32);
+			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
+
+			if (!cpuMan.GetRender()->SetResolution({ 64, 32 }))
+			{
+				utility::LOGerr("Could not set extended resolution mode!");
+				cpuMan.SetFlags(Cpu::EXIT);
+			}
+
+			cpuMan.UnsetFlags(Cpu::EXTENDED_MODE);
+			break;
+
+		}
+
+
 		case 0x00FF: // 0x00FF* SuperChip: Enable extended screen mode 
 		{
 			cpuMan.SetGfx(64 * 128);
@@ -112,26 +130,13 @@ void op_0xxx(CpuManager& cpuMan)
 				utility::LOGerr("Could not set extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
-			cpuMan.GetRender()->DrawBuffer();
-	
-			break;
-		}
-
-
-		case 0x00FE: // 0x00FE* SuperChip:  Disable extended screen mode
-		{
-			cpuMan.SetGfx(64 * 32);
-			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
-
-			if(!cpuMan.GetRender()->SetResolution( { 64, 32 } ))
-			{
-				utility::LOGerr("Could not set extended resolution mode!");
-				cpuMan.SetFlags(Cpu::EXIT);
-			}
 			
-			break;
+			cpuMan.SetFlags(Cpu::EXTENDED_MODE);
 
+			break;
 		}
+
+
 
 		default: // 0NNN or 00CN
 		{
@@ -413,7 +418,7 @@ void op_DXYN(CpuManager& cpuMan)
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
-	const int height = ( cpuMan.GetRender()->GetResolution().w > 32 && N == 0 ) ? 16 : N;
+	const int height = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) && N == 0 ) ? 16 : N;
 	const int width = (height == 16) ? 16 : 8;
 
 	const uint8_t* _8bitRow = & cpuMan.GetMemory(cpuMan.GetIndexRegister());
