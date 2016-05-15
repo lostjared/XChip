@@ -36,7 +36,7 @@ SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const 
 	SetMaxSize(GetSize());
 }
 
-void SettingsWindow::setRomPath(const std::string &text, const std::string &fps, const std::string &cpufreq)
+void SettingsWindow::SetRomPath(const std::string &text, const std::string &fps, const std::string &cpufreq)
 {
 	_romPath->Clear();
 	*_romPath << text.c_str();
@@ -126,4 +126,7 @@ const std::string SettingsWindow::FPS() const
 
 
 
-
+const std::string SettingsWindow::GetRomPath() const
+{
+	return _romPath->GetLineText(0).c_str();
+}

@@ -88,24 +88,26 @@ void MainWindow::OnAbout(wxCommandEvent&)
 }
 
 
-void MainWindow::OnLDown(wxMouseEvent&)
+void MainWindow::OnLDown(wxMouseEvent& event)
 {
-	/*
 	auto m_lbox = static_cast<wxListBox*>(event.GetEventObject());
 	int item = m_lbox->HitTest(event.GetPosition());
 
 	if (item != wxNOT_FOUND)
 	{
 		wxString str = m_lbox->GetString(item);
-		std::ostringstream stream;
-		stream << _filePath << "/" << str.c_str();
-		std::string fullname = stream.str();
-		std::cout << "Start Rom At Path: " << fullname << "\n";
-		StartProgram(fullname);
+		_romPath = _settingsWin->GetRomPath();
+#ifdef _WIN32
+		_romPath += '\\';
+#elif defined(__APPLE__) || defined(__linux__)
+		_romPath += '/';
+#endif
+		_romPath += str.c_str();
+		std::cout << "Start Rom At Path: " << _romPath << "\n";
+
+		StartEmulator();
 		
 	}
-
-	*/
 }
 
 
@@ -150,11 +152,8 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 	if (openDialog.ShowModal() == wxID_CANCEL)
 		return;
 
-
 	_romPath = openDialog.GetPath().c_str();
-
 	std::cout << "Selected File: " << _romPath << std::endl;
-
 	StartEmulator();
 }
 
@@ -245,11 +244,11 @@ void MainWindow::LoadList(const std::string &text, const std::string &fps, std::
 	{
 		_listBox->InsertItems(strings, 0);
 		_romPath = text;
-		_settingsWin->setRomPath(text, fps, cpu_freq);
+		_settingsWin->SetRomPath(text, fps, cpu_freq);
 	}
 	else
 	{
-		_settingsWin->setRomPath("", fps, cpu_freq);
+		_settingsWin->SetRomPath("", fps, cpu_freq);
 
 	}
 }

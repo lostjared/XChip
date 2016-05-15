@@ -10,7 +10,8 @@ class SettingsWindow : public wxFrame
 public:
 	enum { ID_TEXT1 = 1, ID_TEXTCTRL1, ID_TEXT2, ID_TEXTCTRL2, ID_TEXT3, ID_TEXTCTRL3, ID_BTN_OK, ID_BTN_CANCEL, ID_BTN_DEFAULT };
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
-	void setRomPath(const std::string &text, const std::string &fps, const std::string &cpufreq);
+	const std::string GetRomPath() const;
+	void SetRomPath(const std::string &text, const std::string &fps, const std::string &cpufreq);
 	void CreateControls();
 	void SaveSettings();
 	const std::string RomPath() const;
