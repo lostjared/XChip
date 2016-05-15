@@ -68,20 +68,20 @@ int Process::Join()
 {
 	int status;
 	
+	const auto clean = make_scope_exit([this]() noexcept { this->pid = 0; });
+
 	waitpid(pid, &status, 0);
 	
 	if(WIFEXITED(status))
 		return WEXITSTATUS(status);
 
 
-	pid = 0;
-
 	return -1;
 
 }
 
 
-void Process::Terminate()
+int Process::Terminate()
 {	
 
 	if(pid != 0)
@@ -91,9 +91,10 @@ void Process::Terminate()
 		if(kill(pid, SIGINT) == ESRCH )
 			LOG("Process not found");
 
-		pid = 0;
+		return Join();
 	}
 
+	return 0;
 }
 
 
