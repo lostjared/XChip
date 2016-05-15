@@ -110,7 +110,7 @@ void Process::Terminate()
 
 Process::Process()
 {
-	ZeroInf();
+	ZeroInfo();
 }
 
 
@@ -131,24 +131,22 @@ bool Process::Run(const std::string &app)
 	if (
 		
 		!CreateProcess(nullptr, // No module name (use command line)
-		               (LPSTR)app.c_str(),  // Command line
-		               nullptr,                // Process handle not inheritable
-		               nullptr,                // Thread handle not inheritable
-		               true,                  // Set handle inheritance to FALSE
-		               CREATE_NEW_PROCESS_GROUP,     // creation flags
-		               nullptr,                // Use parent's environment block
-		               nullptr,                // Use parent's starting directory 
-		               &_si,                   // Pointer to STARTUPINFO structure
-		               &_pi)                   // Pointer to PROCESS_INFORMATION structure
+                       (LPSTR)app.c_str(),    // Command line
+                       nullptr,               // Process handle not inheritable
+                       nullptr,               // Thread handle not inheritable
+                       true,                  // Set handle inheritance to FALSE
+                       CREATE_NO_WINDOW,      // creation flags
+                       nullptr,               // Use parent's environment block
+                       nullptr,               // Use parent's starting directory 
+                       &_si,                  // Pointer to STARTUPINFO structure
+                       &_pi)                  // Pointer to PROCESS_INFORMATION structure
 	  )
 
 	{
 		LOGerr("Could not create a new process!");
-		ZeroInf();
+		CloseAndZero();
 		return false;
 	}
-	
-	CloseHandle(_pi.hThread);
 	
 	return true;
 }
@@ -156,47 +154,37 @@ bool Process::Run(const std::string &app)
 
 int Process::Join()
 {
+
+	const auto clean = make_scope_exit([this]() noexcept { CloseAndZero(); });
+
 	DWORD exitCode;
+
 	WaitForSingleObject(_pi.hProcess, INFINITE);
+	
 	if (!GetExitCodeProcess(_pi.hProcess, &exitCode))
 	{
 		LOGerr("Could not get process exit code.");
 		return -1;
 	}
 
-	ZeroInf();
 	return exitCode;
 }
 
 
 
 
-bool _stdcall enum_windows_callback(HWND hwnd, LPARAM neededId) 
+
+int Process::Terminate()
 {
 	
-	DWORD procId;
-	GetWindowThreadProcessId(hwnd, &procId);
-	if (procId == static_cast<DWORD>(neededId))
+	if (!GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, _pi.dwProcessId))
 	{
-		SendMessage(hwnd, WM_CLOSE, 0, 0);
-		return false;
-	}
-
-	return true; 
-}
-
-
-
-
-void Process::Terminate()
-{
-	if (!GenerateConsoleCtrlEvent(CTRL_C_EVENT, _pi.dwProcessId))
-	{
-		LOGerr("Sending CTRL_C_EVENT failed. Try SendMessage WM_CLOSE");
+		LOGerr("Sending CTRL_BREAK_EVENT failed...");
+		LOGerr("Trying SendMessage WM_CLOSE...");
 		EnumWindows((WNDENUMPROC)enum_windows_callback, _pi.dwProcessId);
 	}
 
-	Join();
+	return Join();
 }
 
 
@@ -209,14 +197,49 @@ bool Process::IsRunning() const
 
 
 
-void Process::ZeroInf()
+void Process::ZeroInfo()
+{
+	ZeroMemory(&_si, sizeof(STARTUPINFO));
+	ZeroMemory(&_pi, sizeof(PROCESS_INFORMATION));
+	_si.cb = sizeof(STARTUPINFO);
+}
+
+
+void Process::CloseHandles()
 {
 	CloseHandle(_pi.hProcess);
 	CloseHandle(_pi.hThread);
-	ZeroMemory(&_si, sizeof(_si));
-	_si.cb = sizeof(_si);
-	ZeroMemory(&_pi, sizeof(_pi));
 }
+
+
+void Process::CloseAndZero()
+{
+	CloseHandles();
+	ZeroInfo();
+}
+
+
+bool _stdcall Process::enum_windows_callback(HWND hwnd, LPARAM neededId)
+{
+
+	DWORD procId;
+	GetWindowThreadProcessId(hwnd, &procId);
+	
+	if (procId == static_cast<DWORD>(neededId))
+	{
+		SendMessage(hwnd, WM_CLOSE, 0, 0);
+		return false;
+	}
+
+	return true;
+}
+
+
+
+
+
+
+
 
 #endif // _WIN32
 

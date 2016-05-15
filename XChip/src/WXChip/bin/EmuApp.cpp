@@ -37,6 +37,7 @@ bool _stdcall ctrl_handler(DWORD ctrlType);
 /*********************************************************
  * SIGNALS:
  * SIGINT - set g_emulator exitflag
+ * CTRL_EVENT: windows ConsoleCtrlEvents...
  *********************************************************/
 
 
@@ -56,12 +57,29 @@ int main(int argc, char **argv)
 	using xchip::utility::make_unique;
 
 	
+#if defined(__linux__) || defined(__APPLE__) 
 
+	if (signal(SIGINT, signals_sigint) == SIG_ERR)
+	{
+		std::cerr << "Could not install signal handler!" << std::endl;
+		return EXIT_FAILURE;
+	}
+
+#elif defined(_WIN32)
+
+	if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrl_handler, true))
+	{
+		std::cerr << "Could not install Console Ctrl Handler: " << GetLastError() << std::endl;
+		return EXIT_FAILURE;
+	}
+
+#endif
 
 	if (argc < 2) {
 		std::cout << "No game to load..." << std::endl;
 		return EXIT_SUCCESS;
 	}
+
 
 
 	UniqueRender render;
@@ -86,26 +104,6 @@ int main(int argc, char **argv)
 	if (!g_emulator.LoadRom(argv[1]))
 		return EXIT_FAILURE;
 
-
-	g_emulator.GetRender()->SetWindowName("EmuApp");
-
-#if defined(__linux__) || defined(__APPLE__) 
-
-	if(signal(SIGINT, signals_sigint) == SIG_ERR)
-	{
-		std::cerr << "Could not install signal handler!" << std::endl;
-		return EXIT_FAILURE;
-	}
-
-#elif defined(_WIN32)
-
-	if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrl_handler, true))
-	{
-		std::cerr << "Could not install Console Ctrl Handler: " << GetLastError() << std::endl;
-		return EXIT_FAILURE;
-	}
-
-#endif
 
 	if(argc >= 3)
 		configure_emulator(std::vector<std::string>(argv+2, argv+argc));
@@ -416,14 +414,10 @@ void signals_sigint(const int signum)
 #elif defined(_WIN32)
 bool _stdcall ctrl_handler(DWORD ctrlType)
 {
-	if (ctrlType == CTRL_C_EVENT) 
-	{
-		std::cout << "Received CTRL_C_EVENT! ctrlType: " << ctrlType << std::endl;
-		std::cout << "Closing Application!" << std::endl;
-		g_emulator.SetExitFlag(true);
-		return true;
-	}
-	return false;
+	std::cout << "Received ctrlType: " << ctrlType << std::endl;
+	std::cout << "Closing Application!" << std::endl;
+	g_emulator.SetExitFlag(true);
+	return true;
 }
 #endif
 

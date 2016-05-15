@@ -36,14 +36,17 @@ public:
 	bool IsRunning() const;
 	bool Run(const std::string &app);
 	int Join();
-	void Terminate();
+	int Terminate();
 private:
 
 #if defined(__APPLE__) || defined(__linux__)
 	pid_t pid = 0;
 
 #elif defined(_WIN32)
-	void ZeroInf();
+	static bool _stdcall enum_windows_callback(HWND hwnd, LPARAM neededId);
+	void CloseHandles();
+	void ZeroInfo();
+	void CloseAndZero();
 	STARTUPINFO _si;
 	PROCESS_INFORMATION _pi;
 
