@@ -283,7 +283,7 @@ void op_DXYN(CpuManager& cpuMan)
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
-	const int height = (!N) ? 16 : N;
+	const int height = N;
 
 	const uint8_t* _8bitRow = & cpuMan.GetMemory(cpuMan.GetIndexRegister());
 
