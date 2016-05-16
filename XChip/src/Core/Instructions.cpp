@@ -82,12 +82,13 @@ void op_0xxx(CpuManager& cpuMan)
 		case 0x00FB: // 0x00FB* SuperChip: scrolls display 4 pixels right:
 		{
 			const auto res = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) ) ? utility::Resolution { 128, 64 } : utility::Resolution { 64, 32 };		
-			for(int y = 0; y < res.h; ++y )
+			for( int y = 0; y < res.h; ++y )
 			{
 				uint32_t* line = cpuMan.GetGfx() + res.w * y;
 				std::memmove(line + 4, line, sizeof(uint32_t) * (res.w - 4));
 				std::memset(line, 0, sizeof(uint32_t) * 4);
-			}; 
+			}
+ 
 			break;
 		}
 
@@ -95,12 +96,12 @@ void op_0xxx(CpuManager& cpuMan)
 		case 0x00FC: // 0x00FC* SuperChip: scrolls display 4 pixels left:
 		{
 			const auto res = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) ) ? utility::Resolution { 128, 64 } : utility::Resolution { 64, 32 };		
-			for(int y = 0; y < res.h; ++y )
+			for( int y = 0; y < res.h; ++y )
 			{
 				uint32_t* line = cpuMan.GetGfx() + res.w * y;
-				std::memmove(line, line + 4, sizeof(uint32_t) * (res.w - 4) );
-				std::memset(&line[res.w - 4], 0, sizeof(uint32_t) * 4);
-			};
+				std::memmove(line, line + 4, sizeof(uint32_t) * (res.w - 4));
+				std::memset(&line[res.w - 4],  0, sizeof(uint32_t) * 4);
+			}
 
 			break;
 		}
@@ -285,7 +286,7 @@ void op_DXYN(CpuManager& cpuMan)
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
-	const int height = N;
+	const int height = (!N) ? 16 : N;
 
 	const uint8_t* _8bitRow = & cpuMan.GetMemory(cpuMan.GetIndexRegister());
 
