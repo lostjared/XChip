@@ -80,12 +80,30 @@ void op_0xxx(CpuManager& cpuMan)
 			break;
 
 		case 0x00FB: // 0x00FB* SuperChip: scrolls display 4 pixels right:
-			cpuMan.GetRender()->SetScrollX(cpuMan.GetRender()->GetScrollX() - 4);
+		{
+			const auto res = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) ) ? utility::Resolution { 128, 64 } : utility::Resolution { 64, 32 };		
+			for(int y = 0; y < res.h; ++y )
+			{
+				uint32_t* line = cpuMan.GetGfx() + res.w * y;
+				std::memmove(line + 4, line, sizeof(uint32_t) * (res.w - 4));
+				std::memset(line, 0, sizeof(uint32_t) * 4);
+			}; 
 			break;
+		}
+
 
 		case 0x00FC: // 0x00FC* SuperChip: scrolls display 4 pixels left:
-			cpuMan.GetRender()->SetScrollX(cpuMan.GetRender()->GetScrollX() + 4);
+		{
+			const auto res = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) ) ? utility::Resolution { 128, 64 } : utility::Resolution { 64, 32 };		
+			for(int y = 0; y < res.h; ++y )
+			{
+				uint32_t* line = cpuMan.GetGfx() + res.w * y;
+				std::memmove(line, line + 4, sizeof(uint32_t) * (res.w - 4) );
+				std::memset(&line[res.w - 4], 0, sizeof(uint32_t) * 4);
+			};
+
 			break;
+		}
 
 		case 0x00FD: // 0x00FD* SuperChip : exit CHIP interpreter
 			// set error flag to exit
@@ -143,8 +161,14 @@ void op_0xxx(CpuManager& cpuMan)
 			if( (cpuMan.GetOpcode(0x00F0) >> 4) == 0xC )
 			{
 				// 00CN* SuperChip: Scroll display N lines down:
-				auto* const render = cpuMan.GetRender();
-				render->SetScrollY(render->GetScrollY(iRender::ScrollType::InLines) + static_cast<int>(N), iRender::ScrollType::InLines);
+				const auto res = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) ) ? utility::Resolution { 128, 64 } : utility::Resolution { 64, 32 };
+				uint32_t* gfx = cpuMan.GetGfx();
+				const int lines = N;			
+			    for (int i = res.h - 1; i >= lines; --i)
+			        memcpy(&gfx[i * res.w], &gfx[(i - lines) * res.w], sizeof(uint32_t) * res.w);
+
+			    memset(&gfx[0], 0, sizeof(uint32_t)*(lines * res.w));
+
 			}
 
 			else
@@ -274,7 +298,7 @@ void op_DXYN(CpuManager& cpuMan)
 
 			const int pixelPos = (64 * py) + px;
 
-			const bool pixel = (*_8bitRow & (1 << (7 - j))) != 0;
+			const uint32_t pixel = (*_8bitRow & (1 << (7 - j))) != 0;
 
 			VF |= ((cpuMan.GetGfx()[pixelPos] > 0) & pixel);
 
@@ -316,7 +340,7 @@ void op_DXYN_ex(CpuManager& cpuMan)
 
 			const int pixelPos = (128 * py) + px;
 
-			const bool pixel = (*_8bitRow & (1 << (7 - j))) != 0;
+			const uint32_t pixel = (*_8bitRow & (1 << (7 - j))) != 0;
 
 			VF |= ((cpuMan.GetGfx(pixelPos) > 0) & pixel);
 
