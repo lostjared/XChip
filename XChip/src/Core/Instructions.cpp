@@ -68,6 +68,7 @@ void execute_instruction(CpuManager& cpuMan)
 
 void op_0xxx(CpuManager& cpuMan)
 {
+	using utility::Resolution;
 	switch (cpuMan.GetOpcode())
 	{
 		case 0x00E0: // clear screen
@@ -81,12 +82,13 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FB: // 0x00FB* SuperChip: scrolls display 4 pixels right:
 		{
-			const auto res = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) ) ? utility::Resolution { 128, 64 } : utility::Resolution { 64, 32 };		
+			const auto res = cpuMan.GetFlags(Cpu::EXTENDED_MODE) ? Resolution { 128, 64 } : Resolution { 64, 32 };		
 			for( int y = 0; y < res.h; ++y )
 			{
-				uint32_t* line = cpuMan.GetGfx() + res.w * y;
-				std::memmove(line + 4, line, sizeof(uint32_t) * (res.w - 4));
-				std::memset(line, 0, sizeof(uint32_t) * 4);
+				uint32_t* lineBeg = cpuMan.GetGfx() + res.w * y;
+				uint32_t* lineEnd = lineBeg + res.w;
+				std::copy(lineBeg, lineEnd-4, lineBeg+4);
+				std::fill(lineBeg, lineBeg+4, 0);
 			}
  
 			break;
@@ -95,12 +97,13 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FC: // 0x00FC* SuperChip: scrolls display 4 pixels left:
 		{
-			const auto res = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) ) ? utility::Resolution { 128, 64 } : utility::Resolution { 64, 32 };		
+			const auto res = cpuMan.GetFlags(Cpu::EXTENDED_MODE) ? Resolution { 128, 64 } : Resolution { 64, 32 };
 			for( int y = 0; y < res.h; ++y )
 			{
-				uint32_t* line = cpuMan.GetGfx() + res.w * y;
-				std::memmove(line, line + 4, sizeof(uint32_t) * (res.w - 4));
-				std::memset(&line[res.w - 4],  0, sizeof(uint32_t) * 4);
+				uint32_t* lineBeg = cpuMan.GetGfx() + res.w * y;
+				uint32_t* lineEnd = lineBeg + res.w;
+				std::copy(lineBeg+4, lineEnd, lineBeg);
+				std::fill(lineEnd-4, lineEnd, 0); 
 			}
 
 			break;
