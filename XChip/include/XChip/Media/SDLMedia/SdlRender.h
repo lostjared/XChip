@@ -43,8 +43,8 @@ public:
 	void HideWindow() noexcept override;
 	void ShowWindow() noexcept override;
 
-	virtual void SetWinCloseCallback(const void* arg, WinCloseCallback callback) noexcept override;
-	virtual void SetWinResizeCallback(const void* arg, WinResizeCallback callback) noexcept override;
+	void SetWinCloseCallback(const void* arg, WinCloseCallback callback) noexcept override;
+	void SetWinResizeCallback(const void* arg, WinResizeCallback callback) noexcept override;
 
 private:
 	SDL_Window* _window = nullptr;

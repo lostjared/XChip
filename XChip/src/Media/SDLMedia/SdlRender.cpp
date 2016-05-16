@@ -33,68 +33,6 @@ SdlRender::~SdlRender()
 
 
 
-const char* SdlRender::GetWindowName() const noexcept
-{
-	_SDLRENDER_INITIALIZED_ASSERT_();
-	return SDL_GetWindowTitle(_window);
-}
-
-
-utility::Color SdlRender::GetColorFilter() const noexcept
-{
-	_SDLRENDER_INITIALIZED_ASSERT_();
-	utility::Color color;
-	SDL_GetTextureColorMod(_texture, &color.r, &color.g, &color.b);
-	return color;
-
-}
-
-
-
-
-utility::Resolution SdlRender::GetResolution() const noexcept
-{
-	_SDLRENDER_INITIALIZED_ASSERT_();
-	
-	SDL_DisplayMode displayMode;
-
-	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
-	{
-		xchip::utility::LOGerr(SDL_GetError());
-		return {0, 0};
-	}
-
-	return {displayMode.w, displayMode.h};
-}
-
-
-
-int SdlRender::GetScrollX(const ScrollType type) const noexcept
-{
-	if(type == ScrollType::InPixels )
-		return _camera->x;
-	else
-		return _camera->x / 22;
-}
-
-
-int SdlRender::GetScrollY(const ScrollType type) const noexcept
-{
-	if(type == ScrollType::InPixels )
-		return _camera->y;
-	else
-		return _camera->y / 22;
-}
-
-
-
-
-
-
-
-
-
-
 bool SdlRender::Initialize(const int width, const int height) noexcept
 {
 	if (_initialized)
@@ -168,6 +106,67 @@ void SdlRender::Dispose() noexcept
 
 
 
+const char* SdlRender::GetWindowName() const noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	return SDL_GetWindowTitle(_window);
+}
+
+
+utility::Color SdlRender::GetColorFilter() const noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	utility::Color color;
+	SDL_GetTextureColorMod(_texture, &color.r, &color.g, &color.b);
+	return color;
+
+}
+
+
+
+
+utility::Resolution SdlRender::GetResolution() const noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	
+	SDL_DisplayMode displayMode;
+
+	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
+	{
+		xchip::utility::LOGerr(SDL_GetError());
+		return {0, 0};
+	}
+
+	return {displayMode.w, displayMode.h};
+}
+
+
+
+int SdlRender::GetScrollX(const ScrollType type) const noexcept
+{
+	if(type == ScrollType::InPixels )
+		return _camera->x;
+	else
+		return _camera->x / 22;
+}
+
+
+int SdlRender::GetScrollY(const ScrollType type) const noexcept
+{
+	if(type == ScrollType::InPixels )
+		return _camera->y;
+	else
+		return _camera->y / 22;
+}
+
+
+
+
+
+
+
+
+
 
 
 bool SdlRender::UpdateEvents() noexcept
@@ -226,51 +225,42 @@ bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
 
 bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
 {
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	using namespace utility::literals;
 
-	const auto* const oldBuff = _buffer;
-	const auto oldRes = this->GetResolution();
-	if(!this->Initialize( res.w, res.h))
+	SDL_DisplayMode dispMode;
+	
+	if( SDL_GetWindowDisplayMode(_window, &dispMode ) )
 	{
-		utility::LOGerr("Could not set new resolution. Setting previous resolution.");
-		if(!this->Initialize(oldRes.w, oldRes.h))
-			utility::LOGerr("Could not set old resolution. SdlRender is not usable.");
-
+		utility::LOGerr(SDL_GetError());
 		return false;
 	}
 
-	this->SetBuffer(oldBuff);
-	return true;
-/*
-	_SDLRENDER_INITIALIZED_ASSERT_();	
-	if( res.w <= 0 || res.h <= 0 )
+	_pitch = res.w * sizeof(uint32_t);
+	dispMode.w = res.w * 4;
+	dispMode.h = res.h * 6;
+	_camera->w = dispMode.w;
+	_camera->h = dispMode.h;
+
+	if( SDL_SetWindowDisplayMode( _window, &dispMode ) )
 	{
-		xchip::utility::LOGerr("SetResolution: w and h must be greater than 0.");
+		utility::LOGerr(SDL_GetError());
 		return false;
 	}
 
-
-	SDL_DisplayMode displayMode;
-
-	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
+	const auto currentColor = this->GetColorFilter();
+	SDL_DestroyTexture( _texture );	
+	_texture = SDL_CreateTexture(_rend, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, res.w, res.h);
+	if (!_texture)
 	{
-		xchip::utility::LOGerr(SDL_GetError());
+		utility::LOGerr("Could not create new texture: "_s + SDL_GetError());
 		return false;
 	}
+	this->SetColorFilter(currentColor);
 
-	displayMode.w = res.w * 4;
-	displayMode.h = res.h * 6;
-
-	if( SDL_SetWindowDisplayMode(_window, &displayMode) )
-	{
-		xchip::utility::LOGerr(SDL_GetError());
-		return false;
-	}
+	SDL_SetWindowSize(_window, dispMode.w, dispMode.h);
 
 	return true;
-
-*/
-
-
 }
 
 

@@ -144,7 +144,7 @@ void op_0xxx(CpuManager& cpuMan)
 			{
 				// 00CN* SuperChip: Scroll display N lines down:
 				auto* const render = cpuMan.GetRender();
-				render->SetScrollY(render->GetScrollY() + static_cast<int>(-N), iRender::ScrollType::InLines);
+				render->SetScrollY(render->GetScrollY(iRender::ScrollType::InLines) + static_cast<int>(N), iRender::ScrollType::InLines);
 			}
 
 			else
@@ -311,14 +311,14 @@ void op_DXYN_ex(CpuManager& cpuMan)
 	{
 		for (int j = 0; j < width; ++j)
 		{
-			const int px = ((vx + j) & 63);
-			const int py = ((vy + i) & 31);
+			const int px = ((vx + j) & 127);
+			const int py = ((vy + i) & 63);
 
-			const int pixelPos = (64 * py) + px;
+			const int pixelPos = (128 * py) + px;
 
 			const bool pixel = (*_8bitRow & (1 << (7 - j))) != 0;
 
-			VF |= ((cpuMan.GetGfx()[pixelPos] > 0) & pixel);
+			VF |= ((cpuMan.GetGfx(pixelPos) > 0) & pixel);
 
 			cpuMan.GetGfx(pixelPos) ^= (pixel) ? ~0 : 0;
 		}
