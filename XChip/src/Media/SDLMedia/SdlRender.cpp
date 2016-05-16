@@ -33,7 +33,7 @@ SdlRender::~SdlRender()
 
 
 
-bool SdlRender::Initialize(const int width, const int height) noexcept
+bool SdlRender::Initialize(const utility::Vec2i& winSize, const utility::Vec2i& res) noexcept
 {
 	if (_initialized)
 		this->Dispose();
@@ -50,13 +50,10 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 		}
 	});
 
-	_pitch = width * sizeof(uint32_t);
-
-	const auto winW = width * 4;
-	const auto winH = height * 6;
+	_pitch = res.x * sizeof(uint32_t);
 
 	_window = SDL_CreateWindow("Chip8 - SdlRender", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-                                   winW, winH, SDL_WINDOW_RESIZABLE);
+                                   winSize.x, winSize.y, SDL_WINDOW_RESIZABLE);
 
 	if (!_window) 
 		return false;
@@ -66,20 +63,10 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 	if (!_rend)
 		return false;
 
-	_texture = SDL_CreateTexture(_rend, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+	_texture = SDL_CreateTexture(_rend, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, res.x, res.y);
 
 	if (!_texture)
 		return false;
-
-	_camera = static_cast<SDL_Rect*> ( std::malloc(sizeof(SDL_Rect)) );
-
-	if(!_camera)
-		return false;
-
-	_camera->x = 0;
-	_camera->y = 0;
-	_camera->w = winW;
-	_camera->h = winH;
 
 	SDL_RenderClear(_rend);
 	SDL_RenderPresent(_rend);
@@ -91,7 +78,6 @@ bool SdlRender::Initialize(const int width, const int height) noexcept
 
 void SdlRender::Dispose() noexcept
 {
-	std::free(_camera);
 	SDL_DestroyTexture(_texture);
 	SDL_DestroyRenderer(_rend);
 	SDL_DestroyWindow(_window);
@@ -125,47 +111,27 @@ utility::Color SdlRender::GetColorFilter() const noexcept
 
 
 
-utility::Resolution SdlRender::GetResolution() const noexcept
+utility::Vec2i SdlRender::GetResolution() const noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	
-	SDL_DisplayMode displayMode;
-
-	if( SDL_GetWindowDisplayMode(_window, &displayMode) )
+	utility::Vec2i res;
+	if( SDL_QueryTexture(_texture, nullptr, nullptr, &res.x, &res.y) )
 	{
 		xchip::utility::LOGerr(SDL_GetError());
 		return {0, 0};
 	}
 
-	return {displayMode.w, displayMode.h};
+	return res;
 }
 
 
-
-int SdlRender::GetScrollX(const ScrollType type) const noexcept
+utility::Vec2i SdlRender::GetWindowSize() const noexcept
 {
-	if(type == ScrollType::InPixels )
-		return _camera->x;
-	else
-		return _camera->x / 22;
+	utility::Vec2i size;
+	SDL_GetWindowSize(_window, &size.x, &size.y);
+	return size;
 }
-
-
-int SdlRender::GetScrollY(const ScrollType type) const noexcept
-{
-	if(type == ScrollType::InPixels )
-		return _camera->y;
-	else
-		return _camera->y / 22;
-}
-
-
-
-
-
-
-
-
 
 
 
@@ -181,9 +147,6 @@ bool SdlRender::UpdateEvents() noexcept
 			case SDL_WINDOWEVENT_RESTORED: 
 				if (_resizeClbk) 
 					_resizeClbk(_resizeClbkArg);  
-				
-				SDL_GetWindowSize(_window, &_camera->w, &_camera->h);
-				
 				break;
 			
 			case SDL_WINDOWEVENT_CLOSE: 
@@ -223,50 +186,46 @@ bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
 
 
 
-bool SdlRender::SetResolution(const utility::Resolution& res) noexcept
+bool SdlRender::SetResolution(const utility::Vec2i& res) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	using namespace utility::literals;
 
-	SDL_DisplayMode dispMode;
+	_pitch = res.x * sizeof(uint32_t);
 	
-	if( SDL_GetWindowDisplayMode(_window, &dispMode ) )
-	{
-		utility::LOGerr(SDL_GetError());
-		return false;
-	}
-
-	_pitch = res.w * sizeof(uint32_t);
-	dispMode.w = res.w * 4;
-	dispMode.h = res.h * 6;
-	_camera->w = dispMode.w;
-	_camera->h = dispMode.h;
-
-	if( SDL_SetWindowDisplayMode( _window, &dispMode ) )
-	{
-		utility::LOGerr(SDL_GetError());
-		return false;
-	}
-
 	const auto currentColor = this->GetColorFilter();
-	SDL_DestroyTexture( _texture );	
-	_texture = SDL_CreateTexture(_rend, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, res.w, res.h);
+	SDL_Texture* const oldTexture = _texture;
+
+	_texture = SDL_CreateTexture(_rend, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, res.x, res.y);
+
 	if (!_texture)
 	{
 		utility::LOGerr("Could not create new texture: "_s + SDL_GetError());
+		_texture = oldTexture;
 		return false;
 	}
-	this->SetColorFilter(currentColor);
 
-	SDL_SetWindowSize(_window, dispMode.w, dispMode.h);
+	SDL_DestroyTexture(oldTexture);
+	this->SetColorFilter(currentColor);
 
 	return true;
 }
 
 
+
+void SdlRender::SetWindowSize(const utility::Vec2i& size) noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	SDL_SetWindowSize(_window, size.x, size.y);
+}
+
+
 bool SdlRender::SetFullScreen(const bool val) noexcept
 {
+	_SDLRENDER_INITIALIZED_ASSERT_();
+
 	using namespace utility::literals;
+
 
 	if(val)
 	{
@@ -292,27 +251,7 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 		}
 	}
 
-
 	return true;
-}
-
-
-void SdlRender::SetScrollX(const int x, const ScrollType type) noexcept
-{
-	if(type == ScrollType::InPixels)
-		_camera->x = x;
-	else
-		_camera->x = x * 22;
-}
-
-
-
-void SdlRender::SetScrollY(const int y, const ScrollType type) noexcept
-{
-	if(type == ScrollType::InPixels)
-		_camera->y = y;
-	else
-		_camera->y = y * 22;
 }
 
 
@@ -327,7 +266,7 @@ void SdlRender::DrawBuffer() noexcept
 
 	SDL_RenderClear(_rend);
 	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
-	SDL_RenderCopyEx(_rend, _texture, nullptr, _camera, 0.0, nullptr, SDL_FLIP_NONE);
+	SDL_RenderCopy(_rend, _texture, nullptr, nullptr);
 	SDL_RenderPresent(_rend);
 }
 

@@ -68,7 +68,6 @@ void execute_instruction(CpuManager& cpuMan)
 
 void op_0xxx(CpuManager& cpuMan)
 {
-	using utility::Resolution;
 	switch (cpuMan.GetOpcode())
 	{
 		case 0x00E0: // clear screen
@@ -82,30 +81,27 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FB: // 0x00FB* SuperChip: scrolls display 4 pixels right:
 		{
-			const auto res = cpuMan.GetFlags(Cpu::EXTENDED_MODE) ? Resolution { 128, 64 } : Resolution { 64, 32 };		
-			for( int y = 0; y < res.h; ++y )
+			const auto res = cpuMan.GetRender()->GetResolution();
+			for( int y = 0; y < res.y; ++y )
 			{
-				uint32_t* lineBeg = cpuMan.GetGfx() + res.w * y;
-				uint32_t* lineEnd = lineBeg + res.w;
-				std::copy(lineBeg, lineEnd-4, lineBeg+4);
+				uint32_t* lineBeg = cpuMan.GetGfx() + res.x * y;
+				std::memmove(lineBeg+4, lineBeg, sizeof(uint32_t) * (res.x-4));
 				std::fill(lineBeg, lineBeg+4, 0);
 			}
- 
 			break;
 		}
 
 
 		case 0x00FC: // 0x00FC* SuperChip: scrolls display 4 pixels left:
 		{
-			const auto res = cpuMan.GetFlags(Cpu::EXTENDED_MODE) ? Resolution { 128, 64 } : Resolution { 64, 32 };
-			for( int y = 0; y < res.h; ++y )
+			const auto res = cpuMan.GetRender()->GetResolution();
+			for( int y = 0; y < res.y; ++y )
 			{
-				uint32_t* lineBeg = cpuMan.GetGfx() + res.w * y;
-				uint32_t* lineEnd = lineBeg + res.w;
-				std::copy(lineBeg+4, lineEnd, lineBeg);
+				uint32_t* lineBeg = cpuMan.GetGfx() + res.x * y;
+				uint32_t* lineEnd = lineBeg + res.x;
+				std::memmove(lineBeg, lineBeg+4, sizeof(uint32_t) * (res.x-4));
 				std::fill(lineEnd-4, lineEnd, 0); 
 			}
-
 			break;
 		}
 
@@ -118,15 +114,14 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FE: // 0x00FE* SuperChip:  Disable extended screen mode
 		{
-			cpuMan.SetGfx(64 * 32);
-			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
-
 			if (!cpuMan.GetRender()->SetResolution({ 64, 32 }))
 			{
 				utility::LOGerr("Could not set extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
-	
+
+			cpuMan.SetGfx(64*32);
+			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
 			cpuMan.UnsetFlags(Cpu::EXTENDED_MODE);
 			
 			auto itr = std::find(std::begin(instrTable), std::end(instrTable), op_DXYN_ex);
@@ -140,15 +135,14 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FF: // 0x00FF* SuperChip: Enable extended screen mode 
 		{
-			cpuMan.SetGfx(128 * 64);
-			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
-
 			if(!cpuMan.GetRender()->SetResolution( { 128, 64 } ))
 			{
 				utility::LOGerr("Could not set extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
-			
+
+			cpuMan.SetGfx(128*64);
+			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
 			cpuMan.SetFlags(Cpu::EXTENDED_MODE);
 			
 			auto itr = std::find(std::begin(instrTable), std::end(instrTable), op_DXYN);
@@ -165,13 +159,13 @@ void op_0xxx(CpuManager& cpuMan)
 			if( (cpuMan.GetOpcode(0x00F0) >> 4) == 0xC )
 			{
 				// 00CN* SuperChip: Scroll display N lines down:
-				const auto res = ( cpuMan.GetFlags(Cpu::EXTENDED_MODE) ) ? utility::Resolution { 128, 64 } : utility::Resolution { 64, 32 };
+				const auto res = cpuMan.GetRender()->GetResolution();
 				uint32_t* gfx = cpuMan.GetGfx();
 				const int lines = N;			
-			    for (int i = res.h - 1; i >= lines; --i)
-			        memcpy(&gfx[i * res.w], &gfx[(i - lines) * res.w], sizeof(uint32_t) * res.w);
+			    for (int i = res.y - 1; i >= lines; --i)
+			        memcpy(&gfx[i * res.x], &gfx[(i - lines) * res.x], sizeof(uint32_t) * res.x);
 
-			    memset(&gfx[0], 0, sizeof(uint32_t)*(lines * res.w));
+			    memset(&gfx[0], 0, sizeof(uint32_t)*(lines * res.x));
 
 			}
 
@@ -322,12 +316,11 @@ void op_DXYN_ex(CpuManager& cpuMan)
 	const auto vy = VY;
 	int height;
 	int width;
-	
-	if( N == 0 )
+	if( N == 0 ) 
 	{
 		height = width = 16;
 	}
-	else
+	else 
 	{
 		height = N;
 		width = 8;
@@ -583,7 +576,7 @@ void op_FXxx(CpuManager& cpuMan) // 9 instructions.
 void op_FX30(CpuManager& cpuMan)
 {
 	using utility::arr_size;
-	cpuMan.SetIndexRegister(  arr_size(fonts::chip8DefaultFont) + ( VX * 10 )  );
+	cpuMan.SetIndexRegister( arr_size(fonts::chip8DefaultFont)+(VX*10) );
 }
 
 

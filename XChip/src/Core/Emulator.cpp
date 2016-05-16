@@ -336,7 +336,7 @@ bool Emulator::InitRender()
 	else if (rend->IsInitialized()) {
 		return true;
 	} 
-	else if (!rend->Initialize(64, 32)) {
+	else if (!rend->Initialize({512, 256}, {64, 32})) {
 		return false;
 	}
 

@@ -222,7 +222,7 @@ void configure_emulator(const std::vector<std::string>& arguments)
 
 void res_config(const std::string& arg)
 {
-	using xchip::utility::Resolution;
+	using xchip::utility::Vec2i;
 
 	try
 	{
@@ -232,16 +232,14 @@ void res_config(const std::string& arg)
 		if(separatorIndex == std::string::npos)
 			throw std::invalid_argument("missing the \'x\' separator for widthxheight");
 	
-		const Resolution res(std::stoi(arg.substr(0, separatorIndex)), 
+		const Vec2i res(std::stoi(arg.substr(0, separatorIndex)), 
                                std::stoi(arg.substr(separatorIndex+1, arg.size())) );
 
 		if(!g_emulator.GetRender())
 			throw std::runtime_error("null Render");
 
-		if(!g_emulator.GetRender()->SetResolution(res))
-			throw std::runtime_error("iRender internal error");
-
-		std::cout << "Render Resolution: " << g_emulator.GetRender()->GetResolution() << std::endl; 
+		g_emulator.GetRender()->SetWindowSize(res);
+		std::cout << "Render Resolution: " << g_emulator.GetRender()->GetWindowSize() << std::endl; 
 		std::cout << "Done." << std::endl;
 
 	}

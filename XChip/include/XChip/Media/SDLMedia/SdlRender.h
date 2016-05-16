@@ -17,26 +17,21 @@ class SdlRender final : public iRender, private SdlSystem
 public:
 	SdlRender() noexcept;
 	~SdlRender();
-	bool Initialize(const int width, const int height) noexcept override;
+	bool Initialize(const utility::Vec2i& winSize, const utility::Vec2i& res) noexcept override;
 	void Dispose() noexcept override;
 	
 	bool IsInitialized() const noexcept override;
 	const char* GetWindowName() const noexcept override;
 	const uint32_t* GetBuffer() const noexcept override;
 	utility::Color GetColorFilter() const noexcept override;
-	utility::Resolution GetResolution() const noexcept override;
-	int GetScrollX(const ScrollType type = ScrollType::InPixels) const noexcept override;
-	int GetScrollY(const ScrollType type = ScrollType::InPixels) const noexcept override;
-
+	utility::Vec2i GetResolution() const noexcept override;
+	utility::Vec2i GetWindowSize() const noexcept override;
+	
 	void SetWindowName(const char* name) noexcept override;
 	void SetBuffer(const uint32_t* gfx) noexcept override;
 	bool SetColorFilter(const utility::Color& color) noexcept override;
-	bool SetResolution(const utility::Resolution& res) noexcept override;
-	void SetScrollX(const int x, const ScrollType type = ScrollType::InPixels) noexcept override;
-	void SetScrollY(const int y, const ScrollType type = ScrollType::InLines) noexcept override;
-
-
-
+	bool SetResolution(const utility::Vec2i& res) noexcept override;
+	void SetWindowSize(const utility::Vec2i& size) noexcept override;
 	bool SetFullScreen(const bool val) noexcept override;
 	bool UpdateEvents() noexcept override;
 	void DrawBuffer() noexcept override;
@@ -50,7 +45,6 @@ private:
 	SDL_Window* _window = nullptr;
 	SDL_Renderer* _rend = nullptr;
 	SDL_Texture* _texture = nullptr;
-	SDL_Rect* _camera     = nullptr;
 	const uint32_t* _buffer = nullptr;
 	WinCloseCallback _closeClbk = nullptr;
 	WinResizeCallback _resizeClbk = nullptr;

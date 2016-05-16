@@ -54,8 +54,6 @@ int main(void)
 
 	int y = 0;
 
-	g_emulator.SetFps(2);
-	g_emulator.GetRender()->SetFullScreen(true);
 	while (!g_emulator.GetExitFlag())
 	{
 		g_emulator.UpdateSystems(); 
@@ -66,8 +64,6 @@ int main(void)
 
 			if( y == 32 ) 
 				y = 0;
-
-			g_emulator.GetRender()->SetScrollY( y++ );
 		}
 	}
 
