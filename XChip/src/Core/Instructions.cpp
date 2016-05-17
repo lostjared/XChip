@@ -285,7 +285,7 @@ void op_DXYN(CpuManager& cpuMan)
 	const auto vy = VY;
 	const int height = N;
 
-	const uint8_t* _8bitRow = & cpuMan.GetMemory(cpuMan.GetIndexRegister());
+	const uint8_t* _8bitRow =  cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 
 	for (int i = 0; i < height; ++i, ++_8bitRow)
 	{
@@ -314,22 +314,47 @@ void op_DXYN_ex(CpuManager& cpuMan)
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
-	const int height = (!N) ? 16 : N;
-	const uint8_t* _8bitRow = & cpuMan.GetMemory(cpuMan.GetIndexRegister());
 
-	for (int i = 0; i < height; ++i, ++_8bitRow)
+	if(N)	
 	{
-		for (int j = 0; j < 8; ++j)
+		const int height = N;
+		const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
+		for (int i = 0; i < height; ++i, ++_8bitRow)
 		{
-			const int px = ((vx + j) & 127);
-			const int py = ((vy + i) & 63);
-			const int pixelPos = (128 * py) + px;
+			for (int j = 0; j < 8; ++j)
+			{
+				const int px = ((vx + j) & 127);
+				const int py = ((vy + i) & 63);
+				const int pixelPos = (128 * py) + px;
 
-			const uint32_t pixel = (*_8bitRow & (1 << (7 - j))) != 0;
+				const uint32_t pixel = (*_8bitRow & (1 << (7 - j))) != 0;
 
-			VF |= ((cpuMan.GetGfx(pixelPos) > 0) & pixel);
+				VF |= ((cpuMan.GetGfx(pixelPos) > 0) & pixel);
+				cpuMan.GetGfx(pixelPos) ^= (pixel) ? 0xFFFFFFFF : 0;
+			}
+		}
+	}
 
-			cpuMan.GetGfx(pixelPos) ^= (pixel) ? 0xFFFFFFFF : 0;
+	else
+	{
+		const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
+		for(int i = 0; i < 16; ++i, ++_8bitRow)
+		{
+			for(int j = 0, b = 0; j < 16; ++j, ++b)
+			{
+				if( b == 8 ) 
+				{
+					++_8bitRow;
+					b = 0;
+				}
+
+				const int px = ((vx + j) & 127);
+				const int py = ((vy + i) & 63);
+				const int pixelPos = (128 * py) + px;
+				const uint32_t pixel = (*_8bitRow & (1 << (7 - b))) != 0;
+				VF |= ((cpuMan.GetGfx(pixelPos) > 0) & pixel);
+				cpuMan.GetGfx(pixelPos) ^= (pixel) ? 0xFFFFFFFF : 0;
+			}
 		}
 	}
 }
