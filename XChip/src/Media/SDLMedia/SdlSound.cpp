@@ -16,18 +16,17 @@
 
 namespace xchip {
 
-inline float SdlSound::GetCurFreq() const { return _curFreq * _specs[Have].freq; }
-inline float SdlSound::GetPlayFreq() const { return _playFreq * _specs[Have].freq; }
-inline void SdlSound::SetCycleTime(const float hz) { _cycleTime = _specs[Have].freq / hz; }
-inline void SdlSound::SetCurFreq(const float hz) { _curFreq = hz / _specs[Have].freq; }
-inline void SdlSound::SetPlayFreq(const float hz) { _playFreq = hz / _specs[Have].freq; }
-inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * len; }
+float SdlSound::GetCurFreq() const { return _curFreq * _specs[Have].freq; }
+float SdlSound::GetPlayFreq() const { return _playFreq * _specs[Have].freq; }
 
+void SdlSound::SetCycleTime(const float hz) { _cycleTime = _specs[Have].freq / hz; }
+void SdlSound::SetCurFreq(const float hz) { _curFreq = hz / _specs[Have].freq; }
+void SdlSound::SetPlayFreq(const float hz) { _playFreq = hz / _specs[Have].freq; }
+void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * len; }
 
-
-inline float SdlSound::GetCountdownFreq() const noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); return _specs[Have].freq / _cycleTime; }
-inline bool SdlSound::IsPlaying() const  noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING; }
-inline void SdlSound::SetCountdownFreq(const float hertz) noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); _cycleTime = _specs[Have].freq / hertz; }
+float SdlSound::GetCountdownFreq() const noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); return _specs[Have].freq / _cycleTime; }
+bool SdlSound::IsPlaying() const  noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING; }
+void SdlSound::SetCountdownFreq(const float hertz) noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); _cycleTime = _specs[Have].freq / hertz; }
 
 
 
