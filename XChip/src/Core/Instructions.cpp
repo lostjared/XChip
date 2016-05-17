@@ -281,6 +281,7 @@ void op_DXYN(CpuManager& cpuMan)
 {
 
 	VF = 0;
+	const auto res = --cpuMan.GetRender()->GetResolution();
 	const auto vx = VX;
 	const auto vy = VY;
 	const int height = N;
@@ -291,10 +292,10 @@ void op_DXYN(CpuManager& cpuMan)
 	{
 		for (int j = 0; j < 8; ++j)
 		{
-			const int px = ((vx + j) & 63);
-			const int py = ((vy + i) & 31);
+			const int px = ((vx + j) & res.x);
+			const int py = ((vy + i) & res.y);
 
-			const int pixelPos = (64 * py) + px;
+			const int pixelPos = ((res.x+1) * py) + px;
 
 			const uint32_t pixel = (*_8bitRow & (1 << (7 - j))) != 0;
 
@@ -311,50 +312,35 @@ void op_DXYN(CpuManager& cpuMan)
 void op_DXYN_ex(CpuManager& cpuMan)
 {
 
+	if(N)
+	{
+		op_DXYN(cpuMan);
+		return; 
+	}
+
+
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
+	const auto res = --cpuMan.GetRender()->GetResolution();
+	const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 
-	if(N)	
+	for(int i = 0; i < 16; ++i, ++_8bitRow)
 	{
-		const int height = N;
-		const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
-		for (int i = 0; i < height; ++i, ++_8bitRow)
+		for(int j = 0, bitmask = 0; j < 16; ++j, ++bitmask) 
 		{
-			for (int j = 0; j < 8; ++j)
+			if( bitmask == 8 )
 			{
-				const int px = ((vx + j) & 127);
-				const int py = ((vy + i) & 63);
-				const int pixelPos = (128 * py) + px;
-
-				const uint32_t pixel = (*_8bitRow & (1 << (7 - j))) != 0;
-
-				VF |= ((cpuMan.GetGfx(pixelPos) > 0) & pixel);
-				cpuMan.GetGfx(pixelPos) ^= (pixel) ? 0xFFFFFFFF : 0;
+				bitmask = 0;
+				++_8bitRow;
 			}
-		}
-	}
 
-	else
-	{
-		const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
-		for(int i = 0; i < 16; ++i, ++_8bitRow)
-		{
-			for(int j = 0, b = 0; j < 16; ++j, ++b)
-			{
-				if( b == 8 ) 
-				{
-					++_8bitRow;
-					b = 0;
-				}
-
-				const int px = ((vx + j) & 127);
-				const int py = ((vy + i) & 63);
-				const int pixelPos = (128 * py) + px;
-				const uint32_t pixel = (*_8bitRow & (1 << (7 - b))) != 0;
-				VF |= ((cpuMan.GetGfx(pixelPos) > 0) & pixel);
-				cpuMan.GetGfx(pixelPos) ^= (pixel) ? 0xFFFFFFFF : 0;
-			}
+			const int px = ((vx + j) & res.x);
+			const int py = ((vy + i) & res.y);
+			const int pixelPos = ((res.x+1) * py) + px;
+			const uint32_t pixel = (*_8bitRow & (1 << (7 - bitmask))) != 0;
+			VF |= ((cpuMan.GetGfx(pixelPos) > 0) & pixel);
+			cpuMan.GetGfx(pixelPos) ^= (pixel) ? 0xFFFFFFFF : 0;
 		}
 	}
 }
