@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 
 
 
-xchip::utility::Color get_arg_rgb(const std::string arg);
+xchip::utility::Color get_arg_rgb(const std::string& arg);
 void res_config(const std::string& arg);
 void fsc_config(const std::string& arg);
 void cfq_config(const std::string& arg);
@@ -399,7 +399,7 @@ void fps_config(const std::string& arg)
 }
 
 
-xchip::utility::Color get_arg_rgb(const std::string arg)
+xchip::utility::Color get_arg_rgb(const std::string& arg)
 {
 	const auto firstSeparator = arg.find('x');
 
