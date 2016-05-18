@@ -41,6 +41,7 @@ bool SdlRender::Initialize(const utility::Vec2i& winSize, const utility::Vec2i& 
 	else if (!this->InitSubSystem())
 		return false;
 
+	
 	const auto scope = utility::make_scope_exit([this]() noexcept 
 	{
 		using namespace xchip::utility::literals;
@@ -63,11 +64,12 @@ bool SdlRender::Initialize(const utility::Vec2i& winSize, const utility::Vec2i& 
 	if (!_rend)
 		return false;
 
-	_texture = SDL_CreateTexture(_rend, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, res.x, res.y);
 
-	if (!_texture)
+	if(!CreateTexture(res.x, res.y))
 		return false;
 
+
+	SDL_SetRenderDrawColor(_rend, 0, 0, 0, 0xff);
 	SDL_RenderClear(_rend);
 	SDL_RenderPresent(_rend);
 	_initialized = true;
@@ -111,9 +113,17 @@ utility::Color SdlRender::GetColorFilter() const noexcept
 
 utility::Color SdlRender::GetBackgroundColor() const noexcept
 {
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	using utility::literals::operator""_s;
+	utility::Color color;
+	
+	if(SDL_GetRenderDrawColor(_rend, &color.r, &color.g, &color.b, nullptr))
+	{
+		utility::LOGerr("Could not get render draw color: "_s + SDL_GetError());
+		return {0, 0, 0};
+	}
 
-
-	return {0, 0, 0};
+	return color;
 }
 
 
@@ -135,6 +145,7 @@ utility::Vec2i SdlRender::GetResolution() const noexcept
 
 utility::Vec2i SdlRender::GetWindowSize() const noexcept
 {
+	_SDLRENDER_INITIALIZED_ASSERT_();
 	utility::Vec2i size;
 	SDL_GetWindowSize(_window, &size.x, &size.y);
 	return size;
@@ -187,18 +198,10 @@ bool SdlRender::SetResolution(const utility::Vec2i& res) noexcept
 	_pitch = res.x * sizeof(uint32_t);
 	
 	const auto currentColor = this->GetColorFilter();
-	SDL_Texture* const oldTexture = _texture;
 
-	_texture = SDL_CreateTexture(_rend, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, res.x, res.y);
-
-	if (!_texture)
-	{
-		utility::LOGerr("Could not create new texture: "_s + SDL_GetError());
-		_texture = oldTexture;
+	if(!CreateTexture(res.x, res.y))
 		return false;
-	}
 
-	SDL_DestroyTexture(oldTexture);
 	this->SetColorFilter(currentColor);
 
 	return true;
@@ -270,18 +273,17 @@ bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
 
 bool SdlRender::SetBackgroundColor(const utility::Color& color) noexcept
 {
-	//SDL_SetSurfaceColorMod(SDL_GetWindowSurface(_window), color.r, color.g, color.b);
-	//SDL_UpdateWindowSurface(_window);
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	using utility::literals::operator""_s;
+
+	if(SDL_SetRenderDrawColor(_rend, color.r, color.g, color.b, 0xff))
+	{
+		utility::LOGerr("Could not set render draw color: "_s + SDL_GetError());
+		return false;
+	}
+
 	return true;
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -294,6 +296,7 @@ void SdlRender::DrawBuffer() noexcept
 	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
 	SDL_RenderCopy(_rend, _texture, nullptr, nullptr);
 	SDL_RenderPresent(_rend);
+
 }
 
 
@@ -329,7 +332,39 @@ void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback
 
 
 
+bool SdlRender::CreateTexture(const int w, const int h)
+{
+	using utility::literals::operator""_s;
+	auto* const surface = SDL_CreateRGBSurface(0, w, h, 32, 0,0,0,0);
 
+	if(!surface)
+	{
+		utility::LOGerr("Could not create surface: "_s + SDL_GetError());
+		return false;
+	}
+
+	auto* oldTexture = _texture;
+	
+	const auto cleanup = utility::make_scope_exit([&surface, &oldTexture]() noexcept
+	{
+		SDL_FreeSurface(surface);
+		SDL_DestroyTexture(oldTexture);
+	});
+
+
+	SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
+	_texture = SDL_CreateTextureFromSurface(_rend, surface);
+
+	if(!_texture)
+	{
+		utility::LOGerr("Could not create texture: "_s + SDL_GetError());
+		_texture = oldTexture;
+		oldTexture = nullptr;
+		return false;
+	}
+
+	return true;	
+}
 
 
 

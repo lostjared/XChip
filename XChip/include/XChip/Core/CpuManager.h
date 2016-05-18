@@ -73,6 +73,7 @@ public:
 	bool SetRegisters(const size_t size);
 	bool SetStack(const size_t size);
 	bool SetGfxRes(const utility::Vec2i& res);
+	bool SetGfxRes(const int w, const int h);
 	bool ResizeMemory(const size_t size);
 	bool ResizeRegisters(const size_t size);
 	bool ResizeStack(const size_t size);

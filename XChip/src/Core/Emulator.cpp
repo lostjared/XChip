@@ -57,7 +57,7 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	if (!_manager.SetMemory(0xFFFF)
 		|| !_manager.SetRegisters(0x10)
 		|| !_manager.SetStack(0x10)
-		|| !_manager.SetGfxRes({64, 32}))
+		|| !_manager.SetGfxRes(64, 32))
 	{
 		return false;
 	}

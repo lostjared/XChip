@@ -101,6 +101,24 @@ bool CpuManager::SetGfxRes(const utility::Vec2i& res)
 
 
 
+bool CpuManager::SetGfxRes(const int w, const int h)
+{
+	if ( !alloc_cpu_arr(_cpu.gfx, w * h) )
+	{
+		LOGerr("Cannot allocate Cpu memory size: "_s + std::to_string(w*h));
+		_gfxRes = 0;
+		return false;
+	}
+
+	_gfxRes.x = w;
+	_gfxRes.y = h;
+
+	return true;
+}
+
+
+
+
 
 bool CpuManager::ResizeMemory(const std::size_t size)
 {

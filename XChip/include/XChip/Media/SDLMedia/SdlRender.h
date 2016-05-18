@@ -44,6 +44,8 @@ public:
 	void SetWinResizeCallback(const void* arg, WinResizeCallback callback) noexcept override;
 
 private:
+	bool CreateTexture(const int w, const int h);
+
 	SDL_Window* _window = nullptr;
 	SDL_Renderer* _rend = nullptr;
 	SDL_Texture* _texture = nullptr;

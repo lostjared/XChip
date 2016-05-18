@@ -20,11 +20,12 @@
 static xchip::Emulator g_emulator;
 void configure_emulator(const std::vector<std::string>& arguments);
 /*********************************************************
- *	-RES  WidthxHeight ex: -RES 200x300
+ *	-RES  window size: WidthxHeight ex: -RES 200x300
  *	-FSC  fullscreen ex: -FSC
  *	-CFQ  Cpu Frequency in hz ex: -CFQ 600
  *	-SFQ  Sound Tone in hz ex: -SFQ 400
- *	-COL  Color in RGB ex: -COL 100x200x400
+ *	-COL  Color in RGB ex: -COL 100x200x255
+ *      -BKG  Background color in RGB ex: -BKG 255x0x0
  *	-FPS  Frame Rate ex: -FPS 30
  *********************************************************/
 
@@ -109,9 +110,6 @@ int main(int argc, char **argv)
 		configure_emulator(std::vector<std::string>(argv+2, argv+argc));
 
 
-
-	g_emulator.GetRender()->SetBackgroundColor( { 0, 0xff, 0 } );
-
 	while (!g_emulator.GetExitFlag())
 	{
 		g_emulator.UpdateSystems(); 
@@ -143,6 +141,7 @@ void fsc_config(const std::string& arg);
 void cfq_config(const std::string& arg);
 void sfq_config(const std::string& arg);
 void col_config(const std::string& arg);
+void bkg_config(const std::string& arg);
 void fps_config(const std::string& arg);
 
 void configure_emulator(const std::vector<std::string>& arguments)
@@ -155,13 +154,14 @@ void configure_emulator(const std::vector<std::string>& arguments)
 	using ConfigFunc = void(*)(const std::string&);
 	using ConfigPair = std::pair<const char*, ConfigFunc>;
 
-	ConfigPair configTable[6] = 
+	ConfigPair configTable[] = 
 	{
 		{"-RES", res_config},
 		{"-FSC", fsc_config},
 		{"-CFQ", cfq_config},
 		{"-SFQ", sfq_config},
 		{"-COL", col_config},
+		{"-BKG", bkg_config},
 		{"-FPS", fps_config}
 	};
 
@@ -372,6 +372,69 @@ void col_config(const std::string& arg)
 
 
 }
+
+
+
+
+
+
+
+
+void bkg_config(const std::string& arg)
+{
+
+	try
+	{
+		std::cout << "Setting Background Color..." << std::endl;
+		const auto firstSeparator = arg.find('x');
+
+		if(firstSeparator == std::string::npos)
+			throw std::invalid_argument("missing the \'x\' separator");
+
+		const auto secondSeparator = arg.find('x', firstSeparator+1);
+
+		if(secondSeparator == std::string::npos)
+			throw std::invalid_argument("missing the second \'x\' separator");
+
+		unsigned long rgb[3] = 
+		{
+			std::stoul(arg.substr(0, firstSeparator)),
+			std::stoul(arg.substr(firstSeparator+1, secondSeparator)),
+			std::stoul(arg.substr(secondSeparator+1, arg.size()))
+		};
+
+		for(auto& col : rgb)
+		{
+			if(col > 255)
+				col = 255;
+		}
+
+		xchip::utility::Color color((uint8_t)rgb[0], (uint8_t)rgb[1], (uint8_t)rgb[2]);
+
+		if(!g_emulator.GetRender())
+			throw std::runtime_error("null Render");
+
+		if(!g_emulator.GetRender()->SetBackgroundColor(color))
+			throw std::runtime_error("iRender internal error");
+
+		std::cout << "Background Color: " << g_emulator.GetRender()->GetBackgroundColor() << std::endl;
+		std::cout << "Done." << std::endl;
+		
+	}
+	catch(std::exception& e)
+	{
+		std::cerr << "Failed to set Render Color: " << e.what() << std::endl;
+	}
+
+
+}
+
+
+
+
+
+
+
 
 
 
