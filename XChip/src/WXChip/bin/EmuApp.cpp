@@ -334,7 +334,7 @@ void col_config(const std::string& arg)
 		if(!g_emulator.GetRender()->SetDrawColor(color))
 			throw std::runtime_error("iRender internal error");
 
-		std::cout << "Render Color: " << color << std::endl;
+		std::cout << "Render Color: " << g_emulator.GetRender()->GetDrawColor() << std::endl;
 		std::cout << "Done." << std::endl;
 		
 	}
