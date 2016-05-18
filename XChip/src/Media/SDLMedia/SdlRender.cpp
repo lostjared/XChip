@@ -101,7 +101,7 @@ const char* SdlRender::GetWindowName() const noexcept
 }
 
 
-utility::Color SdlRender::GetColorFilter() const noexcept
+utility::Color SdlRender::GetDrawColor() const noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	utility::Color color;
@@ -197,12 +197,12 @@ bool SdlRender::SetResolution(const utility::Vec2i& res) noexcept
 
 	_pitch = res.x * sizeof(uint32_t);
 	
-	const auto currentColor = this->GetColorFilter();
+	const auto currentColor = this->GetDrawColor();
 
 	if(!CreateTexture(res.x, res.y))
 		return false;
 
-	this->SetColorFilter(currentColor);
+	this->SetDrawColor(currentColor);
 
 	return true;
 }
@@ -258,7 +258,7 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 
 
 
-bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
+bool SdlRender::SetDrawColor(const utility::Color& color) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	if(SDL_SetTextureColorMod(_texture, color.r, color.g, color.b))
