@@ -49,9 +49,10 @@ bool Process::Run(const std::string &app)
 		close(read_fd);
 		dup2(write_fd,1);
 		close(write_fd);
-		execl("/bin/sh", "sh", "-c", app.c_str(), NULL);
-		exit(1);
-		return true;
+		if(execl("/bin/sh", "sh", "-c", app.c_str(), NULL))
+			exit(EXIT_FAILURE);
+
+		exit(EXIT_SUCCESS);
 	}
 	
 	else
