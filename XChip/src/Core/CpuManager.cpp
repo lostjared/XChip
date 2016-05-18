@@ -48,7 +48,7 @@ void CpuManager::Dispose() noexcept
 }
 
 
-bool CpuManager::SetMemory(const std::size_t size)
+bool CpuManager::SetMemory(const size_t size)
 {
 	if ( !alloc_cpu_arr(_cpu.memory, size)) 
 	{
@@ -61,7 +61,7 @@ bool CpuManager::SetMemory(const std::size_t size)
 
 
 
-bool CpuManager::SetRegisters(const std::size_t size)
+bool CpuManager::SetRegisters(const size_t size)
 {
 	if ( !alloc_cpu_arr(_cpu.registers, size)) 
 	{
@@ -73,7 +73,7 @@ bool CpuManager::SetRegisters(const std::size_t size)
 }
 
 
-bool CpuManager::SetStack(const std::size_t size)
+bool CpuManager::SetStack(const size_t size)
 {
 	if ( !alloc_cpu_arr(_cpu.stack, size) )
 	{
@@ -85,19 +85,19 @@ bool CpuManager::SetStack(const std::size_t size)
 }
 
 
-
-bool CpuManager::SetGfx(const std::size_t size)
+bool CpuManager::SetGfxRes(const utility::Vec2i& res)
 {
-	if ( !alloc_cpu_arr(_cpu.gfx, size) )
+	if ( !alloc_cpu_arr(_cpu.gfx, res.x * res.y) )
 	{
-		LOGerr("Cannot allocate Cpu memory size: "_s + std::to_string(size));
+		LOGerr("Cannot allocate Cpu memory size: "_s + std::to_string(res.x*res.y));
+		_gfxRes = 0;
 		return false;
 	}
 
+	_gfxRes = res;
+
 	return true;
 }
-
-
 
 
 
@@ -142,18 +142,6 @@ bool CpuManager::ResizeStack(const size_t size)
 	return true;
 }
 
-
-
-bool CpuManager::ResizeGfx(const size_t size)
-{
-	if (!realloc_cpu_arr(_cpu.gfx, size))
-	{
-		LOGerr("Cannot reallocate Cpu GFX to size: "_s + std::to_string(size));
-		return false;
-	}
-
-	return true;
-}
 
 
 

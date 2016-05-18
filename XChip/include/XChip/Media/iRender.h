@@ -19,16 +19,18 @@ public:
 	
 	virtual const char* GetWindowName() const noexcept = 0;
 	virtual const uint32_t* GetBuffer() const noexcept = 0;
-	virtual utility::Color GetColorFilter() const noexcept = 0;
 	virtual utility::Vec2i GetResolution() const noexcept = 0;
 	virtual utility::Vec2i GetWindowSize() const noexcept = 0;
+	virtual utility::Color GetColorFilter() const noexcept = 0;
+	virtual utility::Color GetBackgroundColor() const noexcept = 0;
 
 	virtual bool UpdateEvents() noexcept = 0;
 	virtual void SetWindowName(const char* name) noexcept = 0;
-	virtual bool SetColorFilter(const utility::Color& color) noexcept = 0;
 	virtual bool SetResolution(const utility::Vec2i& res) noexcept = 0;
 	virtual void SetWindowSize(const utility::Vec2i& size) noexcept = 0;
 	virtual bool SetFullScreen(const bool value) noexcept = 0;
+	virtual bool SetColorFilter(const utility::Color& color) noexcept = 0;
+	virtual bool SetBackgroundColor(const utility::Color& color) noexcept = 0;
 	virtual void SetBuffer(const uint32_t* gfx) noexcept = 0;
 	virtual void DrawBuffer() noexcept = 0;
 	virtual void HideWindow() noexcept = 0;

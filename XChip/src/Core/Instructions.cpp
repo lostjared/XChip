@@ -114,13 +114,14 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FE: // 0x00FE* SuperChip:  Disable extended screen mode
 		{
-			if (!cpuMan.GetRender()->SetResolution({ 64, 32 }))
+			constexpr utility::Vec2i defaultRes(64,32);
+			if (!cpuMan.GetRender()->SetResolution(defaultRes))
 			{
 				utility::LOGerr("Could not set extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
 
-			cpuMan.SetGfx(64*32);
+			cpuMan.SetGfxRes(defaultRes);
 			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
 			cpuMan.UnsetFlags(Cpu::EXTENDED_MODE);
 			
@@ -135,13 +136,14 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FF: // 0x00FF* SuperChip: Enable extended screen mode 
 		{
-			if(!cpuMan.GetRender()->SetResolution( { 128, 64 } ))
+			constexpr utility::Vec2i extendedRes(128, 64);
+			if(!cpuMan.GetRender()->SetResolution( extendedRes ))
 			{
 				utility::LOGerr("Could not set extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
 
-			cpuMan.SetGfx(128*64);
+			cpuMan.SetGfxRes(extendedRes);
 			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
 			cpuMan.SetFlags(Cpu::EXTENDED_MODE);
 			
@@ -281,27 +283,21 @@ void op_DXYN(CpuManager& cpuMan)
 {
 
 	VF = 0;
-	const auto res = cpuMan.GetRender()->GetResolution();
+	const auto& res = cpuMan.GetGfxRes();
 	const auto resDec = res - 1;
 	const auto vx = VX;
 	const auto vy = VY;
 	const int height = N;
-
 	const uint8_t* _8bitRow =  cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 
 	for (int i = 0; i < height; ++i, ++_8bitRow)
 	{
 		for (int j = 0; j < 8; ++j)
 		{
-			const int px = ((vx + j) & resDec.x);
-			const int py = ((vy + i) & resDec.y);
-			const int pixelPos = ((res.x) * py) + px;
-
-			const uint32_t pixel = (*_8bitRow & (1 << (7 - j))) != 0;
-
-			VF |= ((cpuMan.GetGfx(pixelPos) > 0) & pixel);
-
-			cpuMan.GetGfx(pixelPos) ^= (pixel) ? 0xFFFFFFFF : 0;
+			auto& gfxPixel = cpuMan.GetGfx((vx + j) & resDec.x,  (vy + i) & resDec.y);
+			const bool memoryBit = (*_8bitRow & (1 << (7 - j))) != 0;
+			VF |= ((gfxPixel != 0) && memoryBit);
+			gfxPixel ^= (memoryBit) ? 0xFFFFFFFF : 0;
 		}
 	}
 }
@@ -322,7 +318,7 @@ void op_DXYN_ex(CpuManager& cpuMan)
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
-	const auto res = cpuMan.GetRender()->GetResolution();
+	const auto& res = cpuMan.GetGfxRes();
 	const auto resDec = res - 1;
 	const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 
@@ -336,12 +332,10 @@ void op_DXYN_ex(CpuManager& cpuMan)
 				++_8bitRow;
 			}
 
-			const int px = ((vx + j) & resDec.x);
-			const int py = ((vy + i) & resDec.y);
-			const int pixelPos = ((res.x) * py) + px;
-			const uint32_t pixel = (*_8bitRow & (1 << (7 - bitmask))) != 0;
-			VF |= ((cpuMan.GetGfx(pixelPos) > 0) & pixel);
-			cpuMan.GetGfx(pixelPos) ^= (pixel) ? 0xFFFFFFFF : 0;
+			auto& gfxPixel = cpuMan.GetGfx((vx + j) & resDec.x,  (vy + i) & resDec.y);
+			const bool memoryBit = (*_8bitRow & (1 << (7 - bitmask))) != 0;
+			VF |= ((gfxPixel > 0) & memoryBit);
+			gfxPixel ^= (memoryBit) ? 0xFFFFFFFF : 0;
 		}
 	}
 }

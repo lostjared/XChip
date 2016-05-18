@@ -109,6 +109,13 @@ utility::Color SdlRender::GetColorFilter() const noexcept
 }
 
 
+utility::Color SdlRender::GetBackgroundColor() const noexcept
+{
+
+
+	return {0, 0, 0};
+}
+
 
 
 utility::Vec2i SdlRender::GetResolution() const noexcept
@@ -171,20 +178,6 @@ void SdlRender::SetWindowName(const char* name) noexcept
 	SDL_SetWindowTitle(_window, name);
 }
 
-bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
-{
-	_SDLRENDER_INITIALIZED_ASSERT_();
-	if(SDL_SetTextureColorMod(_texture, color.r, color.g, color.b))
-	{
-		xchip::utility::LOGerr(SDL_GetError());
-		return false;
-	}
-	return true;
-}
-
-
-
-
 
 bool SdlRender::SetResolution(const utility::Vec2i& res) noexcept
 {
@@ -218,6 +211,7 @@ void SdlRender::SetWindowSize(const utility::Vec2i& size) noexcept
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	SDL_SetWindowSize(_window, size.x, size.y);
 }
+
 
 
 bool SdlRender::SetFullScreen(const bool val) noexcept
@@ -258,12 +252,44 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 
 
 
+
+
+
+bool SdlRender::SetColorFilter(const utility::Color& color) noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	if(SDL_SetTextureColorMod(_texture, color.r, color.g, color.b))
+	{
+		xchip::utility::LOGerr(SDL_GetError());
+		return false;
+	}
+	return true;
+}
+
+
+
+bool SdlRender::SetBackgroundColor(const utility::Color& color) noexcept
+{
+	//SDL_SetSurfaceColorMod(SDL_GetWindowSurface(_window), color.r, color.g, color.b);
+	//SDL_UpdateWindowSurface(_window);
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 void SdlRender::DrawBuffer() noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	ASSERT_MSG(_buffer != nullptr, "attempt to draw null buffer");
-
-
 	SDL_RenderClear(_rend);
 	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
 	SDL_RenderCopy(_rend, _texture, nullptr, nullptr);

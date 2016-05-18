@@ -23,10 +23,12 @@ struct Vector2
 	Vector2 operator-(const Vector2& other) const;
 	Vector2 operator*(const Vector2& other) const;
 	Vector2 operator/(const Vector2& other) const;
+	Vector2& operator=(const T val);
 	Vector2& operator+=(const T val);
 	Vector2& operator-=(const T val);
 	Vector2& operator*=(const T val);
 	Vector2& operator/=(const T val);
+	Vector2& operator=(const Vector2& other);
 	Vector2& operator+=(const Vector2& other);
 	Vector2& operator-=(const Vector2& other);
 	Vector2& operator*=(const Vector2& other);
@@ -61,6 +63,17 @@ template<class T>
 Vector2<T> Vector2<T>::operator*(const Vector2<T>& other) const { return { x * other.x, y * other.y}; }
 template<class T>
 Vector2<T> Vector2<T>::operator/(const Vector2<T>& other) const { return { x / other.x, y / other.y}; }
+
+
+
+template<class T>
+Vector2<T>& Vector2<T>::operator=(const T val)
+{
+	x = val;
+	y = val;
+	return *this;
+
+}
 
 
 template<class T>
@@ -101,6 +114,22 @@ Vector2<T>& Vector2<T>::operator/=(const T val)
 	return *this;
 
 }
+
+
+
+
+
+template<class T>
+Vector2<T>& Vector2<T>::operator=(const Vector2<T>& other)
+{
+	x = other.x;
+	y = other.y;
+	return *this;
+
+}
+
+
+
 
 
 template<class T>

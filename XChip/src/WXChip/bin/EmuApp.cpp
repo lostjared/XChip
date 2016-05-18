@@ -109,6 +109,9 @@ int main(int argc, char **argv)
 		configure_emulator(std::vector<std::string>(argv+2, argv+argc));
 
 
+
+	g_emulator.GetRender()->SetBackgroundColor( { 0, 0xff, 0 } );
+
 	while (!g_emulator.GetExitFlag())
 	{
 		g_emulator.UpdateSystems(); 
