@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 
 
 
-
+xchip::utility::Color get_arg_rgb(const std::string arg);
 void res_config(const std::string& arg);
 void fsc_config(const std::string& arg);
 void cfq_config(const std::string& arg);
@@ -265,7 +265,6 @@ void fsc_config(const std::string&)
 		if(!g_emulator.GetRender()->SetFullScreen(true))
 			throw std::runtime_error("iRender internal error");
 
-
 		std::cout << "Done." << std::endl;
 	}
 	catch(std::exception& e)
@@ -279,7 +278,6 @@ void fsc_config(const std::string&)
 
 void cfq_config(const std::string& arg)
 {
-
 	try
 	{
 		std::cout << "Setting Cpu Frequency..." << std::endl;		
@@ -292,7 +290,6 @@ void cfq_config(const std::string& arg)
 	{
 		std::cerr << "Failed to set Cpu Frequency: " << e.what() << std::endl;
 	}
-
 
 }
 
@@ -326,34 +323,10 @@ void sfq_config(const std::string& arg)
 
 void col_config(const std::string& arg)
 {
-
 	try
 	{
 		std::cout << "Setting Render Color..." << std::endl;
-		const auto firstSeparator = arg.find('x');
-
-		if(firstSeparator == std::string::npos)
-			throw std::invalid_argument("missing the \'x\' separator");
-
-		const auto secondSeparator = arg.find('x', firstSeparator+1);
-
-		if(secondSeparator == std::string::npos)
-			throw std::invalid_argument("missing the second \'x\' separator");
-
-		unsigned long rgb[3] = 
-		{
-			std::stoul(arg.substr(0, firstSeparator)),
-			std::stoul(arg.substr(firstSeparator+1, secondSeparator)),
-			std::stoul(arg.substr(secondSeparator+1, arg.size()))
-		};
-
-		for(auto& col : rgb)
-		{
-			if(col > 255)
-				col = 255;
-		}
-
-		xchip::utility::Color color((uint8_t)rgb[0], (uint8_t)rgb[1], (uint8_t)rgb[2]);
+		const auto color = get_arg_rgb(arg);
 
 		if(!g_emulator.GetRender())
 			throw std::runtime_error("null Render");
@@ -370,7 +343,6 @@ void col_config(const std::string& arg)
 		std::cerr << "Failed to set Render Color: " << e.what() << std::endl;
 	}
 
-
 }
 
 
@@ -382,34 +354,11 @@ void col_config(const std::string& arg)
 
 void bkg_config(const std::string& arg)
 {
-
 	try
 	{
 		std::cout << "Setting Background Color..." << std::endl;
-		const auto firstSeparator = arg.find('x');
-
-		if(firstSeparator == std::string::npos)
-			throw std::invalid_argument("missing the \'x\' separator");
-
-		const auto secondSeparator = arg.find('x', firstSeparator+1);
-
-		if(secondSeparator == std::string::npos)
-			throw std::invalid_argument("missing the second \'x\' separator");
-
-		unsigned long rgb[3] = 
-		{
-			std::stoul(arg.substr(0, firstSeparator)),
-			std::stoul(arg.substr(firstSeparator+1, secondSeparator)),
-			std::stoul(arg.substr(secondSeparator+1, arg.size()))
-		};
-
-		for(auto& col : rgb)
-		{
-			if(col > 255)
-				col = 255;
-		}
-
-		xchip::utility::Color color((uint8_t)rgb[0], (uint8_t)rgb[1], (uint8_t)rgb[2]);
+		
+		const auto color = get_arg_rgb(arg);
 
 		if(!g_emulator.GetRender())
 			throw std::runtime_error("null Render");
@@ -426,15 +375,7 @@ void bkg_config(const std::string& arg)
 		std::cerr << "Failed to set Render Color: " << e.what() << std::endl;
 	}
 
-
 }
-
-
-
-
-
-
-
 
 
 
@@ -442,7 +383,6 @@ void bkg_config(const std::string& arg)
 
 void fps_config(const std::string& arg)
 {
-
 	try
 	{
 		std::cout << "Setting Emulator FPS..." << std::endl;
@@ -459,7 +399,33 @@ void fps_config(const std::string& arg)
 }
 
 
+xchip::utility::Color get_arg_rgb(const std::string arg)
+{
+	const auto firstSeparator = arg.find('x');
 
+	if (firstSeparator == std::string::npos)
+		throw std::invalid_argument("missing the \'x\' separator");
+
+	const auto secondSeparator = arg.find('x', firstSeparator + 1);
+
+	if (secondSeparator == std::string::npos)
+		throw std::invalid_argument("missing the second \'x\' separator");
+
+	unsigned long rgb[3] =
+	{
+		std::stoul(arg.substr(0, firstSeparator)),
+		std::stoul(arg.substr(firstSeparator + 1, secondSeparator)),
+		std::stoul(arg.substr(secondSeparator + 1, arg.size()))
+	};
+
+	for (auto& col : rgb)
+	{
+		if (col > 255)
+			col = 255;
+	}
+
+	return { (uint8_t)rgb[0], (uint8_t)rgb[1], (uint8_t)rgb[2] };
+}
 
 
 
