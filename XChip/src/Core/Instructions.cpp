@@ -611,14 +611,14 @@ void op_FXx5(CpuManager& cpuMan)
 			ASSERT_MSG(static_cast<size_t>(X+1) < (cpuMan.GetMemorySize() - cpuMan.GetIndexRegister()),
 				"memory overflow");
 
-			std::copy_n(cpuMan.GetRegisters(), X + 1, &cpuMan.GetMemory(cpuMan.GetIndexRegister()));
+			std::copy_n(cpuMan.GetRegisters(), X+1, &cpuMan.GetMemory(cpuMan.GetIndexRegister()));
 			break;
 
 		case 0x65: //FX65  Fills V0 to VX with values from memory starting at address I.
 			ASSERT_MSG(static_cast<size_t>(X+1) < cpuMan.GetRegistersSize(),
 				"registers overflow");
 
-			std::copy_n(&cpuMan.GetMemory(cpuMan.GetIndexRegister()), X + 1, cpuMan.GetRegisters());
+			std::copy_n(&cpuMan.GetMemory(cpuMan.GetIndexRegister()), X+1, cpuMan.GetRegisters());
 			break;
 
 		case 0x75: // 0xFX75* SuperChip: Store V0...VX in RPL user flags ( X <= 7 )

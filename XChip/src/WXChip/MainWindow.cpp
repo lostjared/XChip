@@ -130,7 +130,7 @@ void MainWindow::OnStartRom(wxCommandEvent&)
 }
 
 
-void MainWindow::OnLoadRomDir(wxCommandEvent& event)
+void MainWindow::OnLoadRomDir(wxCommandEvent&)
 {
 	wxDirDialog dlg(NULL, "Choose input directory", "",
 		wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
