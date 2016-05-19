@@ -53,7 +53,7 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	});
 
 
-	// Default Chip8 Mode
+	// chip8 and super chip mode
 	if (!_manager.SetMemory(0xFFFF)
 		|| !_manager.SetRegisters(0x10)
 		|| !_manager.SetStack(0x10)

@@ -599,6 +599,7 @@ void op_FX0A(CpuManager& cpuMan)
 
 void op_FXx5(CpuManager& cpuMan)
 {
+	using utility::arr_size;
 	switch (NN)
 	{
 		case 0x15: // FX15  Sets the delay timer to VX.
@@ -621,14 +622,22 @@ void op_FXx5(CpuManager& cpuMan)
 			break;
 
 		case 0x75: // 0xFX75* SuperChip: Store V0...VX in RPL user flags ( X <= 7 )
-			utility::LOGerr("opcode 0xFX75 not implemented.");
+		{
+			constexpr auto rplOffset = arr_size(fonts::chip8DefaultFont) + arr_size(fonts::chip8HiResFont);
+			auto* const rpl = cpuMan.GetMemory() + rplOffset;
+			std::copy_n(cpuMan.GetRegisters(),  VX, rpl);
+//			utility::LOGerr("opcode 0xFX75 not implemented.");
 			break;
 
-
+		}
 		case 0x85: // 0xFX85* SuperChip: Read V0...VX from RPL user flags ( X <= 7 )
-			utility::LOGerr("opcode 0xFX85 not implemented.");
+		{
+			constexpr auto rplOffset = arr_size(fonts::chip8DefaultFont) + arr_size(fonts::chip8HiResFont);
+			const auto* const rpl = cpuMan.GetMemory() + rplOffset;
+			std::copy_n(rpl, VX, cpuMan.GetRegisters());
+//			utility::LOGerr("opcode 0xFX85 not implemented.");
 			break;
-
+		}
 		default: 
 			unknown_opcode(cpuMan); 
 			break;
