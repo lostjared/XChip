@@ -85,10 +85,9 @@ private:
 
 
 
-inline bool SdlRender::IsInitialized() const noexcept { return _initialized; }
-inline const uint32_t* SdlRender::GetBuffer() const noexcept { return _buffer; }
 
-inline void SdlRender::SetBuffer(const uint32_t* gfx) noexcept { _buffer = gfx; }
+
+
 
 
 

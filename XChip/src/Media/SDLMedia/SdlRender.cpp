@@ -112,7 +112,15 @@ void SdlRender::Dispose() noexcept
 
 
 
+bool SdlRender::IsInitialized() const noexcept 
+{ 
+	return _initialized; 
+}
 
+const uint32_t* SdlRender::GetBuffer() const noexcept 
+{ 
+	return _buffer; 
+}
 
 const char* SdlRender::GetWindowName() const noexcept
 {
@@ -199,6 +207,14 @@ bool SdlRender::UpdateEvents() noexcept
 
 	
 	return false;
+}
+
+
+
+
+void SdlRender::SetBuffer(const uint32_t* gfx) noexcept 
+{ 
+	_buffer = gfx; 
 }
 
 

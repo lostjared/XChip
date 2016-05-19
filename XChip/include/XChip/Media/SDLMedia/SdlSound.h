@@ -79,9 +79,7 @@ private:
 };
 
 
-inline bool SdlSound::IsInitialized() const noexcept { return _initialized; }
-inline float SdlSound::GetSoundFreq() const noexcept { return this->GetCurFreq(); }
-inline void SdlSound::SetSoundFreq(const float hz) noexcept { this->SetCurFreq(hz); }
+
 
 
 

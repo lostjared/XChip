@@ -1,6 +1,6 @@
 /*
 
-XChip - A chip8 lib and emulator.
+WXChip - wxWidgets GUI for XChip emulator.
 Copyright (C) 2016  Jared Bruni.
 
 
