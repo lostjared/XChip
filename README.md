@@ -4,7 +4,7 @@ You can easily use the project API's to modify the emulator.
 You can also design your own Media class and just use the current emulator with your class.
 
 #### Some Chip8 games running:
-### ...
+![photo](/Tools/Images/BRIX.jpg?raw=true "Optional Title")
 
 ####Some SuperChip games running:
 ### ...
