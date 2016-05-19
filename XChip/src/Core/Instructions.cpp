@@ -569,7 +569,6 @@ void op_FXxx(CpuManager& cpuMan) // 9 instructions.
 // Set I to the Hi Res font corresponding the digit in VX
 void op_FX30(CpuManager& cpuMan)
 {
-	using utility::arr_size;
 	cpuMan.SetIndexRegister( arr_size(fonts::chip8DefaultFont) + (VX*10) );
 }
 
@@ -599,7 +598,7 @@ void op_FX0A(CpuManager& cpuMan)
 
 void op_FXx5(CpuManager& cpuMan)
 {
-	using utility::arr_size;
+
 	switch (NN)
 	{
 		case 0x15: // FX15  Sets the delay timer to VX.
