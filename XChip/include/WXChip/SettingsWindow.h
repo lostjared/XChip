@@ -19,6 +19,12 @@ public:
 	const std::string FPS() const;
 
 private:
+	void OnCloseWindow(wxCloseEvent &event);
+	void OnCancel(wxCommandEvent &event);
+	void OnOkay(wxCommandEvent &event);
+	void OnDefault(wxCommandEvent &event);
+
+
 	float _fpsValue;
 	unsigned int _freqValue;
 	std::unique_ptr<wxPanel> _panel;
@@ -31,10 +37,6 @@ private:
 	std::unique_ptr<wxButton> _buttonOk;
 	std::unique_ptr<wxButton> _buttonCancel;
 	std::unique_ptr<wxButton> _buttonDefault;
-	void OnCloseWindow(wxCloseEvent &event);
-	void OnCancel(wxCommandEvent &event);
-	void OnOkay(wxCommandEvent &event);
-	void OnDefault(wxCommandEvent &event);
 	wxDECLARE_EVENT_TABLE();
 };
 
