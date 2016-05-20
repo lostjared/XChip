@@ -155,12 +155,18 @@ void SettingsWindow::CreateControls()
 	_buttonDefault = make_unique<wxButton>(_panel.get(), ID_BTN_DEFAULT, _T("Default"), 
                                                 wxPoint(230,150), wxSize(100,25));
 
-	_resText = make_unique<wxStaticText>(_panel.get(), ID_TEXT4, _T("Resolution: "), wxPoint(10, 70), wxSize(100, 25));
+	_emuResText = make_unique<wxStaticText>(_panel.get(), ID_TEXT4, _T("Resolution: "), 
+                                                wxPoint(10, 70), wxSize(100, 25));
 	
 	
 	wxString choices[] = {"320x240", "640x480", "1280x720", "1920x1080"};
 	
-	_resolution.reset(new wxComboBox(_panel.get(), ID_RES, _T("320x240"), wxPoint(100, 70), wxSize(200,25), 4, choices, wxCB_READONLY));
+
+	_emuResCBox = make_unique<wxComboBox>(_panel.get(), ID_RES, _T("320x240"), 
+                                         wxPoint(100, 70), wxSize(200,25), 4, choices, wxCB_READONLY);
+
+//	_emuResCBox.reset(new wxComboBox(_panel.get(), ID_RES, _T("320x240"), 
+//                                       wxPoint(100, 70), wxSize(200,25), 4, choices, wxCB_READONLY));
 	
 	
 	ResetTextControls();
@@ -202,7 +208,7 @@ void SettingsWindow::OnDefault(wxCommandEvent&)
 
 unsigned int SettingsWindow::GetResolution()
 {
-	return _resolution->GetSelection();
+	return _emuResCBox->GetSelection();
 }
 
 

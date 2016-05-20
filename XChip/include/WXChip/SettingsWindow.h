@@ -42,7 +42,8 @@ public:
 	{ 
 		ID_TEXT1 = 1, ID_TEXTCTRL1, ID_TEXT2, 
 		ID_TEXTCTRL2, ID_TEXT3, ID_TEXTCTRL3, 
-		ID_BTN_OK, ID_BTN_CANCEL, ID_BTN_DEFAULT,ID_TEXT4, ID_RES
+		ID_BTN_OK, ID_BTN_CANCEL, ID_BTN_DEFAULT,
+		ID_TEXT4, ID_RES
 	};
 
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
@@ -83,11 +84,12 @@ private:
 	std::unique_ptr<wxTextCtrl> _fpsTxtCtrl;
 	std::unique_ptr<wxStaticText> _cpuFreqTxt;
 	std::unique_ptr<wxTextCtrl> _cpuFreqTxtCtrl;
+	std::unique_ptr<wxStaticText> _emuResText;
+	std::unique_ptr<wxComboBox> _emuResCBox;
 	std::unique_ptr<wxButton> _buttonOk;
 	std::unique_ptr<wxButton> _buttonCancel;
 	std::unique_ptr<wxButton> _buttonDefault;
-	std::unique_ptr<wxComboBox> _resolution;
-	std::unique_ptr<wxStaticText> _resText;
+
 
 	Vec2i _emuWinSize = defaultEmuWinSize;
 	Color _drawColor = defaultDrawColor;
