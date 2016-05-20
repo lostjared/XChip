@@ -59,23 +59,31 @@ bool Process::Run(const std::string &app)
 	
 	if (pid != 0)
 		Terminate();
-	
+
+	const auto clean = make_scope_exit([this]() noexcept { 
+				if(pid == -1) 
+					pid=0;		
+			});
+
 	int fd[2];
 	int read_fd, write_fd;
 
 	if(pipe(fd) == -1)
 	{
-		LOGerr("Could not open pipe: "_s + strerror(errno));
+		const int err = errno;
+		LOGerr("Could not open pipe: "_s + strerror(err));
 		return false;
 	}
 
 	read_fd = fd[0];
 	write_fd = fd[1];
+
 	pid = vfork();
 
 	if(pid == -1)
 	{
-		LOGerr("Could not create child process: "_s + strerror(errno));
+		const int err = errno;
+		LOGerr("Could not create child process: "_s + strerror(err));
 		return false;
 	}
 
@@ -88,8 +96,9 @@ bool Process::Run(const std::string &app)
 
 		if(execl("/bin/sh", "sh", "-c", app.c_str(), NULL))
 		{
+			const int err = errno;
 			LOGerr("Could not execute command: "_s + app);
-			LOGerr("Error: "_s + strerror(errno));
+			LOGerr("Error: "_s + strerror(err));
 			exit(EXIT_FAILURE);
 		}
 
@@ -125,15 +134,24 @@ int Process::Join()
 
 int Process::Terminate()
 {	
-
+	LOG("Terminating Process...");
 	if(pid != 0)
 	{
-		LOG("Sent signal.");
+		LOG("Sending SIGINT.");
 
-		if(kill(pid, SIGINT) == ESRCH )
-			LOG("Process not found");
+		const auto killResult = kill(pid, SIGINT);
+
+		if(  killResult == ESRCH )
+			LOGerr("Process not found");
+		else if( killResult == 1 )
+			LOGerr("Error");
 
 		return Join();
+	}
+
+	else
+	{
+		LOG("Process is not running...");
 	}
 
 	return 0;
