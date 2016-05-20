@@ -55,8 +55,7 @@ public:
 	std::string GetDirPath() const;
 	int GetCPUFreq() const;
 	float GetFPS() const;
-	bool GetEmuFullscreen() const;
-	unsigned int GetResolution();
+
 	
 	void SetDirPath(const std::string& path);
 	void SetCPUFreq(const int freq);
@@ -116,7 +115,6 @@ inline float SettingsWindow::GetFPS() const { return _fps; }
 inline const SettingsWindow::Color& SettingsWindow::GetDrawColor() const { return _drawColor; }
 inline const SettingsWindow::Color& SettingsWindow::GetBackgroundColor() const { return _bkgColor; }
 inline const SettingsWindow::Vec2i& SettingsWindow::GetEmuWinSize() const { return _emuWinSize; }
-
 
 
 inline void SettingsWindow::SetDrawColor(const Color& drawColor) { _drawColor = drawColor; }

@@ -69,6 +69,8 @@ std::string SettingsWindow::GetEmuConfigStr() const
 	config += (const char*) _fpsTxtCtrl->GetLineText(0).c_str();
 	config += " -CFQ ";
 	config += (const char*) _cpuFreqTxtCtrl->GetLineText(0).c_str();
+	config += " -RES ";
+	config += (const char*) _emuResCBox->GetStringSelection().c_str();
 	config += " ";
 
 	return config;
@@ -147,7 +149,7 @@ void SettingsWindow::CreateControls()
 
 
 	
-	wxString sizeChoices[] = {"320x240", "640x480", "1280x720", "1920x1080"};
+	wxString sizeChoices[] = { "320x240", "640x480", "1280x720", "1920x1080" };
 	
 
 	_emuResCBox = make_unique<wxComboBox>(_panel.get(), ID_RES, _T("320x240"), 
@@ -208,10 +210,6 @@ void SettingsWindow::OnDefault(wxCommandEvent&)
 	ResetTextControls();
 }
 
-unsigned int SettingsWindow::GetResolution()
-{
-	return _emuResCBox->GetSelection();
-}
 
 
 void SettingsWindow::ResetTextControls()
@@ -220,6 +218,7 @@ void SettingsWindow::ResetTextControls()
 	_cpuFreqTxtCtrl->Clear();
 	*_fpsTxtCtrl << defaultFPS;
 	*_cpuFreqTxtCtrl << defaultCpuFreq;
+	_emuResCBox->SetSelection(0);
 }
 
 
