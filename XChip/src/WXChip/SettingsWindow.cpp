@@ -188,8 +188,8 @@ void SettingsWindow::OnOkay(wxCommandEvent&)
 
 void SettingsWindow::OnDefault(wxCommandEvent&)
 {
-	ResetTextControls();
 	ResetVariables();
+	ResetTextControls();
 }
 
 

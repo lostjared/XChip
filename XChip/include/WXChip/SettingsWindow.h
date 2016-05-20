@@ -93,8 +93,17 @@ private:
 	int _cpuFreq = defaultCpuFreq;
 	float _soundFreq = defaultSoundFreq;
 	float _fps = defaultFPS;
+
+
 	wxDECLARE_EVENT_TABLE();
 };
+
+
+
+
+
+
+
 
 
 
@@ -104,8 +113,13 @@ inline const SettingsWindow::Color& SettingsWindow::GetDrawColor() const { retur
 inline const SettingsWindow::Color& SettingsWindow::GetBackgroundColor() const { return _bkgColor; }
 inline const SettingsWindow::Vec2i& SettingsWindow::GetEmuWinSize() const { return _emuWinSize; }
 
+
+
 inline void SettingsWindow::SetDrawColor(const Color& drawColor) { _drawColor = drawColor; }
 inline void SettingsWindow::SetBackgroundColor(const Color& backgroundColor) { _bkgColor = backgroundColor; }
 inline void SettingsWindow::SetEmuWinSize(const Vec2i& size) { _emuWinSize.x = size.x; _emuWinSize.y = size.y; }
+
+
+
 
 #endif
