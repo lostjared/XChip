@@ -20,6 +20,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+#include <cerrno>
 #include <csignal>
 #include <string>
 #include <algorithm>
@@ -54,25 +55,43 @@ bool Process::IsRunning() const
 	
 bool Process::Run(const std::string &app) 
 {
-
+	using namespace literals;
 	
 	if (pid != 0)
 		Terminate();
 	
 	int fd[2];
 	int read_fd, write_fd;
-	pipe(fd);
+
+	if(pipe(fd) == -1)
+	{
+		LOGerr("Could not open pipe: "_s + strerror(errno));
+		return false;
+	}
+
 	read_fd = fd[0];
 	write_fd = fd[1];
 	pid = vfork();
+
+	if(pid == -1)
+	{
+		LOGerr("Could not create child process: "_s + strerror(errno));
+		return false;
+	}
+
 	
-	if (pid == 0)
+	else if (pid == 0)
 	{
 		close(read_fd);
 		dup2(write_fd,1);
 		close(write_fd);
+
 		if(execl("/bin/sh", "sh", "-c", app.c_str(), NULL))
+		{
+			LOGerr("Could not execute command: "_s + app);
+			LOGerr("Error: "_s + strerror(errno));
 			exit(EXIT_FAILURE);
+		}
 
 		exit(EXIT_SUCCESS);
 	}
@@ -80,7 +99,7 @@ bool Process::Run(const std::string &app)
 	else
 	{
 		close(write_fd);
-		LOG("In Parent...");
+		LOG("Created Child Process...");
 	}
 	
 	return true;
