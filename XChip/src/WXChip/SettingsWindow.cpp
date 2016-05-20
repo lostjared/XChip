@@ -46,7 +46,8 @@ wxEND_EVENT_TABLE()
 
 
 SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size)
-	: wxFrame(NULL, wxID_ANY, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
+	: wxFrame(NULL, wxID_ANY, title, pos, size, 
+                  wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 
 	CreateControls();
@@ -59,6 +60,29 @@ void SettingsWindow::SetDirPath(const std::string &dirPath)
 	_dirTxtCtrl->Clear();
 	*_dirTxtCtrl << dirPath.c_str();
 }
+
+
+void SettingsWindow::SetCPUFreq(const int freq) 
+{ 
+	_cpuFreqTxtCtrl->Clear();
+	*_cpuFreqTxtCtrl << freq;
+	_cpuFreq = freq;	
+}
+
+void SettingsWindow::SetSoundFreq(const float freq) 
+{
+	_soundFreq = freq; 
+}
+
+void SettingsWindow::SetFPS(const float fps) 
+{ 
+	_fpsTxtCtrl->Clear();
+	*_fpsTxtCtrl << fps;
+	_fps = fps;
+}
+
+
+
 
 void SettingsWindow::CreateControls()
 {
@@ -74,20 +98,18 @@ void SettingsWindow::CreateControls()
                                               wxPoint(100,10), wxSize(320,20),wxTE_READONLY);
 
 	// validators 
-	wxIntegerValidator<unsigned int> cpuFreqValidator(&_cpuFreq, wxNUM_VAL_ZERO_AS_BLANK);
+	wxIntegerValidator<int> cpuFreqValidator(&_cpuFreq, wxNUM_VAL_ZERO_AS_BLANK);
 	cpuFreqValidator.SetRange(1, 5000);
 
-	wxFloatingPointValidator<float> fpsValidator(2, &_fps,wxNUM_VAL_ZERO_AS_BLANK);
+	wxFloatingPointValidator<float> fpsValidator(2, &_fps, wxNUM_VAL_ZERO_AS_BLANK);
 	fpsValidator.SetRange(1.0f, 120.0f);
 
 
 	_cpuFreqTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), 
                                              wxPoint(220,40), wxSize(150,25));
 
-
 	_cpuFreqTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, _T("60"), 
                                                wxPoint(320,40), wxSize(100,20), 0, cpuFreqValidator);
-
 
 	_fpsTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT2,_T("FPS: "), 
                                              wxPoint(10,40), wxSize(150,25));

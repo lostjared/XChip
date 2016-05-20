@@ -40,16 +40,17 @@ public:
 	};
 
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
+
 	const Color& GetDrawColor() const;
 	const Color& GetBackgroundColor() const;
 	const Vec2i& GetEmuWinSize() const;
 	std::string GetDirPath() const;
-	unsigned int GetCPUFreq() const;
+	int GetCPUFreq() const;
 	float GetFPS() const;
 	bool GetEmuFullscreen() const;
 	
 	void SetDirPath(const std::string& path);
-	void SetCPUFreq(const unsigned int freq);
+	void SetCPUFreq(const int freq);
 	void SetSoundFreq(const float freq);
 	void SetFPS(const float fps);
 	void SetDrawColor(const Color& drawColor);
@@ -81,7 +82,7 @@ private:
 	Vec2i _emuWinSize = { 800, 600 };
 	Color _drawColor = { 255, 255, 255 };
 	Color _backgroundColor = { 0, 0, 0 };
-	unsigned int _cpuFreq = 60;
+	int _cpuFreq = 60;
 	float _soundFreq = 350;
 	float _fps = 60;
 	bool _emuFullScreen;
@@ -90,16 +91,12 @@ private:
 
 
 
-inline unsigned int SettingsWindow::GetCPUFreq() const { return _cpuFreq; }
+inline int SettingsWindow::GetCPUFreq() const { return _cpuFreq; }
 inline float SettingsWindow::GetFPS() const { return _fps; }
 inline const SettingsWindow::Color& SettingsWindow::GetDrawColor() const { return _drawColor; }
 inline const SettingsWindow::Color& SettingsWindow::GetBackgroundColor() const { return _backgroundColor; }
 inline const SettingsWindow::Vec2i& SettingsWindow::GetEmuWinSize() const { return _emuWinSize; }
 
-
-inline void SettingsWindow::SetCPUFreq(const unsigned int freq) { _cpuFreq = freq; }
-inline void SettingsWindow::SetSoundFreq(const float freq) { _soundFreq = freq; }
-inline void SettingsWindow::SetFPS(const float fps) { _fps = fps; }
 inline void SettingsWindow::SetDrawColor(const Color& drawColor) { _drawColor = drawColor; }
 inline void SettingsWindow::SetBackgroundColor(const Color& backgroundColor) { _backgroundColor = backgroundColor; }
 inline void SettingsWindow::SetEmuWinSize(const Vec2i& size) { _emuWinSize.x = size.x; _emuWinSize.y = size.y; }
