@@ -41,6 +41,7 @@ public:
 
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 
+	std::string GetEmuConfigStr() const;
 	const Color& GetDrawColor() const;
 	const Color& GetBackgroundColor() const;
 	const Vec2i& GetEmuWinSize() const;

@@ -55,6 +55,20 @@ SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const 
 	SetMaxSize(GetSize());
 }
 
+
+
+std::string SettingsWindow::GetEmuConfigStr() const
+{
+	std::string config;
+	config = "-FPS ";
+	config += (const char*) _fpsTxtCtrl->GetLineText(0).c_str();
+	config += " -CFQ ";
+	config += (const char*) _cpuFreqTxtCtrl->GetLineText(0).c_str();
+
+	return config;
+}
+
+
 void SettingsWindow::SetDirPath(const std::string &dirPath)
 {
 	_dirTxtCtrl->Clear();
