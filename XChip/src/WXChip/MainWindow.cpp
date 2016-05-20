@@ -122,7 +122,7 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 	if (item != wxNOT_FOUND)
 	{
 		wxString str = m_lbox->GetString(item);
-		_romPath = _settingsWin->GetRomPath();
+		_romPath = _settingsWin->GetDirPath();
 #ifdef _WIN32
 		_romPath += '\\';
 #elif defined(__APPLE__) || defined(__linux__)
@@ -161,9 +161,7 @@ void MainWindow::OnLoadRomDir(wxCommandEvent&)
 
 
 	wxString value = dlg.GetPath();
-	std::string fps = _settingsWin->FPS();
-	std::string cpu = _settingsWin->CPUFreq();
-	LoadList(std::string(value.c_str()), fps, cpu);
+	LoadList(std::string(value.c_str()));
 }
 
 
@@ -225,18 +223,16 @@ void MainWindow::CreateControls()
 
 
 
-void MainWindow::LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq)
+void MainWindow::LoadList(const std::string &dirPath)
 {
 
-	saveDirectory(text, fps, cpu_freq);
-
-	if (text == "nopath") return;
+	if (dirPath == "nopath") return;
 
 	wxArrayString strings;
 
 	_listBox->Clear();
 
-	DIR *dir = opendir(text.c_str());
+	DIR *dir = opendir(dirPath.c_str());
 
 	if (dir == NULL)
 	{
@@ -250,11 +246,11 @@ void MainWindow::LoadList(const std::string &text, const std::string &fps, std::
 	{
 		if (e->d_type == DT_REG)
 		{
-			std::string text = e->d_name;
+			std::string file = e->d_name;
 			std::regex exp1("ch8$", std::regex_constants::icase);
 			std::regex exp2("([0-9a-zA-Z_\\ ]+)", std::regex_constants::icase);
-			bool isTag = std::regex_search(text, exp1);
-			bool isTag2 = std::regex_match(text, exp2);
+			bool isTag = std::regex_search(file, exp1);
+			bool isTag2 = std::regex_match(file, exp2);
 			if (isTag || isTag2)
 			{
 				wxString w(e->d_name);
@@ -269,14 +265,13 @@ void MainWindow::LoadList(const std::string &text, const std::string &fps, std::
 	if (!strings.IsEmpty())
 	{
 		_listBox->InsertItems(strings, 0);
-		_romPath = text;
-		_settingsWin->SetRomPath(text, fps, cpu_freq);
+		_settingsWin->SetDirPath(dirPath);
 	}
 	else
 	{
-		_settingsWin->SetRomPath("", fps, cpu_freq);
-
+		_settingsWin->SetDirPath("");
 	}
+	
 }
 
 

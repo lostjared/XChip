@@ -29,7 +29,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 class MainWindow final : public wxFrame
 {
-	friend class WXChip;
 public:
 	enum { ID_LoadRom, ID_TEXT, ID_LISTBOX, ID_STARTROM, ID_LOADROM, ID_EMUSET, ID_LOADROMDIR };
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
@@ -48,7 +47,7 @@ private:
 	void StopEmulator();
 	
 	void CreateControls();
-	void LoadList(const std::string &text, const std::string &fps, std::string &cpu_freq);
+	void LoadList(const std::string &dirPath);
 	bool ComputeEmuAppPath();
 
 	std::unique_ptr<wxPanel> _panel;
