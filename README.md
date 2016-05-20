@@ -18,5 +18,5 @@ Its available for Mac OSX, Linux, Windows7
 ![ScreenShot](https://github.com/dhustkoder/XChip/blob/master/Tools/Images/WXChip.png?raw=true "WXChip")
 
 
-If you would like to contribute, please follow this guideline:
+If you would like to contribute, please follow 
 ![dolphin guideline] (https://github.com/dolphin-emu/dolphin/blob/master/Contributing.md  "dolphin emulator")
