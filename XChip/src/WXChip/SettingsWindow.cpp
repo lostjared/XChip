@@ -134,7 +134,7 @@ void SettingsWindow::CreateControls()
 
 
 	_cpuFreqTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), 
-                                             wxPoint(220,40), wxSize(150,25));
+                                                 wxPoint(220,40), wxSize(150,25));
 
 	_cpuFreqTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, "", 
                                                   wxPoint(320,40), wxSize(100,20), 0, cpuFreqValidator);
@@ -145,6 +145,18 @@ void SettingsWindow::CreateControls()
 	_fpsTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, "",
                                                wxPoint(100,40), wxSize(100,20), 0, fpsValidator);
 
+
+	
+	wxString sizeChoices[] = {"320x240", "640x480", "1280x720", "1920x1080"};
+	
+
+	_emuResCBox = make_unique<wxComboBox>(_panel.get(), ID_RES, _T("320x240"), 
+                                              wxPoint(100, 70), wxSize(200,25), 4, sizeChoices, wxCB_READONLY);
+
+//	_emuResCBox.reset(new wxComboBox(_panel.get(), ID_RES, _T("320x240"), 
+//                                       wxPoint(100, 70), wxSize(200,25), 4, sizeChoices, wxCB_READONLY));
+	
+	
 
 	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BTN_OK, _T("Ok"), 
                                            wxPoint(10, 150), wxSize(100,25));
@@ -158,17 +170,7 @@ void SettingsWindow::CreateControls()
 	_emuResText = make_unique<wxStaticText>(_panel.get(), ID_TEXT4, _T("Resolution: "), 
                                                 wxPoint(10, 70), wxSize(100, 25));
 	
-	
-	wxString choices[] = {"320x240", "640x480", "1280x720", "1920x1080"};
-	
 
-	_emuResCBox = make_unique<wxComboBox>(_panel.get(), ID_RES, _T("320x240"), 
-                                         wxPoint(100, 70), wxSize(200,25), 4, choices, wxCB_READONLY);
-
-//	_emuResCBox.reset(new wxComboBox(_panel.get(), ID_RES, _T("320x240"), 
-//                                       wxPoint(100, 70), wxSize(200,25), 4, choices, wxCB_READONLY));
-	
-	
 	ResetTextControls();
 }
 
