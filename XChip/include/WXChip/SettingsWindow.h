@@ -34,7 +34,6 @@ class SettingsWindow : public wxFrame
 	static constexpr int defaultCpuFreq = 380;
 	static constexpr float defaultSoundFreq = 350.f;
 	static constexpr float defaultFPS = 60.f;
-	static constexpr Vec2i defaultEmuWinSize = { 800, 600 };
 	static constexpr Color defaultDrawColor = { 255, 255, 255 };
 	static constexpr Color defaultBkgColor = { 0, 0, 0 };
 public:
@@ -51,7 +50,7 @@ public:
 	std::string GetEmuConfigStr() const;
 	const Color& GetDrawColor() const;
 	const Color& GetBackgroundColor() const;
-	const Vec2i& GetEmuWinSize() const;
+	Vec2i GetEmuResolution() const;
 	std::string GetDirPath() const;
 	int GetCPUFreq() const;
 	float GetFPS() const;
@@ -89,8 +88,6 @@ private:
 	std::unique_ptr<wxButton> _buttonCancel;
 	std::unique_ptr<wxButton> _buttonDefault;
 
-
-	Vec2i _emuWinSize = defaultEmuWinSize;
 	Color _drawColor = defaultDrawColor;
 	Color _bkgColor = defaultBkgColor;
 	int _cpuFreq = defaultCpuFreq;
@@ -114,12 +111,12 @@ inline int SettingsWindow::GetCPUFreq() const { return _cpuFreq; }
 inline float SettingsWindow::GetFPS() const { return _fps; }
 inline const SettingsWindow::Color& SettingsWindow::GetDrawColor() const { return _drawColor; }
 inline const SettingsWindow::Color& SettingsWindow::GetBackgroundColor() const { return _bkgColor; }
-inline const SettingsWindow::Vec2i& SettingsWindow::GetEmuWinSize() const { return _emuWinSize; }
+
 
 
 inline void SettingsWindow::SetDrawColor(const Color& drawColor) { _drawColor = drawColor; }
 inline void SettingsWindow::SetBackgroundColor(const Color& backgroundColor) { _bkgColor = backgroundColor; }
-inline void SettingsWindow::SetEmuWinSize(const Vec2i& size) { _emuWinSize.x = size.x; _emuWinSize.y = size.y; }
+
 
 
 

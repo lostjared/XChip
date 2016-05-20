@@ -44,7 +44,6 @@ EVT_BUTTON(ID_BTN_CANCEL, SettingsWindow::OnCancel)
 EVT_BUTTON(ID_BTN_DEFAULT, SettingsWindow::OnDefault)
 wxEND_EVENT_TABLE()
 
-constexpr SettingsWindow::Vec2i SettingsWindow::defaultEmuWinSize;
 constexpr SettingsWindow::Color SettingsWindow::defaultDrawColor;
 constexpr SettingsWindow::Color SettingsWindow::defaultBkgColor;
 
@@ -82,7 +81,20 @@ std::string SettingsWindow::GetDirPath() const
 	return static_cast<const char*>(_dirTxtCtrl->GetLineText(0).c_str());
 }
 
+SettingsWindow::Vec2i SettingsWindow::GetEmuResolution() const 
+{
+	const auto resStr = _emuResCBox->GetStringSelection();
+	if( resStr != "FULLSCREEN" )
+	{
+		const auto xsep = resStr.find('x');
+		const Vec2i res(std::stoi((const char*)resStr.substr(0, xsep).c_str()), 
+                                std::stoi((const char*)resStr.substr(xsep+1, resStr.size())));
 
+		return res; 
+	}
+	
+	return {0, 0};
+}
 
 
 void SettingsWindow::SetDirPath(const std::string &dirPath)
@@ -111,6 +123,13 @@ void SettingsWindow::SetFPS(const float fps)
 	_fps = fps;
 }
 
+
+
+void SettingsWindow::SetEmuWinSize(const Vec2i&) 
+{ 
+//	_emuWinSize.x = size.x; 
+//	_emuWinSize.y = size.y; 
+}
 
 
 
@@ -149,16 +168,12 @@ void SettingsWindow::CreateControls()
 
 
 	
-	wxString sizeChoices[] = { "320x240", "640x480", "1280x720", "1920x1080" };
+	wxString sizeChoices[] = { "320x240", "640x480", "1280x720", "1920x1080", "FULLSCREEN" };
 	
 
 	_emuResCBox = make_unique<wxComboBox>(_panel.get(), ID_RES, _T("320x240"), 
-                                              wxPoint(100, 70), wxSize(200,25), 4, sizeChoices, wxCB_READONLY);
+                                              wxPoint(100, 70), wxSize(200,25), 5, sizeChoices, wxCB_READONLY);
 
-//	_emuResCBox.reset(new wxComboBox(_panel.get(), ID_RES, _T("320x240"), 
-//                                       wxPoint(100, 70), wxSize(200,25), 4, sizeChoices, wxCB_READONLY));
-	
-	
 
 	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BTN_OK, _T("Ok"), 
                                            wxPoint(10, 150), wxSize(100,25));
@@ -227,7 +242,6 @@ void SettingsWindow::ResetVariables()
 	_cpuFreq = defaultCpuFreq;
 	_soundFreq = defaultSoundFreq;
 	_fps = defaultFPS;
-	_emuWinSize = defaultEmuWinSize;
 	_drawColor = defaultDrawColor;
 	_bkgColor = defaultBkgColor;
 	

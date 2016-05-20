@@ -37,15 +37,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 static xchip::Emulator g_emulator;
 void configure_emulator(const std::vector<std::string>& arguments);
-/*********************************************************
- *	-RES  window size: WidthxHeight ex: -RES 200x300
- *	-FSC  fullscreen ex: -FSC
+/*******************************************************************************************
+ *	-RES  window size: WidthxHeight ex: -RES 200x300 and -RES FULLSCREEN for fullscreen
  *	-CFQ  Cpu Frequency in hz ex: -CFQ 600
  *	-SFQ  Sound Tone in hz ex: -SFQ 400
  *	-COL  Color in RGB ex: -COL 100x200x255
  *      -BKG  Background color in RGB ex: -BKG 255x0x0
  *	-FPS  Frame Rate ex: -FPS 30
- *********************************************************/
+ *******************************************************************************************/
 
 #if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum);
@@ -155,7 +154,6 @@ int main(int argc, char **argv)
 
 xchip::utility::Color get_arg_rgb(const std::string& arg);
 void res_config(const std::string& arg);
-void fsc_config(const std::string& arg);
 void cfq_config(const std::string& arg);
 void sfq_config(const std::string& arg);
 void col_config(const std::string& arg);
@@ -175,7 +173,6 @@ void configure_emulator(const std::vector<std::string>& arguments)
 	ConfigPair configTable[] = 
 	{
 		{"-RES", res_config},
-		{"-FSC", fsc_config},
 		{"-CFQ", cfq_config},
 		{"-SFQ", sfq_config},
 		{"-COL", col_config},
@@ -248,22 +245,35 @@ void res_config(const std::string& arg)
 	try
 	{
 		std::cout << "Setting Resolution..." << std::endl;
-		const auto separatorIndex = arg.find('x');
-		
-		if(separatorIndex == std::string::npos)
-			throw std::invalid_argument("missing the \'x\' separator for widthxheight");
-	
-		const Vec2i res(std::stoi(arg.substr(0, separatorIndex)), 
-                               std::stoi(arg.substr(separatorIndex+1, arg.size())) );
 
 		if(!g_emulator.GetRender())
 			throw std::runtime_error("null Render");
 
-		g_emulator.GetRender()->SetWindowSize(res);
+
+		if(arg == "FULLSCREEN")
+		{
+			if(!g_emulator.GetRender()->SetFullScreen(true))
+				throw std::runtime_error("iRender internal error.");
+		}
+
+		else
+		{
+			const auto separatorIndex = arg.find('x');
+		
+			if(separatorIndex == std::string::npos)
+				throw std::invalid_argument("missing the \'x\' separator for widthxheight");
+
+			const Vec2i res(std::stoi(arg.substr(0, separatorIndex)), 
+                                        std::stoi(arg.substr(separatorIndex+1, arg.size())) );
+
+			g_emulator.GetRender()->SetWindowSize(res);
+		}
+
 		std::cout << "Render Resolution: " << g_emulator.GetRender()->GetWindowSize() << std::endl; 
 		std::cout << "Done." << std::endl;
 
 	}
+
 	catch(std::exception& e)
 	{
 		std::cerr << "Failed to set Render resolution: " << e.what() << std::endl;
@@ -272,25 +282,6 @@ void res_config(const std::string& arg)
 
 }
 
-
-void fsc_config(const std::string&)
-{
-	try
-	{
-		std::cout << "Setting Render Fullscreen..." << std::endl;
-		if(!g_emulator.GetRender())
-			throw std::runtime_error("null Render");
-		if(!g_emulator.GetRender()->SetFullScreen(true))
-			throw std::runtime_error("iRender internal error");
-
-		std::cout << "Done." << std::endl;
-	}
-	catch(std::exception& e)
-	{
-		std::cerr << "Erro while setting Render fullscreen: " << e.what() << std::endl;
-	}
-
-}
 
 
 
