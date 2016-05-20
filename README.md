@@ -1,6 +1,6 @@
-# XChip - a chip8 lib and emulator
-This chip8 emulator is designed to be flexible.
-You can easily use the project API's to modify the emulator.
+# XChip
+This XChip is an chip8 emulator/interpreter designed to be flexible.
+You can easily use the project's API to modify the emulator.
 You can also design your own Media class and just use the current emulator with your class.
 
 #### Some Chip8 games running:
@@ -16,3 +16,7 @@ We're working on a wxWidgets GUI to easily set those parameters and call your ga
 Its available for Mac OSX, Linux, Windows7
 
 ![ScreenShot](https://github.com/dhustkoder/XChip/blob/master/Tools/Images/WXChip.png?raw=true "WXChip")
+
+
+If you would like to contribute, please follow this guideline:
+![dolphin guideline] (https://github.com/dolphin-emu/dolphin/blob/master/Contributing.md  "dolphin emulator")
