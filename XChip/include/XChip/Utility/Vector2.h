@@ -35,14 +35,14 @@ struct Vector2
 	constexpr Vector2() : x(0), y(0) {}
 	constexpr Vector2(T _x, T _y) : x(_x), y(_y) {}
 	constexpr Vector2(const Vector2& rhs) : x(rhs.x), y(rhs.y) {}
-	Vector2 operator+(const T val) const;
-	Vector2 operator-(const T val) const;
-	Vector2 operator*(const T val) const;
-	Vector2 operator/(const T val) const;
-	Vector2 operator+(const Vector2& other) const;
-	Vector2 operator-(const Vector2& other) const;
-	Vector2 operator*(const Vector2& other) const;
-	Vector2 operator/(const Vector2& other) const;
+	constexpr Vector2 operator+(const T val) const;
+	constexpr Vector2 operator-(const T val) const;
+	constexpr Vector2 operator*(const T val) const;
+	constexpr Vector2 operator/(const T val) const;
+	constexpr Vector2 operator+(const Vector2& other) const;
+	constexpr Vector2 operator-(const Vector2& other) const;
+	constexpr Vector2 operator*(const Vector2& other) const;
+	constexpr Vector2 operator/(const Vector2& other) const;
 	Vector2& operator=(const T val);
 	Vector2& operator+=(const T val);
 	Vector2& operator-=(const T val);
@@ -68,21 +68,21 @@ using Vec2d = Vector2<double>;
 
 
 template<class T>
-Vector2<T> Vector2<T>::operator+(const T val) const { return { x + val, y + val }; }
+constexpr Vector2<T> Vector2<T>::operator+(const T val) const { return { x + val, y + val }; }
 template<class T>
-Vector2<T> Vector2<T>::operator-(const T val) const { return { x - val, y - val }; }
+constexpr Vector2<T> Vector2<T>::operator-(const T val) const { return { x - val, y - val }; }
 template<class T>
-Vector2<T> Vector2<T>::operator*(const T val) const { return {x*val, y*val}; }
+constexpr Vector2<T> Vector2<T>::operator*(const T val) const { return {x*val, y*val}; }
 template<class T>
-Vector2<T> Vector2<T>::operator/(const T val) const { return {x*val, y*val}; }
+constexpr Vector2<T> Vector2<T>::operator/(const T val) const { return {x*val, y*val}; }
 template<class T>
-Vector2<T> Vector2<T>::operator+(const Vector2<T>& other) const { return { x + other.x, y + other.y}; }
+constexpr Vector2<T> Vector2<T>::operator+(const Vector2<T>& other) const { return { x + other.x, y + other.y}; }
 template<class T>
-Vector2<T> Vector2<T>::operator-(const Vector2<T>& other) const { return { x - other.x, y - other.y}; }
+constexpr Vector2<T> Vector2<T>::operator-(const Vector2<T>& other) const { return { x - other.x, y - other.y}; }
 template<class T>
-Vector2<T> Vector2<T>::operator*(const Vector2<T>& other) const { return { x * other.x, y * other.y}; }
+constexpr Vector2<T> Vector2<T>::operator*(const Vector2<T>& other) const { return { x * other.x, y * other.y}; }
 template<class T>
-Vector2<T> Vector2<T>::operator/(const Vector2<T>& other) const { return { x / other.x, y / other.y}; }
+constexpr Vector2<T> Vector2<T>::operator/(const Vector2<T>& other) const { return { x / other.x, y / other.y}; }
 
 
 
@@ -122,7 +122,6 @@ Vector2<T>& Vector2<T>::operator*=(const T val)
 	x *= val;
 	y *= val;
 	return *this;
-
 }
 
 
@@ -132,7 +131,6 @@ Vector2<T>& Vector2<T>::operator/=(const T val)
 	x /= val;
 	y /= val;
 	return *this;
-
 }
 
 

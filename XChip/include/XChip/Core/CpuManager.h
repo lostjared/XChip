@@ -191,7 +191,7 @@ inline const uint32_t& CpuManager::GetGfx(const utility::Vec2i& point) const
 {
 	ASSERT_MSG(_gfxRes.x >= point.x && _gfxRes.y >= point.y, "GFX overflow"); 
 	return _cpu.gfx[ ( _gfxRes.x * point.y ) + point.x]; 
-};
+}
 
 
 
@@ -199,7 +199,7 @@ inline const uint32_t& CpuManager::GetGfx(const int x, const int y) const
 {
 	ASSERT_MSG(_gfxRes.x >= x && _gfxRes.y >= y, "GFX overflow"); 
 	return _cpu.gfx[ ( _gfxRes.x * y ) + x]; 
-};
+}
 
 
 
@@ -247,14 +247,14 @@ inline uint32_t& CpuManager::GetGfx(const utility::Vec2i& point)
 {
 	ASSERT_MSG(_gfxRes.x >= point.x && _gfxRes.y >= point.y, "GFX overflow"); 
 	return _cpu.gfx[ ( _gfxRes.x * point.y ) + point.x]; 
-};
+}
 
 
 inline uint32_t& CpuManager::GetGfx(const int x, const int y)
 {
 	ASSERT_MSG(_gfxRes.x >= x && _gfxRes.y >= y, "GFX overflow"); 
 	return _cpu.gfx[ ( _gfxRes.x * y ) + x]; 
-};
+}
 
 
 

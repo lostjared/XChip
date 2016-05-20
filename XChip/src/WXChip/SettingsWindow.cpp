@@ -44,6 +44,11 @@ EVT_BUTTON(ID_BTN_CANCEL, SettingsWindow::OnCancel)
 EVT_BUTTON(ID_BTN_DEFAULT, SettingsWindow::OnDefault)
 wxEND_EVENT_TABLE()
 
+constexpr SettingsWindow::Vec2i SettingsWindow::defaultEmuWinSize;
+constexpr SettingsWindow::Color SettingsWindow::defaultDrawColor;
+constexpr SettingsWindow::Color SettingsWindow::defaultBkgColor;
+
+
 
 SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size, 
@@ -203,5 +208,10 @@ void SettingsWindow::ResetTextControls()
 void SettingsWindow::ResetVariables()
 {
 	_cpuFreq = defaultCpuFreq;
+	_soundFreq = defaultSoundFreq;
 	_fps = defaultFPS;
+	_emuWinSize = defaultEmuWinSize;
+	_drawColor = defaultDrawColor;
+	_bkgColor = defaultBkgColor;
+	
 }
