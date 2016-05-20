@@ -44,8 +44,9 @@ EVT_BUTTON(ID_BTN_CANCEL, SettingsWindow::OnCancel)
 EVT_BUTTON(ID_BTN_DEFAULT, SettingsWindow::OnDefault)
 wxEND_EVENT_TABLE()
 
-constexpr SettingsWindow::Color SettingsWindow::defaultDrawColor;
-constexpr SettingsWindow::Color SettingsWindow::defaultBkgColor;
+
+constexpr decltype(SettingsWindow::defaultCpuFreq) SettingsWindow::defaultCpuFreq;
+constexpr decltype(SettingsWindow::defaultFPS) SettingsWindow::defaultFPS;
 
 
 
@@ -55,82 +56,61 @@ SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const 
 {
 
 	CreateControls();
+	UpdateConfigStr();
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
 }
 
 
 
-std::string SettingsWindow::GetEmuConfigStr() const
-{
-	std::string config;
-	config = " -FPS ";
-	config += (const char*) _fpsTxtCtrl->GetLineText(0).c_str();
-	config += " -CFQ ";
-	config += (const char*) _cpuFreqTxtCtrl->GetLineText(0).c_str();
-	config += " -RES ";
-	config += (const char*) _emuResCBox->GetStringSelection().c_str();
-	config += " ";
-
-	return config;
-}
-
-
 std::string SettingsWindow::GetDirPath() const
 {
-	return static_cast<const char*>(_dirTxtCtrl->GetLineText(0).c_str());
+	return static_cast<const char*>(_dirPath->GetLineText(0).c_str());
 }
 
-SettingsWindow::Vec2i SettingsWindow::GetEmuResolution() const 
-{
-	const auto resStr = _emuResCBox->GetStringSelection();
-	if( resStr != "FULLSCREEN" )
-	{
-		const auto xsep = resStr.find('x');
-		const Vec2i res(std::stoi((const char*)resStr.substr(0, xsep).c_str()), 
-                                std::stoi((const char*)resStr.substr(xsep+1, resStr.size())));
 
-		return res; 
-	}
-	
-	return {0, 0};
+int SettingsWindow::GetCPUFreq() const 
+{ 
+	return std::stoi((const char*)_cpuFreq->GetLineText(0).c_str());
+}
+
+float SettingsWindow::GetFPS() const 
+{ 
+	return std::stof((const char*)_fps->GetLineText(0).c_str()); 
 }
 
 
 void SettingsWindow::SetDirPath(const std::string &dirPath)
 {
-	_dirTxtCtrl->Clear();
-	*_dirTxtCtrl << dirPath.c_str();
+	_dirPath->Clear();
+	*_dirPath << dirPath.c_str();
 }
 
 
 void SettingsWindow::SetCPUFreq(const int freq) 
 { 
-	_cpuFreqTxtCtrl->Clear();
-	*_cpuFreqTxtCtrl << freq;
-	_cpuFreq = freq;	
-}
+	_cpuFreq->Clear();
+	*_cpuFreq << freq;
 
-void SettingsWindow::SetSoundFreq(const float freq) 
-{
-	_soundFreq = freq; 
 }
 
 void SettingsWindow::SetFPS(const float fps) 
 { 
-	_fpsTxtCtrl->Clear();
-	*_fpsTxtCtrl << fps;
-	_fps = fps;
+	_fps->Clear();
+	*_fps << fps;
 }
 
 
-
-void SettingsWindow::SetEmuWinSize(const Vec2i&) 
-{ 
-//	_emuWinSize.x = size.x; 
-//	_emuWinSize.y = size.y; 
+void SettingsWindow::UpdateConfigStr()
+{
+	_configStr = " -FPS ";
+	_configStr += (const char*) _fps->GetLineText(0).c_str();
+	_configStr += " -CFQ ";
+	_configStr += (const char*) _cpuFreq->GetLineText(0).c_str();
+	_configStr += " -RES ";
+	_configStr += (const char*) _emuRes->GetStringSelection().c_str();
+	_configStr += " ";
 }
-
 
 
 void SettingsWindow::CreateControls()
@@ -143,35 +123,37 @@ void SettingsWindow::CreateControls()
 	_dirTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT1,_T("Directory: "), 
                                              wxPoint(10,15), wxSize(150,25));
 
-	_dirTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, "", 
-                                              wxPoint(100,10), wxSize(320,20), wxTE_READONLY);
+	_dirPath = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, _T(""), 
+                                            wxPoint(100,10), wxSize(320,20), wxTE_READONLY);
 
 	// validators 
-	wxIntegerValidator<int> cpuFreqValidator(&_cpuFreq, wxNUM_VAL_ZERO_AS_BLANK);
+	wxIntegerValidator<int> cpuFreqValidator(nullptr, wxNUM_VAL_ZERO_AS_BLANK);
 	cpuFreqValidator.SetRange(1, 5000);
 
-	wxFloatingPointValidator<float> fpsValidator(2, &_fps, wxNUM_VAL_ZERO_AS_BLANK);
+	wxFloatingPointValidator<float> fpsValidator(2, nullptr, wxNUM_VAL_ZERO_AS_BLANK);
 	fpsValidator.SetRange(1.00, 120.00);
 
 
 	_cpuFreqTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), 
                                                  wxPoint(220,40), wxSize(150,25));
 
-	_cpuFreqTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, "", 
+	_cpuFreq = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, defaultCpuFreq, 
                                                   wxPoint(320,40), wxSize(100,20), 0, cpuFreqValidator);
 
 	_fpsTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT2,_T("FPS: "), 
                                              wxPoint(10,40), wxSize(150,25));
 
-	_fpsTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, "",
+	_fps = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, defaultFPS,
                                                wxPoint(100,40), wxSize(100,20), 0, fpsValidator);
 
+	_emuResText = make_unique<wxStaticText>(_panel.get(), ID_TEXT4, _T("Resolution: "), 
+                                                wxPoint(10, 70), wxSize(100, 25));
 
 	
 	wxString sizeChoices[] = { "320x240", "640x480", "1280x720", "1920x1080", "FULLSCREEN" };
 	
 
-	_emuResCBox = make_unique<wxComboBox>(_panel.get(), ID_RES, _T("320x240"), 
+	_emuRes = make_unique<wxComboBox>(_panel.get(), ID_RES, _T("320x240"), 
                                               wxPoint(100, 70), wxSize(200,25), 5, sizeChoices, wxCB_READONLY);
 
 
@@ -184,11 +166,7 @@ void SettingsWindow::CreateControls()
 	_buttonDefault = make_unique<wxButton>(_panel.get(), ID_BTN_DEFAULT, _T("Default"), 
                                                 wxPoint(230,150), wxSize(100,25));
 
-	_emuResText = make_unique<wxStaticText>(_panel.get(), ID_TEXT4, _T("Resolution: "), 
-                                                wxPoint(10, 70), wxSize(100, 25));
-	
 
-	ResetTextControls();
 }
 
 void SettingsWindow::SaveSettings()
@@ -211,17 +189,13 @@ void SettingsWindow::OnCancel(wxCommandEvent&)
 
 void SettingsWindow::OnOkay(wxCommandEvent&)
 {
-	// transfer contents on TextControls to 
-	// SettingsWindow member variables
-	_fpsTxtCtrl->GetValidator()->TransferFromWindow();
-	_cpuFreqTxtCtrl->GetValidator()->TransferFromWindow();
+	UpdateConfigStr();
 	SaveSettings();
 	Show(false);
 }
 
 void SettingsWindow::OnDefault(wxCommandEvent&)
 {
-	ResetVariables();
 	ResetTextControls();
 }
 
@@ -229,20 +203,11 @@ void SettingsWindow::OnDefault(wxCommandEvent&)
 
 void SettingsWindow::ResetTextControls()
 {
-	_fpsTxtCtrl->Clear();
-	_cpuFreqTxtCtrl->Clear();
-	*_fpsTxtCtrl << defaultFPS;
-	*_cpuFreqTxtCtrl << defaultCpuFreq;
-	_emuResCBox->SetSelection(0);
+	_fps->Clear();
+	_cpuFreq->Clear();
+	*_fps << defaultFPS;
+	*_cpuFreq << defaultCpuFreq;
+	_emuRes->SetSelection(0);
 }
 
 
-void SettingsWindow::ResetVariables()
-{
-	_cpuFreq = defaultCpuFreq;
-	_soundFreq = defaultSoundFreq;
-	_fps = defaultFPS;
-	_drawColor = defaultDrawColor;
-	_bkgColor = defaultBkgColor;
-	
-}

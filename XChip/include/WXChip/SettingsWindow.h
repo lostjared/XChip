@@ -31,11 +31,9 @@ class SettingsWindow : public wxFrame
 {
 	using Color = xchip::utility::Color;
 	using Vec2i = xchip::utility::Vec2i;
-	static constexpr int defaultCpuFreq = 380;
-	static constexpr float defaultSoundFreq = 350.f;
-	static constexpr float defaultFPS = 60.f;
-	static constexpr Color defaultDrawColor = { 255, 255, 255 };
-	static constexpr Color defaultBkgColor = { 0, 0, 0 };
+	static constexpr const auto* const defaultCpuFreq = _T("380");
+	static constexpr const auto* const defaultFPS = _T("60.00");
+
 public:
 	enum 
 	{ 
@@ -47,10 +45,7 @@ public:
 
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
 
-	std::string GetEmuConfigStr() const;
-	const Color& GetDrawColor() const;
-	const Color& GetBackgroundColor() const;
-	Vec2i GetEmuResolution() const;
+	const std::string& GetEmuConfigStr() const;
 	std::string GetDirPath() const;
 	int GetCPUFreq() const;
 	float GetFPS() const;
@@ -58,11 +53,7 @@ public:
 	
 	void SetDirPath(const std::string& path);
 	void SetCPUFreq(const int freq);
-	void SetSoundFreq(const float freq);
 	void SetFPS(const float fps);
-	void SetDrawColor(const Color& drawColor);
-	void SetBackgroundColor(const Color& backgroundColor);
-	void SetEmuWinSize(const Vec2i& size);
 	void SetEmuFullscreen(const bool val);
 	void SaveSettings();
 
@@ -71,51 +62,31 @@ private:
 	void OnCancel(wxCommandEvent &event);
 	void OnOkay(wxCommandEvent &event);
 	void OnDefault(wxCommandEvent &event);
+	void UpdateConfigStr();
 	void CreateControls();
 	void ResetTextControls();
-	void ResetVariables();
 
+	std::string _configStr;
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _dirTxt;
-	std::unique_ptr<wxTextCtrl> _dirTxtCtrl;
+	std::unique_ptr<wxTextCtrl> _dirPath;
 	std::unique_ptr<wxStaticText> _fpsTxt;
-	std::unique_ptr<wxTextCtrl> _fpsTxtCtrl;
+	std::unique_ptr<wxTextCtrl> _fps;
 	std::unique_ptr<wxStaticText> _cpuFreqTxt;
-	std::unique_ptr<wxTextCtrl> _cpuFreqTxtCtrl;
+	std::unique_ptr<wxTextCtrl> _cpuFreq;
 	std::unique_ptr<wxStaticText> _emuResText;
-	std::unique_ptr<wxComboBox> _emuResCBox;
+	std::unique_ptr<wxComboBox> _emuRes;
+	std::unique_ptr<wxCheckBox> _emuFullScreen;
 	std::unique_ptr<wxButton> _buttonOk;
 	std::unique_ptr<wxButton> _buttonCancel;
 	std::unique_ptr<wxButton> _buttonDefault;
-
-	Color _drawColor = defaultDrawColor;
-	Color _bkgColor = defaultBkgColor;
-	int _cpuFreq = defaultCpuFreq;
-	float _soundFreq = defaultSoundFreq;
-	float _fps = defaultFPS;
-
 
 	wxDECLARE_EVENT_TABLE();
 };
 
 
 
-
-
-
-
-
-
-
-inline int SettingsWindow::GetCPUFreq() const { return _cpuFreq; }
-inline float SettingsWindow::GetFPS() const { return _fps; }
-inline const SettingsWindow::Color& SettingsWindow::GetDrawColor() const { return _drawColor; }
-inline const SettingsWindow::Color& SettingsWindow::GetBackgroundColor() const { return _bkgColor; }
-
-
-
-inline void SettingsWindow::SetDrawColor(const Color& drawColor) { _drawColor = drawColor; }
-inline void SettingsWindow::SetBackgroundColor(const Color& backgroundColor) { _bkgColor = backgroundColor; }
+inline const std::string& SettingsWindow::GetEmuConfigStr() const { return _configStr;  }
 
 
 

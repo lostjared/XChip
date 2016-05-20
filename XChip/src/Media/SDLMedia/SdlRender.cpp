@@ -74,7 +74,7 @@ bool SdlRender::Initialize(const utility::Vec2i& winSize, const utility::Vec2i& 
 	_pitch = res.x * sizeof(uint32_t);
 
 	_window = SDL_CreateWindow("Chip8 - SdlRender", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-                                   winSize.x, winSize.y, SDL_WINDOW_RESIZABLE);
+                                    winSize.x, winSize.y, SDL_WINDOW_RESIZABLE);
 
 	if (!_window) 
 		return false;
