@@ -60,13 +60,22 @@ SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const 
 std::string SettingsWindow::GetEmuConfigStr() const
 {
 	std::string config;
-	config = "-FPS ";
+	config = " -FPS ";
 	config += (const char*) _fpsTxtCtrl->GetLineText(0).c_str();
 	config += " -CFQ ";
 	config += (const char*) _cpuFreqTxtCtrl->GetLineText(0).c_str();
+	config += " ";
 
 	return config;
 }
+
+
+std::string SettingsWindow::GetDirPath() const
+{
+	return static_cast<const char*>(_dirTxtCtrl->GetLineText(0).c_str());
+}
+
+
 
 
 void SettingsWindow::SetDirPath(const std::string &dirPath)
@@ -105,31 +114,31 @@ void SettingsWindow::CreateControls()
 
 	_panel = make_unique<wxPanel>(this, wxID_ANY);
 
-	_dirTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT1,_T("Roms Directory: "), 
+	_dirTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT1,_T("Directory: "), 
                                              wxPoint(10,15), wxSize(150,25));
 
 	_dirTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, "", 
-                                              wxPoint(100,10), wxSize(320,20),wxTE_READONLY);
+                                              wxPoint(100,10), wxSize(320,20), wxTE_READONLY);
 
 	// validators 
 	wxIntegerValidator<int> cpuFreqValidator(&_cpuFreq, wxNUM_VAL_ZERO_AS_BLANK);
 	cpuFreqValidator.SetRange(1, 5000);
 
 	wxFloatingPointValidator<float> fpsValidator(2, &_fps, wxNUM_VAL_ZERO_AS_BLANK);
-	fpsValidator.SetRange(1.0f, 120.0f);
+	fpsValidator.SetRange(1.00, 120.00);
 
 
 	_cpuFreqTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), 
                                              wxPoint(220,40), wxSize(150,25));
 
-	_cpuFreqTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, _T("60"), 
-                                               wxPoint(320,40), wxSize(100,20), 0, cpuFreqValidator);
+	_cpuFreqTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, "", 
+                                                  wxPoint(320,40), wxSize(100,20), 0, cpuFreqValidator);
 
 	_fpsTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT2,_T("FPS: "), 
                                              wxPoint(10,40), wxSize(150,25));
 
-	_fpsTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, _T("60"), 
-                                               wxPoint(100,40), wxSize(100,20),0, fpsValidator);
+	_fpsTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, "",
+                                               wxPoint(100,40), wxSize(100,20), 0, fpsValidator);
 
 
 	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BTN_OK, _T("Ok"), 
@@ -141,6 +150,7 @@ void SettingsWindow::CreateControls()
 	_buttonDefault = make_unique<wxButton>(_panel.get(), ID_BTN_DEFAULT, _T("Default"), 
                                                 wxPoint(230,150), wxSize(100,25));
 
+	ResetTextControls();
 }
 
 void SettingsWindow::SaveSettings()
@@ -163,9 +173,6 @@ void SettingsWindow::OnCancel(wxCommandEvent&)
 
 void SettingsWindow::OnOkay(wxCommandEvent&)
 {
-	using namespace xchip::utility;
-	using namespace xchip::utility::literals;
-
 	// transfer contents on TextControls to 
 	// SettingsWindow member variables
 	_fpsTxtCtrl->GetValidator()->TransferFromWindow();
@@ -176,13 +183,25 @@ void SettingsWindow::OnOkay(wxCommandEvent&)
 
 void SettingsWindow::OnDefault(wxCommandEvent&)
 {
-	_fpsTxtCtrl->Clear();
-	_cpuFreqTxtCtrl->Clear();
-	*_fpsTxtCtrl << "60";
-	*_cpuFreqTxtCtrl << "60";
+	ResetTextControls();
+	ResetVariables();
 }
 
-std::string SettingsWindow::GetDirPath() const
+
+
+
+
+void SettingsWindow::ResetTextControls()
 {
-	return static_cast<const char*>(_dirTxtCtrl->GetLineText(0).c_str());
+	_fpsTxtCtrl->Clear();
+	_cpuFreqTxtCtrl->Clear();
+	*_fpsTxtCtrl << defaultFPS;
+	*_cpuFreqTxtCtrl << defaultCpuFreq;
+}
+
+
+void SettingsWindow::ResetVariables()
+{
+	_cpuFreq = defaultCpuFreq;
+	_fps = defaultFPS;
 }

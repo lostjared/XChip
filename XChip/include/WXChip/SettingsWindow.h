@@ -31,6 +31,9 @@ class SettingsWindow : public wxFrame
 {
 	using Color = xchip::utility::Color;
 	using Vec2i = xchip::utility::Vec2i;
+	static constexpr int defaultCpuFreq = 380;
+	static constexpr float defaultSoundFreq = 350.f;
+	static constexpr float defaultFPS = 60.f;
 public:
 	enum 
 	{ 
@@ -67,7 +70,8 @@ private:
 	void OnOkay(wxCommandEvent &event);
 	void OnDefault(wxCommandEvent &event);
 	void CreateControls();
-
+	void ResetTextControls();
+	void ResetVariables();
 
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _dirTxt;
@@ -83,10 +87,9 @@ private:
 	Vec2i _emuWinSize = { 800, 600 };
 	Color _drawColor = { 255, 255, 255 };
 	Color _backgroundColor = { 0, 0, 0 };
-	int _cpuFreq = 60;
-	float _soundFreq = 350;
-	float _fps = 60;
-	bool _emuFullScreen;
+	int _cpuFreq = defaultCpuFreq;
+	float _soundFreq = defaultSoundFreq;
+	float _fps = defaultFPS;
 	wxDECLARE_EVENT_TABLE();
 };
 
