@@ -49,7 +49,6 @@ constexpr decltype(SettingsWindow::defaultCpuFreq) SettingsWindow::defaultCpuFre
 constexpr decltype(SettingsWindow::defaultFPS) SettingsWindow::defaultFPS;
 
 
-
 SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size, 
                   wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
