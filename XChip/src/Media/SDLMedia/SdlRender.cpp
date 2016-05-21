@@ -23,6 +23,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <SDL2/SDL_events.h>
 
 #include <XChip/Media/SDLMedia/SdlRender.h>
+#include <XChip/Utility/Plugin.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
 #include <XChip/Utility/Assert.h>
@@ -32,7 +33,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 namespace xchip {
 
 extern SDL_Event g_sdlEvent;
-
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin*);
 
 SdlRender::SdlRender() noexcept
 	: SdlSystem(System::Render)
@@ -48,9 +49,6 @@ SdlRender::~SdlRender()
 	if (_initialized)
 		this->Dispose();
 }
-
-
-
 
 
 bool SdlRender::Initialize(const utility::Vec2i& winSize, const utility::Vec2i& res) noexcept
@@ -116,6 +114,28 @@ bool SdlRender::IsInitialized() const noexcept
 { 
 	return _initialized; 
 }
+
+
+
+
+
+
+const char* SdlRender::GetPluginName() const noexcept
+{
+	return PLUGIN_NAME;
+}
+
+const char* SdlRender::GetPluginVersion() const noexcept
+{
+	return PLUGIN_VER;
+}
+
+PluginDeleter SdlRender::GetPluginDeleter() const noexcept
+{
+	return XCHIP_FreePlugin;
+}
+
+
 
 const uint32_t* SdlRender::GetBuffer() const noexcept 
 { 
@@ -400,6 +420,32 @@ bool SdlRender::CreateTexture(const int w, const int h)
 	}
 
 	return true;	
+}
+
+
+
+
+
+
+extern "C" iRender* XCHIP_LoadPlugin()
+{
+	return new(std::nothrow) SdlRender();
+}
+
+
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin* plugin)
+{
+	const auto* sdlrend = dynamic_cast<const SdlRender*>(plugin);
+
+	if(!sdlrend)
+	{
+		utility::LOGerr("XCHIP_FreePlugin: dynamic_cast iMediaPlugin* to SdlRender* Failed");
+		std::exit(EXIT_FAILURE);
+	}
+
+	delete sdlrend;
+
+	return;
 }
 
 

@@ -28,9 +28,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _SDLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlInput is not initialized")
 
 namespace xchip {
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin*);
+
 
 using namespace utility;
 extern SDL_Event g_sdlEvent;
+
+
+
 
 SdlInput::SdlInput() noexcept
 	: SdlSystem(System::Input)
@@ -113,6 +118,20 @@ bool SdlInput::IsInitialized() const noexcept
 }
 
 
+const char* SdlInput::GetPluginName() const noexcept
+{
+	return PLUGIN_NAME;
+}
+
+const char* SdlInput::GetPluginVersion() const noexcept
+{
+	return PLUGIN_VER;
+}
+
+PluginDeleter SdlInput::GetPluginDeleter() const noexcept
+{
+	return XCHIP_FreePlugin;
+}
 
 
 bool SdlInput::IsKeyPressed(const Key key) const noexcept
@@ -222,6 +241,26 @@ void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback)
 
 
 
+
+
+extern "C" iInput* XCHIP_LoadPlugin()
+{
+	return new(std::nothrow) SdlInput();
+}
+
+
+
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin* plugin)
+{
+	const auto* sdlinput = dynamic_cast<const SdlInput*>( plugin );
+	if(! sdlinput )
+	{
+		utility::LOGerr("XCHIP_FreePlugin: dynamic_cast iMediaPlugin to sdlinput failed!");
+		std::exit(EXIT_FAILURE);
+	}
+	
+	delete sdlinput;
+}
 
 
 

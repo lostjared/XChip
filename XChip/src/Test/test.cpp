@@ -22,39 +22,63 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <iostream>
 
 #include <XChip/Core/Emulator.h> 
-#include <XChip/Media/SDLMedia.h>
+#include <XChip/Media/Interfaces.h>
 #include <XChip/Utility/Memory.h>
+#include <XChip/Utility/Plugin.h>
+#include <XChip/Utility/Log.h>
 
 
 
+static xchip::utility::Plugin prender;
+static xchip::utility::Plugin pinput;
+static xchip::utility::Plugin psound;
 static xchip::Emulator g_emulator;
 
 
-int main(void)
+int main(int argc, char **argv)
 {
 	using xchip::Emulator;
-	using xchip::SdlRender;
-	using xchip::SdlInput;
-	using xchip::SdlSound;
 	using xchip::UniqueRender;
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
-	using xchip::utility::make_unique;
 
 
+
+	using LoadPluginFunc = xchip::iMediaPlugin* (*)(void);
+
+	if(argc < 2)
+	{
+		xchip::utility::LOGerr("No game to load.");
+		return EXIT_FAILURE;
+	}
 
 
 	UniqueRender render;
 	UniqueInput input;
 	UniqueSound sound;
 
-
 	try {
-		render = make_unique<SdlRender>();
-		input = make_unique<SdlInput>();
-		sound = make_unique<SdlSound>();
+		if(!prender.Load("./libXChipSDLRenderPlugin.so") ||
+		   	!pinput.Load("./libXChipSDLInputPlugin.so") ||
+			!psound.Load("./libXChipSDLSoundPlugin.so") )
+		{
+			throw std::runtime_error("could not load all plugins");
+		}
+
+
+		LoadPluginFunc loadRender = reinterpret_cast<LoadPluginFunc>( prender.GetAddr("XCHIP_LoadPlugin") );
+		LoadPluginFunc loadInput = reinterpret_cast<LoadPluginFunc>( pinput.GetAddr("XCHIP_LoadPlugin") );
+		LoadPluginFunc loadSound = reinterpret_cast<LoadPluginFunc>( psound.GetAddr("XCHIP_LoadPlugin") );
+
+		if(!loadRender || !loadInput || !loadSound )
+			throw std::runtime_error("Could not get plugin Load function");
+
+		render.reset( reinterpret_cast<xchip::iRender*>( loadRender() ) );
+		input.reset( reinterpret_cast<xchip::iInput*>( loadInput()) );
+		sound.reset( reinterpret_cast<xchip::iSound*>( loadSound()) );
 	}
-	catch (std::exception& e) {
+	catch (std::exception& e) 
+	{
 		std::cout << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
@@ -64,27 +88,20 @@ int main(void)
 		return EXIT_FAILURE;
 
 
+
+	if(!g_emulator.LoadRom(argv[1]))
+		return EXIT_FAILURE;
 	
-	uint32_t* buff = const_cast<uint32_t*>(g_emulator.GetRender()->GetBuffer());
-
-
-
-	buff[0] = ~0;
-	buff[63 * 1] = ~0;
-
-	int y = 0;
-
 	while (!g_emulator.GetExitFlag())
 	{
 		g_emulator.UpdateSystems(); 
 		g_emulator.HaltForNextFlag();
-		if (g_emulator.GetDrawFlag())
-		{
-			g_emulator.Draw();
 
-			if( y == 32 ) 
-				y = 0;
-		}
+		if(g_emulator.GetInstrFlag())
+			g_emulator.ExecuteInstr();
+
+		if(g_emulator.GetDrawFlag())
+			g_emulator.Draw();
 	}
 
 

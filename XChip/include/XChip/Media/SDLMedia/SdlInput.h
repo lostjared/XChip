@@ -33,14 +33,18 @@ class SdlInput final : public iInput, private SdlSystem
 {
 	using SDL_Scancode = int;
 	using KeyPair = std::pair<Key, SDL_Scancode>;
+	static constexpr const char* const PLUGIN_NAME = "SdlInput";
+	static constexpr const char* const PLUGIN_VER = "SdlInput 1.0. Using SDL2";
 public:
 	SdlInput() noexcept;
 	~SdlInput();
 	
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
-
 	bool IsInitialized() const noexcept override;
+	const char* GetPluginName() const noexcept override;
+	const char* GetPluginVersion() const noexcept override;
+	PluginDeleter GetPluginDeleter() const noexcept override;
 	bool IsKeyPressed(const Key key) const noexcept override;
 	Key GetPressedKey() const noexcept override;
 

@@ -108,15 +108,18 @@ void Emulator::Dispose() noexcept
 	Cpu& chip = _manager.GetCpu();
 
 	if (chip.render) {
-		delete chip.render;
+		const auto free_plugin = chip.render->GetPluginDeleter();
+		free_plugin(chip.render);
 		chip.render = nullptr;
 	}
 	if (chip.input) {
-		delete chip.input;
+		const auto free_plugin = chip.input->GetPluginDeleter();
+		free_plugin(chip.input);
 		chip.input = nullptr;
 	}
 	if (chip.sound) {
-		delete chip.sound;
+		const auto free_plugin = chip.sound->GetPluginDeleter();
+		free_plugin(chip.sound);
 		chip.sound = nullptr;
 	}
 	

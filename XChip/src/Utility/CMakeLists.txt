@@ -4,3 +4,4 @@ file(GLOB_RECURSE HEADERS XChip/*.h)
 
 
 add_library(${PROJECT_NAME} ${HEADERS} ${SRC})
+target_link_libraries(${PROJECT_NAME} -ldl)

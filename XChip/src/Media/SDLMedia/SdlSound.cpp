@@ -35,6 +35,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _SDLSOUND_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlSound is not initialized")
 
 namespace xchip {
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin*);
+
 
 float SdlSound::GetCurFreq() const { return _curFreq * _specs[Have].freq; }
 float SdlSound::GetPlayFreq() const { return _playFreq * _specs[Have].freq; }
@@ -128,8 +130,22 @@ void SdlSound::Dispose() noexcept
 }
 
 
+const char* SdlSound::GetPluginName() const noexcept
+{
+	return PLUGIN_NAME;
+}
 
 
+
+const char* SdlSound::GetPluginVersion() const noexcept
+{
+	return PLUGIN_VER;
+}
+
+PluginDeleter SdlSound::GetPluginDeleter() const noexcept
+{
+	return XCHIP_FreePlugin;
+}
 
 void SdlSound::Play(const uint8_t soundTimer) noexcept
 {
@@ -242,6 +258,34 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 	}
 
 }
+
+
+
+extern "C" iSound* XCHIP_LoadPlugin()
+{
+	return new(std::nothrow) SdlSound();
+}
+
+
+
+
+
+
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin* plugin)
+{
+	const auto* sdlsound = dynamic_cast<const SdlSound*>(plugin);
+
+	if(!sdlsound)
+	{
+		utility::LOGerr("XCHIP_FreePlugin: dynamic_cast iMediaPlugin* to SdlRender* Failed");
+		std::exit(EXIT_FAILURE);
+	}
+
+	delete sdlsound;
+
+	return;
+}
+
 
 
 

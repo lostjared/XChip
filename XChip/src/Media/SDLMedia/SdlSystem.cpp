@@ -21,6 +21,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <utility>
 
 #include <SDL2/SDL.h>
+#include <XChip/Media/iMediaPlugin.h>
 #include <XChip/Media/SDLMedia/SdlSystem.h>
 #include <XChip/Utility/Timer.h>
 #include <XChip/Utility/Log.h>
@@ -169,4 +170,12 @@ bool _all_of(const T(&arr)[sz], const T val)
 
 
 
+
+
+
+
+
+
 }
+
+

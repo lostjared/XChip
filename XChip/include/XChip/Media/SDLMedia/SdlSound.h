@@ -35,6 +35,8 @@ namespace xchip {
 
 class SdlSound final : public iSound, private SdlSystem
 {
+	static constexpr const char* const PLUGIN_NAME = "SdlSound";
+	static constexpr const char* const PLUGIN_VER = "1.0";
 	static constexpr float defaultFreq = 450;
 public:
 	SdlSound() noexcept;
@@ -42,8 +44,10 @@ public:
 
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
-
 	bool IsInitialized() const noexcept override;
+	const char* GetPluginName() const noexcept override;
+	const char* GetPluginVersion() const noexcept override;
+	PluginDeleter GetPluginDeleter() const noexcept override;
 	bool IsPlaying() const noexcept override;
 	float GetCountdownFreq() const noexcept override;	
 	float GetSoundFreq() const noexcept override;

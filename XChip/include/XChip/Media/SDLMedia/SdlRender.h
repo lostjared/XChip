@@ -33,7 +33,8 @@ namespace xchip {
 
 class SdlRender final : public iRender, private SdlSystem
 {
-
+	static constexpr const char* const PLUGIN_NAME = "SdlRender";
+	static constexpr const char* const PLUGIN_VER = "SdlRender 1.0. Using SDL2";
 public:
 	SdlRender() noexcept;
 	~SdlRender();
@@ -41,6 +42,9 @@ public:
 	void Dispose() noexcept override;
 	
 	bool IsInitialized() const noexcept override;
+	const char* GetPluginName() const noexcept override;
+	const char* GetPluginVersion() const noexcept override;
+	PluginDeleter GetPluginDeleter() const noexcept override;
 	const char* GetWindowName() const noexcept override;
 	const uint32_t* GetBuffer() const noexcept override;
 	utility::Color GetDrawColor() const noexcept override;
