@@ -42,6 +42,8 @@ int main(int argc, char **argv)
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
 	using xchip::MediaPluginLoader;
+
+
 	if(argc < 2)
 	{
 		xchip::utility::LOGerr("No game to load.");
@@ -81,7 +83,7 @@ int main(int argc, char **argv)
 			throw std::runtime_error("Failed to initialize emulator");
 
 		if(!g_emulator.LoadRom(argv[1]))
-			throw std::runtime_error("Failed to load rm");
+			throw std::runtime_error("Failed to load rom");
 	}
 	catch (std::exception& e) 
 	{
