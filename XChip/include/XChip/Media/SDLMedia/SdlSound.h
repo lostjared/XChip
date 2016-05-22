@@ -24,7 +24,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <XChip/Utility/StdintDef.h>
 #include <XChip/Media/iSound.h>
-#include "SdlSystem.h"
+
 
 
 struct SDL_AudioSpec;
@@ -33,8 +33,10 @@ typedef uint32_t SDL_AudioDeviceID;
 namespace xchip {
 
 
-class SdlSound final : public iSound, private SdlSystem
+class SdlSound final : public iSound
 {
+	static constexpr const char* const PLUGIN_NAME = "SdlSound";
+	static constexpr const char* const PLUGIN_VER = "1.0";
 	static constexpr float defaultFreq = 450;
 public:
 	SdlSound() noexcept;
@@ -42,8 +44,10 @@ public:
 
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
-
 	bool IsInitialized() const noexcept override;
+	const char* GetPluginName() const noexcept override;
+	const char* GetPluginVersion() const noexcept override;
+	MediaPluginDeleter GetPluginDeleter() const noexcept override;
 	bool IsPlaying() const noexcept override;
 	float GetCountdownFreq() const noexcept override;	
 	float GetSoundFreq() const noexcept override;

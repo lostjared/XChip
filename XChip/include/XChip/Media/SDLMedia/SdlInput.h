@@ -20,27 +20,32 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_SDLINPUT_H_
 #define _XCHIP_SDLINPUT_H_
+#include <SDL2/SDL_events.h>
 #include <vector>
 #include <XChip/Media/iInput.h>
-#include "SdlSystem.h"
+
 
  
 
 namespace xchip {
 
 	
-class SdlInput final : public iInput, private SdlSystem
+class SdlInput final : public iInput
 {
 	using SDL_Scancode = int;
 	using KeyPair = std::pair<Key, SDL_Scancode>;
+	static constexpr const char* const PLUGIN_NAME = "SdlInput";
+	static constexpr const char* const PLUGIN_VER = "SdlInput 1.0. Using SDL2";
 public:
 	SdlInput() noexcept;
 	~SdlInput();
 	
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
-
 	bool IsInitialized() const noexcept override;
+	const char* GetPluginName() const noexcept override;
+	const char* GetPluginVersion() const noexcept override;
+	MediaPluginDeleter GetPluginDeleter() const noexcept override;
 	bool IsKeyPressed(const Key key) const noexcept override;
 	Key GetPressedKey() const noexcept override;
 

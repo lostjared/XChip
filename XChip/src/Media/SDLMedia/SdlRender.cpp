@@ -18,11 +18,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#include <SDL2/SDL_video.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_events.h>
 
 #include <XChip/Media/SDLMedia/SdlRender.h>
+#include <XChip/Utility/Plugin.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
 #include <XChip/Utility/Assert.h>
@@ -31,12 +29,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip {
 
-extern SDL_Event g_sdlEvent;
 
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin*);
 
 SdlRender::SdlRender() noexcept
-	: SdlSystem(System::Render)
-
 {
 	utility::LOG("Creating SdlRenderer object...");
 }
@@ -50,21 +46,23 @@ SdlRender::~SdlRender()
 }
 
 
-
-
-
 bool SdlRender::Initialize(const utility::Vec2i& winSize, const utility::Vec2i& res) noexcept
 {
+	using namespace xchip::utility::literals;
+
 	if (_initialized)
 		this->Dispose();
 
-	else if (!this->InitSubSystem())
-		return false;
 
+	if( SDL_InitSubSystem( SDL_INIT_VIDEO ) )
+	{
+		utility::LOGerr("Could not initialize SDL2 Video: "_s + SDL_GetError());
+		return false;
+	}
 	
 	const auto scope = utility::make_scope_exit([this]() noexcept 
 	{
-		using namespace xchip::utility::literals;
+
 		if (!this->_initialized) {
 			utility::LOGerr("Couldn't initialize SdlRender. SDL ERROR MSG: "_s + SDL_GetError());
 			this->Dispose();
@@ -103,11 +101,13 @@ void SdlRender::Dispose() noexcept
 	SDL_DestroyTexture(_texture);
 	SDL_DestroyRenderer(_rend);
 	SDL_DestroyWindow(_window);
+	SDL_QuitSubSystem( SDL_INIT_VIDEO );
 	_window = nullptr;
 	_buffer = nullptr;
 	_closeClbk = nullptr;
 	_resizeClbk = nullptr;
 	_initialized = false;
+
 }
 
 
@@ -116,6 +116,28 @@ bool SdlRender::IsInitialized() const noexcept
 { 
 	return _initialized; 
 }
+
+
+
+
+
+
+const char* SdlRender::GetPluginName() const noexcept
+{
+	return PLUGIN_NAME;
+}
+
+const char* SdlRender::GetPluginVersion() const noexcept
+{
+	return PLUGIN_VER;
+}
+
+MediaPluginDeleter SdlRender::GetPluginDeleter() const noexcept
+{
+	return XCHIP_FreePlugin;
+}
+
+
 
 const uint32_t* SdlRender::GetBuffer() const noexcept 
 { 
@@ -184,29 +206,32 @@ utility::Vec2i SdlRender::GetWindowSize() const noexcept
 bool SdlRender::UpdateEvents() noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	PollEvent();	
-	if (g_sdlEvent.type == SDL_WINDOWEVENT)
+	bool hasevent = false;
+	while (SDL_PollEvent(&_sdlevent) != 0)
 	{
-		switch (g_sdlEvent.window.event)
+		if (_sdlevent.type == SDL_WINDOWEVENT)
 		{
-			case SDL_WINDOWEVENT_RESIZED: /* fall */
-			case SDL_WINDOWEVENT_RESTORED: 
-				if (_resizeClbk) 
-					_resizeClbk(_resizeClbkArg);  
-				break;
+			switch (_sdlevent.window.event)
+			{
+				case SDL_WINDOWEVENT_RESIZED: /* fall */
+				case SDL_WINDOWEVENT_RESTORED: 
+					if (_resizeClbk) 
+						_resizeClbk(_resizeClbkArg);  
+					break;
 			
-			case SDL_WINDOWEVENT_CLOSE: 
-				if (_closeClbk) 
-					_closeClbk(_closeClbkArg); 
+				case SDL_WINDOWEVENT_CLOSE: 
+					if (_closeClbk) 
+						_closeClbk(_closeClbkArg); 
 				
-				break;
+					break;
+			}
+
+			hasevent = true;		
 		}
 
-		return true;
 	}
 
-	
-	return false;
+	return hasevent;
 }
 
 
@@ -400,6 +425,32 @@ bool SdlRender::CreateTexture(const int w, const int h)
 	}
 
 	return true;	
+}
+
+
+
+
+
+
+extern "C" iMediaPlugin* XCHIP_LoadPlugin()
+{
+	return new(std::nothrow) SdlRender();
+}
+
+
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin* plugin)
+{
+	const auto* sdlrend = dynamic_cast<const SdlRender*>(plugin);
+
+	if(!sdlrend)
+	{
+		utility::LOGerr("XCHIP_FreePlugin: dynamic_cast iMediaPlugin* to SdlRender* Failed");
+		std::exit(EXIT_FAILURE);
+	}
+
+	delete sdlrend;
+
+	return;
 }
 
 

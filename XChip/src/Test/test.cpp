@@ -22,78 +22,90 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <iostream>
 
 #include <XChip/Core/Emulator.h> 
-#include <XChip/Media/SDLMedia.h>
+#include <XChip/Media/Interfaces.h>
 #include <XChip/Utility/Memory.h>
+#include <XChip/Utility/Plugin.h>
+#include <XChip/Utility/Log.h>
 
 
 
+static xchip::utility::Plugin prender;
+static xchip::utility::Plugin pinput;
+static xchip::utility::Plugin psound;
 static xchip::Emulator g_emulator;
 
 
-int main(void)
+int main(int argc, char **argv)
 {
 	using xchip::Emulator;
-	using xchip::SdlRender;
-	using xchip::SdlInput;
-	using xchip::SdlSound;
 	using xchip::UniqueRender;
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
-	using xchip::utility::make_unique;
+	using xchip::MediaPluginLoader;
 
 
-
-
-	UniqueRender render;
-	UniqueInput input;
-	UniqueSound sound;
-
-
-	try {
-		render = make_unique<SdlRender>();
-		input = make_unique<SdlInput>();
-		sound = make_unique<SdlSound>();
-	}
-	catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
+	if(argc < 2)
+	{
+		xchip::utility::LOGerr("No game to load.");
 		return EXIT_FAILURE;
 	}
 
-	
-	if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
+
+	try 
+	{
+		UniqueRender render;
+		UniqueInput input;
+		UniqueSound sound;
+
+		if(!prender.Load("./libXChipSDLRenderPlugin.so") ||
+		   	!pinput.Load("./libXChipSDLInputPlugin.so") ||
+			!psound.Load("./libXChipSDLSoundPlugin.so") )
+		{
+			throw std::runtime_error("could not load all plugins");
+		}
+
+
+		const auto loadRender = reinterpret_cast<MediaPluginLoader>( prender.GetAddr("XCHIP_LoadPlugin") );
+		const auto loadInput = reinterpret_cast<MediaPluginLoader>( pinput.GetAddr("XCHIP_LoadPlugin") );
+		const auto loadSound = reinterpret_cast<MediaPluginLoader>( psound.GetAddr("XCHIP_LoadPlugin") );
+
+		if(!loadRender || !loadInput || !loadSound )
+			throw std::runtime_error("Could not get plugin Load function");
+
+		render.reset( static_cast<xchip::iRender*>( loadRender() ) );
+		input.reset( static_cast<xchip::iInput*>( loadInput()) );
+		sound.reset( static_cast<xchip::iSound*>( loadSound()) );
+
+		if(!render || !input || !sound)
+			throw std::runtime_error("Some LoadPlugin function returned nullptr");
+
+		if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
+			throw std::runtime_error("Failed to initialize emulator");
+
+		if(!g_emulator.LoadRom(argv[1]))
+			throw std::runtime_error("Failed to load rom");
+	}
+	catch (std::exception& e) 
+	{
+		std::cout << "Failed to setup emulator: " <<  e.what() << std::endl;
 		return EXIT_FAILURE;
-
-
+	}
 	
-	uint32_t* buff = const_cast<uint32_t*>(g_emulator.GetRender()->GetBuffer());
-
-
-
-	buff[0] = ~0;
-	buff[63 * 1] = ~0;
-
-	int y = 0;
-
 	while (!g_emulator.GetExitFlag())
 	{
 		g_emulator.UpdateSystems(); 
 		g_emulator.HaltForNextFlag();
-		if (g_emulator.GetDrawFlag())
-		{
-			g_emulator.Draw();
 
-			if( y == 32 ) 
-				y = 0;
-		}
+		if(g_emulator.GetInstrFlag())
+			g_emulator.ExecuteInstr();
+
+		if(g_emulator.GetDrawFlag())
+			g_emulator.Draw();
 	}
 
 
 
-
-
 	return EXIT_SUCCESS;
-
-
 }
 
 

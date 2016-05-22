@@ -24,7 +24,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include "CpuManager.h"
 #include <XChip/Media/Interfaces.h>
-#include <XChip/Utility/Memory.h>
+#include <XChip/Media/UniqueMediaPlugin.h>
 #include <XChip/Utility/Timer.h>
 #include <XChip/Utility/Assert.h>
 
@@ -32,9 +32,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip {
 namespace instructions { extern void execute_instruction(CpuManager&); }
-using UniqueRender = std::unique_ptr<iRender>;
-using UniqueInput = std::unique_ptr<iInput>;
-using UniqueSound = std::unique_ptr<iSound>;
+using UniqueRender = UniqueMediaPlugin<iRender>;
+using UniqueInput = UniqueMediaPlugin<iInput>;
+using UniqueSound = UniqueMediaPlugin<iSound>;
 
 
 

@@ -28,13 +28,19 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _SDLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlInput is not initialized")
 
 namespace xchip {
-
 using namespace utility;
-extern SDL_Event g_sdlEvent;
+
+
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin*);
+
+
+
+
+
+
+
 
 SdlInput::SdlInput() noexcept
-	: SdlSystem(System::Input)
-
 {
 	LOG("Creating SdlInput object...");
 }
@@ -58,8 +64,7 @@ bool SdlInput::Initialize() noexcept
 	if (_initialized)
 		this->Dispose();
 
-	else if (!this->InitSubSystem())
-		return false;
+	// TODO: Initialize events
 
 	_keyboardState = SDL_GetKeyboardState(NULL);
 
@@ -89,8 +94,6 @@ bool SdlInput::Initialize() noexcept
 	}
 
 
-
-
 	_initialized = true;
 	return true;
 }
@@ -113,6 +116,20 @@ bool SdlInput::IsInitialized() const noexcept
 }
 
 
+const char* SdlInput::GetPluginName() const noexcept
+{
+	return PLUGIN_NAME;
+}
+
+const char* SdlInput::GetPluginVersion() const noexcept
+{
+	return PLUGIN_VER;
+}
+
+MediaPluginDeleter SdlInput::GetPluginDeleter() const noexcept
+{
+	return XCHIP_FreePlugin;
+}
 
 
 bool SdlInput::IsKeyPressed(const Key key) const noexcept
@@ -142,9 +159,8 @@ bool SdlInput::UpdateKeys() noexcept
 {
 	_SDLINPUT_INITIALIZED_ASSERT_();
 
-	 PollEvent();
+	SDL_PumpEvents();
 	_keyboardState = SDL_GetKeyboardState(NULL);
-
 
 	if (_keyboardState[SDL_SCANCODE_RETURN])
 	{
@@ -163,7 +179,7 @@ bool SdlInput::UpdateKeys() noexcept
 		return false;
 	}
 
-	return g_sdlEvent.type == SDL_KEYDOWN;
+	return true;
 }
 
 
@@ -180,8 +196,10 @@ Key SdlInput::WaitKeyPress() noexcept
 		const auto begin = _keyPairs.crbegin();
 		const auto end = _keyPairs.crend();
 		
-		while (_waitClbk(_waitClbkArg))
+		while (true)
 		{
+			if(!_waitClbk(_waitClbkArg))
+				break;
 			if (UpdateKeys())
 			{
 				for (auto itr = begin; itr != end; ++itr)
@@ -222,6 +240,26 @@ void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback)
 
 
 
+
+
+extern "C" iMediaPlugin* XCHIP_LoadPlugin()
+{
+	return new(std::nothrow) SdlInput();
+}
+
+
+
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin* plugin)
+{
+	const auto* sdlinput = dynamic_cast<const SdlInput*>( plugin );
+	if(! sdlinput )
+	{
+		utility::LOGerr("XCHIP_FreePlugin: dynamic_cast iMediaPlugin to sdlinput failed!");
+		std::exit(EXIT_FAILURE);
+	}
+	
+	delete sdlinput;
+}
 
 
 

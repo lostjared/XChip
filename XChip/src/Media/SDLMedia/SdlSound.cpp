@@ -35,6 +35,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _SDLSOUND_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlSound is not initialized")
 
 namespace xchip {
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin*);
+
 
 float SdlSound::GetCurFreq() const { return _curFreq * _specs[Have].freq; }
 float SdlSound::GetPlayFreq() const { return _playFreq * _specs[Have].freq; }
@@ -52,7 +54,6 @@ void SdlSound::SetSoundFreq(const float hz) noexcept  { this->SetCurFreq(hz); }
 
 
 SdlSound::SdlSound() noexcept
-	:  SdlSystem(System::Sound)
 {
 	utility::LOG("Creating SdlSound object...");
 }
@@ -76,10 +77,13 @@ bool SdlSound::Initialize() noexcept
 	if (_initialized)
 		this->Dispose();
 
-	else if (!this->InitSubSystem())
+
+	if( SDL_InitSubSystem(SDL_INIT_AUDIO) )
 		return false;
-	
-	const auto cleanup = utility::make_scope_exit([this]() noexcept {
+
+
+	const auto cleanup = utility::make_scope_exit([this]() noexcept 
+	{
 		if (!this->_initialized)
 			this->Dispose();
 	});
@@ -123,12 +127,26 @@ void SdlSound::Dispose() noexcept
 		_specs = nullptr;
 	}
 
-
+	SDL_QuitSubSystem( SDL_INIT_AUDIO );
 	_initialized = false;
+}
+
+const char* SdlSound::GetPluginName() const noexcept
+{
+	return PLUGIN_NAME;
 }
 
 
 
+const char* SdlSound::GetPluginVersion() const noexcept
+{
+	return PLUGIN_VER;
+}
+
+MediaPluginDeleter SdlSound::GetPluginDeleter() const noexcept
+{
+	return XCHIP_FreePlugin;
+}
 
 
 void SdlSound::Play(const uint8_t soundTimer) noexcept
@@ -242,6 +260,34 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 	}
 
 }
+
+
+
+extern "C" iMediaPlugin* XCHIP_LoadPlugin()
+{
+	return new(std::nothrow) SdlSound();
+}
+
+
+
+
+
+
+extern "C" void XCHIP_FreePlugin(const iMediaPlugin* plugin)
+{
+	const auto* sdlsound = dynamic_cast<const SdlSound*>(plugin);
+
+	if(!sdlsound)
+	{
+		utility::LOGerr("XCHIP_FreePlugin: dynamic_cast iMediaPlugin* to SdlRender* Failed");
+		std::exit(EXIT_FAILURE);
+	}
+
+	delete sdlsound;
+
+	return;
+}
+
 
 
 
