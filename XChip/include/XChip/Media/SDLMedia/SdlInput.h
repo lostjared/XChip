@@ -20,16 +20,17 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_SDLINPUT_H_
 #define _XCHIP_SDLINPUT_H_
+#include <SDL2/SDL_events.h>
 #include <vector>
 #include <XChip/Media/iInput.h>
-#include "SdlSystem.h"
+
 
  
 
 namespace xchip {
 
 	
-class SdlInput final : public iInput, private SdlSystem
+class SdlInput final : public iInput
 {
 	using SDL_Scancode = int;
 	using KeyPair = std::pair<Key, SDL_Scancode>;

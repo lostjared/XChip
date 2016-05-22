@@ -1,15 +1,17 @@
 project(SDLMedia)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-file(GLOB SDL_SYSTEM ./SdlSystem.cpp)
+
 file(GLOB RENDER_PLUGIN ./SdlRender.cpp)
 file(GLOB INPUT_PLUGIN ./SdlInput.cpp)
 file(GLOB SOUND_PLUGIN ./SdlSound.cpp)
 file(GLOB_RECURSE HEADERS XChip/*.h)
 
+
 add_library(XChipSDLRenderPlugin SHARED ${HEADERS} ${RENDER_PLUGIN})
 add_library(XChipSDLInputPlugin SHARED ${HEADERS} ${INPUT_PLUGIN})
 add_library(XChipSDLSoundPlugin SHARED ${HEADERS} ${SOUND_PLUGIN})
-add_library(SDLSystem SHARED ${HEADERS} ${SDL_SYSTEM})
-target_link_libraries(XChipSDLRenderPlugin SDL2 SDLSystem)
-target_link_libraries(XChipSDLInputPlugin SDL2 SDLSystem)
-target_link_libraries(XChipSDLSoundPlugin SDL2 SDLSystem)
+
+
+target_link_libraries(XChipSDLRenderPlugin SDL2 )
+target_link_libraries(XChipSDLInputPlugin SDL2  )
+target_link_libraries(XChipSDLSoundPlugin SDL2  )

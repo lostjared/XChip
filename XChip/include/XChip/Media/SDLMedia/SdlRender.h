@@ -20,8 +20,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_SDLRENDER_H_
 #define _XCHIP_SDLRENDER_H_
+#include <SDL2/SDL.h>
 #include <XChip/Media/iRender.h>
-#include "SdlSystem.h"
+
  
 struct SDL_Window;
 struct SDL_Renderer;
@@ -31,7 +32,7 @@ struct SDL_Rect;
 namespace xchip {
 
 
-class SdlRender final : public iRender, private SdlSystem
+class SdlRender final : public iRender
 {
 	static constexpr const char* const PLUGIN_NAME = "SdlRender";
 	static constexpr const char* const PLUGIN_VER = "SdlRender 1.0. Using SDL2";
@@ -69,7 +70,7 @@ public:
 
 private:
 	bool CreateTexture(const int w, const int h);
-
+	SDL_Event _sdlevent;
 	SDL_Window* _window = nullptr;
 	SDL_Renderer* _rend = nullptr;
 	SDL_Texture* _texture = nullptr;

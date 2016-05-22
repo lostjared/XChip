@@ -28,18 +28,19 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _SDLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlInput is not initialized")
 
 namespace xchip {
+using namespace utility;
+
+
 extern "C" void XCHIP_FreePlugin(const iMediaPlugin*);
 
 
-using namespace utility;
-extern SDL_Event g_sdlEvent;
+
+
 
 
 
 
 SdlInput::SdlInput() noexcept
-	: SdlSystem(System::Input)
-
 {
 	LOG("Creating SdlInput object...");
 }
@@ -63,8 +64,7 @@ bool SdlInput::Initialize() noexcept
 	if (_initialized)
 		this->Dispose();
 
-	else if (!this->InitSubSystem())
-		return false;
+	// TODO: Initialize events
 
 	_keyboardState = SDL_GetKeyboardState(NULL);
 
@@ -92,8 +92,6 @@ bool SdlInput::Initialize() noexcept
 		utility::LOGerr("Could not initialize SdlInput::_keyPairs : "_s + err.what());
 		return false;
 	}
-
-
 
 
 	_initialized = true;
@@ -161,9 +159,8 @@ bool SdlInput::UpdateKeys() noexcept
 {
 	_SDLINPUT_INITIALIZED_ASSERT_();
 
-	 PollEvent();
+	SDL_PumpEvents();
 	_keyboardState = SDL_GetKeyboardState(NULL);
-
 
 	if (_keyboardState[SDL_SCANCODE_RETURN])
 	{
@@ -182,7 +179,7 @@ bool SdlInput::UpdateKeys() noexcept
 		return false;
 	}
 
-	return g_sdlEvent.type == SDL_KEYDOWN;
+	return true;
 }
 
 
@@ -199,8 +196,10 @@ Key SdlInput::WaitKeyPress() noexcept
 		const auto begin = _keyPairs.crbegin();
 		const auto end = _keyPairs.crend();
 		
-		while (_waitClbk(_waitClbkArg))
+		while (true)
 		{
+			if(!_waitClbk(_waitClbkArg))
+				break;
 			if (UpdateKeys())
 			{
 				for (auto itr = begin; itr != end; ++itr)
@@ -243,7 +242,7 @@ void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback)
 
 
 
-extern "C" iInput* XCHIP_LoadPlugin()
+extern "C" iMediaPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlInput();
 }

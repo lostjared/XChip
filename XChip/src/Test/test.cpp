@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
 
 
-	using LoadPluginFunc = xchip::iMediaPlugin* (*)(void);
+	using LoadPluginFunc = xchip::iMediaPlugin* (*)();
 
 	if(argc < 2)
 	{

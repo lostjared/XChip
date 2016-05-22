@@ -24,7 +24,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <XChip/Utility/StdintDef.h>
 #include <XChip/Media/iSound.h>
-#include "SdlSystem.h"
+
 
 
 struct SDL_AudioSpec;
@@ -33,7 +33,7 @@ typedef uint32_t SDL_AudioDeviceID;
 namespace xchip {
 
 
-class SdlSound final : public iSound, private SdlSystem
+class SdlSound final : public iSound
 {
 	static constexpr const char* const PLUGIN_NAME = "SdlSound";
 	static constexpr const char* const PLUGIN_VER = "1.0";

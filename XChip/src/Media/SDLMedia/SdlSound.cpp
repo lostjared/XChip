@@ -54,7 +54,6 @@ void SdlSound::SetSoundFreq(const float hz) noexcept  { this->SetCurFreq(hz); }
 
 
 SdlSound::SdlSound() noexcept
-	:  SdlSystem(System::Sound)
 {
 	utility::LOG("Creating SdlSound object...");
 }
@@ -78,10 +77,13 @@ bool SdlSound::Initialize() noexcept
 	if (_initialized)
 		this->Dispose();
 
-	else if (!this->InitSubSystem())
+
+	if( SDL_InitSubSystem(SDL_INIT_AUDIO) )
 		return false;
-	
-	const auto cleanup = utility::make_scope_exit([this]() noexcept {
+
+
+	const auto cleanup = utility::make_scope_exit([this]() noexcept 
+	{
 		if (!this->_initialized)
 			this->Dispose();
 	});
@@ -125,10 +127,9 @@ void SdlSound::Dispose() noexcept
 		_specs = nullptr;
 	}
 
-
+	SDL_QuitSubSystem( SDL_INIT_AUDIO );
 	_initialized = false;
 }
-
 
 const char* SdlSound::GetPluginName() const noexcept
 {
@@ -146,6 +147,7 @@ PluginDeleter SdlSound::GetPluginDeleter() const noexcept
 {
 	return XCHIP_FreePlugin;
 }
+
 
 void SdlSound::Play(const uint8_t soundTimer) noexcept
 {
@@ -261,7 +263,7 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 
 
 
-extern "C" iSound* XCHIP_LoadPlugin()
+extern "C" iMediaPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlSound();
 }
