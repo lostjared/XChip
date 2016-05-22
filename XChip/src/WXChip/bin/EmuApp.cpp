@@ -30,7 +30,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 #include <XChip/Core/Emulator.h> 
-#include <XChip/Media/SDLMedia.h>
 #include <XChip/Utility/Memory.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Assert.h>
@@ -93,7 +92,8 @@ int main(int argc, char **argv)
 
 #endif
 
-	if (argc < 2) {
+	if (argc < 2) 
+	{
 		std::cout << "No game to load..." << std::endl;
 		return EXIT_SUCCESS;
 	}
