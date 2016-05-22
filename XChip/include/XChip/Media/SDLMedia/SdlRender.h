@@ -45,7 +45,7 @@ public:
 	bool IsInitialized() const noexcept override;
 	const char* GetPluginName() const noexcept override;
 	const char* GetPluginVersion() const noexcept override;
-	PluginDeleter GetPluginDeleter() const noexcept override;
+	MediaPluginDeleter GetPluginDeleter() const noexcept override;
 	const char* GetWindowName() const noexcept override;
 	const uint32_t* GetBuffer() const noexcept override;
 	utility::Color GetDrawColor() const noexcept override;

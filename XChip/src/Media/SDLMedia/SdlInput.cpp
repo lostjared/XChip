@@ -126,7 +126,7 @@ const char* SdlInput::GetPluginVersion() const noexcept
 	return PLUGIN_VER;
 }
 
-PluginDeleter SdlInput::GetPluginDeleter() const noexcept
+MediaPluginDeleter SdlInput::GetPluginDeleter() const noexcept
 {
 	return XCHIP_FreePlugin;
 }

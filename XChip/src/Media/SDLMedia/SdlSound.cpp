@@ -143,7 +143,7 @@ const char* SdlSound::GetPluginVersion() const noexcept
 	return PLUGIN_VER;
 }
 
-PluginDeleter SdlSound::GetPluginDeleter() const noexcept
+MediaPluginDeleter SdlSound::GetPluginDeleter() const noexcept
 {
 	return XCHIP_FreePlugin;
 }

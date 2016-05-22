@@ -132,7 +132,7 @@ const char* SdlRender::GetPluginVersion() const noexcept
 	return PLUGIN_VER;
 }
 
-PluginDeleter SdlRender::GetPluginDeleter() const noexcept
+MediaPluginDeleter SdlRender::GetPluginDeleter() const noexcept
 {
 	return XCHIP_FreePlugin;
 }

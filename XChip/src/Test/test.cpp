@@ -41,11 +41,7 @@ int main(int argc, char **argv)
 	using xchip::UniqueRender;
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
-
-
-
-	using LoadPluginFunc = xchip::iMediaPlugin* (*)();
-
+	using xchip::MediaPluginLoader;
 	if(argc < 2)
 	{
 		xchip::utility::LOGerr("No game to load.");
@@ -53,11 +49,12 @@ int main(int argc, char **argv)
 	}
 
 
-	UniqueRender render;
-	UniqueInput input;
-	UniqueSound sound;
+	try 
+	{
+		UniqueRender render;
+		UniqueInput input;
+		UniqueSound sound;
 
-	try {
 		if(!prender.Load("./libXChipSDLRenderPlugin.so") ||
 		   	!pinput.Load("./libXChipSDLInputPlugin.so") ||
 			!psound.Load("./libXChipSDLSoundPlugin.so") )
@@ -66,31 +63,31 @@ int main(int argc, char **argv)
 		}
 
 
-		LoadPluginFunc loadRender = reinterpret_cast<LoadPluginFunc>( prender.GetAddr("XCHIP_LoadPlugin") );
-		LoadPluginFunc loadInput = reinterpret_cast<LoadPluginFunc>( pinput.GetAddr("XCHIP_LoadPlugin") );
-		LoadPluginFunc loadSound = reinterpret_cast<LoadPluginFunc>( psound.GetAddr("XCHIP_LoadPlugin") );
+		const auto loadRender = reinterpret_cast<MediaPluginLoader>( prender.GetAddr("XCHIP_LoadPlugin") );
+		const auto loadInput = reinterpret_cast<MediaPluginLoader>( pinput.GetAddr("XCHIP_LoadPlugin") );
+		const auto loadSound = reinterpret_cast<MediaPluginLoader>( psound.GetAddr("XCHIP_LoadPlugin") );
 
 		if(!loadRender || !loadInput || !loadSound )
 			throw std::runtime_error("Could not get plugin Load function");
 
-		render.reset( reinterpret_cast<xchip::iRender*>( loadRender() ) );
-		input.reset( reinterpret_cast<xchip::iInput*>( loadInput()) );
-		sound.reset( reinterpret_cast<xchip::iSound*>( loadSound()) );
+		render.reset( static_cast<xchip::iRender*>( loadRender() ) );
+		input.reset( static_cast<xchip::iInput*>( loadInput()) );
+		sound.reset( static_cast<xchip::iSound*>( loadSound()) );
+
+		if(!render || !input || !sound)
+			throw std::runtime_error("Some LoadPlugin function returned nullptr");
+
+		if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
+			throw std::runtime_error("Failed to initialize emulator");
+
+		if(!g_emulator.LoadRom(argv[1]))
+			throw std::runtime_error("Failed to load rm");
 	}
 	catch (std::exception& e) 
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << "Failed to setup emulator: " <<  e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
-
-	
-	if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
-		return EXIT_FAILURE;
-
-
-
-	if(!g_emulator.LoadRom(argv[1]))
-		return EXIT_FAILURE;
 	
 	while (!g_emulator.GetExitFlag())
 	{
@@ -106,11 +103,7 @@ int main(int argc, char **argv)
 
 
 
-
-
 	return EXIT_SUCCESS;
-
-
 }
 
 

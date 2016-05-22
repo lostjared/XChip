@@ -45,7 +45,7 @@ public:
 	bool IsInitialized() const noexcept override;
 	const char* GetPluginName() const noexcept override;
 	const char* GetPluginVersion() const noexcept override;
-	PluginDeleter GetPluginDeleter() const noexcept override;
+	MediaPluginDeleter GetPluginDeleter() const noexcept override;
 	bool IsKeyPressed(const Key key) const noexcept override;
 	Key GetPressedKey() const noexcept override;
 

@@ -47,7 +47,7 @@ public:
 	bool IsInitialized() const noexcept override;
 	const char* GetPluginName() const noexcept override;
 	const char* GetPluginVersion() const noexcept override;
-	PluginDeleter GetPluginDeleter() const noexcept override;
+	MediaPluginDeleter GetPluginDeleter() const noexcept override;
 	bool IsPlaying() const noexcept override;
 	float GetCountdownFreq() const noexcept override;	
 	float GetSoundFreq() const noexcept override;

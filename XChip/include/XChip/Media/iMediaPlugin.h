@@ -18,27 +18,25 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_IMEDIAPLUGIN_H_
-#define _XCHIP_IMEDIAPLUGIN_H_
+#ifndef _XCHIP_MEDIA_IMEDIAPLUGIN_H_
+#define _XCHIP_MEDIA_IMEDIAPLUGIN_H_
 
 
 
 namespace xchip {
-
 class iMediaPlugin;
-using PluginDeleter = void(*)(const iMediaPlugin*);
-
+using MediaPluginDeleter = void(*)(const iMediaPlugin*);
+using MediaPluginLoader = iMediaPlugin* (*)();
 
 class iMediaPlugin
 {
-
 public:
 	virtual ~iMediaPlugin() = default;
 	virtual void Dispose() noexcept = 0;
 	virtual bool IsInitialized() const noexcept = 0;
 	virtual const char* GetPluginName() const noexcept = 0;
 	virtual const char* GetPluginVersion() const noexcept = 0;
-	virtual PluginDeleter GetPluginDeleter() const noexcept = 0;
+	virtual MediaPluginDeleter GetPluginDeleter() const noexcept = 0;
 };
 
 
