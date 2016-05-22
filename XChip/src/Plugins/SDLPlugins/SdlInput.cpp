@@ -19,8 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 #include <SDL2/SDL_events.h>
+#include <XChip/Plugins/SDLPlugins/SdlInput.h>
 #include <XChip/Utility/Log.h>
-#include <XChip/Media/SDLMedia/SdlInput.h>
 #include <XChip/Utility/ScopeExit.h>
 #include <XChip/Utility/Assert.h>
 
@@ -31,7 +31,7 @@ namespace xchip {
 using namespace utility;
 
 
-extern "C" void XCHIP_FreePlugin(const iMediaPlugin*);
+extern "C" void XCHIP_FreePlugin(const iPlugin*);
 
 
 
@@ -126,7 +126,7 @@ const char* SdlInput::GetPluginVersion() const noexcept
 	return PLUGIN_VER;
 }
 
-MediaPluginDeleter SdlInput::GetPluginDeleter() const noexcept
+PluginDeleter SdlInput::GetPluginDeleter() const noexcept
 {
 	return XCHIP_FreePlugin;
 }
@@ -242,14 +242,14 @@ void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback)
 
 
 
-extern "C" iMediaPlugin* XCHIP_LoadPlugin()
+extern "C" iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlInput();
 }
 
 
 
-extern "C" void XCHIP_FreePlugin(const iMediaPlugin* plugin)
+extern "C" void XCHIP_FreePlugin(const iPlugin* plugin)
 {
 	const auto* sdlinput = dynamic_cast<const SdlInput*>( plugin );
 	if(! sdlinput )

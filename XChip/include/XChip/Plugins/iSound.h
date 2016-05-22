@@ -20,7 +20,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_ISOUND_H_
 #define _XCHIP_ISOUND_H_
-#include "iMediaPlugin.h"
+#include "iPlugin.h"
 #include "../Utility/StdintDef.h"
 
  
@@ -28,7 +28,7 @@ namespace xchip {
 
 
 
-class iSound : public iMediaPlugin
+class iSound : public iPlugin
 {
 public:
 	virtual bool Initialize() noexcept = 0;

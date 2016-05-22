@@ -19,8 +19,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 
-#include <XChip/Media/SDLMedia/SdlRender.h>
-#include <XChip/Utility/Plugin.h>
+#include <XChip/Plugins/SDLPlugins/SdlRender.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
 #include <XChip/Utility/Assert.h>
@@ -30,7 +29,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 namespace xchip {
 
 
-extern "C" void XCHIP_FreePlugin(const iMediaPlugin*);
+extern "C" void XCHIP_FreePlugin(const iPlugin*);
 
 SdlRender::SdlRender() noexcept
 {
@@ -132,7 +131,7 @@ const char* SdlRender::GetPluginVersion() const noexcept
 	return PLUGIN_VER;
 }
 
-MediaPluginDeleter SdlRender::GetPluginDeleter() const noexcept
+PluginDeleter SdlRender::GetPluginDeleter() const noexcept
 {
 	return XCHIP_FreePlugin;
 }
@@ -432,13 +431,13 @@ bool SdlRender::CreateTexture(const int w, const int h)
 
 
 
-extern "C" iMediaPlugin* XCHIP_LoadPlugin()
+extern "C" iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlRender();
 }
 
 
-extern "C" void XCHIP_FreePlugin(const iMediaPlugin* plugin)
+extern "C" void XCHIP_FreePlugin(const iPlugin* plugin)
 {
 	const auto* sdlrend = dynamic_cast<const SdlRender*>(plugin);
 

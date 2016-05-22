@@ -1,4 +1,4 @@
-if(${TEST_BUILD} STREQUAL "ON")
+if(${BUILD_TEST} STREQUAL "ON")
 	project(XChipTest)
 	add_executable(${PROJECT_NAME} test.cpp)
 	target_link_libraries(${PROJECT_NAME} Core)

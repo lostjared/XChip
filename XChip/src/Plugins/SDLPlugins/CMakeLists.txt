@@ -1,4 +1,4 @@
-project(SDLMedia)
+project(SDLPlugins)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 file(GLOB RENDER_PLUGIN ./SdlRender.cpp)

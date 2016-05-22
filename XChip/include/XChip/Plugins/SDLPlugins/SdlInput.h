@@ -20,9 +20,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_SDLINPUT_H_
 #define _XCHIP_SDLINPUT_H_
-#include <SDL2/SDL_events.h>
+
 #include <vector>
-#include <XChip/Media/iInput.h>
+
+#include <SDL2/SDL_events.h>
+#include <XChip/Plugins/iInput.h>
 
 
  
@@ -45,7 +47,7 @@ public:
 	bool IsInitialized() const noexcept override;
 	const char* GetPluginName() const noexcept override;
 	const char* GetPluginVersion() const noexcept override;
-	MediaPluginDeleter GetPluginDeleter() const noexcept override;
+	PluginDeleter GetPluginDeleter() const noexcept override;
 	bool IsKeyPressed(const Key key) const noexcept override;
 	Key GetPressedKey() const noexcept override;
 

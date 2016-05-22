@@ -21,9 +21,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifndef _XCHIP_SDLSOUND_H_
 #define _XCHIP_SDLSOUND_H_
 
-
+#include <XChip/Plugins/iSound.h>
 #include <XChip/Utility/StdintDef.h>
-#include <XChip/Media/iSound.h>
+
 
 
 
@@ -47,7 +47,7 @@ public:
 	bool IsInitialized() const noexcept override;
 	const char* GetPluginName() const noexcept override;
 	const char* GetPluginVersion() const noexcept override;
-	MediaPluginDeleter GetPluginDeleter() const noexcept override;
+	PluginDeleter GetPluginDeleter() const noexcept override;
 	bool IsPlaying() const noexcept override;
 	float GetCountdownFreq() const noexcept override;	
 	float GetSoundFreq() const noexcept override;

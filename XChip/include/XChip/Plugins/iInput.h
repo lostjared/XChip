@@ -21,7 +21,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifndef _XCHIP_IINPUT_H_
 #define _XCHIP_IINPUT_H_
 #include <XChip/Utility/StdintDef.h>
-#include "iMediaPlugin.h"
+#include "iPlugin.h"
 
 
  
@@ -48,7 +48,7 @@ enum class Key : uint8_t
 
 
 
-class iInput : public iMediaPlugin
+class iInput : public iPlugin
 {
 public:
 	using WaitKeyCallback = bool(*)(const void*);

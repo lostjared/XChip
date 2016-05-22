@@ -1,5 +1,5 @@
 add_subdirectory(Utility)
 add_subdirectory(Core)
-add_subdirectory(Media)
+add_subdirectory(Plugins)
 add_subdirectory(Test)
 add_subdirectory(WXChip)

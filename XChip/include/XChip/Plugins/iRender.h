@@ -23,13 +23,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <XChip/Utility/StdintDef.h>
 #include <XChip/Utility/Color.h>
 #include <XChip/Utility/Vector2.h>
-#include "iMediaPlugin.h"
+#include "iPlugin.h"
  
 namespace xchip {
 
 
 
-class iRender : public iMediaPlugin
+class iRender : public iPlugin
 {
 public:
 	using WinCloseCallback = void(*)(const void*);

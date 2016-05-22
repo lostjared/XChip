@@ -18,11 +18,34 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_INTERFACES_H_
-#define _XCHIP_INTERFACES_H_
-#include "iRender.h"
-#include "iInput.h"
-#include "iSound.h"
+#ifndef _XCHIP_MEDIA_IMEDIAPLUGIN_H_
+#define _XCHIP_MEDIA_IMEDIAPLUGIN_H_
+
+
+
+namespace xchip {
+
+
+class iPlugin;
+using PluginDeleter = void(*)(const iPlugin*);
+using PluginLoader = iPlugin* (*)();
+
+class iPlugin
+{
+public:
+	virtual ~iPlugin() = default;
+	virtual void Dispose() noexcept = 0;
+	virtual bool IsInitialized() const noexcept = 0;
+	virtual const char* GetPluginName() const noexcept = 0;
+	virtual const char* GetPluginVersion() const noexcept = 0;
+	virtual PluginDeleter GetPluginDeleter() const noexcept = 0;
+};
+
+
+
+
+
+}
 
 
 

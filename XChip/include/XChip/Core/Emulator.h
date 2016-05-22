@@ -23,8 +23,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <string>
 
 #include "CpuManager.h"
-#include <XChip/Media/Interfaces.h>
-#include <XChip/Media/UniqueMediaPlugin.h>
+#include <XChip/Plugins.h>
 #include <XChip/Utility/Timer.h>
 #include <XChip/Utility/Assert.h>
 
@@ -32,9 +31,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip {
 namespace instructions { extern void execute_instruction(CpuManager&); }
-using UniqueRender = UniqueMediaPlugin<iRender>;
-using UniqueInput = UniqueMediaPlugin<iInput>;
-using UniqueSound = UniqueMediaPlugin<iSound>;
+using UniqueRender = UniquePlugin<iRender>;
+using UniqueInput = UniquePlugin<iInput>;
+using UniqueSound = UniquePlugin<iSound>;
 
 
 

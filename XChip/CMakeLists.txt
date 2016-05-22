@@ -6,15 +6,15 @@ project(XChip)
 set(MEMORY_SANITIZER "OFF" CACHE STRING "-fsanitize=memory")
 set(UNDEFINED_SANITIZER "OFF" CACHE STRING "-fsanitize=undefined")
 
-#set on media libraries
-set(USING_SDL_MEDIA "OFF" CACHE STRING "")
-set(USING_WX_MEDIA "OFF" CACHE STRING "")
+#set on plugins libraries to build
+set(BUILD_SDL_PLUGINS "OFF" CACHE STRING "")
+
 
 #build Test ?
-set(TEST_BUILD "OFF" CACHE STRING "")
+set(BUILD_TEST "OFF" CACHE STRING "")
 
-# build wXChip ?
-set(WXCHIP_BUILD "OFF" CACHE STRING "")
+# build WXChip ?
+set(BUILD_WXCHIP "OFF" CACHE STRING "")
 
 
 # compiler settings flags

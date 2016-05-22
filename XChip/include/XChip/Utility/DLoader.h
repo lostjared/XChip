@@ -1,5 +1,5 @@
-#ifndef _XCHIP_UTILITY_PLUGIN_H_
-#define _XCHIP_UTILITY_PLUGIN_H_
+#ifndef _XCHIP_UTILITY_DLOADER_H_
+#define _XCHIP_UTILITY_DLOADER_H_
 
 #if defined(__linux__) || defined(__APPLE__)
 #include <dlfcn.h>
@@ -7,20 +7,20 @@
 #include <windows.h>
 #endif
 
-
+#include <string>
 
 namespace xchip { namespace utility {
 
 
 
-class Plugin
+class DLoader
 {
 public:
-	Plugin();
-	~Plugin();
+	DLoader();
+	~DLoader();
 	void Free();
-	bool Load(const char* dlPath);
-	void* GetAddr(const char* symbol);
+	bool Load(const std::string& dlPath);
+	void* GetSymbol(const std::string& symbol);
 private:
 #if defined(__linux__) || defined(__APPLE__)
 	void* hplugin = nullptr;

@@ -21,12 +21,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 // needed for M_PI 
 #define _USE_MATH_DEFINES 
 #include <cmath>
-
 #include <cstdlib>
 #include <cstring>
 #include <SDL2/SDL.h>
 
-#include <XChip/Media/SDLMedia/SdlSound.h>
+#include <XChip/Plugins/SDLPlugins/SdlSound.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Timer.h>
 #include <XChip/Utility/ScopeExit.h>
@@ -35,7 +34,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _SDLSOUND_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlSound is not initialized")
 
 namespace xchip {
-extern "C" void XCHIP_FreePlugin(const iMediaPlugin*);
+extern "C" void XCHIP_FreePlugin(const iPlugin*);
 
 
 float SdlSound::GetCurFreq() const { return _curFreq * _specs[Have].freq; }
@@ -131,6 +130,8 @@ void SdlSound::Dispose() noexcept
 	_initialized = false;
 }
 
+
+
 const char* SdlSound::GetPluginName() const noexcept
 {
 	return PLUGIN_NAME;
@@ -143,7 +144,7 @@ const char* SdlSound::GetPluginVersion() const noexcept
 	return PLUGIN_VER;
 }
 
-MediaPluginDeleter SdlSound::GetPluginDeleter() const noexcept
+PluginDeleter SdlSound::GetPluginDeleter() const noexcept
 {
 	return XCHIP_FreePlugin;
 }
@@ -263,7 +264,7 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 
 
 
-extern "C" iMediaPlugin* XCHIP_LoadPlugin()
+extern "C" iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlSound();
 }
@@ -273,7 +274,7 @@ extern "C" iMediaPlugin* XCHIP_LoadPlugin()
 
 
 
-extern "C" void XCHIP_FreePlugin(const iMediaPlugin* plugin)
+extern "C" void XCHIP_FreePlugin(const iPlugin* plugin)
 {
 	const auto* sdlsound = dynamic_cast<const SdlSound*>(plugin);
 

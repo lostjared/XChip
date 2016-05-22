@@ -19,15 +19,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 #include <algorithm>
-#include <XChip/Core/Fonts.h>
-#include <XChip/Core/CpuManager.h>
-#include <XChip/Core/Instructions.h>
-#include <XChip/Media/iRender.h>
-#include <XChip/Media/iInput.h>
-#include <XChip/Media/iSound.h>
-#include <XChip/Utility/Alloc.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Utility/Assert.h>
+#include <XChip/Plugins.h>
+#include <XChip/Core.h>
+#include <XChip/Utility.h>
 
 
 

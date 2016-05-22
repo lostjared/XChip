@@ -21,7 +21,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifndef _XCHIP_SDLRENDER_H_
 #define _XCHIP_SDLRENDER_H_
 #include <SDL2/SDL.h>
-#include <XChip/Media/iRender.h>
+#include <XChip/Plugins/iRender.h>
 
  
 struct SDL_Window;
@@ -45,7 +45,7 @@ public:
 	bool IsInitialized() const noexcept override;
 	const char* GetPluginName() const noexcept override;
 	const char* GetPluginVersion() const noexcept override;
-	MediaPluginDeleter GetPluginDeleter() const noexcept override;
+	PluginDeleter GetPluginDeleter() const noexcept override;
 	const char* GetWindowName() const noexcept override;
 	const uint32_t* GetBuffer() const noexcept override;
 	utility::Color GetDrawColor() const noexcept override;

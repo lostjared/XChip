@@ -22,16 +22,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <iostream>
 
 #include <XChip/Core/Emulator.h> 
-#include <XChip/Media/Interfaces.h>
-#include <XChip/Utility/Memory.h>
-#include <XChip/Utility/Plugin.h>
-#include <XChip/Utility/Log.h>
+#include <XChip/Plugins.h>
+#include <XChip/Utility.h>
 
 
 
-static xchip::utility::Plugin prender;
-static xchip::utility::Plugin pinput;
-static xchip::utility::Plugin psound;
+static xchip::utility::DLoader dlrender;
+static xchip::utility::DLoader dlinput;
+static xchip::utility::DLoader dlsound;
 static xchip::Emulator g_emulator;
 
 
@@ -41,7 +39,7 @@ int main(int argc, char **argv)
 	using xchip::UniqueRender;
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
-	using xchip::MediaPluginLoader;
+	using xchip::PluginLoader;
 
 
 	if(argc < 2)
@@ -57,23 +55,23 @@ int main(int argc, char **argv)
 		UniqueInput input;
 		UniqueSound sound;
 
-		if(!prender.Load("./libXChipSDLRenderPlugin.so") ||
-		   	!pinput.Load("./libXChipSDLInputPlugin.so") ||
-			!psound.Load("./libXChipSDLSoundPlugin.so") )
+		if(!dlrender.Load("./libXChipSDLRenderPlugin") ||
+		   	!dlinput.Load("./libXChipSDLInputPlugin") ||
+			!dlsound.Load("./libXChipSDLSoundPlugin") )
 		{
 			throw std::runtime_error("could not load all plugins");
 		}
 
 
-		const auto loadRender = reinterpret_cast<MediaPluginLoader>( prender.GetAddr("XCHIP_LoadPlugin") );
-		const auto loadInput = reinterpret_cast<MediaPluginLoader>( pinput.GetAddr("XCHIP_LoadPlugin") );
-		const auto loadSound = reinterpret_cast<MediaPluginLoader>( psound.GetAddr("XCHIP_LoadPlugin") );
+		const auto loadRender = reinterpret_cast<PluginLoader>( dlrender.GetSymbol("XCHIP_LoadPlugin") );
+		const auto loadInput = reinterpret_cast<PluginLoader>( dlinput.GetSymbol("XCHIP_LoadPlugin") );
+		const auto loadSound = reinterpret_cast<PluginLoader>( dlsound.GetSymbol("XCHIP_LoadPlugin") );
 
 		if(!loadRender || !loadInput || !loadSound )
 			throw std::runtime_error("Could not get plugin Load function");
 
-		render.reset( static_cast<xchip::iRender*>( loadRender() ) );
-		input.reset( static_cast<xchip::iInput*>( loadInput()) );
+		render.reset( static_cast<xchip::iRender*>(loadRender()) );
+		input.reset( static_cast<xchip::iInput*>(loadInput()) );
 		sound.reset( static_cast<xchip::iSound*>( loadSound()) );
 
 		if(!render || !input || !sound)
