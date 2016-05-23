@@ -22,6 +22,19 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _XCHIP_PLUGINS_IPLUGIN_H_
 
 
+#ifdef _WIN32
+#define XCHIP_EXPORT _declspec(dllexport)
+#elif defined(__linxu__) || defined(__APPLE__)
+#define XCHIP_EXPORT
+#else
+#define XCHIP_EXPORT
+#error "Unknown Plataform for XCHIP_EXPORT"
+#endif
+
+#define XCHIP_LOAD_PLUGIN_SYM "XCHIP_LoadPlugin"
+#define XCHIP_FREE_PLUGIN_SYM "XCHIP_FreePlugin"
+
+
 
 namespace xchip {
 
@@ -42,11 +55,6 @@ public:
 };
 
 
-#ifdef _WIN32
-#define XCHIP_EXPORT _declspec(dllexport)
-#elif defined(__linxu__) || defined(__APPLE__)
-#define XCHIP_EXPORT
-#endif
 
 
 }

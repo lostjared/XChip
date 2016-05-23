@@ -70,14 +70,11 @@ bool DLoader::Load(const std::string& dlPath)
 	if (!_hplugin)
 	{
 		const std::string dlPathFix = dlPath + postfix;
-		LOGerr("Error Loading "_s + dlPath);
-		LOGerr("Trying with postfix added: "_s + dlPathFix);
 		_hplugin = LoadLibrary(dlPath.c_str());
-		
 		if (!_hplugin)
 		{
 			const int errorCode = GetLastError();
-			LOGerr("Could not load "_s + dlPath);
+			LOGerr("Could not load "_s + dlPath + ", or " + dlPathFix + " ...");
 			LOGerr("Error Code: "_s + std::to_string(errorCode));
 			return false;
 		}
@@ -108,7 +105,7 @@ void* DLoader::GetSymbol(const std::string& symbolName)
 	}
 	
 #elif defined(_WIN32)
-	GetLastError(); // clean
+	SetLastError(0); // clean
 	void* symbolAddr = GetProcAddress(_hplugin, symbolName.c_str());
 	const auto errorCode = GetLastError();
 	if (!symbolAddr && errorCode)

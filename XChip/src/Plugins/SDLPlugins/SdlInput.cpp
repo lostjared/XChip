@@ -31,7 +31,7 @@ namespace xchip {
 using namespace utility;
 
 
-extern "C" void XCHIP_FreePlugin(const iPlugin*);
+extern "C"  XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
 
 

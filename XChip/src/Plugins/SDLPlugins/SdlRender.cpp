@@ -29,7 +29,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 namespace xchip {
 
 
-extern "C" void XCHIP_FreePlugin(const iPlugin*);
+extern "C" void  XCHIP_EXPORT XCHIP_FreePlugin(const iPlugin*);
 
 SdlRender::SdlRender() noexcept
 {

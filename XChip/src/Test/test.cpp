@@ -55,17 +55,17 @@ int main(int argc, char **argv)
 		UniqueInput input;
 		UniqueSound sound;
 
-		if(!dlrender.Load("./SDLRender.dll") ||
-		   	!dlinput.Load("./SDLInput.dll") ||
-			!dlsound.Load("./SDLSound.dll") )
+		if(!dlrender.Load("./XChipSDLRender") ||
+		   	!dlinput.Load("./XChipSDLInput") ||
+			!dlsound.Load("./XChipSDLSound") )
 		{
 			throw std::runtime_error("could not load all plugins");
 		}
 
 
-		const auto loadRender = reinterpret_cast<PluginLoader>( dlrender.GetSymbol("XCHIP_LoadPlugin") );
-		const auto loadInput = reinterpret_cast<PluginLoader>( dlinput.GetSymbol("XCHIP_LoadPlugin") );
-		const auto loadSound = reinterpret_cast<PluginLoader>( dlsound.GetSymbol("XCHIP_LoadPlugin") );
+		const auto loadRender = reinterpret_cast<PluginLoader>( dlrender.GetSymbol(XCHIP_LOAD_PLUGIN_SYM) );
+		const auto loadInput = reinterpret_cast<PluginLoader>( dlinput.GetSymbol(XCHIP_LOAD_PLUGIN_SYM) );
+		const auto loadSound = reinterpret_cast<PluginLoader>( dlsound.GetSymbol(XCHIP_LOAD_PLUGIN_SYM) );
 
 		if(!loadRender || !loadInput || !loadSound )
 			throw std::runtime_error("Could not get plugin Load function");

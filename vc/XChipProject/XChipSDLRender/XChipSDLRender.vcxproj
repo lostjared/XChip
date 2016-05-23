@@ -19,16 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\XChip\src\Plugins\SDLPlugins\SdlInput.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\Plugins\SDLPlugins\SdlRender.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\XChip\include\XChip\Plugins\SDLPlugins\SdlInput.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Plugins\SDLPlugins\SdlRender.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{EAD83027-FBAE-4821-9577-CAA9F4B8963C}</ProjectGuid>
+    <ProjectGuid>{CC428E0C-CF8F-4DA4-890E-C585793484CF}</ProjectGuid>
     <RootNamespace>MediaSDL</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
-    <ProjectName>SDLInput</ProjectName>
+    <ProjectName>XChipSDLRender</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

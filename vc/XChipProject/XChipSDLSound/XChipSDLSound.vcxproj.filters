@@ -19,7 +19,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\XChip\include\XChip\Plugins\SDLPlugins\SdlRender.h">
+    <ClInclude Include="..\..\..\XChip\include\XChip\Plugins\SDLPlugins\SdlSound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

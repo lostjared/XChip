@@ -34,22 +34,18 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _SDLSOUND_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlSound is not initialized")
 
 namespace xchip {
-extern "C" void XCHIP_FreePlugin(const iPlugin*);
+
+extern "C" void  XCHIP_EXPORT XCHIP_FreePlugin(const iPlugin*);
 
 
-float SdlSound::GetCurFreq() const { return _curFreq * _specs[Have].freq; }
-float SdlSound::GetPlayFreq() const { return _playFreq * _specs[Have].freq; }
-float SdlSound::GetCountdownFreq() const noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); return _specs[Have].freq / _cycleTime; }
-bool SdlSound::IsPlaying() const  noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING; }
-bool SdlSound::IsInitialized() const noexcept { return _initialized; }
-float SdlSound::GetSoundFreq() const noexcept { return this->GetCurFreq(); }
+inline float SdlSound::GetCurFreq() const { return _curFreq * _specs[Have].freq; }
+inline float SdlSound::GetPlayFreq() const { return _playFreq * _specs[Have].freq; }
+inline void SdlSound::SetCycleTime(const float hz) { _cycleTime = _specs[Have].freq / hz; }
+inline void SdlSound::SetCurFreq(const float hz) { _curFreq = hz / _specs[Have].freq; }
+inline void SdlSound::SetPlayFreq(const float hz) { _playFreq = hz / _specs[Have].freq; }
+inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * len; }
 
-void SdlSound::SetCycleTime(const float hz) { _cycleTime = _specs[Have].freq / hz; }
-void SdlSound::SetCurFreq(const float hz) { _curFreq = hz / _specs[Have].freq; }
-void SdlSound::SetPlayFreq(const float hz) { _playFreq = hz / _specs[Have].freq; }
-void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * len; }
-void SdlSound::SetCountdownFreq(const float hertz) noexcept { _SDLSOUND_INITIALIZED_ASSERT_(); _cycleTime = _specs[Have].freq / hertz; }
-void SdlSound::SetSoundFreq(const float hz) noexcept  { this->SetCurFreq(hz); }
+
 
 
 SdlSound::SdlSound() noexcept
@@ -131,6 +127,12 @@ void SdlSound::Dispose() noexcept
 }
 
 
+bool SdlSound::IsInitialized() const noexcept
+{
+	return _initialized;
+}
+
+
 
 const char* SdlSound::GetPluginName() const noexcept
 {
@@ -148,6 +150,41 @@ PluginDeleter SdlSound::GetPluginDeleter() const noexcept
 {
 	return XCHIP_FreePlugin;
 }
+
+
+
+float SdlSound::GetSoundFreq() const noexcept 
+{ 
+	return this->GetCurFreq(); 
+}
+
+
+float SdlSound::GetCountdownFreq() const noexcept
+{
+	_SDLSOUND_INITIALIZED_ASSERT_();
+	return _specs[Have].freq / _cycleTime;
+}
+
+bool SdlSound::IsPlaying() const  noexcept
+{
+	_SDLSOUND_INITIALIZED_ASSERT_();
+	return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING;
+}
+
+
+void SdlSound::SetCountdownFreq(const float hertz) noexcept 
+{ 
+	_SDLSOUND_INITIALIZED_ASSERT_(); 
+	_cycleTime = _specs[Have].freq / hertz; 
+}
+
+
+void SdlSound::SetSoundFreq(const float hz) noexcept 
+{ 
+	_SDLSOUND_INITIALIZED_ASSERT_();
+	this->SetCurFreq(hz); 
+}
+
 
 
 void SdlSound::Play(const uint8_t soundTimer) noexcept
@@ -190,6 +227,8 @@ void SdlSound::Stop() noexcept
 
 
 
+
+
 bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 {
 	using namespace utility::literals;
@@ -212,6 +251,8 @@ bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 
 	return true;
 }
+
+
 
 
 
@@ -264,14 +305,16 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 
 
 
+
+
+
+
+
+
 extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlSound();
 }
-
-
-
-
 
 
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
