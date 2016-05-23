@@ -57,6 +57,7 @@ Emulator::~Emulator()
 
 bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound sound) noexcept
 {
+	using std::move;
 	using fonts::chip8DefaultFont;
 	using fonts::chip8HiResFont;
 	using utility::arr_size;
@@ -64,16 +65,17 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	if (_initialized) 
 		this->Dispose();
 
-	
-
 	const auto scope = utility::make_scope_exit([this]() noexcept 
 	{
 		if (!this->_initialized)
 			this->Dispose();
 	});
 
+	_renderPlugin = move(render);
+	_inputPlugin = move(input);
+	_soundPlugin = move(sound);
 
-	// chip8 and super chip mode
+	// init the CPU
 	if (!_manager.SetMemory(0xFFFF)
 		|| !_manager.SetRegisters(0x10)
 		|| !_manager.SetStack(0x10)
@@ -85,12 +87,10 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 	_manager.SetPC(0x200);
 	_manager.LoadFont(chip8DefaultFont, arr_size(chip8DefaultFont), 0);
 	_manager.LoadFont(chip8HiResFont, arr_size(chip8HiResFont), arr_size(chip8DefaultFont));
-	_manager.SetRender(render.release());
-	_manager.SetInput(input.release());
-	_manager.SetSound(sound.release());
 	
 	// try to init all interfaces before returning something...
-	if (!(InitRender() & InitInput() & InitSound())) {
+	if (!( InitRender() & InitInput() & InitSound()) ) 
+	{
 		return false;
 	}
 
@@ -106,27 +106,7 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 void Emulator::Dispose() noexcept
 {
 	Cpu& chip = _manager.GetCpu();
-
-	if (chip.render) {
-		const auto free_plugin = chip.render->GetPluginDeleter();
-		free_plugin(chip.render);
-		chip.render = nullptr;
-	}
-	if (chip.input) {
-		const auto free_plugin = chip.input->GetPluginDeleter();
-		free_plugin(chip.input);
-		chip.input = nullptr;
-	}
-	if (chip.sound) {
-		const auto free_plugin = chip.sound->GetPluginDeleter();
-		free_plugin(chip.sound);
-		chip.sound = nullptr;
-	}
-	
 	_manager.Dispose();
-	_instrf = false;
-	_drawf = false;
-	_exitf = true;
 	_initialized = false;
 }
 
@@ -136,7 +116,7 @@ void Emulator::Dispose() noexcept
 
 void Emulator::HaltForNextFlag() const
 {
-	if (!_instrf && !_drawf)
+	if (! _manager.GetFlags(Cpu::DRAW | Cpu::INSTR))
 	{
 		const auto instrRemain = _instrTimer.GetRemain();
 		const auto frameRemain = _frameTimer.GetRemain();
@@ -150,15 +130,15 @@ void Emulator::UpdateTimers()
 {
 	using namespace utility::literals;
 
-	if (!_instrf && _instrTimer.Finished())
+	if (!_manager.GetFlags(Cpu::INSTR) && _instrTimer.Finished())
 	{
-		_instrf = true;
+		_manager.SetFlags(Cpu::INSTR);
 		_instrTimer.Start();
 	}
 
-	if (!_drawf && _frameTimer.Finished())
+	if (!_manager.GetFlags(Cpu::DRAW) && _frameTimer.Finished())
 	{
-		_drawf = true;
+		_manager.SetFlags(Cpu::DRAW);
 		_frameTimer.Start();
 	}
 
@@ -178,9 +158,8 @@ void Emulator::UpdateTimers()
  
 void Emulator::UpdateSystems()
 {
-	ASSERT_MSG(_manager.GetRender() != nullptr, "null render");
-	ASSERT_MSG(_manager.GetInput() != nullptr, "null input");
-
+	ASSERT_MSG(!_manager.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
+	ASSERT_MSG(!_manager.GetFlags(Cpu::BAD_INPUT),  "BAD INPUT");
 	_manager.GetRender()->UpdateEvents();
 	_manager.GetInput()->UpdateKeys();
 	this->UpdateTimers();
@@ -191,21 +170,21 @@ void Emulator::UpdateSystems()
 
 void Emulator::CleanFlags()
 {
-	_instrf = false;
-	_drawf = false;
-	_exitf = false;
+	const auto badFlags = _manager.GetFlags(Cpu::BAD_RENDER | Cpu::BAD_INPUT | Cpu::BAD_SOUND);
 	_manager.CleanFlags();
+	_manager.SetFlags(badFlags);
 }
 
 
 
 void Emulator::Reset()
 {
-	ASSERT_MSG(_manager.GetSound() != nullptr, "null sound");
+	ASSERT_MSG(!_manager.GetFlags(Cpu::BAD_SOUND), "BAD SOUND");
 
 	if(_manager.GetSound()->IsPlaying())
 		_manager.GetSound()->Stop();
 
+	
 	CleanFlags();
 	_manager.CleanGfx();
 	_manager.CleanStack();
@@ -220,18 +199,8 @@ void Emulator::Reset()
 bool Emulator::SetRender(UniqueRender rend) 
 { 
 	utility::LOG("Setting new iRender...");
-
-	const iRender* oldRend = _manager.SwapRender(rend.release()); 
-	if (oldRend)
-		delete oldRend;
-
-	if (!InitRender()) 
-	{
-		_exitf = true;
-		return false;
-	}
-
-	return true;
+	_renderPlugin = std::move(rend);
+	return InitRender();
 }
 
 
@@ -240,17 +209,8 @@ bool Emulator::SetRender(UniqueRender rend)
 bool Emulator::SetInput(UniqueInput input) 
 {
 	utility::LOG("Setting new iInput...");
-	const iInput* oldInput = _manager.SwapInput(input.release()); 
-	if (oldInput)
-		delete oldInput;
-
-	if (!InitInput())
-	{
-		_exitf = true;
-		return false;
-	}
-
-	return true;	
+	_inputPlugin = std::move(input);
+	return InitInput();
 }
 
 
@@ -259,18 +219,8 @@ bool Emulator::SetInput(UniqueInput input)
 bool Emulator::SetSound(UniqueSound sound) 
 {
 	utility::LOG("Setting new iSound...");
-
-	const iSound* oldSound = _manager.SwapSound(sound.release()); 
-	if (oldSound)
-		delete oldSound;
-
-	if (!InitSound())
-	{
-		_exitf = true;
-		return false;
-	}
-
-	return true;
+	_soundPlugin = std::move(sound);
+	return InitSound();
 }
 
 
@@ -278,19 +228,17 @@ bool Emulator::SetSound(UniqueSound sound)
 
 UniqueRender Emulator::SwapRender(UniqueRender rend) 
 { 
-	if (rend) 
+	if (rend.get()) 
 	{
 		utility::LOG("Swapping iRender...");
-		auto* const oldRend = _manager.SwapRender(rend.release());
-		if (!InitRender())
-			_exitf = true;
-
-		return UniqueRender(oldRend);
+		_renderPlugin.Swap(rend);
+		InitRender();
+		return std::move(rend);
 	}
 
-	_exitf = true;
 	utility::LOG("Swapping iRender to nullptr...");
-	return UniqueRender(_manager.SwapRender(nullptr));
+	_manager.SetRender(nullptr);
+	return std::move(_renderPlugin);
 }
 
 
@@ -298,19 +246,17 @@ UniqueRender Emulator::SwapRender(UniqueRender rend)
 
 UniqueInput Emulator::SwapInput(UniqueInput input) 
 { 
-	if (input)
+	if (input.get())
 	{
 		utility::LOG("Swapping iInput...");
-		auto* const oldInput =  _manager.SwapInput(input.release());
-		if (!InitInput())
-			_exitf = true;
-
-		return UniqueInput(oldInput);
+		_inputPlugin.Swap(input);
+		InitInput();
+		return std::move(input);
 	}
 
-	_exitf = true;
 	utility::LOG("Swapping iInput to nullptr...");
-	return UniqueInput(_manager.SwapInput(nullptr));
+	_manager.SetInput(nullptr);
+	return std::move(_inputPlugin);
 }
 
 
@@ -318,25 +264,18 @@ UniqueInput Emulator::SwapInput(UniqueInput input)
 
 UniqueSound Emulator::SwapSound(UniqueSound sound) 
 { 
-	if (sound)
+	if (sound.get())
 	{
 		utility::LOG("Swapping iSound...");
-		auto* const oldSound(_manager.SwapSound(sound.release()));
-		if (!InitInput())
-			_exitf = true;
-
-		return UniqueSound(oldSound);
+		_soundPlugin.Swap(sound);
+		InitSound();
+		return std::move(sound);
 	}
 
-	_exitf = true;
 	utility::LOG("Swapping iSound to nullptr...");
-	return UniqueSound(_manager.SwapSound(nullptr));
+	_manager.SetSound(nullptr);
+	return std::move(_soundPlugin);
 }
-
-
-
-
-
 
 
 
@@ -349,9 +288,14 @@ UniqueSound Emulator::SwapSound(UniqueSound sound)
 
 bool Emulator::InitRender()
 {
-	iRender* const rend = _manager.GetRender();
+	iRender* const rend = _renderPlugin.get();
+	const auto end_scope = utility::make_scope_exit([this]()noexcept 
+	{ 
+		_manager.SetRender(_renderPlugin.get());
+	});
 
-	if (!rend)  {
+
+	if (!rend) {
 		utility::LOGerr("Cannot Initialize iRender: nullptr");
 		return false;
 	} 
@@ -363,7 +307,7 @@ bool Emulator::InitRender()
 	}
 
 	rend->SetBuffer(_manager.GetGfx());
-	rend->SetWinCloseCallback(&_exitf, [](const void* exitf) { *(bool*)exitf = true; });
+	rend->SetWinCloseCallback(&_manager, [](const void* man) { ((CpuManager*)man)->SetFlags(Cpu::EXIT); });
 	return true;
 }
 
@@ -372,7 +316,12 @@ bool Emulator::InitRender()
 
 bool Emulator::InitInput()
 {
-	iInput* const input = _manager.GetInput();
+	iInput* const input = _inputPlugin.get();
+	const auto end_scope = utility::make_scope_exit([this]()noexcept
+	{
+		_manager.SetInput(_inputPlugin.get());
+	});
+
 
 	if (!input) {
 		utility::LOGerr("Cannot Initialize iInput: nullptr");
@@ -386,7 +335,7 @@ bool Emulator::InitInput()
 	}
 
 
-	input->SetEscapeKeyCallback(&_exitf, [](const void* exitf) { *(bool*)exitf = true; });
+	input->SetEscapeKeyCallback(&_manager, [](const void* man){ ((CpuManager*)man)->SetFlags(Cpu::EXIT); });
 	input->SetResetKeyCallback(this, [](const void* _this) { ((Emulator*)_this)->Reset(); });
 	input->SetWaitKeyCallback(this, [](const void* g_emulator)
 	{
@@ -421,7 +370,11 @@ bool Emulator::InitInput()
 
 bool Emulator::InitSound()
 {
-	iSound* const sound = _manager.GetSound();
+	iSound* const sound = _soundPlugin.get();
+	const auto end_scope = utility::make_scope_exit([this]()noexcept
+	{
+		_manager.SetSound(_soundPlugin.get());
+	});
 
 	if (!sound)  {
 		utility::LOGerr("Cannot Initialize iSound: nullptr");

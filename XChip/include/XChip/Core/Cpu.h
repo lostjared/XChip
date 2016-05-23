@@ -48,16 +48,20 @@ struct Cpu
 	size_t I;
 
 	uint32_t flags;
-
 	uint16_t opcode;
 	uint8_t delayTimer;
 	uint8_t soundTimer;
 	
 	enum Flags : uint32_t 
 	{ 
-		EXIT = 0x0000001, 
-		EXTENDED_MODE = 0x00000002, 
-		PAUSE = 0x00000004 
+		EXIT =  0x0000001,
+		PAUSE = 0x00000002,
+		INSTR = 0x00000004,
+		DRAW =  0x00000008,
+		EXTENDED_MODE = 0x00000010,
+		BAD_RENDER = 0x00000020,
+		BAD_INPUT = 0x00000040,
+		BAD_SOUND = 0x00000080
 	};
 };
 

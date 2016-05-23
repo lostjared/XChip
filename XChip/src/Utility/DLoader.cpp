@@ -5,9 +5,19 @@
 namespace xchip { namespace utility {
 
 
-DLoader::DLoader()
+DLoader::DLoader(DLoader&& rhs)
+	: _hplugin(rhs._hplugin)
 {
+	rhs._hplugin = nullptr;
+}
 
+
+DLoader& DLoader::operator=(DLoader&& rhs)
+{
+	auto* const aux = this->_hplugin;
+	this->_hplugin = rhs._hplugin;
+	rhs._hplugin = aux;
+	return *this;
 }
 
 DLoader::~DLoader()
@@ -15,23 +25,16 @@ DLoader::~DLoader()
 	if(_hplugin)
 		this->Free();
 }
-void DLoader::Free()
-{
 
-#if defined(__linux__) || defined(__APPLE__)
-	dlclose(_hplugin);
-#elif defined(_WIN32)
-	FreeLibrary(_hplugin);	
-#endif
-	_hplugin = nullptr;
-}
+
+
 
 
 bool DLoader::Load(const std::string& dlPath)
 {
 	using namespace literals;
 
-	if(_hplugin)
+	if (_hplugin)
 		this->Free();
 
 #if defined(__linux__)
@@ -46,7 +49,7 @@ bool DLoader::Load(const std::string& dlPath)
 #if defined(__linux__) || defined(__APPLE__)
 
 	_hplugin = dlopen(dlPath.c_str(), RTLD_LAZY);
-	if(!_hplugin)
+	if (!_hplugin)
 	{
 		const std::string dlPathFix = dlPath + postfix;
 		LOGerr("Error Loading "_s + dlPath);
@@ -54,7 +57,7 @@ bool DLoader::Load(const std::string& dlPath)
 
 		_hplugin = dlopen(dlPathFix.c_str(), RTLD_LAZY);
 
-		if(!_hplugin)
+		if (!_hplugin)
 		{
 			const char* error = dlerror();
 			LOGerr("Could not load shared library: "_s + error);
@@ -86,6 +89,26 @@ bool DLoader::Load(const std::string& dlPath)
 
 	return true;
 }
+
+
+
+
+
+void DLoader::Free()
+{
+
+#if defined(__linux__) || defined(__APPLE__)
+	dlclose(_hplugin);
+#elif defined(_WIN32)
+	FreeLibrary(_hplugin);	
+#endif
+
+
+	_hplugin = nullptr;
+}
+
+
+
 
 void* DLoader::GetSymbol(const std::string& symbolName)
 {

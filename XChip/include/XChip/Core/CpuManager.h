@@ -27,8 +27,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip {
 
-
-
 class CpuManager
 {
 public:
@@ -45,7 +43,7 @@ public:
 	uint16_t GetOpcode() const;
 	uint16_t GetOpcode(const uint16_t mask) const;
 	uint32_t GetFlags() const;
-	bool GetFlags(const Cpu::Flags flags) const;
+	uint32_t GetFlags(const uint32_t flags) const;
 	size_t GetIndexRegister() const;
 	size_t GetPC() const;
 	size_t GetSP() const;
@@ -97,8 +95,8 @@ public:
 	bool ResizeMemory(const size_t size);
 	bool ResizeRegisters(const size_t size);
 	bool ResizeStack(const size_t size);
-	void SetFlags(const Cpu::Flags flags);
-	void UnsetFlags(const Cpu::Flags flags);
+	void SetFlags(const uint32_t flags);
+	void UnsetFlags(const uint32_t flags);
 	void CleanFlags();
 	void SetDelayTimer(const uint8_t val);
 	void SetSoundTimer(const uint8_t val);
@@ -121,6 +119,7 @@ public:
 	void CleanRegisters();
 	void CleanStack();
 	void CleanGfx();
+
 private:
 	Cpu _cpu;
 	utility::Vec2i _gfxRes = {0, 0};
@@ -137,7 +136,7 @@ inline uint8_t CpuManager::GetSoundTimer() const { return _cpu.soundTimer; }
 inline uint16_t CpuManager::GetOpcode() const { return _cpu.opcode; }
 inline uint16_t CpuManager::GetOpcode(const uint16_t mask) const { return _cpu.opcode & mask; }
 inline uint32_t CpuManager::GetFlags() const { return _cpu.flags; }
-inline bool CpuManager::GetFlags(const Cpu::Flags flags) const { return (_cpu.flags & flags) != 0; }
+inline uint32_t CpuManager::GetFlags(const uint32_t flags) const { return _cpu.flags & flags; }
 inline size_t CpuManager::GetIndexRegister() const { return _cpu.I; }
 inline size_t CpuManager::GetPC() const { return _cpu.pc; }
 inline size_t CpuManager::GetSP() const { return _cpu.sp; }
@@ -257,10 +256,8 @@ inline uint32_t& CpuManager::GetGfx(const int x, const int y)
 }
 
 
-
-
-inline void CpuManager::SetFlags(const Cpu::Flags flags) { _cpu.flags |= flags; }
-inline void CpuManager::UnsetFlags(const Cpu::Flags flags) { _cpu.flags &= ~flags; }
+inline void CpuManager::SetFlags(const uint32_t flags) { _cpu.flags |= flags; }
+inline void CpuManager::UnsetFlags(const uint32_t flags) { _cpu.flags &= ~flags; }
 inline void CpuManager::CleanFlags() { _cpu.flags = 0; }
 inline void CpuManager::SetDelayTimer(const uint8_t val) { _cpu.delayTimer = val; }
 inline void CpuManager::SetSoundTimer(const uint8_t val) { _cpu.soundTimer = val; }
@@ -268,9 +265,6 @@ inline void CpuManager::SetOpcode(const uint16_t val) { _cpu.opcode = val; }
 inline void CpuManager::SetIndexRegister(const size_t index) { _cpu.I = index; }
 inline void CpuManager::SetPC(const size_t offset) { _cpu.pc = offset; }
 inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
-inline void CpuManager::SetRender(iRender* render) { _cpu.render = render; }
-inline void CpuManager::SetInput(iInput* input) { _cpu.input = input; }
-inline void CpuManager::SetSound(iSound* sound) { _cpu.sound = sound; }
 
 
 inline void CpuManager::CleanMemory() 

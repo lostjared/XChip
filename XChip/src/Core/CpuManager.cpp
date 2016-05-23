@@ -19,6 +19,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 #include <XChip/Core/CpuManager.h>
+#include <XChip/Plugins/iRender.h>
+#include <XChip/Plugins/iInput.h>
+#include <XChip/Plugins/iSound.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
 #include <XChip/Utility/Assert.h>
@@ -30,13 +33,14 @@ namespace xchip {
 using namespace xchip::utility;
 using namespace xchip::utility::literals;
 
+
+static void check_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept;
 template<class T>
 static bool alloc_cpu_arr(T*& arr, const size_t size) noexcept;
 template<class T>
 static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept;
 template<class T>
 static void free_cpu_arr(T*& arr) noexcept;
-
 
 
 
@@ -236,16 +240,33 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 
 
+void CpuManager::SetRender(iRender* render) 
+{
+	check_plugin(*this, render, Cpu::BAD_RENDER);
+	_cpu.render = render; 
+}
 
+
+void CpuManager::SetInput(iInput* input) 
+{
+	check_plugin(*this, input, Cpu::BAD_INPUT);
+	_cpu.input = input; 
+}
+
+
+void CpuManager::SetSound(iSound* sound) 
+{
+	check_plugin(*this, sound, Cpu::BAD_SOUND);
+	_cpu.sound = sound; 
+}
 
 
 
 iRender* CpuManager::SwapRender(iRender* render)
 {
 	ASSERT_MSG(render != _cpu.render, "trying to swap the same addresses");
-
 	auto* const ret = _cpu.render;
-	_cpu.render = render;
+	SetRender(render);
 	return ret;
 }
 
@@ -254,9 +275,8 @@ iRender* CpuManager::SwapRender(iRender* render)
 iInput* CpuManager::SwapInput(iInput* input)
 {
 	ASSERT_MSG(input != _cpu.input, "trying to swap the same addresses");
-
 	auto* const ret = _cpu.input;
-	_cpu.input = input;
+	SetInput(input);
 	return ret;
 }
 
@@ -265,15 +285,23 @@ iInput* CpuManager::SwapInput(iInput* input)
 iSound* CpuManager::SwapSound(iSound* sound)
 {
 	ASSERT_MSG(sound != _cpu.sound, "trying to swap the same addresses");
-
 	auto* const ret = _cpu.sound;
-	_cpu.sound = sound;
+	SetSound(sound);
 	return ret;
 }
 
 
 
 
+static void check_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept
+{
+	if (!plugin)
+		man.SetFlags(flag);
+	else if (!plugin->IsInitialized())
+		man.SetFlags(flag);
+	else
+		man.UnsetFlags(flag);
+}
 
 
 

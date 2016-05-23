@@ -5,6 +5,8 @@
 #include <dlfcn.h>
 #elif defined(_WIN32)
 #include <windows.h>
+#else
+#error "Unknown Plataform utility DLoader"
 #endif
 
 #include <string>
@@ -16,7 +18,11 @@ namespace xchip { namespace utility {
 class DLoader
 {
 public:
-	DLoader();
+	DLoader() = default;
+	DLoader(DLoader&&);
+	DLoader(const DLoader&) = delete;
+	DLoader& operator=(DLoader&&);
+	DLoader& operator=(const DLoader&) = delete;
 	~DLoader();
 	void Free();
 	bool Load(const std::string& dlPath);

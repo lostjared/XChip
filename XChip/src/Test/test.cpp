@@ -27,9 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
-static xchip::utility::DLoader dlrender;
-static xchip::utility::DLoader dlinput;
-static xchip::utility::DLoader dlsound;
+
 static xchip::Emulator g_emulator;
 
 
@@ -55,40 +53,27 @@ int main(int argc, char **argv)
 		UniqueInput input;
 		UniqueSound sound;
 
-		if(!dlrender.Load("./XChipSDLRender") ||
-		   	!dlinput.Load("./XChipSDLInput") ||
-			!dlsound.Load("./XChipSDLSound") )
+		if(!render.Load("./XChipSDLRender") ||
+		   	!input.Load("./XChipSDLInput") ||
+			!sound.Load("./XChipSDLSound") )
 		{
 			throw std::runtime_error("could not load all plugins");
 		}
-
-
-		const auto loadRender = reinterpret_cast<PluginLoader>( dlrender.GetSymbol(XCHIP_LOAD_PLUGIN_SYM) );
-		const auto loadInput = reinterpret_cast<PluginLoader>( dlinput.GetSymbol(XCHIP_LOAD_PLUGIN_SYM) );
-		const auto loadSound = reinterpret_cast<PluginLoader>( dlsound.GetSymbol(XCHIP_LOAD_PLUGIN_SYM) );
-
-		if(!loadRender || !loadInput || !loadSound )
-			throw std::runtime_error("Could not get plugin Load function");
-
-		render.reset( static_cast<xchip::iRender*>(loadRender()) );
-		input.reset( static_cast<xchip::iInput*>(loadInput()) );
-		sound.reset( static_cast<xchip::iSound*>( loadSound()) );
-
-		if(!render || !input || !sound)
-			throw std::runtime_error("Some LoadPlugin function returned nullptr");
 
 		if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
 			throw std::runtime_error("Failed to initialize emulator");
 
 		if(!g_emulator.LoadRom(argv[1]))
 			throw std::runtime_error("Failed to load rom");
+
 	}
 	catch (std::exception& e) 
 	{
 		std::cout << "Failed to setup emulator: " <<  e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
-	
+
+
 	while (!g_emulator.GetExitFlag())
 	{
 		g_emulator.UpdateSystems(); 
@@ -105,8 +90,6 @@ int main(int argc, char **argv)
 
 	return EXIT_SUCCESS;
 }
-
-
 
 
 

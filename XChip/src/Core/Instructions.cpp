@@ -95,6 +95,7 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FB: // 0x00FB* SuperChip: scrolls display 4 pixels right:
 		{
+			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 			const auto res = cpuMan.GetRender()->GetResolution();
 			for( int y = 0; y < res.y; ++y )
 			{
@@ -108,6 +109,7 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FC: // 0x00FC* SuperChip: scrolls display 4 pixels left:
 		{
+			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 			const auto res = cpuMan.GetRender()->GetResolution();
 			for( int y = 0; y < res.y; ++y )
 			{
@@ -128,6 +130,7 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FE: // 0x00FE* SuperChip:  Disable extended screen mode
 		{
+			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 			constexpr utility::Vec2i defaultRes(64,32);
 			if (!cpuMan.GetRender()->SetResolution(defaultRes))
 			{
@@ -150,6 +153,7 @@ void op_0xxx(CpuManager& cpuMan)
 
 		case 0x00FF: // 0x00FF* SuperChip: Enable extended screen mode 
 		{
+			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 			constexpr utility::Vec2i extendedRes(128, 64);
 			if(!cpuMan.GetRender()->SetResolution( extendedRes ))
 			{
@@ -174,6 +178,7 @@ void op_0xxx(CpuManager& cpuMan)
 		{
 			if( (cpuMan.GetOpcode(0x00F0) >> 4) == 0xC )
 			{
+				ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 				// 00CN* SuperChip: Scroll display N lines down:
 				const auto res = cpuMan.GetRender()->GetResolution();
 				uint32_t* gfx = cpuMan.GetGfx();
@@ -295,6 +300,7 @@ void op_CXNN(CpuManager& cpuMan)
 // DXYN: DRAW INSTRUCTION
 void op_DXYN(CpuManager& cpuMan)
 {
+	ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 
 	VF = 0;
 	const auto& res = cpuMan.GetGfxRes();
@@ -321,7 +327,7 @@ void op_DXYN(CpuManager& cpuMan)
 // EXTENDED_MODE
 void op_DXYN_ex(CpuManager& cpuMan)
 {
-
+	ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 	if(N)
 	{
 		op_DXYN(cpuMan);
@@ -363,19 +369,17 @@ void op_DXYN_ex(CpuManager& cpuMan)
 // 2 instruction EX9E, EXA1
 void op_EXxx(CpuManager& cpuMan)
 {
-	ASSERT_MSG(cpuMan.GetInput() != nullptr && cpuMan.GetInput()->IsInitialized(),
-               "Cpu::Input, null or not initialized!");
-
-
 	switch (N)
 	{
 		case 0xE: // EX9E  Skips the next instruction if the key stored in VX is pressed.
+			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_INPUT), "Cpu::Input, null or not initialized!");
 			if (cpuMan.GetInput()->IsKeyPressed((Key)VX))
 				cpuMan.SetPC( cpuMan.GetPC() + 2 );
 			break;
 
 
 		case 0x1: // 0xEXA1  Skips the next instruction if the key stored in VX isn't pressed.
+			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_INPUT), "Cpu::Input, null or not initialized!");
 			if (!cpuMan.GetInput()->IsKeyPressed((Key)VX))
 				cpuMan.SetPC( cpuMan.GetPC() + 2 );
 			break;
@@ -600,8 +604,7 @@ void op_FX07(CpuManager& cpuMan)
 // FX0A   A key press is awaited, and then stored in VX.
 void op_FX0A(CpuManager& cpuMan)
 {
-	ASSERT_MSG(cpuMan.GetInput() != nullptr && cpuMan.GetInput()->IsInitialized(),
-               "Cpu::input, null or not initialized!");
+	ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_INPUT), "Cpu::input, null or not initialized!");
 
 	VX = static_cast<uint8_t>(cpuMan.GetInput()->WaitKeyPress());
 }
@@ -666,8 +669,7 @@ void op_FXx5(CpuManager& cpuMan)
 // FX18   Sets the sound timer to VX.
 void op_FX18(CpuManager& cpuMan)
 {
-	ASSERT_MSG(cpuMan.GetSound() != nullptr && cpuMan.GetSound()->IsInitialized(),
-               "Cpu::sound, null or not initialized");
+	ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_SOUND), "Cpu::sound, null or not initialized");
 
 	cpuMan.SetSoundTimer(VX);
 

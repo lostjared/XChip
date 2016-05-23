@@ -23,6 +23,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <string>
 
 #include "CpuManager.h"
+#include "Instructions.h"
 #include <XChip/Plugins.h>
 #include <XChip/Utility/Timer.h>
 #include <XChip/Utility/Assert.h>
@@ -30,7 +31,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  
 
 namespace xchip {
-namespace instructions { extern void execute_instruction(CpuManager&); }
 using UniqueRender = UniquePlugin<iRender>;
 using UniqueInput = UniquePlugin<iInput>;
 using UniqueSound = UniquePlugin<iSound>;
@@ -57,7 +57,9 @@ public:
 	void HaltForNextFlag() const;
 	int GetCpuFreq() const;
 	int GetFps() const;
-
+	const iRender* GetRender() const;
+	const iInput* GetInput() const;
+	const iSound* GetSound() const;
 
 	void UpdateSystems();
 	void ExecuteInstr();
@@ -65,23 +67,23 @@ public:
 	void Draw();
 	void Reset();
 
+	iRender* GetRender();
+	iInput* GetInput();
+	iSound* GetSound();
+
 	void SetDrawFlag(const bool val);
 	void SetExitFlag(const bool val);
 	void SetCpuFreq(const int value);
 	void SetFps(const int value);
 	bool LoadRom(const std::string& fileName);
-
 	bool SetRender(UniqueRender rend);
 	bool SetInput(UniqueInput input);
 	bool SetSound(UniqueSound sound);
-
-	iRender* GetRender();
-	iInput* GetInput();
-	iSound* GetSound();
-	
 	UniqueRender SwapRender(UniqueRender rend = nullptr);
 	UniqueInput SwapInput(UniqueInput input = nullptr);
 	UniqueSound SwapSound(UniqueSound sound = nullptr);
+
+
 
 private:
  	void UpdateTimers();
@@ -93,9 +95,9 @@ private:
 	utility::Timer _instrTimer;
 	utility::Timer _frameTimer;
 	utility::Timer _chDelayTimer;
-	bool _instrf = false;
-	bool _drawf  = false;
-	bool _exitf  = true;
+	UniqueRender _renderPlugin;
+	UniqueInput _inputPlugin;
+	UniqueSound _soundPlugin;
 	bool _initialized = false;
 };
 
@@ -104,34 +106,62 @@ private:
 
 
 inline bool Emulator::IsInitialized() const { return _initialized; }
-inline bool Emulator::GetInstrFlag() const { return _instrf; }
-inline bool Emulator::GetDrawFlag() const { return _drawf; }
-inline bool Emulator::GetExitFlag() const { return _exitf || _manager.GetFlags(Cpu::EXIT); }
+inline bool Emulator::GetInstrFlag() const { return _manager.GetFlags(Cpu::INSTR); }
+inline bool Emulator::GetDrawFlag() const { return _manager.GetFlags(Cpu::DRAW); }
+inline bool Emulator::GetExitFlag() const { return _manager.GetFlags(Cpu::EXIT); }
+inline const iRender* Emulator::GetRender() const { return _manager.GetRender(); }
+inline const iInput* Emulator::GetInput() const { return _manager.GetInput(); }
+inline const iSound* Emulator::GetSound() const { return _manager.GetSound(); }
 
-
-inline int Emulator::GetCpuFreq() const {
+inline int Emulator::GetCpuFreq() const 
+{
 	using namespace utility::literals;
 	return static_cast<int>(1_sec / _instrTimer.GetTarget());
 }
 
-inline int Emulator::GetFps() const {
+inline int Emulator::GetFps() const 
+{
 	using namespace utility::literals;
 	return static_cast<int>(1_sec / _frameTimer.GetTarget());
 }
 
 
-inline void Emulator::SetDrawFlag(const bool val) { _drawf = val; }
-inline void Emulator::SetExitFlag(const bool val) { _exitf = val; }
 
-inline void Emulator::SetCpuFreq(const int value) { 
-	_instrTimer.SetTargetTime(utility::literals::operator""_hz(value > 0 ? value : 1));
+inline void Emulator::SetCpuFreq(const int value)
+{
+	using namespace utility::literals;
+	_instrTimer.SetTargetTime(operator""_hz(value > 0 ? value : 1));
 }
-inline void Emulator::SetFps(const int value) { 
-	_frameTimer.SetTargetTime(utility::literals::operator""_hz(value > 0 ? value : 1));
+
+inline void Emulator::SetFps(const int value)
+{
+	using namespace utility::literals;
+	_frameTimer.SetTargetTime(operator""_hz(value > 0 ? value : 1));
 }
+
+
+inline void Emulator::SetDrawFlag(const bool val) 
+{ 
+	if (val)
+		_manager.SetFlags(Cpu::DRAW);
+	else
+		_manager.UnsetFlags(Cpu::DRAW);
+}
+
+
+inline void Emulator::SetExitFlag(const bool val) 
+{
+	if (val)
+		_manager.SetFlags(Cpu::EXIT);
+	else
+		_manager.UnsetFlags(Cpu::EXIT);
+}
+
 
 
 inline bool Emulator::LoadRom(const std::string& fname) { return _manager.LoadRom(fname.c_str(), 0x200); }
+
+
 inline iRender* Emulator::GetRender() { return _manager.GetRender(); }
 inline iInput* Emulator::GetInput() { return _manager.GetInput(); }
 inline iSound* Emulator::GetSound() { return _manager.GetSound(); }
@@ -140,16 +170,15 @@ inline iSound* Emulator::GetSound() { return _manager.GetSound(); }
 inline void Emulator::ExecuteInstr()
 {
 	instructions::execute_instruction(_manager);
-	_instrf = false;
+	_manager.UnsetFlags(Cpu::INSTR);
 }
 
 
 inline void Emulator::Draw()
 {
-	ASSERT_MSG(_manager.GetRender() != nullptr, "null render!");
-
+	ASSERT_MSG( !_manager.GetFlags(Cpu::BAD_RENDER), "bad render!");
 	_manager.GetRender()->DrawBuffer();
-	_drawf = false;
+	_manager.UnsetFlags(Cpu::DRAW);
 }
 
 

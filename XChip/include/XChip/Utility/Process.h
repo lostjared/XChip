@@ -21,8 +21,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef __PROCESS_H__
-#define __PROCESS_H__
+#ifndef _XCHIP_UTILITY_PROCESS_H_
+#define _XCHIP_UTILITY_PROCESS_H_
 
 #if defined(__APPLE__) || defined(__linux__)
 #include <signal.h>
@@ -36,6 +36,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <Windows.h>
 #include <process.h>
 
+#else
+#error "Unknown Plataform utility Process"
 #endif
 
 

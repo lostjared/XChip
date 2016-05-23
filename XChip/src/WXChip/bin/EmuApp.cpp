@@ -18,16 +18,19 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+#error "EmuApp / WXChip are not ready for the plugin system"
+
 #if defined(__linux__) || defined(__APPLE__)
 #include <csignal>
 #elif defined( _WIN32 )
 #include <Windows.h>
 #endif
 
+
 #include <algorithm>
 #include <utility>
 #include <fstream>
-
+#include <vector>
 
 #include <XChip/Core/Emulator.h> 
 #include <XChip/Utility/Memory.h>
@@ -65,9 +68,6 @@ bool _stdcall ctrl_handler(DWORD ctrlType);
 int main(int argc, char **argv)
 {
 	using xchip::Emulator;
-	using xchip::SdlRender;
-	using xchip::SdlInput;
-	using xchip::SdlSound;
 	using xchip::UniqueRender;
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
@@ -105,16 +105,6 @@ int main(int argc, char **argv)
 	UniqueSound sound;
 
 
-	try {
-		render = make_unique<SdlRender>();
-		input = make_unique<SdlInput>();
-		sound = make_unique<SdlSound>();
-	}
-	catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
-		return EXIT_FAILURE;
-	}
-
 	
 	if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
 		return EXIT_FAILURE;
@@ -137,11 +127,6 @@ int main(int argc, char **argv)
 			g_emulator.Draw();
 	}
 
-
-
-	// test
-	std::ofstream f("test.dat");
-	f << "EXIT_SUCCESS";
 
 	return EXIT_SUCCESS;
 

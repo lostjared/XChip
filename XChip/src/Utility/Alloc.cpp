@@ -20,7 +20,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <cstdlib>
 #include <XChip/Utility/Alloc.h>
-#include <XChip/Utility/Log.h>
 #include <XChip/Utility/Assert.h>
 
  
