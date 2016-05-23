@@ -6,24 +6,26 @@ namespace xchip { namespace utility {
 
 
 DLoader::DLoader(DLoader&& rhs)
-	: _hplugin(rhs._hplugin)
+	: _handle(rhs._handle)
 {
-	rhs._hplugin = nullptr;
+	rhs._handle = nullptr;
+}
+
+
+DLoader::~DLoader()
+{
+	this->Free();
 }
 
 
 DLoader& DLoader::operator=(DLoader&& rhs)
 {
-	auto* const aux = this->_hplugin;
-	this->_hplugin = rhs._hplugin;
-	rhs._hplugin = aux;
-	return *this;
-}
-
-DLoader::~DLoader()
-{
-	if(_hplugin)
+	if(_handle)
 		this->Free();
+
+	this->_handle = rhs._handle;
+	rhs._handle = nullptr;
+	return *this;
 }
 
 
@@ -34,7 +36,7 @@ bool DLoader::Load(const std::string& dlPath)
 {
 	using namespace literals;
 
-	if (_hplugin)
+	if (_handle)
 		this->Free();
 
 #if defined(__linux__)
@@ -48,16 +50,12 @@ bool DLoader::Load(const std::string& dlPath)
 
 #if defined(__linux__) || defined(__APPLE__)
 
-	_hplugin = dlopen(dlPath.c_str(), RTLD_LAZY);
-	if (!_hplugin)
+	_handle = dlopen(dlPath.c_str(), RTLD_LAZY);
+	if (!_handle)
 	{
 		const std::string dlPathFix = dlPath + postfix;
-		LOGerr("Error Loading "_s + dlPath);
-		LOGerr("Trying with postfix added: "_s + dlPathFix);
-
-		_hplugin = dlopen(dlPathFix.c_str(), RTLD_LAZY);
-
-		if (!_hplugin)
+		_handle = dlopen(dlPathFix.c_str(), RTLD_LAZY);
+		if (!_handle)
 		{
 			const char* error = dlerror();
 			LOGerr("Could not load shared library: "_s + error);
@@ -68,13 +66,13 @@ bool DLoader::Load(const std::string& dlPath)
 
 #elif defined(_WIN32)
 
-	_hplugin = LoadLibrary(dlPath.c_str());
+	_handle = LoadLibrary(dlPath.c_str());
 
-	if (!_hplugin)
+	if (!_handle)
 	{
 		const std::string dlPathFix = dlPath + postfix;
-		_hplugin = LoadLibrary(dlPath.c_str());
-		if (!_hplugin)
+		_handle = LoadLibrary(dlPath.c_str());
+		if (!_handle)
 		{
 			const int errorCode = GetLastError();
 			LOGerr("Could not load "_s + dlPath + ", or " + dlPathFix + " ...");
@@ -96,15 +94,18 @@ bool DLoader::Load(const std::string& dlPath)
 
 void DLoader::Free()
 {
+	if(_handle)
+	{
 
 #if defined(__linux__) || defined(__APPLE__)
-	dlclose(_hplugin);
+		dlclose(_handle);
 #elif defined(_WIN32)
-	FreeLibrary(_hplugin);	
+		FreeLibrary(_handle);	
 #endif
+	
 
-
-	_hplugin = nullptr;
+		_handle = nullptr;
+	}
 }
 
 
@@ -113,13 +114,13 @@ void DLoader::Free()
 void* DLoader::GetSymbol(const std::string& symbolName)
 {
 	using namespace literals; 
-	ASSERT_MSG(_hplugin != nullptr, "Attempt to Get symbol from null shared library");
+	ASSERT_MSG(_handle != nullptr, "Attempt to Get symbol from null shared library");
 
 
 #if defined(__linux__) || defined(__APPLE__)
 
 	dlerror(); // clean
-	void* symbolAddr = reinterpret_cast<void*>( dlsym(_hplugin, symbolName.c_str() ) );
+	void* symbolAddr = reinterpret_cast<void*>( dlsym(_handle, symbolName.c_str() ) );
 	const char* error = dlerror();
 	if(error)
 	{
@@ -129,7 +130,7 @@ void* DLoader::GetSymbol(const std::string& symbolName)
 	
 #elif defined(_WIN32)
 	SetLastError(0); // clean
-	void* symbolAddr = GetProcAddress(_hplugin, symbolName.c_str());
+	void* symbolAddr = GetProcAddress(_handle, symbolName.c_str());
 	const auto errorCode = GetLastError();
 	if (!symbolAddr && errorCode)
 	{

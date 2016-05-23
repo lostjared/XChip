@@ -105,7 +105,6 @@ bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound so
 
 void Emulator::Dispose() noexcept
 {
-	Cpu& chip = _manager.GetCpu();
 	_manager.Dispose();
 	_initialized = false;
 }
@@ -233,7 +232,7 @@ UniqueRender Emulator::SwapRender(UniqueRender rend)
 		utility::LOG("Swapping iRender...");
 		_renderPlugin.Swap(rend);
 		InitRender();
-		return std::move(rend);
+		return rend;
 	}
 
 	utility::LOG("Swapping iRender to nullptr...");
@@ -251,7 +250,7 @@ UniqueInput Emulator::SwapInput(UniqueInput input)
 		utility::LOG("Swapping iInput...");
 		_inputPlugin.Swap(input);
 		InitInput();
-		return std::move(input);
+		return input;
 	}
 
 	utility::LOG("Swapping iInput to nullptr...");
@@ -269,7 +268,7 @@ UniqueSound Emulator::SwapSound(UniqueSound sound)
 		utility::LOG("Swapping iSound...");
 		_soundPlugin.Swap(sound);
 		InitSound();
-		return std::move(sound);
+		return sound;
 	}
 
 	utility::LOG("Swapping iSound to nullptr...");

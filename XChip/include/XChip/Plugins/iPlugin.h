@@ -24,7 +24,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifdef _WIN32
 #define XCHIP_EXPORT _declspec(dllexport)
-#elif defined(__linxu__) || defined(__APPLE__)
+#elif defined(__linux__) || defined(__APPLE__)
 #define XCHIP_EXPORT
 #else
 #define XCHIP_EXPORT
@@ -35,13 +35,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define XCHIP_FREE_PLUGIN_SYM "XCHIP_FreePlugin"
 
 
-
 namespace xchip {
 
 
+
 class iPlugin;
-using PluginDeleter = void(*)(const iPlugin*);
 using PluginLoader = iPlugin* (*)();
+using PluginDeleter = void(*)(const iPlugin*);
+
 
 class iPlugin
 {
@@ -53,6 +54,7 @@ public:
 	virtual const char* GetPluginVersion() const noexcept = 0;
 	virtual PluginDeleter GetPluginDeleter() const noexcept = 0;
 };
+
 
 
 

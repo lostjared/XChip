@@ -60,19 +60,18 @@ int main(int argc, char **argv)
 			throw std::runtime_error("could not load all plugins");
 		}
 
+		
 		if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
 			throw std::runtime_error("Failed to initialize emulator");
 
 		if(!g_emulator.LoadRom(argv[1]))
 			throw std::runtime_error("Failed to load rom");
-
 	}
 	catch (std::exception& e) 
 	{
 		std::cout << "Failed to setup emulator: " <<  e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
-
 
 	while (!g_emulator.GetExitFlag())
 	{

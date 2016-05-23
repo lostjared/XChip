@@ -305,16 +305,12 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 
 
 
-
-
-
-
-
-
 extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlSound();
 }
+
+
 
 
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
