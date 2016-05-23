@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_IRENDER_H_
-#define _XCHIP_IRENDER_H_
+#ifndef _XCHIP_PLUGINS_IRENDER_H_
+#define _XCHIP_PLUGINS_IRENDER_H_
 #include <XChip/Utility/StdintDef.h>
 #include <XChip/Utility/Color.h>
 #include <XChip/Utility/Vector2.h>

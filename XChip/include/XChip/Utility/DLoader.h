@@ -23,9 +23,9 @@ public:
 	void* GetSymbol(const std::string& symbol);
 private:
 #if defined(__linux__) || defined(__APPLE__)
-	void* hplugin = nullptr;
+	void* _hplugin = nullptr;
 #elif defined(_WIN32)
-
+	HMODULE _hplugin = nullptr;
 #endif
 
 };

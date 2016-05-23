@@ -22,6 +22,7 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Alloc.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Assert.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\BaseTraits.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\DLoader.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Log.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Memory.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Process.h" />
@@ -33,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\Utility\Alloc.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\Utility\DLoader.cpp" />
     <ClCompile Include="..\..\..\XChip\src\Utility\Process.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

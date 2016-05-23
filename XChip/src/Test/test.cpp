@@ -55,9 +55,9 @@ int main(int argc, char **argv)
 		UniqueInput input;
 		UniqueSound sound;
 
-		if(!dlrender.Load("./libXChipSDLRenderPlugin") ||
-		   	!dlinput.Load("./libXChipSDLInputPlugin") ||
-			!dlsound.Load("./libXChipSDLSoundPlugin") )
+		if(!dlrender.Load("./SDLRender.dll") ||
+		   	!dlinput.Load("./SDLInput.dll") ||
+			!dlsound.Load("./SDLSound.dll") )
 		{
 			throw std::runtime_error("could not load all plugins");
 		}

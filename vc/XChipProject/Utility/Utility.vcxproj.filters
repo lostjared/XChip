@@ -48,12 +48,18 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Resolution.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\DLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\Utility\Alloc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XChip\src\Utility\Process.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XChip\src\Utility\DLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

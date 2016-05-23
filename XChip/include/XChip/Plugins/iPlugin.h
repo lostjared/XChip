@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_MEDIA_IMEDIAPLUGIN_H_
-#define _XCHIP_MEDIA_IMEDIAPLUGIN_H_
+#ifndef _XCHIP_PLUGINS_IPLUGIN_H_
+#define _XCHIP_PLUGINS_IPLUGIN_H_
 
 
 
@@ -42,7 +42,11 @@ public:
 };
 
 
-
+#ifdef _WIN32
+#define XCHIP_EXPORT _declspec(dllexport)
+#elif defined(__linxu__) || defined(__APPLE__)
+#define XCHIP_EXPORT
+#endif
 
 
 }

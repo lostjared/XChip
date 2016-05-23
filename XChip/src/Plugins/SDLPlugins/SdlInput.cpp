@@ -242,14 +242,14 @@ void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback)
 
 
 
-extern "C" iPlugin* XCHIP_LoadPlugin()
+extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlInput();
 }
 
 
 
-extern "C" void XCHIP_FreePlugin(const iPlugin* plugin)
+extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 {
 	const auto* sdlinput = dynamic_cast<const SdlInput*>( plugin );
 	if(! sdlinput )

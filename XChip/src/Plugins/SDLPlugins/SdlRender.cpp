@@ -431,13 +431,13 @@ bool SdlRender::CreateTexture(const int w, const int h)
 
 
 
-extern "C" iPlugin* XCHIP_LoadPlugin()
+extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlRender();
 }
 
 
-extern "C" void XCHIP_FreePlugin(const iPlugin* plugin)
+extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 {
 	const auto* sdlrend = dynamic_cast<const SdlRender*>(plugin);
 

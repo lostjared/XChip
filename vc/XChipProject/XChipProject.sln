@@ -3,18 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Media", "Media", "{CCBBAC63-0482-4703-B637-F2DCFBFC9183}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{CCBBAC63-0482-4703-B637-F2DCFBFC9183}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\XChip\include\XChip\Media\iInput.h = ..\..\XChip\include\XChip\Media\iInput.h
-		..\..\XChip\include\XChip\Media\iMediaInterface.h = ..\..\XChip\include\XChip\Media\iMediaInterface.h
-		..\..\XChip\include\XChip\Media\Interfaces.h = ..\..\XChip\include\XChip\Media\Interfaces.h
-		..\..\XChip\include\XChip\Media\iRender.h = ..\..\XChip\include\XChip\Media\iRender.h
-		..\..\XChip\include\XChip\Media\iSound.h = ..\..\XChip\include\XChip\Media\iSound.h
+		..\..\XChip\include\XChip\Plugins\iInput.h = ..\..\XChip\include\XChip\Plugins\iInput.h
+		..\..\XChip\include\XChip\Plugins\iPlugin.h = ..\..\XChip\include\XChip\Plugins\iPlugin.h
+		..\..\XChip\include\XChip\Plugins\iRender.h = ..\..\XChip\include\XChip\Plugins\iRender.h
+		..\..\XChip\include\XChip\Plugins\iSound.h = ..\..\XChip\include\XChip\Plugins\iSound.h
+		..\..\XChip\include\XChip\Plugins\UniquePlugin.h = ..\..\XChip\include\XChip\Plugins\UniquePlugin.h
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{F7AFD42C-DFC6-4094-8E64-6E25744117BF}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDLMedia", "SDLMedia\SDLMedia.vcxproj", "{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WXChip", "WXChip", "{F7AFD42C-DFC6-4094-8E64-6E25744117BF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WXChip", "WXChip\wXChip.vcxproj", "{06119663-17F2-4F7B-B49D-1B11E280EC5F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -44,6 +42,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EmuApp", "EmuApp\EmuApp.vcx
 		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8} = {7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Include", "Include", "{CECD205E-99B2-4405-B843-5C9B16059367}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\XChip\include\XChip\Core.h = ..\..\XChip\include\XChip\Core.h
+		..\..\XChip\include\XChip\Plugins.h = ..\..\XChip\include\XChip\Plugins.h
+		..\..\XChip\include\XChip\Utility.h = ..\..\XChip\include\XChip\Utility.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDLSound", "SDLSound\SDLSound.vcxproj", "{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDLRender", "SDLRender\SDLRender.vcxproj", "{CC428E0C-CF8F-4DA4-890E-C585793484CF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDLInput", "SDLInput\SDLInput.vcxproj", "{EAD83027-FBAE-4821-9577-CAA9F4B8963C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -54,16 +65,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|ARM.ActiveCfg = Debug|Win32
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x64.ActiveCfg = Debug|x64
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x64.Build.0 = Debug|x64
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x86.ActiveCfg = Debug|Win32
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x86.Build.0 = Debug|Win32
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|ARM.ActiveCfg = Release|Win32
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x64.ActiveCfg = Release|x64
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x64.Build.0 = Release|x64
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x86.ActiveCfg = Release|Win32
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x86.Build.0 = Release|Win32
 		{06119663-17F2-4F7B-B49D-1B11E280EC5F}.Debug|ARM.ActiveCfg = Debug|Win32
 		{06119663-17F2-4F7B-B49D-1B11E280EC5F}.Debug|x64.ActiveCfg = Debug|x64
 		{06119663-17F2-4F7B-B49D-1B11E280EC5F}.Debug|x64.Build.0 = Debug|x64
@@ -114,13 +115,45 @@ Global
 		{2AD166F5-7CFD-45BB-8DFC-B7DD63B206E9}.Release|x64.Build.0 = Release|x64
 		{2AD166F5-7CFD-45BB-8DFC-B7DD63B206E9}.Release|x86.ActiveCfg = Release|Win32
 		{2AD166F5-7CFD-45BB-8DFC-B7DD63B206E9}.Release|x86.Build.0 = Release|Win32
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|ARM.ActiveCfg = Debug|Win32
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x64.ActiveCfg = Debug|x64
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x64.Build.0 = Debug|x64
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x86.ActiveCfg = Debug|Win32
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Debug|x86.Build.0 = Debug|Win32
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|ARM.ActiveCfg = Release|Win32
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x64.ActiveCfg = Release|x64
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x64.Build.0 = Release|x64
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x86.ActiveCfg = Release|Win32
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8}.Release|x86.Build.0 = Release|Win32
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF}.Debug|ARM.ActiveCfg = Debug|Win32
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF}.Debug|x64.ActiveCfg = Debug|x64
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF}.Debug|x64.Build.0 = Debug|x64
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF}.Debug|x86.ActiveCfg = Debug|Win32
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF}.Debug|x86.Build.0 = Debug|Win32
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF}.Release|ARM.ActiveCfg = Release|Win32
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF}.Release|x64.ActiveCfg = Release|x64
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF}.Release|x64.Build.0 = Release|x64
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF}.Release|x86.ActiveCfg = Release|Win32
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF}.Release|x86.Build.0 = Release|Win32
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C}.Debug|ARM.ActiveCfg = Debug|Win32
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C}.Debug|x64.ActiveCfg = Debug|x64
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C}.Debug|x64.Build.0 = Debug|x64
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C}.Debug|x86.ActiveCfg = Debug|Win32
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C}.Debug|x86.Build.0 = Debug|Win32
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C}.Release|ARM.ActiveCfg = Release|Win32
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C}.Release|x64.ActiveCfg = Release|x64
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C}.Release|x64.Build.0 = Release|x64
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C}.Release|x86.ActiveCfg = Release|Win32
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8} = {CCBBAC63-0482-4703-B637-F2DCFBFC9183}
 		{06119663-17F2-4F7B-B49D-1B11E280EC5F} = {F7AFD42C-DFC6-4094-8E64-6E25744117BF}
 		{2AD166F5-7CFD-45BB-8DFC-B7DD63B206E9} = {F7AFD42C-DFC6-4094-8E64-6E25744117BF}
+		{7AD1DCB7-BBA3-4504-91CE-2DD5EF7FE2D8} = {CCBBAC63-0482-4703-B637-F2DCFBFC9183}
+		{CC428E0C-CF8F-4DA4-890E-C585793484CF} = {CCBBAC63-0482-4703-B637-F2DCFBFC9183}
+		{EAD83027-FBAE-4821-9577-CAA9F4B8963C} = {CCBBAC63-0482-4703-B637-F2DCFBFC9183}
 	EndGlobalSection
 EndGlobal

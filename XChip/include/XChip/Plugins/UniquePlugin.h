@@ -1,5 +1,5 @@
-#ifndef _XCHIP_MEDIA_UNIQUEPLUGIN_H_
-#define _XCHIP_MEDIA_UNIQUEPLUGIN_H_
+#ifndef _XCHIP_PLUGINS_UNIQUEPLUGIN_H_
+#define _XCHIP_PLUGINS_UNIQUEPLUGIN_H_
 #include <XChip/Utility/BaseTraits.h>
 #include <XChip/Utility/Memory.h>
 #include "iPlugin.h"
