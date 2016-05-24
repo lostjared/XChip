@@ -26,14 +26,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <Windows.h>
 #endif
 
+// TODO: adapt to plugin system
 
 #include <algorithm>
 #include <utility>
 #include <fstream>
 #include <vector>
 
-#include <XChip/Core/Emulator.h> 
-#include <XChip/Utility/Memory.h>
+#include <XChip/Core/Emulator.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Assert.h>
 
@@ -100,14 +100,8 @@ int main(int argc, char **argv)
 
 
 
-	UniqueRender render;
-	UniqueInput input;
-	UniqueSound sound;
-
 
 	
-	if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
-		return EXIT_FAILURE;
 
 	if (!g_emulator.LoadRom(argv[1]))
 		return EXIT_FAILURE;

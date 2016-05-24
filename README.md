@@ -1,5 +1,5 @@
 # XChip
-This XChip is an chip8 emulator/interpreter designed to be flexible.
+This XChip is a chip8 emulator/interpreter designed to be flexible.
 You can easily use the project's API to modify the emulator.
 You can also design your own Media class and just use the current emulator with your class.
 
