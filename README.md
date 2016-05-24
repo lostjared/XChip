@@ -2,7 +2,10 @@
 This XChip is a chip8 emulator/interpreter designed to be flexible.
 You can easily use the project's API to modify the emulator.
 The XChip uses 3 plugins: iRender, iInput, iSound.
-You can design your own plugins and use it with the emulator.
+You can create your own plugins from those interfaces 
+and use it with the emulator as shared libraries.
+
+
 
 ## Build:
 Use CMake to build on Linux and Mac.
