@@ -49,7 +49,7 @@ Process::~Process()
 
 bool Process::IsRunning() const
 {
-	return pid != 0;
+	return _pid != 0;
 }
 
 	
@@ -57,13 +57,15 @@ bool Process::Run(const std::string &app)
 {
 	using namespace literals;
 	
-	if (pid != 0)
+	if (_pid != 0)
 		Terminate();
 
-	const auto clean = make_scope_exit([this]() noexcept { 
-				if(pid == -1) 
-					pid=0;		
-			});
+	const auto clean = make_scope_exit([this]() noexcept 
+	{ 
+		if(_pid == -1) 
+			_pid = 0;		
+	});
+
 
 	int fd[2];
 	int read_fd, write_fd;
@@ -78,9 +80,9 @@ bool Process::Run(const std::string &app)
 	read_fd = fd[0];
 	write_fd = fd[1];
 
-	pid = vfork();
+	_pid = vfork();
 
-	if(pid == -1)
+	if(_pid == -1)
 	{
 		const int err = errno;
 		LOGerr("Could not create child process: "_s + strerror(err));
@@ -88,7 +90,7 @@ bool Process::Run(const std::string &app)
 	}
 
 	
-	else if (pid == 0)
+	else if (_pid == 0)
 	{
 		close(read_fd);
 		dup2(write_fd,1);
@@ -119,9 +121,9 @@ int Process::Join()
 {
 	int status;
 	
-	const auto clean = make_scope_exit([this]() noexcept { this->pid = 0; });
+	const auto clean = make_scope_exit([this]() noexcept { this->_pid = 0; });
 
-	waitpid(pid, &status, 0);
+	waitpid(_pid, &status, 0);
 	
 	if(WIFEXITED(status))
 		return WEXITSTATUS(status);
@@ -135,11 +137,11 @@ int Process::Join()
 int Process::Terminate()
 {	
 	LOG("Terminating Process...");
-	if(pid != 0)
+	if(_pid != 0)
 	{
 		LOG("Sending SIGINT.");
 
-		const auto killResult = kill(pid, SIGINT);
+		const auto killResult = kill(_pid, SIGINT);
 
 		if(  killResult == ESRCH )
 			LOGerr("Process not found");

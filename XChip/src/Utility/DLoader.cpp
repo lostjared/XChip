@@ -20,9 +20,7 @@ DLoader::~DLoader()
 
 DLoader& DLoader::operator=(DLoader&& rhs)
 {
-	this->Free();
-	this->_handle = rhs._handle;
-	rhs._handle = nullptr;
+	this->Swap(rhs);
 	return *this;
 }
 
@@ -146,7 +144,12 @@ void* DLoader::GetSymbol(const std::string& symbolName)
 
 
 
-
+void DLoader::Swap(DLoader& other)
+{
+	auto* const aux = this->_handle;
+	this->_handle = other._handle;
+	other._handle = aux;
+}
 
 
 

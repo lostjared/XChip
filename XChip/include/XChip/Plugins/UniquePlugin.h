@@ -65,13 +65,7 @@ UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs)
 template<class T>
 UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs)
 {
-
-	if (_plugin)
-		call_deleter(_dloader, _plugin);
-
-	_dloader = std::move(rhs._dloader);
-	_plugin = rhs._plugin;
-	rhs._plugin = nullptr;
+	this->Swap(rhs);
 	return *this;
 }
 
@@ -168,14 +162,12 @@ T* UniquePlugin<T>::get()
 
 
 template<class T>
-void UniquePlugin<T>::Swap(UniquePlugin& rhs)
+void UniquePlugin<T>::Swap(UniquePlugin& other)
 {
-	auto auxPlugin = this->_plugin;
-	auto auxDLoader = std::move(this->_dloader);
-	this->_plugin = rhs._plugin;
-	this->_dloader = std::move(rhs._dloader);
-	rhs._plugin = auxPlugin;
-	rhs._dloader = std::move(auxDLoader);
+	this->_dloader.Swap(other._dloader);
+	auto* const aux = this->_plugin;
+	this->_plugin = other._plugin;
+	other._plugin = aux;
 }
 
 

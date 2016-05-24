@@ -27,6 +27,7 @@ public:
 	void Free();
 	bool Load(const std::string& dlPath);
 	void* GetSymbol(const std::string& symbol);
+	void Swap(DLoader& other);
 private:
 #if defined(__linux__) || defined(__APPLE__)
 	void* _handle = nullptr;
