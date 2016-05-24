@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	using xchip::PluginLoader;
 
 
-	if(argc < 2)
+	if(argc < 0)
 	{
 		xchip::utility::LOGerr("No game to load.");
 		return EXIT_FAILURE;
@@ -59,13 +59,17 @@ int main(int argc, char **argv)
 		{
 			throw std::runtime_error("could not load all plugins");
 		}
-
 		
+		// fake: trying to load another alternative plugin
+		render.Load("./BetterRender"); // fails but old plugin remains
+			
 		if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
 			throw std::runtime_error("Failed to initialize emulator");
 
-		if(!g_emulator.LoadRom(argv[1]))
+		if(!g_emulator.LoadRom("BRIX.ch8"))
 			throw std::runtime_error("Failed to load rom");
+
+
 	}
 	catch (std::exception& e) 
 	{

@@ -31,6 +31,9 @@ public:
 	const T* get() const;
 	T* get();
 	void Swap(UniquePlugin& rhs);
+
+
+
 private:
 	static void call_deleter(utility::DLoader&, iPlugin*);
 	utility::DLoader _dloader;
@@ -62,8 +65,9 @@ UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs)
 template<class T>
 UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs)
 {
-	if(_plugin)
-		this->Free();
+
+	if (_plugin)
+		call_deleter(_dloader, _plugin);
 
 	_dloader = std::move(rhs._dloader);
 	_plugin = rhs._plugin;
@@ -76,8 +80,7 @@ UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs)
 template<class T>
 UniquePlugin<T>::~UniquePlugin()
 {
-	if (_plugin)
-		this->Free();
+	this->Free();
 }
 
 
@@ -86,21 +89,15 @@ template<class T>
 bool UniquePlugin<T>::Load(const std::string& dlPath)
 {
 	using namespace utility::literals;
+	using utility::DLoader;
 
-	if (_plugin)
-		this->Free();
+	DLoader newLoader;
 
-	if (!_dloader.Load(dlPath))
+	if (!newLoader.Load(dlPath))
 		return false;
 
-	const auto cleanup = utility::make_scope_exit([this]() noexcept
-	{
-		if (!_plugin)
-			_dloader.Free();
-	});
 
-
-	const auto pluginLoader = reinterpret_cast<PluginLoader> (_dloader.GetSymbol(XCHIP_LOAD_PLUGIN_SYM));
+	const auto pluginLoader = reinterpret_cast<PluginLoader> (newLoader.GetSymbol(XCHIP_LOAD_PLUGIN_SYM));
 
 	if (!pluginLoader)
 	{
@@ -109,7 +106,7 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 	}
 
 
-	auto* iplug = static_cast<iPlugin*>(pluginLoader());
+	auto iplug = static_cast<iPlugin*>(pluginLoader());
 
 	if (!iplug)
 	{
@@ -117,9 +114,10 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 		return false;
 	}
 
-	_plugin = dynamic_cast<T*>(iplug);
 
-	if(!_plugin)
+	T* newPlugin = dynamic_cast<T*>(iplug);
+
+	if(!newPlugin)
 	{
 		utility::LOGerr("Error Loading plugin: "_s + dlPath);
 		utility::LOGerr("failed to dynamic cast from iPlugin.");
@@ -127,6 +125,8 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 		return false;
 	}
 
+	_dloader = std::move(newLoader);
+	_plugin = newPlugin;
 	return true;
 }
 
@@ -139,11 +139,10 @@ void UniquePlugin<T>::Free()
 {
 	if(_plugin) 
 	{
-		call_deleter(_dloader, static_cast<iPlugin*>(_plugin));
+		call_deleter(_dloader, _plugin);
 		_plugin = nullptr;
+		_dloader.Free();
 	}
-
-	_dloader.Free();
 }
 
 

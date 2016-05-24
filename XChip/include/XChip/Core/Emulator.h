@@ -106,9 +106,9 @@ private:
 
 
 inline bool Emulator::IsInitialized() const { return _initialized; }
-inline bool Emulator::GetInstrFlag() const { return _manager.GetFlags(Cpu::INSTR); }
-inline bool Emulator::GetDrawFlag() const { return _manager.GetFlags(Cpu::DRAW); }
-inline bool Emulator::GetExitFlag() const { return _manager.GetFlags(Cpu::EXIT); }
+inline bool Emulator::GetInstrFlag() const { return _manager.GetFlags(Cpu::INSTR) != 0u; }
+inline bool Emulator::GetDrawFlag() const { return _manager.GetFlags(Cpu::DRAW) != 0u; }
+inline bool Emulator::GetExitFlag() const { return _manager.GetFlags(Cpu::EXIT) != 0u; }
 inline const iRender* Emulator::GetRender() const { return _manager.GetRender(); }
 inline const iInput* Emulator::GetInput() const { return _manager.GetInput(); }
 inline const iSound* Emulator::GetSound() const { return _manager.GetSound(); }

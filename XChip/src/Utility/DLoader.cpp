@@ -20,9 +20,7 @@ DLoader::~DLoader()
 
 DLoader& DLoader::operator=(DLoader&& rhs)
 {
-	if(_handle)
-		this->Free();
-
+	this->Free();
 	this->_handle = rhs._handle;
 	rhs._handle = nullptr;
 	return *this;
@@ -36,9 +34,6 @@ bool DLoader::Load(const std::string& dlPath)
 {
 	using namespace literals;
 
-	if (_handle)
-		this->Free();
-
 #if defined(__linux__)
 	constexpr const char* const postfix = ".so";
 #elif defined(__APPLE__)
@@ -50,12 +45,14 @@ bool DLoader::Load(const std::string& dlPath)
 
 #if defined(__linux__) || defined(__APPLE__)
 
-	_handle = dlopen(dlPath.c_str(), RTLD_LAZY);
-	if (!_handle)
+	auto newHandle = dlopen(dlPath.c_str(), RTLD_LAZY);
+	
+	if (!newHandle)
 	{
 		const std::string dlPathFix = dlPath + postfix;
-		_handle = dlopen(dlPathFix.c_str(), RTLD_LAZY);
-		if (!_handle)
+		newHandle = dlopen(dlPathFix.c_str(), RTLD_LAZY);
+
+		if (!newHandle)
 		{
 			const char* error = dlerror();
 			LOGerr("Could not load shared library: "_s + error);
@@ -66,13 +63,13 @@ bool DLoader::Load(const std::string& dlPath)
 
 #elif defined(_WIN32)
 
-	_handle = LoadLibrary(dlPath.c_str());
+	auto newHandle = LoadLibrary(dlPath.c_str());
 
-	if (!_handle)
+	if(!newHandle)
 	{
 		const std::string dlPathFix = dlPath + postfix;
-		_handle = LoadLibrary(dlPath.c_str());
-		if (!_handle)
+		newHandle = LoadLibrary(dlPath.c_str());
+		if (!newHandle)
 		{
 			const int errorCode = GetLastError();
 			LOGerr("Could not load "_s + dlPath + ", or " + dlPathFix + " ...");
@@ -84,7 +81,8 @@ bool DLoader::Load(const std::string& dlPath)
 
 #endif
 
-
+	this->Free();
+	_handle = newHandle;
 	return true;
 }
 
