@@ -1,7 +1,16 @@
 # XChip
 This XChip is a chip8 emulator/interpreter designed to be flexible.
 You can easily use the project's API to modify the emulator.
-You can also design your own Media class and just use the current emulator with your class.
+The XChip uses 3 plugins: iRender, iInput, iSound.
+You can design your own plugins and use it with the emulator.
+
+## Build:
+Use CMake to build on Linux and Mac.
+And use the Visual Studio project to build on Windows.
+
+
+
+
 
 #### Some Chip8 games running:
 ![ScreenShot](https://github.com/dhustkoder/XChip/blob/master/Tools/Images/BRIX.png?raw=true "BRIX.ch8")
