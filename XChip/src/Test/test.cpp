@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	using xchip::PluginLoader;
 
 
-	if(argc < 0)
+	if(argc < 2)
 	{
 		xchip::utility::LOGerr("No game to load.");
 		return EXIT_FAILURE;
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 		if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
 			throw std::runtime_error("Failed to initialize emulator");
 
-		if(!g_emulator.LoadRom("BRIX.ch8"))
+		if(!g_emulator.LoadRom(argv[1]))
 			throw std::runtime_error("Failed to load rom");
 
 
@@ -76,6 +76,13 @@ int main(int argc, char **argv)
 		std::cout << "Failed to setup emulator: " <<  e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
+
+
+	g_emulator.SetCpuFreq(1500);
+//	g_emulator.GetRender()->SetFullScreen(true);
+	g_emulator.GetRender()->SetBackgroundColor({20, 144, 20});
+	g_emulator.GetRender()->SetDrawColor({144,20,20});
+
 
 	while (!g_emulator.GetExitFlag())
 	{
