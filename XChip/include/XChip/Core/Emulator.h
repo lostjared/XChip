@@ -47,7 +47,7 @@ public:
 	Emulator(const Emulator&) = delete;
 	Emulator& operator=(const Emulator&) = delete;
 
-	bool Initialize(UniqueRender render, UniqueInput input, UniqueSound sound) noexcept;
+	bool Initialize(UniqueRender&& render, UniqueInput&& input, UniqueSound&& sound) noexcept;
 
 	void Dispose() noexcept;
 	bool IsInitialized() const;

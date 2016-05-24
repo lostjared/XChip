@@ -55,7 +55,7 @@ Emulator::~Emulator()
 
 
 
-bool Emulator::Initialize(UniqueRender render, UniqueInput input, UniqueSound sound) noexcept
+bool Emulator::Initialize(UniqueRender&& render, UniqueInput&& input, UniqueSound&& sound) noexcept
 {
 	using std::move;
 	using fonts::chip8DefaultFont;

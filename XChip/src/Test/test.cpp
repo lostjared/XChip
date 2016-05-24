@@ -27,10 +27,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
-
-static xchip::Emulator g_emulator;
-
-
 int main(int argc, char **argv)
 {
 	using xchip::Emulator;
@@ -46,61 +42,21 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
+	Emulator emulator;
+	UniqueRender render;
+	UniqueInput input;
+	UniqueSound sound;
 
-	try 
+	while(1)
 	{
-		UniqueRender render;
-		UniqueInput input;
-		UniqueSound sound;
-
-		if(!render.Load("./XChipSDLRender") ||
-		   	!input.Load("./XChipSDLInput") ||
-			!sound.Load("./XChipSDLSound") )
-		{
-			throw std::runtime_error("could not load all plugins");
-		}
-		
-	
 		render.Load("./XChipSDLRender");
-
-
-			
-		if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
-			throw std::runtime_error("Failed to initialize emulator");
-
-		g_emulator.SetCpuFreq(480);
-		//	g_emulator.GetRender()->SetFullScreen(true);
-		g_emulator.GetRender()->SetBackgroundColor({ 20, 144, 20 });
-		g_emulator.GetRender()->SetDrawColor({ 144,20,20 });
-
-
-
-		if(!g_emulator.LoadRom(argv[1]))
-			throw std::runtime_error("Failed to load rom");
-
+		input.Load("./XChipSDLInput");
+		sound.Load("./XChipSDLSound");
+		render.Free();
+		input.Free();
+		sound.Free();
 
 	}
-	catch (std::exception& e) 
-	{
-		std::cout << "Failed to setup emulator: " <<  e.what() << std::endl;
-		return EXIT_FAILURE;
-	}
-
-
-
-	while (!g_emulator.GetExitFlag())
-	{
-		g_emulator.UpdateSystems(); 
-		g_emulator.HaltForNextFlag();
-
-		if(g_emulator.GetInstrFlag())
-			g_emulator.ExecuteInstr();
-
-		if(g_emulator.GetDrawFlag())
-			g_emulator.Draw();
-	}
-
-
 
 	return EXIT_SUCCESS;
 }
