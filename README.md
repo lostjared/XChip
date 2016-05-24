@@ -6,7 +6,8 @@ You can design your own plugins and use it with the emulator.
 
 ## Build:
 Use CMake to build on Linux and Mac.
-And use the Visual Studio project to build on Windows.
+And use the Visual Studio project to build on Windows. 
+
 
 
 
