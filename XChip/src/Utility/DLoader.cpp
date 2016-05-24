@@ -5,7 +5,7 @@
 namespace xchip { namespace utility {
 
 
-DLoader::DLoader(DLoader&& rhs)
+DLoader::DLoader(DLoader&& rhs) noexcept
 	: _handle(rhs._handle)
 {
 	rhs._handle = nullptr;
@@ -18,7 +18,7 @@ DLoader::~DLoader()
 }
 
 
-DLoader& DLoader::operator=(DLoader&& rhs)
+DLoader& DLoader::operator=(DLoader&& rhs) noexcept
 {
 	this->Swap(rhs);
 	return *this;
@@ -88,7 +88,7 @@ bool DLoader::Load(const std::string& dlPath)
 
 
 
-void DLoader::Free()
+void DLoader::Free() noexcept
 {
 	if(_handle)
 	{
@@ -144,7 +144,7 @@ void* DLoader::GetSymbol(const std::string& symbolName)
 
 
 
-void DLoader::Swap(DLoader& other)
+void DLoader::Swap(DLoader& other) noexcept
 {
 	auto* const aux = this->_handle;
 	this->_handle = other._handle;

@@ -19,15 +19,15 @@ class DLoader
 {
 public:
 	DLoader() = default;
-	DLoader(DLoader&&);
+	DLoader(DLoader&&) noexcept;
 	DLoader(const DLoader&) = delete;
-	DLoader& operator=(DLoader&&);
+	DLoader& operator=(DLoader&&) noexcept;
 	DLoader& operator=(const DLoader&) = delete;
 	~DLoader();
-	void Free();
+	void Free() noexcept;
 	bool Load(const std::string& dlPath);
 	void* GetSymbol(const std::string& symbol);
-	void Swap(DLoader& other);
+	void Swap(DLoader& other) noexcept;
 private:
 #if defined(__linux__) || defined(__APPLE__)
 	void* _handle = nullptr;

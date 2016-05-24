@@ -21,39 +21,36 @@ class UniquePlugin
 public:
 	UniquePlugin() = default;
 	UniquePlugin(std::nullptr_t);
-	UniquePlugin(UniquePlugin&& rhs);
+	UniquePlugin(UniquePlugin&& rhs) noexcept;
 	UniquePlugin(const UniquePlugin& rhs) = delete;
-	UniquePlugin& operator=(UniquePlugin&& rhs);
+	UniquePlugin& operator=(UniquePlugin&& rhs) noexcept;
 	UniquePlugin& operator=(const UniquePlugin& rhs) = delete;
 	~UniquePlugin();
 	bool Load(const std::string& dlPath);
 	void Free();
 	const T* get() const;
 	T* get();
-	void Swap(UniquePlugin& rhs);
+	void Swap(UniquePlugin& rhs) noexcept;
 
 
 
 private:
-	static void call_deleter(utility::DLoader&, iPlugin*);
+	static void call_deleter(utility::DLoader&, iPlugin*) noexcept;
 	utility::DLoader _dloader;
 	T* _plugin = nullptr;
 };
 
 
 
-
-
 template<class T>
 UniquePlugin<T>::UniquePlugin(std::nullptr_t)
-	: _plugin(nullptr)
 {
 }
 
 
 
 template<class T>
-UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs)
+UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs) noexcept
 	:  _dloader(std::move(rhs._dloader)),
 	_plugin(rhs._plugin)
 {
@@ -63,7 +60,7 @@ UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs)
 
 
 template<class T>
-UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs)
+UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs) noexcept
 {
 	this->Swap(rhs);
 	return *this;
@@ -91,7 +88,7 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 		return false;
 
 
-	const auto pluginLoader = reinterpret_cast<PluginLoader> (newLoader.GetSymbol(XCHIP_LOAD_PLUGIN_SYM));
+	const auto pluginLoader = reinterpret_cast<PluginLoader>( newLoader.GetSymbol(XCHIP_LOAD_PLUGIN_SYM) );
 
 	if (!pluginLoader)
 	{
@@ -118,6 +115,10 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 		call_deleter(_dloader, iplug);
 		return false;
 	}
+
+
+	if(_plugin)
+		call_deleter(_dloader, _plugin);
 
 	_dloader = std::move(newLoader);
 	_plugin = newPlugin;
@@ -162,7 +163,7 @@ T* UniquePlugin<T>::get()
 
 
 template<class T>
-void UniquePlugin<T>::Swap(UniquePlugin& other)
+void UniquePlugin<T>::Swap(UniquePlugin& other) noexcept
 {
 	this->_dloader.Swap(other._dloader);
 	auto* const aux = this->_plugin;
@@ -174,7 +175,7 @@ void UniquePlugin<T>::Swap(UniquePlugin& other)
 
 
 template<class T>
-void UniquePlugin<T>::call_deleter(utility::DLoader& dloader, iPlugin* plugin)
+void UniquePlugin<T>::call_deleter(utility::DLoader& dloader, iPlugin* plugin) noexcept
 {
 	auto pluginDeleter = reinterpret_cast<PluginDeleter>( dloader.GetSymbol(XCHIP_FREE_PLUGIN_SYM) );
 

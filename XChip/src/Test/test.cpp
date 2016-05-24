@@ -60,8 +60,10 @@ int main(int argc, char **argv)
 			throw std::runtime_error("could not load all plugins");
 		}
 		
-		// fake: trying to load another alternative plugin
-		render.Load("./BetterRender"); // fails but old plugin remains
+	
+		render.Load("./XChipSDLRender");
+
+
 			
 		if (!g_emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
 			throw std::runtime_error("Failed to initialize emulator");
