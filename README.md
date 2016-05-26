@@ -32,4 +32,4 @@ Its available for Mac OSX, Linux, Windows7
 
 
 If you would like to contribute, please follow 
-![dolphin guideline] (https://github.com/dolphin-emu/dolphin/blob/master/Contributing.md  "dolphin emulator")
+[Dolphin guideline] (https://github.com/dolphin-emu/dolphin/blob/master/Contributing.md)
