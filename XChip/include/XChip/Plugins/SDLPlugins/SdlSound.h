@@ -36,7 +36,7 @@ namespace xchip {
 class SdlSound final : public iSound
 {
 	static constexpr const char* const PLUGIN_NAME = "SdlSound";
-	static constexpr const char* const PLUGIN_VER = "1.0";
+	static constexpr const char* const PLUGIN_VER = "1.0 using SDL2";
 	static constexpr float defaultFreq = 450;
 public:
 	SdlSound() noexcept;
