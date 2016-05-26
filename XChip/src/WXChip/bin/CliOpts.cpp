@@ -61,7 +61,7 @@ bool CliOpts::RemoveOpt(const std::string& match)
 
 
 
-CliOpts::ArgVec::const_iterator CliOpts::GetOptItr(const std::string& match)  const
+CliOpts::ArgVec::const_iterator CliOpts::GetOptItr(const std::string& match) const
 {
 	const auto matchSize = match.size();
 	const auto begin = this->begin();
@@ -74,8 +74,7 @@ CliOpts::ArgVec::const_iterator CliOpts::GetOptItr(const std::string& match)  co
 			if(*itr == match)
 			{
 				_isSub = false;
-				++itr;
-				return itr;
+				return ++itr;
 			}
 
 		}

@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 	if (argc < 5) 
 	{
 		std::cout << "Usage:" << std::endl;
-		std::cout << "EmuApp game/rom/path -REN render/plugin/path " 
+		std::cout << "EmuApp -ROM game/rom/path -REN render/plugin/path " 
                           << " -INP input/plugin/path -SND sound/plugin/path  OPTIONS..." << std::endl;
 		return EXIT_SUCCESS;
 	}
@@ -117,8 +117,12 @@ int main(int argc, char **argv)
 		load_plugins(opts);
 		configure_emulator(opts);
 
-		if (!g_emulator.LoadRom(argv[1]))
-			throw std::runtime_error("Could not load rom");
+		const auto romPath = opts.GetOpt("-ROM");
+		if(romPath.empty())
+			throw std::runtime_error("missing -ROM arguments");
+		else
+			g_emulator.LoadRom(romPath);
+
 	}
 	catch(std::exception& err)
 	{
