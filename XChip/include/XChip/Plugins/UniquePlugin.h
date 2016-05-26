@@ -47,13 +47,8 @@ public:
 	UniquePlugin() = default;
 	UniquePlugin(const nullptr_t);
 	UniquePlugin(UniquePlugin&& rhs) noexcept;
-	~UniquePlugin();
-	
-	bool Load(const std::string& dlPath);
-	void Free();
-	void Swap(UniquePlugin& rhs) noexcept;
-
 	UniquePlugin& operator=(UniquePlugin&& rhs) noexcept;
+	~UniquePlugin();
 	bool operator!=(const T* addr) const;
 	bool operator==(const T* addr) const;
 	bool operator!=(const UniquePlugin& other) const;
@@ -63,6 +58,10 @@ public:
 	const T* get() const;
 	T* get();
 	T* operator->();
+	bool Load(const std::string& dlPath);
+	void Free();
+	void Swap(UniquePlugin& rhs) noexcept;
+
 
 private:
 	static void call_deleter(utility::DLoader&, iPlugin*) noexcept;
@@ -77,8 +76,6 @@ UniquePlugin<T>::UniquePlugin(const nullptr_t)
 {
 }
 
-
-
 template<class T>
 UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs) noexcept
 	:  _dloader(std::move(rhs._dloader)),
@@ -90,9 +87,89 @@ UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs) noexcept
 
 
 template<class T>
+UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs) noexcept
+{
+	this->Swap(rhs);
+	return *this;
+}
+
+
+
+template<class T>
 UniquePlugin<T>::~UniquePlugin()
 {
 	this->Free();
+}
+
+
+
+
+
+template<class T>
+bool UniquePlugin<T>::operator!=(const T* addr) const
+{
+	return _plugin != addr;
+}
+
+
+template<class T>
+bool UniquePlugin<T>::operator==(const T* addr) const
+{
+	return _plugin == addr;
+}
+
+
+template<class T>
+bool UniquePlugin<T>::operator!=(const UniquePlugin& other) const
+{
+	return this->_plugin != other._plugin;
+}
+
+
+template<class T>
+bool UniquePlugin<T>::operator==(const UniquePlugin& other) const
+{
+	return this->_plugin == other._plugin;
+}
+
+
+
+
+template<class T>
+UniquePlugin<T>::operator bool() const
+{
+	return _plugin != nullptr;
+}
+
+
+
+
+template<class T>
+const T* UniquePlugin<T>::operator->() const
+{
+	return _plugin;
+}
+
+
+template<class T>
+const T* UniquePlugin<T>::get() const
+{
+	return _plugin;
+}
+
+
+
+template<class T>
+T* UniquePlugin<T>::operator->()
+{
+	return _plugin;
+}
+
+
+template<class T>
+T* UniquePlugin<T>::get()
+{
+	return _plugin;
 }
 
 
@@ -181,89 +258,6 @@ void UniquePlugin<T>::Swap(UniquePlugin& other) noexcept
 
 
 
-
-
-template<class T>
-bool UniquePlugin<T>::operator!=(const T* addr) const
-{
-	return _plugin != addr;
-}
-
-
-template<class T>
-bool UniquePlugin<T>::operator==(const T* addr) const
-{
-	return _plugin == addr;
-}
-
-
-template<class T>
-bool UniquePlugin<T>::operator!=(const UniquePlugin& other) const
-{
-	return this->_plugin != other._plugin;
-}
-
-
-template<class T>
-bool UniquePlugin<T>::operator==(const UniquePlugin& other) const
-{
-	return this->_plugin == other._plugin;
-}
-
-
-
-
-template<class T>
-UniquePlugin<T>::operator bool() const
-{
-	return _plugin != nullptr;
-}
-
-
-
-
-template<class T>
-const T* UniquePlugin<T>::operator->() const
-{
-	return _plugin;
-}
-
-
-template<class T>
-const T* UniquePlugin<T>::get() const
-{
-	return _plugin;
-}
-
-
-
-
-template<class T>
-UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs) noexcept
-{
-	this->Swap(rhs);
-	return *this;
-}
-
-
-
-template<class T>
-T* UniquePlugin<T>::operator->()
-{
-	return _plugin;
-}
-
-
-template<class T>
-T* UniquePlugin<T>::get()
-{
-	return _plugin;
-}
-
-
-
-
-
 template<class T>
 void UniquePlugin<T>::call_deleter(utility::DLoader& dloader, iPlugin* plugin) noexcept
 {
@@ -286,6 +280,20 @@ void UniquePlugin<T>::call_deleter(utility::DLoader& dloader, iPlugin* plugin) n
 	
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
