@@ -115,14 +115,16 @@ int main(int argc, char **argv)
 
 		const xchip::utility::CliOpts opts(argc-1, argv+1);
 
+		const auto romPath = opts.GetOpt("-ROM");
+
+		if (!romPath.empty())
+			g_emulator.LoadRom(romPath);
+		else
+			throw std::runtime_error("missing -ROM argument");
+
+
 		load_plugins(opts);
 		configure_emulator(opts);
-
-		const auto romPath = opts.GetOpt("-ROM");
-		if(romPath.empty())
-			throw std::runtime_error("missing -ROM argument");
-		else
-			g_emulator.LoadRom(romPath);
 
 	}
 	catch(std::exception& err)
@@ -275,10 +277,9 @@ void configure_emulator(const xchip::utility::CliOpts& opts)
 	for(auto itr = begin; itr != end; ++itr)
 	{
 		const auto opt = opts.GetOpt(itr->first);
+		
 		if(!opt.empty())
-		{
 			itr->second(opt);
-		}
 	}
 
 
