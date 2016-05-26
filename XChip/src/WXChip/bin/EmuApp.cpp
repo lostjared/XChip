@@ -36,12 +36,12 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <XChip/Core/Emulator.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Assert.h>
-#include "CliOpts.h"
+#include <XChip/Utility/CliOpts.h>
 static xchip::Emulator g_emulator;
 
 
-void load_plugins(const CliOpts& opts);
-void configure_emulator(const CliOpts& opts);
+void load_plugins(const xchip::utility::CliOpts& opts);
+void configure_emulator(const xchip::utility::CliOpts& opts);
 /*******************************************************************************************
  *	-REN  render plugin path
  *	-INP  input plugin path
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 		if(!g_emulator.Initialize())
 			throw std::runtime_error("Could not initialize emulator");
 
-		const CliOpts opts(argc-1, argv+1);
+		const xchip::utility::CliOpts opts(argc-1, argv+1);
 
 		load_plugins(opts);
 		configure_emulator(opts);
@@ -163,7 +163,7 @@ void set_input_plugin(const std::string& path);
 void set_sound_plugin(const std::string& path);
 
 
-void load_plugins(const CliOpts& opts)
+void load_plugins(const xchip::utility::CliOpts& opts)
 {
 	using namespace xchip::utility::literals;
 
@@ -250,10 +250,8 @@ void col_config(const std::string& arg);
 void bkg_config(const std::string& arg);
 void fps_config(const std::string& arg);
 
-void configure_emulator(const CliOpts& opts)
+void configure_emulator(const xchip::utility::CliOpts& opts)
 {
-
-
 	std::cout << "\n\nconfigure_emulator: \n\n";
 
 
@@ -273,7 +271,7 @@ void configure_emulator(const CliOpts& opts)
 	const auto begin = std::begin(configTable);
 	const auto end = std::end(configTable);
 
-	for(auto itr=begin; itr != end; ++itr)
+	for(auto itr = begin; itr != end; ++itr)
 	{
 		const auto opt = opts.GetOpt(itr->first);
 		if(!opt.empty())
