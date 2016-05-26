@@ -47,16 +47,33 @@ int main(int argc, char **argv)
 	UniqueInput input;
 	UniqueSound sound;
 
-	while(1)
-	{
-		render.Load("./XChipSDLRender");
-		input.Load("./XChipSDLInput");
-		sound.Load("./XChipSDLSound");
-		render.Free();
-		input.Free();
-		sound.Free();
 
+	if (!(render.Load("./XChipSDLRender") &&
+		input.Load("./XChipSDLInput") &&
+		sound.Load("./XChipSDLSound")))
+	{
+		xchip::utility::LOGerr("Could not load plugins");
+		return EXIT_FAILURE;
 	}
+
+	if (!emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
+		return EXIT_FAILURE;
+	else if (!emulator.LoadRom(argv[1]))
+		return EXIT_FAILURE;
+	
+
+	while (!emulator.GetExitFlag())
+	{
+		emulator.UpdateSystems();
+		emulator.HaltForNextFlag();
+		if (emulator.GetInstrFlag())
+			emulator.ExecuteInstr();
+		if (emulator.GetDrawFlag())
+			emulator.Draw();
+	}
+
+
+
 
 	return EXIT_SUCCESS;
 }
