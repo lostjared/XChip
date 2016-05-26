@@ -43,6 +43,7 @@ static xchip::Emulator g_emulator;
 void load_plugins(const xchip::utility::CliOpts& opts);
 void configure_emulator(const xchip::utility::CliOpts& opts);
 /*******************************************************************************************
+ *	-ROM  game rom path
  *	-REN  render plugin path
  *	-INP  input plugin path
  *	-SND  sound plugin path
@@ -50,7 +51,7 @@ void configure_emulator(const xchip::utility::CliOpts& opts);
  *	-CFQ  Cpu Frequency in hz ex: -CFQ 600
  *	-SFQ  Sound Tone in hz ex: -SFQ 400
  *	-COL  Color in RGB ex: -COL 100x200x255
- *  -BKG  Background color in RGB ex: -BKG 255x0x0
+ *	-BKG  Background color in RGB ex: -BKG 255x0x0
  *	-FPS  Frame Rate ex: -FPS 30
  *******************************************************************************************/
 
@@ -119,7 +120,7 @@ int main(int argc, char **argv)
 
 		const auto romPath = opts.GetOpt("-ROM");
 		if(romPath.empty())
-			throw std::runtime_error("missing -ROM arguments");
+			throw std::runtime_error("missing -ROM argument");
 		else
 			g_emulator.LoadRom(romPath);
 
