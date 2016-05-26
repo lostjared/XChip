@@ -18,11 +18,11 @@ namespace xchip { namespace utility {
 class DLoader
 {
 public:
+	DLoader(const DLoader&) = delete;
+	DLoader& operator=(const DLoader&) = delete;
 	DLoader() = default;
 	DLoader(DLoader&&) noexcept;
-	DLoader(const DLoader&) = delete;
 	DLoader& operator=(DLoader&&) noexcept;
-	DLoader& operator=(const DLoader&) = delete;
 	~DLoader();
 	void Free() noexcept;
 	bool Load(const std::string& dlPath);

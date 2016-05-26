@@ -11,19 +11,16 @@ DLoader::DLoader(DLoader&& rhs) noexcept
 	rhs._handle = nullptr;
 }
 
-
-DLoader::~DLoader()
-{
-	this->Free();
-}
-
-
 DLoader& DLoader::operator=(DLoader&& rhs) noexcept
 {
 	this->Swap(rhs);
 	return *this;
 }
 
+DLoader::~DLoader()
+{
+	this->Free();
+}
 
 
 
