@@ -34,7 +34,7 @@ using namespace xchip::utility;
 using namespace xchip::utility::literals;
 
 
-static void check_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept;
+static void check_cpu_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept;
 template<class T>
 static bool alloc_cpu_arr(T*& arr, const size_t size) noexcept;
 template<class T>
@@ -242,21 +242,21 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 void CpuManager::SetRender(iRender* render) 
 {
-	check_plugin(*this, render, Cpu::BAD_RENDER);
+	check_cpu_plugin(*this, render, Cpu::BAD_RENDER);
 	_cpu.render = render; 
 }
 
 
 void CpuManager::SetInput(iInput* input) 
 {
-	check_plugin(*this, input, Cpu::BAD_INPUT);
+	check_cpu_plugin(*this, input, Cpu::BAD_INPUT);
 	_cpu.input = input; 
 }
 
 
 void CpuManager::SetSound(iSound* sound) 
 {
-	check_plugin(*this, sound, Cpu::BAD_SOUND);
+	check_cpu_plugin(*this, sound, Cpu::BAD_SOUND);
 	_cpu.sound = sound; 
 }
 
@@ -293,7 +293,16 @@ iSound* CpuManager::SwapSound(iSound* sound)
 
 
 
-static void check_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept
+
+// local template functions
+template<class T>
+static bool __alloc_arr(T*& arr, const size_t size) noexcept;
+template<class T>
+static bool __realloc_arr(T*& arr, const size_t size) noexcept;
+
+
+
+static void check_cpu_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept
 {
 	if (!plugin)
 		man.SetFlags(flag);
@@ -303,13 +312,6 @@ static void check_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag
 		man.UnsetFlags(flag);
 }
 
-
-
-// local template functions
-template<class T>
-static bool __alloc_arr(T*& arr, const size_t size) noexcept;
-template<class T>
-static bool __realloc_arr(T*& arr, const size_t size) noexcept;
 
 
 template<class T>

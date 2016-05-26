@@ -18,7 +18,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#error "EmuApp / WXChip are not ready for the plugin system"
+
 
 #if defined(__linux__) || defined(__APPLE__)
 #include <csignal>
@@ -38,8 +38,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <XChip/Utility/Assert.h>
 
 static xchip::Emulator g_emulator;
+
+
+void initialize_emulator(const std::vector<std::string>& arguments);
 void configure_emulator(const std::vector<std::string>& arguments);
 /*******************************************************************************************
+ *      -REN render plugin path
+ *      -INP input plugin path
+ *      -SND sound plugin path
  *	-RES  window size: WidthxHeight ex: -RES 200x300 and -RES FULLSCREEN for fullscreen
  *	-CFQ  Cpu Frequency in hz ex: -CFQ 600
  *	-SFQ  Sound Tone in hz ex: -SFQ 400
@@ -71,7 +77,7 @@ int main(int argc, char **argv)
 	using xchip::UniqueRender;
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
-	using xchip::utility::make_unique;
+
 
 	
 #if defined(__linux__) || defined(__APPLE__) 
@@ -92,24 +98,61 @@ int main(int argc, char **argv)
 
 #endif
 
-	if (argc < 2) 
+	if (argc < 5) 
 	{
-		std::cout << "No game to load..." << std::endl;
+		std::cout << "Usage:" << std::endl;
+		std::cout << "EmuApp game/rom/path -REN render/plugin/path " 
+                          << " -INP input/plugin/path -SND sound/plugin/path  OPTIONS..." << std::endl;
 		return EXIT_SUCCESS;
 	}
+	
+	try
+	{
+		// initialize with no plugins.
+		if(!g_emulator.Initialize())
+			throw std::runtime_error("Could not initialize emulator");
 
+		std::vector<std::string> arguments( argv+2, argv+argc );
 
+		// make sure plugins arguments are the first ones
+		const auto seek_plugin_arg = [](const std::string& arg)
+		{
+			const auto configType = arg.substr(0, 4);
+			if(configType == "-REN")
+				return true;	
+			else if(configType == "-INP")
+				return true;
+			else if(configType == "-SND")
+				return true;
 
+			return false;
+		};
 
+		const auto argsBegin = arguments.begin();
+		const auto argsEnd = arguments.end();
+		for(int i = 1 ; i < 4 ; ++i )
+		{
+			auto pluginArgItr = std::find_if(argsBegin+i, argsEnd, seek_plugin_arg);
+			if(pluginArgItr == argsEnd)
+				throw std::runtime_error("Missing plugin argument");
+		
+			std::iter_swap(argsBegin+i, pluginArgItr);
+		} 
 	
 
-	if (!g_emulator.LoadRom(argv[1]))
+		configure_emulator(arguments);
+
+		if(!g_emulator.Good())
+			throw std::runtime_error("emulator bad plugins");
+
+		if (!g_emulator.LoadRom(argv[1]))
+			throw std::runtime_error("Could not load rom");
+	}
+	catch(std::exception& err)
+	{
+		std::cerr << "Exception: " << err.what() << std::endl;
 		return EXIT_FAILURE;
-
-
-	if(argc >= 3)
-		configure_emulator(std::vector<std::string>(argv+2, argv+argc));
-
+	}
 
 	while (!g_emulator.GetExitFlag())
 	{
@@ -131,7 +174,15 @@ int main(int argc, char **argv)
 
 
 
+
+
+
+
+
 xchip::utility::Color get_arg_rgb(const std::string& arg);
+void ren_config(const std::string& arg);
+void inp_config(const std::string& arg);
+void snd_config(const std::string& arg);
 void res_config(const std::string& arg);
 void cfq_config(const std::string& arg);
 void sfq_config(const std::string& arg);
@@ -141,7 +192,7 @@ void fps_config(const std::string& arg);
 
 void configure_emulator(const std::vector<std::string>& arguments)
 {
-	using xchip::utility::make_unique;
+
 
 	std::cout << "\n\n\tconfigure_emulator: \n\n";
 
@@ -151,6 +202,9 @@ void configure_emulator(const std::vector<std::string>& arguments)
 
 	ConfigPair configTable[] = 
 	{
+		{"-REN", ren_config},
+		{"-INP", inp_config},
+		{"-SND", snd_config},	
 		{"-RES", res_config},
 		{"-CFQ", cfq_config},
 		{"-SFQ", sfq_config},
@@ -159,11 +213,16 @@ void configure_emulator(const std::vector<std::string>& arguments)
 		{"-FPS", fps_config}
 	};
 
+	
 
 
 	const auto begin = arguments.cbegin();
 	const auto end = arguments.cend();
 
+
+
+
+	// now call the arguments config functions
 	for(auto arg = begin; arg != end; ++arg)
 	{
 		bool validArg = std::any_of(std::begin(configTable), std::end(configTable),
@@ -212,6 +271,58 @@ void configure_emulator(const std::vector<std::string>& arguments)
 }
 
 
+
+
+
+
+void ren_config(const std::string& arg)
+{
+	using namespace xchip::utility::literals;
+	xchip::UniqueRender render;
+
+	if(!render.Load(arg))
+		throw std::runtime_error("Could not load Render plugin: "_s + arg);
+
+	std::cout << "Loaded Render Plugin: " << render->GetPluginName() << std::endl;
+	std::cout << "Version: " << render->GetPluginVersion() << std::endl;
+	
+	if(!g_emulator.SetRender(std::move(render)))
+		throw std::runtime_error("Failed to set Render plugin"_s + arg);
+}
+
+
+void inp_config(const std::string& arg)
+{
+	using namespace xchip::utility::literals;
+	xchip::UniqueInput input;
+
+	if(!input.Load(arg))
+		throw std::runtime_error("Could not load Input plugin: "_s + arg);
+	
+	std::cout << "Loaded Input Plugin: " << input->GetPluginName() << std::endl;
+	std::cout << "Version: " << input->GetPluginVersion() << std::endl;
+
+	if(!g_emulator.SetInput(std::move(input)))
+		throw std::runtime_error("Failed to set Input plugin"_s + arg);
+
+}
+
+
+void snd_config(const std::string& arg)
+{
+	using namespace xchip::utility::literals;
+	xchip::UniqueSound sound;
+
+	if(!sound.Load(arg))
+		throw std::runtime_error("Could not load Sound plugin: "_s + arg);
+
+	std::cout << "Loaded Sound Plugin: " << sound->GetPluginName() << std::endl;
+	std::cout << "Version: " << sound->GetPluginVersion() << std::endl;
+	
+	if(!g_emulator.SetSound(std::move(sound)))
+		throw std::runtime_error("Failed to set Sound plugin"_s + arg);
+
+}
 
 
 

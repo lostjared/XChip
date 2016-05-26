@@ -29,7 +29,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 namespace xchip {
 using utility::literals::operator""_hz;
 
-
+static bool init_cpu_manager(CpuManager& _manager) noexcept;
 
 
 
@@ -55,12 +55,39 @@ Emulator::~Emulator()
 
 
 
+
+
+
+
+bool Emulator::Initialize() noexcept
+{
+
+	if (_initialized) 
+		this->Dispose();
+
+	const auto scope = utility::make_scope_exit([this]() noexcept 
+	{
+		if (!this->_initialized)
+			this->Dispose();
+	});
+
+
+	if(init_cpu_manager(_manager))
+	{
+		CleanFlags();
+		_initialized = true;
+		return true;
+	}
+
+	return false;
+}
+
+
+
+
 bool Emulator::Initialize(UniqueRender&& render, UniqueInput&& input, UniqueSound&& sound) noexcept
 {
 	using std::move;
-	using fonts::chip8DefaultFont;
-	using fonts::chip8HiResFont;
-	using utility::arr_size;
 
 	if (_initialized) 
 		this->Dispose();
@@ -75,24 +102,12 @@ bool Emulator::Initialize(UniqueRender&& render, UniqueInput&& input, UniqueSoun
 	_inputPlugin = move(input);
 	_soundPlugin = move(sound);
 
-	// init the CPU
-	if (!_manager.SetMemory(0xFFFF)
-		|| !_manager.SetRegisters(0x10)
-		|| !_manager.SetStack(0x10)
-		|| !_manager.SetGfxRes(64, 32))
-	{
+	if(!init_cpu_manager(_manager))
 		return false;
-	}
 
-	_manager.SetPC(0x200);
-	_manager.LoadFont(chip8DefaultFont, arr_size(chip8DefaultFont), 0);
-	_manager.LoadFont(chip8HiResFont, arr_size(chip8HiResFont), arr_size(chip8DefaultFont));
-	
 	// try to init all interfaces before returning something...
 	if (!( InitRender() & InitInput() & InitSound()) ) 
-	{
 		return false;
-	}
 
 	CleanFlags();
 	_initialized = true;
@@ -390,6 +405,37 @@ bool Emulator::InitSound()
 	return true;
 }
 
+
+
+
+
+
+
+
+
+
+
+static bool init_cpu_manager(CpuManager& manager) noexcept
+{
+
+	using fonts::chip8DefaultFont;
+	using fonts::chip8HiResFont;
+	using utility::arr_size;
+
+	// init the CPU
+	if (manager.SetMemory(0xFFFF)
+		&& manager.SetRegisters(0x10)
+		&& manager.SetStack(0x10)
+		&& manager.SetGfxRes(64, 32))
+	{
+		manager.SetPC(0x200);
+		manager.LoadFont(chip8DefaultFont, arr_size(chip8DefaultFont), 0);
+		manager.LoadFont(chip8HiResFont, arr_size(chip8HiResFont), arr_size(chip8DefaultFont));
+		return true;
+	}
+
+	return false;
+}
 
 
 

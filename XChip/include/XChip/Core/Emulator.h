@@ -47,10 +47,12 @@ public:
 	Emulator(const Emulator&) = delete;
 	Emulator& operator=(const Emulator&) = delete;
 
+	bool Initialize() noexcept;
 	bool Initialize(UniqueRender&& render, UniqueInput&& input, UniqueSound&& sound) noexcept;
 
 	void Dispose() noexcept;
 	bool IsInitialized() const;
+	bool Good() const;
 	bool GetInstrFlag() const;
 	bool GetDrawFlag() const;
 	bool GetExitFlag() const;
@@ -106,6 +108,7 @@ private:
 
 
 inline bool Emulator::IsInitialized() const { return _initialized; }
+inline bool Emulator::Good() const { return _manager.GetFlags(Cpu::BAD_RENDER | Cpu::BAD_INPUT | Cpu::BAD_SOUND) == 0u; }
 inline bool Emulator::GetInstrFlag() const { return _manager.GetFlags(Cpu::INSTR) != 0u; }
 inline bool Emulator::GetDrawFlag() const { return _manager.GetFlags(Cpu::DRAW) != 0u; }
 inline bool Emulator::GetExitFlag() const { return _manager.GetFlags(Cpu::EXIT) != 0u; }
