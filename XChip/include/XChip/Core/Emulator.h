@@ -84,8 +84,10 @@ public:
 	UniqueRender SwapRender(UniqueRender rend = nullptr);
 	UniqueInput SwapInput(UniqueInput input = nullptr);
 	UniqueSound SwapSound(UniqueSound sound = nullptr);
-
-
+	template<class P>
+	bool SetPlugin(P&&);
+	template<class P>
+	P SwapPlugin(P&&);
 
 private:
  	void UpdateTimers();
@@ -164,11 +166,9 @@ inline void Emulator::SetExitFlag(const bool val)
 
 inline bool Emulator::LoadRom(const std::string& fname) { return _manager.LoadRom(fname.c_str(), 0x200); }
 
-
 inline iRender* Emulator::GetRender() { return _manager.GetRender(); }
 inline iInput* Emulator::GetInput() { return _manager.GetInput(); }
 inline iSound* Emulator::GetSound() { return _manager.GetSound(); }
-
 
 inline void Emulator::ExecuteInstr()
 {
@@ -185,8 +185,19 @@ inline void Emulator::Draw()
 }
 
 
+template<>
+inline bool Emulator::SetPlugin<UniqueRender>(UniqueRender&& plugin) { return this->SetRender(std::move(plugin)); }
+template<>
+inline bool Emulator::SetPlugin<UniqueInput>(UniqueInput&& plugin) { return this->SetInput(std::move(plugin)); }
+template<>
+inline bool Emulator::SetPlugin<UniqueSound>(UniqueSound&& plugin) { return this->SetSound(std::move(plugin)); }
 
-
+template<>
+inline UniqueRender Emulator::SwapPlugin<UniqueRender>(UniqueRender&& plugin) { return this->SwapRender(std::move(plugin)); }
+template<>
+inline UniqueInput Emulator::SwapPlugin<UniqueInput>(UniqueInput&& plugin) { return this->SwapInput(std::move(plugin)); }
+template<>
+inline UniqueSound Emulator::SwapPlugin<UniqueSound>(UniqueSound&& plugin) { return this->SwapSound(std::move(plugin)); }
 
 
 

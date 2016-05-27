@@ -54,7 +54,6 @@ public:
 	void SetDirPath(const std::string& path);
 	void SetCPUFreq(const int freq);
 	void SetFPS(const float fps);
-	void SetEmuFullscreen(const bool val);
 	void SaveSettings();
 
 private:
@@ -72,8 +71,8 @@ private:
 	std::unique_ptr<wxTextCtrl> _dirPath;
 	std::unique_ptr<wxStaticText> _fpsTxt;
 	std::unique_ptr<wxTextCtrl> _fps;
-	std::unique_ptr<wxStaticText> _cpuFreqTxt;
-	std::unique_ptr<wxTextCtrl> _cpuFreq;
+	std::unique_ptr<wxStaticText> _cpuHzTxt;
+	std::unique_ptr<wxTextCtrl> _cpuHz;
 	std::unique_ptr<wxStaticText> _emuResText;
 	std::unique_ptr<wxComboBox> _emuRes;
 	std::unique_ptr<wxCheckBox> _emuFullScreen;

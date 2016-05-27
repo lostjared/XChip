@@ -70,7 +70,7 @@ std::string SettingsWindow::GetDirPath() const
 
 int SettingsWindow::GetCPUFreq() const 
 { 
-	return std::stoi((const char*)_cpuFreq->GetLineText(0).c_str());
+	return std::stoi((const char*)_cpuHz->GetLineText(0).c_str());
 }
 
 float SettingsWindow::GetFPS() const 
@@ -88,8 +88,8 @@ void SettingsWindow::SetDirPath(const std::string &dirPath)
 
 void SettingsWindow::SetCPUFreq(const int freq) 
 { 
-	_cpuFreq->Clear();
-	*_cpuFreq << freq;
+	_cpuHz->Clear();
+	*_cpuHz << freq;
 
 }
 
@@ -104,8 +104,8 @@ void SettingsWindow::UpdateConfigStr()
 {
 	_configStr = " -FPS ";
 	_configStr += (const char*) _fps->GetLineText(0).c_str();
-	_configStr += " -CFQ ";
-	_configStr += (const char*) _cpuFreq->GetLineText(0).c_str();
+	_configStr += " -CHZ ";
+	_configStr += (const char*) _cpuHz->GetLineText(0).c_str();
 	_configStr += " -RES ";
 	_configStr += (const char*) _emuRes->GetStringSelection().c_str();
 	_configStr += " ";
@@ -133,10 +133,10 @@ void SettingsWindow::CreateControls()
 	fpsValidator.SetRange(1.00, 120.00);
 
 
-	_cpuFreqTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), 
+	_cpuHzTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), 
                                                  wxPoint(220,40), wxSize(60,25));
 
-	_cpuFreq = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, defaultCpuFreq, 
+	_cpuHz = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, defaultCpuFreq, 
                                                   wxPoint(320,40), wxSize(100,20), 0, cpuFreqValidator);
 
 	_fpsTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT2,_T("FPS: "), 
@@ -171,7 +171,7 @@ void SettingsWindow::CreateControls()
 void SettingsWindow::SaveSettings()
 {
 //	saveDirectory((const char*)_dirTxtCtrl->GetLineText(0).c_str(), 
-//                    std::to_string(_fpsValue), std::to_string(_cpuFreq));
+//                    std::to_string(_fpsValue), std::to_string(_cpuHz));
 }
 
 void SettingsWindow::OnCloseWindow(wxCloseEvent &event)
@@ -203,9 +203,9 @@ void SettingsWindow::OnDefault(wxCommandEvent&)
 void SettingsWindow::ResetTextControls()
 {
 	_fps->Clear();
-	_cpuFreq->Clear();
+	_cpuHz->Clear();
 	*_fps << defaultFPS;
-	*_cpuFreq << defaultCpuFreq;
+	*_cpuHz << defaultCpuFreq;
 	_emuRes->SetSelection(0);
 }
 

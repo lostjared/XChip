@@ -48,8 +48,8 @@ void configure_emulator(const xchip::utility::CliOpts& opts);
  *	-INP  input plugin path
  *	-SND  sound plugin path
  *	-RES  window size: WidthxHeight ex: -RES 200x300 and -RES FULLSCREEN for fullscreen
- *	-CFQ  Cpu Frequency in hz ex: -CFQ 600
- *	-SFQ  Sound Tone in hz ex: -SFQ 400
+ *	-CHZ  Cpu Frequency in hz ex: -CHZ 600
+ *	-SHZ  Sound Tone in hz ex: -SHZ 400
  *	-COL  Color in RGB ex: -COL 100x200x255
  *	-BKG  Background color in RGB ex: -BKG 255x0x0
  *	-FPS  Frame Rate ex: -FPS 30
@@ -152,25 +152,30 @@ int main(int argc, char **argv)
 
 
 
-
-
-
-
-
-
-
 #ifdef _WIN32
-constexpr const char* const DEFAULT_RENDER_PLUGIN = ".\\plugins\\XChipSDLRender";
-constexpr const char* const DEFAULT_INPUT_PLUGIN = ".\\plugins\\XChipSDLInput";
-constexpr const char* const DEFAULT_SOUND_PLUGIN = ".\\plugins\\XChipSDLSound";
+struct DEFAULT_RENDER_PLUGIN_PATH {
+	static constexpr const char value[] = ".\\plugins\\XChipSDLRender";
+};
+struct DEFAULT_INPUT_PLUGIN_PATH {
+	static constexpr const char value[] = ".\\plugins\\XChipSDLInput";
+};
+struct DEFAULT_SOUND_PLUGIN_PATH {
+	static constexpr const char value[] = ".\\plugins\\XChipSDLSound";
+};
 #elif defined(__linux__) || defined(__APPLE__)
-constexpr const char* const DEFAULT_RENDER_PLUGIN = "./plugins/XChipSDLRender";
-constexpr const char* const DEFAULT_INPUT_PLUGIN = "./plugins/XChipSDLInput";
-constexpr const char* const DEFAULT_SOUND_PLUGIN = "./plugins/XChipSDLSound";
+struct DEFAULT_RENDER_PLUGIN {
+	static constexpr const char value[] = "./plugins/XChipSDLRender";
+};											
+struct DEFAULT_INPUT_PLUGIN {				
+	static constexpr const char value[] = "./plugins/XChipSDLInput";
+};											
+struct DEFAULT_SOUND_PLUGIN {				
+	static constexpr const char value[] = "./plugins/XChipSDLSound";
+};
 #endif
-void set_render_plugin(const std::string& path);
-void set_input_plugin(const std::string& path);
-void set_sound_plugin(const std::string& path);
+
+template<class Plugin, class DPath>
+void set_plugin(const std::string& path);
 
 
 void load_plugins(const xchip::utility::CliOpts& opts)
@@ -181,9 +186,9 @@ void load_plugins(const xchip::utility::CliOpts& opts)
 	
 	const PluginOptPair pluginOpts[] = 
 	{
-		{"-REN", set_render_plugin},
-		{"-INP", set_input_plugin},
-		{"-SND", set_sound_plugin}
+		{"-REN", set_plugin<xchip::UniqueRender, DEFAULT_RENDER_PLUGIN_PATH>},
+		{"-INP", set_plugin<xchip::UniqueInput, DEFAULT_INPUT_PLUGIN_PATH>},
+		{"-SND", set_plugin<xchip::UniqueSound, DEFAULT_SOUND_PLUGIN_PATH>}
 	};
 
 	const auto begin = std::begin(pluginOpts);
@@ -196,77 +201,25 @@ void load_plugins(const xchip::utility::CliOpts& opts)
 }
 
 
-void set_render_plugin(const std::string& path)
+template<class Plugin, class DPath>
+void set_plugin(const std::string& path)
 {
 	using namespace xchip::utility::literals;
-	xchip::UniqueRender render;
-	
+	Plugin plugin;
 	if (path.empty())
 	{
-		if (!render.Load(DEFAULT_RENDER_PLUGIN))
-			throw std::runtime_error("Failed to load default Render Plugin"_s + DEFAULT_RENDER_PLUGIN);
+		if (!plugin.Load(DPath::value))
+			throw std::runtime_error("Could not load default Plugin: "_s + DPath::value);
 	}
-	else if (!render.Load(path))
+	else if (plugin.Load(path))
 	{
-		throw std::runtime_error("Failed to load Render Plugin"_s + path);
+		throw std::runtime_error("Could not load default Plugin: "_s + path);
 	}
 
-	std::cout << "Loaded Render Plugin: " << render->GetPluginName() << std::endl;
-	std::cout << "Version: " << render->GetPluginVersion() << std::endl;
-	
-	if(!g_emulator.SetRender(std::move(render)))
-		throw std::runtime_error("Failed to set Render plugin"_s + path);
-}
-
-
-void set_input_plugin(const std::string& path)
-{
-	using namespace xchip::utility::literals;
-	xchip::UniqueInput input;
-
-	if (path.empty())
-	{
-		if (!input.Load(DEFAULT_INPUT_PLUGIN))
-			throw std::runtime_error("Failed to load default Input Plugin"_s + DEFAULT_INPUT_PLUGIN);
-	}
-	else if (!input.Load(path))
-	{
-		throw std::runtime_error("Failed to load Input Plugin"_s + path);
-	}
-	
-	std::cout << "Loaded Input Plugin: " << input->GetPluginName() << std::endl;
-	std::cout << "Version: " << input->GetPluginVersion() << std::endl;
-
-	if(!g_emulator.SetInput(std::move(input)))
-		throw std::runtime_error("Failed to set Input plugin"_s + path);
+	if (!g_emulator.SetPlugin(std::move(plugin)))
+		throw std::runtime_error("Failed to set plugin");
 
 }
-
-
-void set_sound_plugin(const std::string& path)
-{
-	using namespace xchip::utility::literals;
-	xchip::UniqueSound sound;
-
-	if (path.empty())
-	{
-		if (!sound.Load(DEFAULT_SOUND_PLUGIN))
-			throw std::runtime_error("Failed to load default Sound Plugin"_s + DEFAULT_SOUND_PLUGIN);
-	}
-	else if (!sound.Load(path))
-	{
-		throw std::runtime_error("Failed to load Sound Plugin"_s + path);
-	}
-
-	std::cout << "Loaded Sound Plugin: " << sound->GetPluginName() << std::endl;
-	std::cout << "Version: " << sound->GetPluginVersion() << std::endl;
-	
-	if(!g_emulator.SetSound(std::move(sound)))
-		throw std::runtime_error("Failed to set Sound plugin"_s + path);
-
-}
-
-
 
 
 
@@ -289,8 +242,8 @@ void configure_emulator(const xchip::utility::CliOpts& opts)
 	ConfigPair configTable[] = 
 	{
 		{"-RES", res_config},
-		{"-CFQ", cfq_config},
-		{"-SFQ", sfq_config},
+		{"-CHZ", cfq_config},
+		{"-SHZ", sfq_config},
 		{"-COL", col_config},
 		{"-BKG", bkg_config},
 		{"-FPS", fps_config}
@@ -518,6 +471,19 @@ xchip::utility::Color get_arg_rgb(const std::string& arg)
 
 	return { (uint8_t)rgb[0], (uint8_t)rgb[1], (uint8_t)rgb[2] };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
