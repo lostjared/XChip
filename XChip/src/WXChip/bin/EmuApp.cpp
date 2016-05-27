@@ -24,7 +24,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <windows.h>
 #endif
 
-// TODO: adapt to plugin system
 
 #include <algorithm>
 #include <utility>
@@ -37,12 +36,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <XChip/Utility/CliOpts.h>
 
 
-
-static xchip::Emulator g_emulator;
-
-
-void load_plugins(const xchip::utility::CliOpts& opts);
-void configure_emulator(const xchip::utility::CliOpts& opts);
 /*******************************************************************************************
  *	-ROM  game rom path
  *	-REN  render plugin path
@@ -56,18 +49,26 @@ void configure_emulator(const xchip::utility::CliOpts& opts);
  *	-FPS  Frame Rate ex: -FPS 30
  *******************************************************************************************/
 
-#if defined(__linux__) || defined(__APPLE__)
-void signals_sigint(const int signum);
-#elif defined(_WIN32)
-bool _stdcall ctrl_handler(DWORD ctrlType);
-#endif
-
 /*********************************************************
  * SIGNALS:
  * SIGINT - set g_emulator exitflag
  * CTRL_EVENT: windows ConsoleCtrlEvents...
  *********************************************************/
 
+
+
+
+static xchip::Emulator g_emulator;
+
+
+void load_plugins(const xchip::utility::CliOpts& opts);
+void configure_emulator(const xchip::utility::CliOpts& opts);
+
+#if defined(__linux__) || defined(__APPLE__)
+void signals_sigint(const int signum);
+#elif defined(_WIN32)
+bool _stdcall ctrl_handler(DWORD ctrlType);
+#endif
 
 
 
