@@ -95,7 +95,6 @@ bool Process::Run(const std::string &app)
 		close(read_fd);
 		dup2(write_fd,1);
 		close(write_fd);
-
 		if(execl("/bin/sh", "sh", "-c", app.c_str(), NULL))
 		{
 			const int err = errno;

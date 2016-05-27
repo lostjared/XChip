@@ -133,7 +133,7 @@ void SettingsWindow::CreateControls()
 	fpsValidator.SetRange(1.00, 120.00);
 
 
-	_cpuHzTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), 
+	_cpuHzTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Hz: "), 
                                                  wxPoint(220,40), wxSize(60,25));
 
 	_cpuHz = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, defaultCpuFreq, 
