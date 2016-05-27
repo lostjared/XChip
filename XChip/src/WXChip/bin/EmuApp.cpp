@@ -18,12 +18,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-
-
 #if defined(__linux__) || defined(__APPLE__)
 #include <csignal>
 #elif defined( _WIN32 )
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 // TODO: adapt to plugin system
@@ -37,6 +35,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Assert.h>
 #include <XChip/Utility/CliOpts.h>
+
+
+
 static xchip::Emulator g_emulator;
 
 
@@ -175,7 +176,8 @@ struct DEFAULT_SOUND_PLUGIN_PATH {
 #endif
 constexpr const char DEFAULT_RENDER_PLUGIN_PATH::value[];
 constexpr const char DEFAULT_INPUT_PLUGIN_PATH::value[];
-constexpr const char DEFAULT_SOUND_PLUGIN_PATH::value[]; 
+constexpr const char DEFAULT_SOUND_PLUGIN_PATH::value[];
+
 template<class Plugin, class DPath>
 void set_plugin(const std::string& path);
 
@@ -184,17 +186,17 @@ void load_plugins(const xchip::utility::CliOpts& opts)
 {
 	using namespace xchip::utility::literals;
 
-	using PluginOptPair = std::pair<const char*, void(*)(const std::string&)>;
+	using PluginConfigPair = std::pair<const char*, void(*)(const std::string&)>;
 	
-	const PluginOptPair pluginOpts[] = 
+	const PluginConfigPair pluginPairs[] = 
 	{
 		{"-REN", set_plugin<xchip::UniqueRender, DEFAULT_RENDER_PLUGIN_PATH>},
 		{"-INP", set_plugin<xchip::UniqueInput, DEFAULT_INPUT_PLUGIN_PATH>},
 		{"-SND", set_plugin<xchip::UniqueSound, DEFAULT_SOUND_PLUGIN_PATH>}
 	};
 
-	const auto begin = std::begin(pluginOpts);
-	const auto end = std::end(pluginOpts);
+	const auto begin = std::begin(pluginPairs);
+	const auto end = std::end(pluginPairs);
 	for(auto itr = begin; itr != end; ++itr)
 	{
 		const auto opt = opts.GetOpt(itr->first);
