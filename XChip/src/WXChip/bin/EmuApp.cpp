@@ -163,17 +163,19 @@ struct DEFAULT_SOUND_PLUGIN_PATH {
 	static constexpr const char value[] = ".\\plugins\\XChipSDLSound";
 };
 #elif defined(__linux__) || defined(__APPLE__)
-struct DEFAULT_RENDER_PLUGIN {
+struct DEFAULT_RENDER_PLUGIN_PATH {
 	static constexpr const char value[] = "./plugins/XChipSDLRender";
 };											
-struct DEFAULT_INPUT_PLUGIN {				
+struct DEFAULT_INPUT_PLUGIN_PATH {				
 	static constexpr const char value[] = "./plugins/XChipSDLInput";
 };											
-struct DEFAULT_SOUND_PLUGIN {				
+struct DEFAULT_SOUND_PLUGIN_PATH {				
 	static constexpr const char value[] = "./plugins/XChipSDLSound";
 };
 #endif
-
+constexpr const char DEFAULT_RENDER_PLUGIN_PATH::value[];
+constexpr const char DEFAULT_INPUT_PLUGIN_PATH::value[];
+constexpr const char DEFAULT_SOUND_PLUGIN_PATH::value[]; 
 template<class Plugin, class DPath>
 void set_plugin(const std::string& path);
 
