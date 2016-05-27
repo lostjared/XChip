@@ -156,31 +156,16 @@ int main(int argc, char **argv)
 
 
 #ifdef _WIN32
-struct DEFAULT_RENDER_PLUGIN_PATH {
-	static constexpr const char value[] = ".\\plugins\\XChipSDLRender";
-};
-struct DEFAULT_INPUT_PLUGIN_PATH {
-	static constexpr const char value[] = ".\\plugins\\XChipSDLInput";
-};
-struct DEFAULT_SOUND_PLUGIN_PATH {
-	static constexpr const char value[] = ".\\plugins\\XChipSDLSound";
-};
+constexpr const char DEFAULT_RENDER_PLUGIN_PATH[] = ".\\plugins\\XChipSDLRender";
+constexpr const char DEFAULT_INPUT_PLUGIN_PATH[] = ".\\plugins\\XChipSDLInput";
+constexpr const char DEFAULT_SOUND_PLUGIN_PATH[] = ".\\plugins\\XChipSDLSound";
 #elif defined(__linux__) || defined(__APPLE__)
-struct DEFAULT_RENDER_PLUGIN_PATH {
-	static constexpr const char value[] = "./plugins/XChipSDLRender";
-};											
-struct DEFAULT_INPUT_PLUGIN_PATH {				
-	static constexpr const char value[] = "./plugins/XChipSDLInput";
-};											
-struct DEFAULT_SOUND_PLUGIN_PATH {				
-	static constexpr const char value[] = "./plugins/XChipSDLSound";
-};
+constexpr const char DEFAULT_RENDER_PLUGIN_PATH[] = "./plugins/XChipSDLRender";
+constexpr const char DEFAULT_INPUT_PLUGIN_PATH[] = "./plugins/XChipSDLInput";
+constexpr const char DEFAULT_SOUND_PLUGIN_PATH[] = "./plugins/XChipSDLSound";
 #endif
-constexpr const char DEFAULT_RENDER_PLUGIN_PATH::value[];
-constexpr const char DEFAULT_INPUT_PLUGIN_PATH::value[];
-constexpr const char DEFAULT_SOUND_PLUGIN_PATH::value[];
 
-template<class Plugin, class DPath>
+template<class Plugin, const char* const dPath>
 void set_plugin(const std::string& path);
 
 
@@ -207,15 +192,15 @@ void load_plugins(const xchip::utility::CliOpts& opts)
 }
 
 
-template<class Plugin, class DPath>
+template<class Plugin, const char* const dPath>
 void set_plugin(const std::string& path)
 {
 	using namespace xchip::utility::literals;
 	Plugin plugin;
 	if (path.empty())
 	{
-		if (!plugin.Load(DPath::value))
-			throw std::runtime_error("Could not load default Plugin: "_s + DPath::value);
+		if (!plugin.Load(dPath))
+			throw std::runtime_error("Could not load default Plugin: "_s + dPath);
 	}
 	else if (plugin.Load(path))
 	{
