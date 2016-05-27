@@ -160,9 +160,9 @@ constexpr const char DEFAULT_RENDER_PLUGIN_PATH[] = ".\\plugins\\XChipSDLRender"
 constexpr const char DEFAULT_INPUT_PLUGIN_PATH[] = ".\\plugins\\XChipSDLInput";
 constexpr const char DEFAULT_SOUND_PLUGIN_PATH[] = ".\\plugins\\XChipSDLSound";
 #elif defined(__linux__) || defined(__APPLE__)
-constexpr const char DEFAULT_RENDER_PLUGIN_PATH[] = "./plugins/XChipSDLRender";
-constexpr const char DEFAULT_INPUT_PLUGIN_PATH[] = "./plugins/XChipSDLInput";
-constexpr const char DEFAULT_SOUND_PLUGIN_PATH[] = "./plugins/XChipSDLSound";
+constexpr const char DEFAULT_RENDER_PLUGIN_PATH[] = "./bin/plugins/XChipSDLRender";
+constexpr const char DEFAULT_INPUT_PLUGIN_PATH[] = "./bin/plugins/XChipSDLInput";
+constexpr const char DEFAULT_SOUND_PLUGIN_PATH[] = "./bin/plugins/XChipSDLSound";
 #endif
 
 template<class Plugin, const char* const dPath>

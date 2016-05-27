@@ -3,6 +3,8 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 project(XChip)
 
 
+
+
 set(MEMORY_SANITIZER "OFF" CACHE STRING "-fsanitize=memory")
 set(UNDEFINED_SANITIZER "OFF" CACHE STRING "-fsanitize=undefined")
 

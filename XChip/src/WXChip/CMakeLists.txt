@@ -1,7 +1,7 @@
 if(${BUILD_WXCHIP} STREQUAL "ON")
 
-
 	PROJECT(WXChip)
+	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/WXChip)
 	# find and include wxWidgets dependencies
 	FIND_PACKAGE(wxWidgets REQUIRED html adv core base net aui xrc qa richtext )
 	INCLUDE(${wxWidgets_USE_FILE})
