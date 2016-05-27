@@ -146,7 +146,7 @@ void SettingsWindow::CreateControls()
                                                wxPoint(100,40), wxSize(100,20), 0, fpsValidator);
 
 	_emuResText = make_unique<wxStaticText>(_panel.get(), ID_TEXT4, _T("Resolution: "), 
-                                                wxPoint(10, 70), wxSize(60, 25));
+                                                wxPoint(10, 70), wxSize(65, 25));
 
 	
 	wxString sizeChoices[] = { "320x240", "640x480", "1280x720", "1920x1080", "FULLSCREEN" };
