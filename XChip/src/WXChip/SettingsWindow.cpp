@@ -120,7 +120,7 @@ void SettingsWindow::CreateControls()
 	_panel = make_unique<wxPanel>(this, wxID_ANY);
 
 	_dirTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT1,_T("Directory: "), 
-                                             wxPoint(10,15), wxSize(150,25));
+                                             wxPoint(10,15), wxSize(80,25));
 
 	_dirPath = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, _T(""), 
                                             wxPoint(100,10), wxSize(320,20), wxTE_READONLY);
@@ -134,19 +134,19 @@ void SettingsWindow::CreateControls()
 
 
 	_cpuFreqTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Freq: "), 
-                                                 wxPoint(220,40), wxSize(150,25));
+                                                 wxPoint(220,40), wxSize(60,25));
 
 	_cpuFreq = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, defaultCpuFreq, 
                                                   wxPoint(320,40), wxSize(100,20), 0, cpuFreqValidator);
 
 	_fpsTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT2,_T("FPS: "), 
-                                             wxPoint(10,40), wxSize(150,25));
+                                             wxPoint(10,40), wxSize(60,25));
 
 	_fps = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, defaultFPS,
                                                wxPoint(100,40), wxSize(100,20), 0, fpsValidator);
 
 	_emuResText = make_unique<wxStaticText>(_panel.get(), ID_TEXT4, _T("Resolution: "), 
-                                                wxPoint(10, 70), wxSize(100, 25));
+                                                wxPoint(10, 70), wxSize(60, 25));
 
 	
 	wxString sizeChoices[] = { "320x240", "640x480", "1280x720", "1920x1080", "FULLSCREEN" };

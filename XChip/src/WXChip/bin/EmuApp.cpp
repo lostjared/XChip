@@ -99,11 +99,11 @@ int main(int argc, char **argv)
 
 #endif
 
-	if (argc < 5) 
+	if (argc < 2) 
 	{
 		std::cout << "Usage:" << std::endl;
 		std::cout << "EmuApp -ROM game/rom/path -REN render/plugin/path " 
-                          << " -INP input/plugin/path -SND sound/plugin/path  OPTIONS..." << std::endl;
+                  << " -INP input/plugin/path -SND sound/plugin/path  OPTIONS..." << std::endl;
 		return EXIT_SUCCESS;
 	}
 	
@@ -159,8 +159,15 @@ int main(int argc, char **argv)
 
 
 
-
-
+#ifdef _WIN32
+constexpr const char* const DEFAULT_RENDER_PLUGIN = ".\\plugins\\XChipSDLRender";
+constexpr const char* const DEFAULT_INPUT_PLUGIN = ".\\plugins\\XChipSDLInput";
+constexpr const char* const DEFAULT_SOUND_PLUGIN = ".\\plugins\\XChipSDLSound";
+#elif defined(__linux__) || defined(__APPLE__)
+constexpr const char* const DEFAULT_RENDER_PLUGIN = "./plugins/XChipSDLRender";
+constexpr const char* const DEFAULT_INPUT_PLUGIN = "./plugins/XChipSDLInput";
+constexpr const char* const DEFAULT_SOUND_PLUGIN = "./plugins/XChipSDLSound";
+#endif
 void set_render_plugin(const std::string& path);
 void set_input_plugin(const std::string& path);
 void set_sound_plugin(const std::string& path);
@@ -184,10 +191,7 @@ void load_plugins(const xchip::utility::CliOpts& opts)
 	for(auto itr = begin; itr != end; ++itr)
 	{
 		const auto opt = opts.GetOpt(itr->first);
-		if(!opt.empty())
-			itr->second(opt);
-		else
-			throw std::runtime_error("Plugin Argument missing: "_s + itr->first);
+		itr->second(opt);
 	}
 }
 
@@ -196,9 +200,16 @@ void set_render_plugin(const std::string& path)
 {
 	using namespace xchip::utility::literals;
 	xchip::UniqueRender render;
-
-	if(!render.Load(path))
-		throw std::runtime_error("Could not load Render plugin: "_s + path);
+	
+	if (path.empty())
+	{
+		if (!render.Load(DEFAULT_RENDER_PLUGIN))
+			throw std::runtime_error("Failed to load default Render Plugin"_s + DEFAULT_RENDER_PLUGIN);
+	}
+	else if (!render.Load(path))
+	{
+		throw std::runtime_error("Failed to load Render Plugin"_s + path);
+	}
 
 	std::cout << "Loaded Render Plugin: " << render->GetPluginName() << std::endl;
 	std::cout << "Version: " << render->GetPluginVersion() << std::endl;
@@ -213,8 +224,15 @@ void set_input_plugin(const std::string& path)
 	using namespace xchip::utility::literals;
 	xchip::UniqueInput input;
 
-	if(!input.Load(path))
-		throw std::runtime_error("Could not load Input plugin: "_s + path);
+	if (path.empty())
+	{
+		if (!input.Load(DEFAULT_INPUT_PLUGIN))
+			throw std::runtime_error("Failed to load default Input Plugin"_s + DEFAULT_INPUT_PLUGIN);
+	}
+	else if (!input.Load(path))
+	{
+		throw std::runtime_error("Failed to load Input Plugin"_s + path);
+	}
 	
 	std::cout << "Loaded Input Plugin: " << input->GetPluginName() << std::endl;
 	std::cout << "Version: " << input->GetPluginVersion() << std::endl;
@@ -230,8 +248,15 @@ void set_sound_plugin(const std::string& path)
 	using namespace xchip::utility::literals;
 	xchip::UniqueSound sound;
 
-	if(!sound.Load(path))
-		throw std::runtime_error("Could not load Sound plugin: "_s + path);
+	if (path.empty())
+	{
+		if (!sound.Load(DEFAULT_SOUND_PLUGIN))
+			throw std::runtime_error("Failed to load default Sound Plugin"_s + DEFAULT_SOUND_PLUGIN);
+	}
+	else if (!sound.Load(path))
+	{
+		throw std::runtime_error("Failed to load Sound Plugin"_s + path);
+	}
 
 	std::cout << "Loaded Sound Plugin: " << sound->GetPluginName() << std::endl;
 	std::cout << "Version: " << sound->GetPluginVersion() << std::endl;

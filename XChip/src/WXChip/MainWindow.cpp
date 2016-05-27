@@ -186,7 +186,7 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 void MainWindow::StartEmulator()
 {
 	StopEmulator();
-	_process.Run(_emuApp + " \"" + _romPath + "\" " + _settingsWin->GetEmuConfigStr());
+	_process.Run(_emuApp + "-ROM \"" + _romPath + "\" " + _settingsWin->GetEmuConfigStr());
 }
 
 
