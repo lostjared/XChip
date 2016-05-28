@@ -48,7 +48,6 @@ private:
 	void CreateControls();
 	void LoadList(const std::string &dirPath);
 	void ComputeEmuAppPath();
-	static std::string GetFullWD();
 
 
 	std::unique_ptr<wxPanel> _panel;

@@ -25,6 +25,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #endif
 
 #ifdef _WIN32
+#include <stdlib.h>
+#include <windows.h>
 #include <WXChip/dirent.h>
 #elif defined(__APPLE__) || defined(__linux__)
 #include <unistd.h>
@@ -37,7 +39,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <regex>
 #include <stdexcept>
 
-
+#include <XChip/Utility/CliOpts.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Memory.h>
 #include <WXChip/Main.h>
@@ -298,20 +300,17 @@ void MainWindow::LoadList(const std::string &dirPath)
 
 void MainWindow::ComputeEmuAppPath()
 {
-
 #ifdef _WIN32
 	constexpr const char* const finalEmuAppPath = "\\bin\\EmuApp.exe";
 #elif defined(__APPLE__) || defined(__linux__)
 	constexpr const char* const finalEmuAppPath = "/bin/EmuApp";
 #endif
 
-	_emuApp = MainWindow::GetFullWD();
+	_emuApp = xchip::utility::CliOpts::GetFullProcDir();
 	_emuApp += finalEmuAppPath;
-
 
 	if (!std::ifstream(_emuApp).good())
 		throw std::runtime_error("Could not find EmuApp executable!");
-
 
 	_emuApp.insert(0, "\"");
 	_emuApp += "\" ";
@@ -322,36 +321,3 @@ void MainWindow::ComputeEmuAppPath()
 
 
 
-
-
-std::string MainWindow::GetFullWD()
-{
-	using namespace xchip::utility::literals;
-
-	#ifdef _WIN32
-
-	throw std::runtime_error("get_full_wd not implemented for windows");
-	return "";
-
-	#elif defined(__linux__) || defined(__APPLE__)
-
-
-	constexpr std::size_t BUFF_LEN = 400;
-	char buffer[BUFF_LEN];
-	auto writeSize = readlink("/proc/self/exe", buffer, BUFF_LEN);
-
-	if(writeSize == -1)
-	{
-		const auto errorCode = errno;
-		throw std::runtime_error ("Could not get working directory by readlink: "_s + strerror(errorCode));
-	}
-
-	while(buffer[writeSize] != '/')
-		--writeSize;
-
-	buffer[writeSize+1]=0;
-
-	return buffer;
-
-	#endif
-}

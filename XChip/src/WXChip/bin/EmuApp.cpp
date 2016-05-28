@@ -23,6 +23,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <unistd.h>
 #elif defined( _WIN32 )
 #include <windows.h>
+#include <stdlib.h>
 #endif
 
 
@@ -65,7 +66,6 @@ static xchip::Emulator g_emulator;
 
 void load_plugins(const xchip::utility::CliOpts& opts);
 void configure_emulator(const xchip::utility::CliOpts& opts);
-std::string get_full_wd();
 
 #if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum);
@@ -155,18 +155,19 @@ int main(int argc, char **argv)
 
 
 
-
+template<class P>
+constexpr const char* DefaultPluginPath();
 #ifdef _WIN32
-constexpr const char DEFAULT_RENDER_PLUGIN_PATH[] = ".\\plugins\\XChipSDLRender";
-constexpr const char DEFAULT_INPUT_PLUGIN_PATH[] = ".\\plugins\\XChipSDLInput";
-constexpr const char DEFAULT_SOUND_PLUGIN_PATH[] = ".\\plugins\\XChipSDLSound";
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return ".\\plugins\\XChipSDLRender";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return ".\\plugins\\XChipSDLInput";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return ".\\plugins\\XChipSDLSound"; }
 #elif defined(__linux__) || defined(__APPLE__)
-constexpr const char DEFAULT_RENDER_PLUGIN_PATH[] = "./plugins/XChipSDLRender";
-constexpr const char DEFAULT_INPUT_PLUGIN_PATH[] = "./plugins/XChipSDLInput";
-constexpr const char DEFAULT_SOUND_PLUGIN_PATH[] = "./plugins/XChipSDLSound";
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "./plugins/XChipSDLRender";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "./plugins/XChipSDLInput";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "./plugins/XChipSDLSound";}
 #endif
 
-template<class Plugin, const char* const dPath>
+template<class PluginType>
 void set_plugin(const std::string& path);
 
 
@@ -176,9 +177,9 @@ void load_plugins(const xchip::utility::CliOpts& opts)
 	
 	const PluginConfigPair pluginPairs[] = 
 	{
-		{"-REN", set_plugin<xchip::UniqueRender, DEFAULT_RENDER_PLUGIN_PATH>},
-		{"-INP", set_plugin<xchip::UniqueInput, DEFAULT_INPUT_PLUGIN_PATH>},
-		{"-SND", set_plugin<xchip::UniqueSound, DEFAULT_SOUND_PLUGIN_PATH>}
+		{"-REN", set_plugin<xchip::UniqueRender>},
+		{"-INP", set_plugin<xchip::UniqueInput>},
+		{"-SND", set_plugin<xchip::UniqueSound>}
 	};
 
 	const auto begin = std::begin(pluginPairs);
@@ -190,19 +191,22 @@ void load_plugins(const xchip::utility::CliOpts& opts)
 	}
 }
 
-
-template<class Plugin, const char* const dPath>
+template<class PluginType>
 void set_plugin(const std::string& path)
 {
 	using namespace xchip::utility::literals;
-	Plugin plugin;
+	using xchip::utility::CliOpts;
+
+	PluginType plugin;
+
 	if (path.empty())
 	{
-		const auto defaultPluginPath = get_full_wd() + dPath;
-		if (!plugin.Load(defaultPluginPath))
-			throw std::runtime_error("Could not load default Plugin: "_s + defaultPluginPath);
+		const auto completePath = CliOpts::GetFullProcDir() + DefaultPluginPath<PluginType>();
+
+		if (!plugin.Load(completePath))
+			throw std::runtime_error("Could not load default Plugin: "_s + completePath);
 	}
-	else if (plugin.Load(path))
+	else if (!plugin.Load(path))
 	{
 		throw std::runtime_error("Could not load default Plugin: "_s + path);
 	}
@@ -461,54 +465,6 @@ xchip::utility::Color get_arg_rgb(const std::string& arg)
 	}
 
 	return { (uint8_t)rgb[0], (uint8_t)rgb[1], (uint8_t)rgb[2] };
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-std::string get_full_wd()
-{
-	using namespace xchip::utility::literals;
-
-	#ifdef _WIN32
-
-	throw std::runtime_error("get_full_wd not implemented for windows");
-	return "";
-
-	#elif defined(__linux__) || defined(__APPLE__)
-
-
-	constexpr std::size_t BUFF_LEN = 400;
-	char buffer[BUFF_LEN];
-	auto writeSize = readlink("/proc/self/exe", buffer, BUFF_LEN);
-
-	if(writeSize == -1)
-	{
-		const auto errorCode = errno;
-		throw std::runtime_error ("Could not get working directory by readlink: "_s + strerror(errorCode));
-	}
-
-	while(buffer[writeSize] != '/')
-		--writeSize;
-
-	buffer[writeSize+1]=0;
-
-	return buffer;
-
-
-
-	#endif
 }
 
 
