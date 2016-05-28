@@ -244,10 +244,13 @@ void UniquePlugin<T>::Free()
 template<class T>
 void UniquePlugin<T>::Swap(UniquePlugin& other) noexcept
 {
-	this->_dloader.Swap(other._dloader);
-	auto* const aux = this->_plugin;
-	this->_plugin = other._plugin;
-	other._plugin = aux;
+	if(&other != this)
+	{
+		this->_dloader.Swap(other._dloader);
+		auto* const aux = this->_plugin;
+		this->_plugin = other._plugin;
+		other._plugin = aux;
+	}
 }
 
 

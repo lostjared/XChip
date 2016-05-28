@@ -44,11 +44,12 @@ private:
 	void OnLoadRomDir(wxCommandEvent& ev);
 	void OnLoadRom(wxCommandEvent& ev);
 	void StartEmulator();
-	void StopEmulator();
-	
+	void StopEmulator();	
 	void CreateControls();
 	void LoadList(const std::string &dirPath);
-	bool ComputeEmuAppPath();
+	void ComputeEmuAppPath();
+	static std::string GetFullWD();
+
 
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
@@ -57,8 +58,6 @@ private:
 	std::unique_ptr<wxButton> _settings;
 	std::unique_ptr<wxButton> _emulatorSettings;
 	std::unique_ptr<SettingsWindow> _settingsWin;
-
-
 	std::string _emuApp;
 	std::string _romPath;
 	xchip::utility::Process _process;

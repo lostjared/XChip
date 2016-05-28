@@ -39,7 +39,6 @@ CliOpts::CliOpts(std::vector<std::string>&& cliArgs)
 }
 
 
-
 std::string CliOpts::GetOpt(const std::string& match) const
 {
 
@@ -57,27 +56,8 @@ std::string CliOpts::GetOpt(const std::string& match) const
 }
 
 
-bool CliOpts::RemoveOpt(const std::string& match)
-{
-	auto itr = GetOptItr(match);
-	if (itr != this->end())
-	{
-		if (_isSub)
-		{
-			this->erase(itr);
-		}
 
-		else
-		{
-			itr = this->erase(itr - 1);
-			this->erase(itr);
-		}
 
-		return true;
-	}
-
-	return false;
-}
 
 
 
@@ -113,6 +93,31 @@ CliOpts::ArgVec::const_iterator CliOpts::GetOptItr(const std::string& match) con
 }
 
 
+
+
+
+
+bool CliOpts::RemoveOpt(const std::string& match)
+{
+	auto itr = GetOptItr(match);
+	if (itr != this->end())
+	{
+		if (_isSub)
+		{
+			this->erase(itr);
+		}
+
+		else
+		{
+			itr = this->erase(itr - 1);
+			this->erase(itr);
+		}
+
+		return true;
+	}
+
+	return false;
+}
 
 
 

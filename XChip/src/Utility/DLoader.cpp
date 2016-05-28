@@ -143,9 +143,12 @@ void* DLoader::GetSymbol(const std::string& symbolName)
 
 void DLoader::Swap(DLoader& other) noexcept
 {
-	auto* const aux = this->_handle;
-	this->_handle = other._handle;
-	other._handle = aux;
+	if(&other != this)
+	{
+		auto* const aux = this->_handle;
+		this->_handle = other._handle;
+		other._handle = aux;
+	}
 }
 
 

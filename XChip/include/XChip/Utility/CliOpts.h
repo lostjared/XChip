@@ -35,7 +35,6 @@ public:
 	CliOpts(std::vector<std::string>&& cliArgs);
 	std::string GetOpt(const std::string& match) const;
 	bool RemoveOpt(const std::string& match);
-
 private:
 	ArgVec::const_iterator GetOptItr(const std::string& match) const;
 	mutable bool _isSub = false;

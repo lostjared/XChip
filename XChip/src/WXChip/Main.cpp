@@ -23,15 +23,12 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+#include <wx/msgdlg.h>
 
-
+#include <string>
 #include <XChip/Utility/Memory.h>
-
-#include <WXChip/Main.h>
 #include <WXChip/MainWindow.h>
-
-
-
+#include <WXChip/Main.h>
 
 wxIMPLEMENT_APP(WXChip);
 
@@ -40,16 +37,17 @@ bool WXChip::OnInit()
 {
 	using xchip::utility::make_unique;
 
-	try {
+	try 
+	{
 		auto mainwin = make_unique<MainWindow>("WXChip", wxPoint(50,50), wxSize(800, 600));
 		mainwin->Show(true);
 		mainwin->SetFocus();
 		_mainwin = mainwin.release();
 
 	}
-	catch(std::exception& err) {
-		std::cout << err.what() << std::endl;
-		return false;
+	catch(std::exception& err) 
+	{
+		wxMessageBox(err.what(), wxT("Fatal Exception"), wxICON_ERROR);
 	}
 
 
