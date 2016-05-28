@@ -138,7 +138,8 @@ bool CliOpts::RemoveOpt(const std::string& match)
 std::string CliOpts::GetFullProcName()
 {
 	using namespace literals;
-	#ifdef _WIN32
+	
+#ifdef _WIN32
 
 	HMODULE handle = GetModuleHandleW(NULL);
 	WCHAR buffer[MAX_PATH];
@@ -158,7 +159,7 @@ std::string CliOpts::GetFullProcName()
 	
 	return ret;
 
-	#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__) || defined(__APPLE__)
 
 	constexpr std::size_t BUFF_LEN = 400;
 	char buffer[BUFF_LEN];
@@ -182,11 +183,11 @@ std::string CliOpts::GetFullProcName()
 
 std::string CliOpts::GetFullProcDir()
 {
-	#ifdef _WIN32
+#ifdef _WIN32
 	constexpr const char dirSlash = '\\';
-	#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__) || defined(__APPLE__)
 	constexpr const char dirSlash = '/';
-	#endif
+#endif
 
 	auto fullPath = GetFullProcName();
 	fullPath.erase(fullPath.find_last_of(dirSlash), fullPath.size());
