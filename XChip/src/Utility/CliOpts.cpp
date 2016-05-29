@@ -22,11 +22,15 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifdef _WIN32
 #include <stdlib.h>
 #include <windows.h>
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__) 
+#include <string.h>
 #include <unistd.h>
+#elif defined(__APPLE__)
+#include <string.h>
+#include <libproc.h>
 #endif
 
-
+#include <XChip/Utility/StdintDef.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/CliOpts.h>
 
@@ -141,6 +145,8 @@ std::string CliOpts::GetFullProcName()
 	
 #ifdef _WIN32
 
+
+
 	HMODULE handle = GetModuleHandleW(NULL);
 	WCHAR buffer[MAX_PATH];
 	auto writeSize = GetModuleFileNameW(handle, buffer, MAX_PATH);
@@ -159,22 +165,46 @@ std::string CliOpts::GetFullProcName()
 	
 	return ret;
 
-#elif defined(__linux__) || defined(__APPLE__)
 
-	constexpr std::size_t BUFF_LEN = 400;
+
+#elif defined(__linux__)
+
+
+	constexpr const size_t BUFF_LEN = 400;
 	char buffer[BUFF_LEN];
 	auto writeSize = readlink("/proc/self/exe", buffer, BUFF_LEN);
 
 	if (writeSize == -1)
 	{
 		const auto errorCode = errno;
-		LOGerr("Error in readlink ErrorCode: "_s + std::to_string(errorCode));
+		LOGerr("Error in readlink: "_s + strerror(errorCode));
 		return std::string();
 	}
 
 	buffer[writeSize] = 0;
 
 	return buffer;
+
+
+
+#elif defined(__APPLE__)
+
+
+	constexpr const size_t BUFF_LEN = 400;
+	char buffer[BUFF_LEN];
+
+	pid_t pid = getpid();
+	
+	if ( rproc_pidpath (pid, buffer, BUFF_LENT) <= 0 ) 
+	{
+		const auto errorCode = errno;
+		LOGerr("Error in rpoc_pidpath: "_s + strerror(errorConde));
+		return std::string();
+	}
+
+	return buffer;
+
+
 
 #endif
 
