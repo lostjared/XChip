@@ -40,7 +40,8 @@ public:
 		ID_TEXT1 = 1, ID_TEXTCTRL1, ID_TEXT2, 
 		ID_TEXTCTRL2, ID_TEXT3, ID_TEXTCTRL3, 
 		ID_BTN_OK, ID_BTN_CANCEL, ID_BTN_DEFAULT,
-		ID_TEXT4, ID_RES, ID_PLUGDIR, ID_PLUGTEXT
+		ID_TEXT4, ID_RES, ID_PLUGRENDIR, ID_PLUGRENTEXT,
+		ID_PLUGINDIR, ID_PLUGINTEXT, ID_PLUGSNDDIR, ID_PLUGSNDTEXT
 	};
 
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
@@ -61,7 +62,9 @@ private:
 	void OnCancel(wxCommandEvent &event);
 	void OnOkay(wxCommandEvent &event);
 	void OnDefault(wxCommandEvent &event);
-	void OnSetPlugin(wxCommandEvent &event);
+	void OnSetRenderPlugin(wxCommandEvent &event);
+	void OnSetInputPlugin(wxCommandEvent &event);
+	void OnSetSoundPlugin(wxCommandEvent &event);
 	void UpdateConfigStr();
 	void CreateControls();
 	void ResetTextControls();
@@ -80,9 +83,13 @@ private:
 	std::unique_ptr<wxButton> _buttonOk;
 	std::unique_ptr<wxButton> _buttonCancel;
 	std::unique_ptr<wxButton> _buttonDefault;
-	std::unique_ptr<wxButton> _plugDir;
-	std::unique_ptr<wxStaticText> _plugText;
-
+	std::unique_ptr<wxButton> _plugRenDir;
+	std::unique_ptr<wxTextCtrl> _plugRenText;
+	std::unique_ptr<wxButton> _plugInDir;
+	std::unique_ptr<wxTextCtrl> _plugInText;
+	std::unique_ptr<wxButton> _plugSndDir;
+	std::unique_ptr<wxTextCtrl> _plugSndText;
+	
 	wxDECLARE_EVENT_TABLE();
 };
 
