@@ -124,7 +124,7 @@ void SettingsWindow::CreateControls()
 	_panel = make_unique<wxPanel>(this, wxID_ANY);
 
 	_dirTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT1,_T("Directory: "), 
-                                             wxPoint(10,15), wxSize(80,25));
+                                            wxPoint(10,15), wxSize(80,25));
 
 	_dirPath = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, _T(""), 
                                             wxPoint(100,10), wxSize(320,20), wxTE_READONLY);
@@ -171,24 +171,25 @@ void SettingsWindow::CreateControls()
 	
 
 	_plugRenDir = make_unique<wxButton>(_panel.get(), ID_PLUGRENDIR, _T("Render Plugin"),
-									 wxPoint(10, 115), wxSize(140, 25));
+                                             wxPoint(10, 115), wxSize(140, 25));
 	
 	_plugRenText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGRENTEXT, _T(""),
-										  		wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
+                                                wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
 	
 	
 	_plugInDir = make_unique<wxButton>(_panel.get(), ID_PLUGINDIR, _T("Input Plugin"),
-									 			wxPoint(10, 115), wxSize(140, 25));
+                                            wxPoint(10, 115), wxSize(140, 25));
+
 	
 	_plugInText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGINTEXT, _T(""),
-										   		wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
+                                           wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
 	
 	
 	_plugSndDir = make_unique<wxButton>(_panel.get(), ID_PLUGSNDDIR, _T("Sound Plugin"),
-									   			wxPoint(10, 115), wxSize(140, 25));
+                                         wxPoint(10, 115), wxSize(140, 25));
 	
-	_plugSndText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGSNDTEXT, _T(""),
-										  		wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
+	_plugSndText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGSNDTEXT, _T(""), 
+                                           wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
 	
 }
 
