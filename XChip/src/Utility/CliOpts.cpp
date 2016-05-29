@@ -26,9 +26,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <string.h>
 #include <unistd.h>
 #elif defined(__APPLE__)
-#include <string.h>
-#include <unistd.h>
-#include <libproc.h>
+#include <mach-o/dyld.h>
 #endif
 
 #include <XChip/Utility/StdintDef.h>
@@ -189,21 +187,19 @@ std::string CliOpts::GetFullProcName()
 
 
 #elif defined(__APPLE__)
-
-
-	constexpr const size_t BUFF_LEN = 400;
-	char buffer[BUFF_LEN];
 	
-	if ( rproc_pidpath (getpid(), buffer, BUFF_LEN) <= 0 )
+	constexpr const uint32_t BUFF_LEN = 400;
+	
+	char buffer[BUFF_LEN];
+	uint32_t size = BUFF_LEN;
+
+	if (_NSGetExecutablePath(path, &size) != 0)
 	{
-		const auto errorCode = errno;
-		LOGerr("Error in rpoc_pidpath: "_s + strerror(errorCode));
+		LOGerr("_NSGetExecutablePath failed. output size: "_s std::to_string(size));
 		return std::string();
 	}
-
+	
 	return buffer;
-
-
 
 #endif
 
