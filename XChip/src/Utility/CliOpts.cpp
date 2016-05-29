@@ -61,7 +61,7 @@ std::string CliOpts::GetOpt(const std::string& match) const
 			return *itr;
 	}
 
-	return "";
+	return std::string();
 
 }
 

@@ -1,5 +1,6 @@
 if(${BUILD_TEST} STREQUAL "ON")
 	project(XChipTest)
+	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/Test)
 	add_executable(${PROJECT_NAME} test.cpp)
 	target_link_libraries(${PROJECT_NAME} Core)
 endif()
