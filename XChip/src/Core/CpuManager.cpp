@@ -341,6 +341,7 @@ static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept
 	{
 		if(size == arr_size(arr))
 			return true;
+		
 		else
 			return __realloc_arr(reinterpret_cast<void*&>(arr), sizeof(T) * size);
 	}	
