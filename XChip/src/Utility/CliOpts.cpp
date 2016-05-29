@@ -25,6 +25,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #elif defined(__linux__) || defined(__APPLE__)
 #include <unistd.h>
 #endif
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+#endif
+
+
 
 
 #include <XChip/Utility/Log.h>
@@ -159,8 +164,8 @@ std::string CliOpts::GetFullProcName()
 	
 	return ret;
 
-#elif defined(__linux__) || defined(__APPLE__)
-
+#elif defined(__linux__)
+	
 	constexpr std::size_t BUFF_LEN = 400;
 	char buffer[BUFF_LEN];
 	auto writeSize = readlink("/proc/self/exe", buffer, BUFF_LEN);
@@ -176,8 +181,17 @@ std::string CliOpts::GetFullProcName()
 
 	return buffer;
 
+#elif defined(__APPLE__)
+	
+	char path[1024];
+	uint32_t size = sizeof(path);
+	if (_NSGetExecutablePath(path, &size) == 0)
+		printf("executable path is %s\n", path);
+	return path;
+	
 #endif
-
+	
+	
 }
 
 
