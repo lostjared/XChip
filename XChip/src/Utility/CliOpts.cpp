@@ -26,9 +26,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <string.h>
 #include <unistd.h>
 #elif defined(__APPLE__)
-#include <string.h>
-#include <unistd.h>
-#include <libproc.h>
 #include <mach-o/dyld.h>
 #endif
 
@@ -196,7 +193,7 @@ std::string CliOpts::GetFullProcName()
 
 	if (_NSGetExecutablePath(buffer, &size) != 0)
 	{
-		LOGerr("_NSGetExecutablePath failed. output size: "+ std::to_string(size));
+		LOGerr("_NSGetExecutablePath failed. output size: " + std::to_string(size));
 		return std::string();
 	}
 	
