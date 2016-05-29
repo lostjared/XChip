@@ -42,7 +42,10 @@ EVT_CLOSE(SettingsWindow::OnCloseWindow)
 EVT_BUTTON(ID_BTN_OK, SettingsWindow::OnOkay)
 EVT_BUTTON(ID_BTN_CANCEL, SettingsWindow::OnCancel)
 EVT_BUTTON(ID_BTN_DEFAULT, SettingsWindow::OnDefault)
-EVT_BUTTON(ID_PLUGDIR, SettingsWindow::OnSetPlugin)
+EVT_BUTTON(ID_PLUGRENDIR, SettingsWindow::OnSetRenderPlugin)
+EVT_BUTTON(ID_PLUGINDIR, SettingsWindow::OnSetInputPlugin)
+EVT_BUTTON(ID_PLUGSNDDIR, SettingsWindow::OnSetSoundPlugin)
+
 wxEND_EVENT_TABLE()
 
 
@@ -167,13 +170,25 @@ void SettingsWindow::CreateControls()
                                                 wxPoint(230,150), wxSize(100,25));
 	
 
-	_plugDir = make_unique<wxButton>(_panel.get(), ID_PLUGDIR, _T("Plugin Directory"),
+	_plugRenDir = make_unique<wxButton>(_panel.get(), ID_PLUGRENDIR, _T("Render Plugin"),
 									 wxPoint(10, 115), wxSize(140, 25));
 	
-	_plugText = make_unique<wxStaticText>(_panel.get(), ID_PLUGDIR, _T(""),
-										  wxPoint(165, 123), wxSize(70, 25));
+	_plugRenText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGRENTEXT, _T(""),
+										  wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
 	
 	
+	_plugInDir = make_unique<wxButton>(_panel.get(), ID_PLUGINDIR, _T("Render Plugin"),
+									 wxPoint(10, 115), wxSize(140, 25));
+	
+	_plugInText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGINTEXT, _T(""),
+										   wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
+	
+	
+	_plugSndDir = make_unique<wxButton>(_panel.get(), ID_PLUGSNDDIR, _T("Render Plugin"),
+									   wxPoint(10, 115), wxSize(140, 25));
+	
+	_plugSndText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGSNDTEXT, _T(""),
+										  wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
 	
 }
 
@@ -207,17 +222,41 @@ void SettingsWindow::OnDefault(wxCommandEvent&)
 	ResetTextControls();
 }
 
-void SettingsWindow::OnSetPlugin(wxCommandEvent&)
+void SettingsWindow::OnSetRenderPlugin(wxCommandEvent&)
 {
-	wxDirDialog dlg(NULL, "Choose input directory", "",
-					wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+	wxFileDialog dlg(this, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 	
+	wxString value = dlg.GetPath();
+	*_plugRenText << value;
+}
+
+void SettingsWindow::OnSetInputPlugin(wxCommandEvent &event)
+{
+	wxFileDialog dlg(this, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+	
+	if (dlg.ShowModal() == wxID_CANCEL)
+		return;
 	
 	wxString value = dlg.GetPath();
-	_plugText->SetLabel(value);
+	*_plugRenText << value;
+
+	
+}
+
+void SettingsWindow::OnSetSoundPlugin(wxCommandEvent &event)
+{
+
+	wxFileDialog dlg(this, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+	
+	if (dlg.ShowModal() == wxID_CANCEL)
+		return;
+	
+	wxString value = dlg.GetPath();
+	*_plugRenText << value;
+	
 }
 
 
