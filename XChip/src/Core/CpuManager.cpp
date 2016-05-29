@@ -28,8 +28,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  
 namespace xchip {
 
-
-
 using namespace xchip::utility;
 using namespace xchip::utility::literals;
 
@@ -294,13 +292,16 @@ iSound* CpuManager::SwapSound(iSound* sound)
 
 
 
-// local template functions
-template<class T>
-static bool __alloc_arr(T*& arr, const size_t size) noexcept;
-template<class T>
-static bool __realloc_arr(T*& arr, const size_t size) noexcept;
 
 
+
+
+
+
+
+// local static functions
+static bool __alloc_arr(void*& arr, const size_t size) noexcept;
+static bool __realloc_arr(void*& arr, const size_t size) noexcept;
 
 static void check_cpu_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept
 {
@@ -311,6 +312,8 @@ static void check_cpu_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags 
 	else
 		man.UnsetFlags(flag);
 }
+
+
 
 
 
@@ -326,21 +329,23 @@ static bool alloc_cpu_arr(T*& arr, const size_t size) noexcept
 			free_arr(arr);
 	}
 
-
-	return __alloc_arr(arr, size);
+	return __alloc_arr(reinterpret_cast<void*&>(arr), sizeof(T) * size);
 }
+
 
 
 template<class T>
 static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept
 {
-	if (arr == nullptr)
-		return __alloc_arr(arr, size);
+	if (arr != nullptr)
+	{
+		if(size == arr_size(arr))
+			return true;
+		else
+			return __realloc_arr(reinterpret_cast<void*&>(arr), sizeof(T) * size);
+	}	
 
-	else if(size == arr_size(arr))
-		return true;
-	
-	return __realloc_arr(arr, size);
+	return __alloc_arr(reinterpret_cast<void*&>(arr), sizeof(T) * size);	
 }
 
 
@@ -358,27 +363,34 @@ static void free_cpu_arr(T*& arr) noexcept
 
 
 
-
-template<class T>
-static bool __alloc_arr(T*& arr, const size_t size) noexcept
+static bool __alloc_arr(void*& arr, const size_t size) noexcept
 {
-	arr = (T*)alloc_arr(sizeof(T) * size);
+	arr = alloc_arr(size);
 	
-	if (!arr)
-		return false;
+	if (arr)
+	{
+		arr_zero(arr, size);
+		return true;
+	}
 
-	arr_zero(arr);
-	return true;
+	return false;
 }
 
 
 
-template<class T>
-static bool __realloc_arr(T*& arr, const size_t size) noexcept
+
+static bool __realloc_arr(void*& arr, const size_t size) noexcept
 {
-	arr = (T*) realloc_arr(arr, sizeof(T) * size);
+	arr = realloc_arr(arr, size);
 	return arr != nullptr;
 }
+
+
+
+
+
+
+
 
 
 

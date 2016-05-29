@@ -72,10 +72,22 @@ void free_arr(const void* block) noexcept
 
 
 
+void arr_zero(void* arr) noexcept
+{
+	ASSERT_MSG(arr != nullptr,
+		"Alloc.h::arr_zero: attempt to clean nullptr");
+
+	memset(arr, 0, arr_size(reinterpret_cast<uint8_t*>(arr)));
+}
 
 
+void arr_zero(void* arr, const size_t size) noexcept
+{
+	ASSERT_MSG(arr != nullptr,
+		"Alloc.h::arr_zero: attempt to clean nullptr");
 
-
+	memset(arr, 0, size);
+}
 
 
 

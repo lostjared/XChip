@@ -11,13 +11,13 @@ namespace xchip { namespace utility {
 
 extern void* alloc_arr(const size_t bytes) noexcept;
 
-
 extern void* realloc_arr(void* from, const size_t bytes) noexcept;
-
 
 extern void free_arr(const void* block) noexcept;
  
+extern void arr_zero(void* arr) noexcept;
 
+extern void arr_zero(void* arr, const size_t size) noexcept;
 
 
 template<class T>
@@ -53,22 +53,14 @@ constexpr size_t arr_size(const T(&)[sz]) noexcept
 
 
 
-template<class T>
-void arr_zero(T* arr) noexcept
-{
-	ASSERT_MSG(arr != nullptr,
-		"Alloc.h::arr_zero: attempt to clean nullptr");
-	memset(arr, 0, arr_size(reinterpret_cast<uint8_t*>(arr)));
-}
-
-
-
 template<class T, const size_t sz>
 void arr_zero(T(&arr)[sz]) noexcept
 {
 	for (auto& it : arr)
 		it = 0;
 }
+
+
 
 
 
