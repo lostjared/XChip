@@ -158,13 +158,13 @@ int main(int argc, char **argv)
 template<class P>
 constexpr const char* DefaultPluginPath();
 #ifdef _WIN32
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return ".\\plugins\\XChipSDLRender";}
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return ".\\plugins\\XChipSDLInput";}
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return ".\\plugins\\XChipSDLSound"; }
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "\\plugins\\XChipSDLRender";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "\\plugins\\XChipSDLInput";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "\\plugins\\XChipSDLSound"; }
 #elif defined(__linux__) || defined(__APPLE__)
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "./plugins/XChipSDLRender";}
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "./plugins/XChipSDLInput";}
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "./plugins/XChipSDLSound";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "/plugins/XChipSDLRender";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "/plugins/XChipSDLInput";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "/plugins/XChipSDLSound";}
 #endif
 
 template<class PluginType>
