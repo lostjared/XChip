@@ -198,7 +198,7 @@ std::string CliOpts::GetFullProcName()
 	if ( rproc_pidpath (pid, buffer, BUFF_LENT) <= 0 ) 
 	{
 		const auto errorCode = errno;
-		LOGerr("Error in rpoc_pidpath: "_s + strerror(errorConde));
+		LOGerr("Error in rpoc_pidpath: "_s + strerror(errorCode));
 		return std::string();
 	}
 
