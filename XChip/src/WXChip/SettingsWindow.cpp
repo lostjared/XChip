@@ -170,7 +170,7 @@ void SettingsWindow::CreateControls()
 	_plugDir = make_unique<wxButton>(_panel.get(), ID_PLUGDIR, _T("Plugin Directory"),
 									 wxPoint(10, 115), wxSize(140, 25));
 	
-	_plugText = make_unique<wxStaticText>(_panel.get(), ID_PLUGDIR, _T("Test"),
+	_plugText = make_unique<wxStaticText>(_panel.get(), ID_PLUGDIR, _T(""),
 										  wxPoint(165, 123), wxSize(70, 25));
 	
 	
