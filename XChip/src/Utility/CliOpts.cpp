@@ -27,6 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <unistd.h>
 #elif defined(__APPLE__)
 #include <string.h>
+#include <unistd.h>
 #include <libproc.h>
 #endif
 
@@ -170,7 +171,7 @@ std::string CliOpts::GetFullProcName()
 #elif defined(__linux__)
 
 
-	constexpr const size_t BUFF_LEN = 400;
+	constexpr const size_t BUFF_LEN = 256;
 	char buffer[BUFF_LEN];
 	auto writeSize = readlink("/proc/self/exe", buffer, BUFF_LEN);
 
