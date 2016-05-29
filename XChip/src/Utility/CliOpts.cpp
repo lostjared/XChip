@@ -189,11 +189,18 @@ std::string CliOpts::GetFullProcName()
 	return buffer;
 
 #elif defined(__APPLE__)
-	char path[1024];
-	uint32_t size = sizeof(path);
-	if (_NSGetExecutablePath(path, &size) == 0)
-		printf("executable path is %s\n", path);
-	return path;
+	constexpr const uint32_t BUFF_LEN = 400;
+	
+	char buffer[BUFF_LEN];
+	uint32_t size = BUFF_LEN;
+	
+	if (_NSGetExecutablePath(path, &size) != 0)
+	{
+		LOGerr("_NSGetExecutablePath failed. output size: "_s std::to_string(size));
+		return std::string();
+	}
+	
+	return buffer;
 #endif
 	
 }
