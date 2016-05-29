@@ -177,14 +177,14 @@ void SettingsWindow::CreateControls()
 										  wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
 	
 	
-	_plugInDir = make_unique<wxButton>(_panel.get(), ID_PLUGINDIR, _T("Render Plugin"),
+	_plugInDir = make_unique<wxButton>(_panel.get(), ID_PLUGINDIR, _T("Input Plugin"),
 									 wxPoint(10, 115), wxSize(140, 25));
 	
 	_plugInText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGINTEXT, _T(""),
 										   wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
 	
 	
-	_plugSndDir = make_unique<wxButton>(_panel.get(), ID_PLUGSNDDIR, _T("Render Plugin"),
+	_plugSndDir = make_unique<wxButton>(_panel.get(), ID_PLUGSNDDIR, _T("Sound Plugin"),
 									   wxPoint(10, 115), wxSize(140, 25));
 	
 	_plugSndText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGSNDTEXT, _T(""),
