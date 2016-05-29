@@ -40,7 +40,7 @@ public:
 		ID_TEXT1 = 1, ID_TEXTCTRL1, ID_TEXT2, 
 		ID_TEXTCTRL2, ID_TEXT3, ID_TEXTCTRL3, 
 		ID_BTN_OK, ID_BTN_CANCEL, ID_BTN_DEFAULT,
-		ID_TEXT4, ID_RES
+		ID_TEXT4, ID_RES, ID_PLUGDIR, ID_PLUGTEXT
 	};
 
 	SettingsWindow(const wxString &title, const wxPoint &pos, const wxSize &size);
@@ -61,6 +61,7 @@ private:
 	void OnCancel(wxCommandEvent &event);
 	void OnOkay(wxCommandEvent &event);
 	void OnDefault(wxCommandEvent &event);
+	void OnSetPlugin(wxCommandEvent &event);
 	void UpdateConfigStr();
 	void CreateControls();
 	void ResetTextControls();
@@ -79,6 +80,8 @@ private:
 	std::unique_ptr<wxButton> _buttonOk;
 	std::unique_ptr<wxButton> _buttonCancel;
 	std::unique_ptr<wxButton> _buttonDefault;
+	std::unique_ptr<wxButton> _plugDir;
+	std::unique_ptr<wxStaticText> _plugText;
 
 	wxDECLARE_EVENT_TABLE();
 };

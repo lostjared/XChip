@@ -42,6 +42,7 @@ EVT_CLOSE(SettingsWindow::OnCloseWindow)
 EVT_BUTTON(ID_BTN_OK, SettingsWindow::OnOkay)
 EVT_BUTTON(ID_BTN_CANCEL, SettingsWindow::OnCancel)
 EVT_BUTTON(ID_BTN_DEFAULT, SettingsWindow::OnDefault)
+EVT_BUTTON(ID_PLUGDIR, SettingsWindow::OnSetPlugin)
 wxEND_EVENT_TABLE()
 
 
@@ -164,8 +165,16 @@ void SettingsWindow::CreateControls()
 
 	_buttonDefault = make_unique<wxButton>(_panel.get(), ID_BTN_DEFAULT, _T("Default"), 
                                                 wxPoint(230,150), wxSize(100,25));
+	
 
-
+	_plugDir = make_unique<wxButton>(_panel.get(), ID_PLUGDIR, _T("Plugin Directory"),
+									 wxPoint(10, 115), wxSize(140, 25));
+	
+	_plugText = make_unique<wxStaticText>(_panel.get(), ID_PLUGDIR, _T("Test"),
+										  wxPoint(165, 123), wxSize(70, 25));
+	
+	
+	
 }
 
 void SettingsWindow::SaveSettings()
@@ -196,6 +205,19 @@ void SettingsWindow::OnOkay(wxCommandEvent&)
 void SettingsWindow::OnDefault(wxCommandEvent&)
 {
 	ResetTextControls();
+}
+
+void SettingsWindow::OnSetPlugin(wxCommandEvent&)
+{
+	wxDirDialog dlg(NULL, "Choose input directory", "",
+					wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+	
+	if (dlg.ShowModal() == wxID_CANCEL)
+		return;
+	
+	
+	wxString value = dlg.GetPath();
+	_plugText->SetLabel(value);
 }
 
 

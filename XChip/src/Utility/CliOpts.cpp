@@ -22,16 +22,19 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifdef _WIN32
 #include <stdlib.h>
 #include <windows.h>
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__) 
+#include <string.h>
 #include <unistd.h>
-#endif
-#if defined(__APPLE__)
+#elif defined(__APPLE__)
+#include <string.h>
+#include <unistd.h>
+#include <libproc.h>
 #include <mach-o/dyld.h>
 #endif
 
 
 
-
+#include <XChip/Utility/StdintDef.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/CliOpts.h>
 
@@ -146,6 +149,8 @@ std::string CliOpts::GetFullProcName()
 	
 #ifdef _WIN32
 
+
+
 	HMODULE handle = GetModuleHandleW(NULL);
 	WCHAR buffer[MAX_PATH];
 	auto writeSize = GetModuleFileNameW(handle, buffer, MAX_PATH);
@@ -164,16 +169,18 @@ std::string CliOpts::GetFullProcName()
 	
 	return ret;
 
+
 #elif defined(__linux__)
-	
-	constexpr std::size_t BUFF_LEN = 400;
+
+
+	constexpr const size_t BUFF_LEN = 256;
 	char buffer[BUFF_LEN];
 	auto writeSize = readlink("/proc/self/exe", buffer, BUFF_LEN);
 
 	if (writeSize == -1)
 	{
 		const auto errorCode = errno;
-		LOGerr("Error in readlink ErrorCode: "_s + std::to_string(errorCode));
+		LOGerr("Error in readlink: "_s + strerror(errorCode));
 		return std::string();
 	}
 
@@ -182,15 +189,12 @@ std::string CliOpts::GetFullProcName()
 	return buffer;
 
 #elif defined(__APPLE__)
-	
 	char path[1024];
 	uint32_t size = sizeof(path);
 	if (_NSGetExecutablePath(path, &size) == 0)
 		printf("executable path is %s\n", path);
 	return path;
-	
 #endif
-	
 	
 }
 
