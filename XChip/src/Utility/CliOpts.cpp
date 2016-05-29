@@ -192,10 +192,8 @@ std::string CliOpts::GetFullProcName()
 
 	constexpr const size_t BUFF_LEN = 400;
 	char buffer[BUFF_LEN];
-
-	pid_t pid = getpid();
 	
-	if ( rproc_pidpath (pid, buffer, BUFF_LENT) <= 0 ) 
+	if ( rproc_pidpath (getpid(), buffer, BUFF_LENT) <= 0 ) 
 	{
 		const auto errorCode = errno;
 		LOGerr("Error in rpoc_pidpath: "_s + strerror(errorCode));
