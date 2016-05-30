@@ -29,7 +29,7 @@ void saveDirectory(const std::string &text, const std::string &fps, const std::s
 	file.open("romlist.dat", std::ios::out);
 	if(!file.is_open())
 	{
-		xchip::utility::LOGerr("Error could not open file");
+		xchip::utility::LogError("Error could not open file");
 		return;
 	}
 	

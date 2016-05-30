@@ -65,5 +65,8 @@
     <ClCompile Include="..\..\..\XChip\src\Utility\CliOpts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\XChip\src\Utility\Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

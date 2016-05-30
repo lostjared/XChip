@@ -44,13 +44,13 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
 SdlRender::SdlRender() noexcept
 {
-	LOG("Creating SdlRenderer object...\n");
+	Log("Creating SdlRenderer object...");
 }
 
 
 SdlRender::~SdlRender()
 {
-	LOG("Destroying SdlRenderer object...\n");
+	Log("Destroying SdlRenderer object...");
 	if (_initialized)
 		this->Dispose();
 }
@@ -65,7 +65,7 @@ bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 
 	if( SDL_InitSubSystem( SDL_INIT_VIDEO ) )
 	{
-		LOGerr("Could not initialize SDL2 Video: %s\n", SDL_GetError());
+		LogError("Could not initialize SDL2 Video: %s", SDL_GetError());
 		return false;
 	}
 	
@@ -73,7 +73,7 @@ bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 	{
 		if (!this->_initialized) 
 		{
-			LOGerr("Couldn't initialize SdlRender. SDL ERROR MSG: %s\n", SDL_GetError());
+			LogError("Couldn't initialize SdlRender. SDL ERROR MSG: %s", SDL_GetError());
 			this->Dispose();
 		}
 	});
@@ -176,7 +176,7 @@ Color SdlRender::GetBackgroundColor() const noexcept
 	
 	if(SDL_GetRenderDrawColor(_rend, &color.r, &color.g, &color.b, nullptr))
 	{
-		LOGerr("Could not get render draw color: %s\n", SDL_GetError());
+		LogError("Could not get render draw color: %s", SDL_GetError());
 		return {0, 0, 0};
 	}
 
@@ -195,7 +195,7 @@ Vec2i SdlRender::GetResolution() const noexcept
 
 	if( SDL_QueryTexture(_texture, nullptr, nullptr, &res.x, &res.y) )
 	{
-		LOGerr("Failed to get SDL_Texture resolution: %s\n", SDL_GetError());
+		LogError("Failed to get SDL_Texture resolution: %s", SDL_GetError());
 		return {0, 0};
 	}
 
@@ -314,13 +314,13 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 	{
 		if(SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP))
 		{
-			LOGerr("Error while setting SdlRender Fullscreen: %s\n", SDL_GetError());
+			LogError("Error while setting SdlRender Fullscreen: %s", SDL_GetError());
 			return false;
 		}
 
 		else if(SDL_ShowCursor(0) < 0) 
 		{
-			LOGerr("Error while hiding cursor: %s\n", SDL_GetError());
+			LogError("Error while hiding cursor: %s", SDL_GetError());
 		}
 	}
 
@@ -329,7 +329,7 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 
 		if(SDL_SetWindowFullscreen(_window, 0))
 		{
-			LOGerr("Error while setting SdlRender Windowed: %s\n", SDL_GetError());
+			LogError("Error while setting SdlRender Windowed: %s", SDL_GetError());
 			return false;
 		}
 	}
@@ -351,7 +351,7 @@ bool SdlRender::SetDrawColor(const Color& color) noexcept
 	
 	if(SDL_SetTextureColorMod(_texture, color.r, color.g, color.b))
 	{
-		LOGerr("Failed to set texture draw color: %s\n", + SDL_GetError());
+		LogError("Failed to set texture draw color: %s", + SDL_GetError());
 		return false;
 	}
 
@@ -369,7 +369,7 @@ bool SdlRender::SetBackgroundColor(const Color& color) noexcept
 
 	if(SDL_SetRenderDrawColor(_rend, color.r, color.g, color.b, 0xff))
 	{
-		LOGerr("Could not set render draw color: %s\n", SDL_GetError());
+		LogError("Could not set render draw color: %s", SDL_GetError());
 		return false;
 	}
 
@@ -440,7 +440,7 @@ bool SdlRender::CreateTexture(const int w, const int h)
 
 	if(!surface)
 	{
-		LOGerr("Could not create surface: %s\n", SDL_GetError());
+		LogError("Could not create surface: %s", SDL_GetError());
 		return false;
 	}
 
@@ -458,7 +458,7 @@ bool SdlRender::CreateTexture(const int w, const int h)
 
 	if(!_texture)
 	{
-		LOGerr("Could not create texture: %s\n", SDL_GetError());
+		LogError("Could not create texture: %s", SDL_GetError());
 		_texture = oldTexture;
 		oldTexture = nullptr;
 		return false;
@@ -490,11 +490,12 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 
 	if(!sdlrend)
 	{
-		LOGerr("XCHIP_FreePlugin: dynamic_cast from iPlugin* to SdlRender* Failed\n");
+		LogError("XCHIP_FreePlugin: dynamic_cast from iPlugin* to SdlRender* Failed");
 		std::exit(EXIT_FAILURE);
 	}
 
 	delete sdlrend;
+	SDL_Quit();
 }
 
 

@@ -155,7 +155,7 @@ std::string CliOpts::GetFullProcName()
 	if (writeSize == MAX_PATH)
 	{
 		const auto errorCode = GetLastError();
-		LOGerr("Error in GetModuleFileName ErrorCode: %d\n", errorCode);
+		LogError("Error in GetModuleFileName ErrorCode: %d", errorCode);
 		return std::string();
 
 	}
@@ -193,7 +193,7 @@ std::string CliOpts::GetFullProcName()
 
 	if (_NSGetExecutablePath(buffer, &size) != 0)
 	{
-		LOGerr("_NSGetExecutablePath failed. output size: %d\n", size);
+		LOGerr("_NSGetExecutablePath failed. output size: %d", size);
 		return std::string();
 	}
 	

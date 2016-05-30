@@ -73,7 +73,7 @@ bool Process::Run(const std::string &app)
 	if(pipe(fd) == -1)
 	{
 		const int err = errno;
-		LOGerr("Could not open pipe: %s\n", strerror(err));
+		LOGerr("Could not open pipe: %s", strerror(err));
 		return false;
 	}
 
@@ -85,7 +85,7 @@ bool Process::Run(const std::string &app)
 	if(_pid == -1)
 	{
 		const int err = errno;
-		LOGerr("Could not create child process: %s\n",  strerror(err));
+		LOGerr("Could not create child process: %s",  strerror(err));
 		return false;
 	}
 
@@ -98,8 +98,8 @@ bool Process::Run(const std::string &app)
 		if(execl("/bin/sh", "sh", "-c", app.c_str(), NULL))
 		{
 			const int err = errno;
-			LOGerr("Could not execute command: %s\n", app.c_str());
-			LOGerr("Error: %s\n", strerror(err));
+			LOGerr("Could not execute command: %s", app.c_str());
+			LOGerr("Error: %s", strerror(err));
 			exit(EXIT_FAILURE);
 		}
 
@@ -205,7 +205,7 @@ bool Process::Run(const std::string &app)
 	  )
 
 	{
-		LOGerr("Could not create a new process!");
+		LogError("Could not create a new process!");
 		CloseAndZero();
 		return false;
 	}
@@ -225,7 +225,7 @@ int Process::Join()
 	
 	if (!GetExitCodeProcess(_pi.hProcess, &exitCode))
 	{
-		LOGerr("Could not get process exit code.");
+		LogError("Could not get process exit code.");
 		return -1;
 	}
 
@@ -241,8 +241,8 @@ int Process::Terminate()
 	
 	if (!GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, _pi.dwProcessId))
 	{
-		LOGerr("Sending CTRL_BREAK_EVENT failed...");
-		LOGerr("Trying SendMessage WM_CLOSE...");
+		LogError("Sending CTRL_BREAK_EVENT failed...");
+		LogError("Trying SendMessage WM_CLOSE...");
 		EnumWindows((WNDENUMPROC)enum_windows_callback, _pi.dwProcessId);
 	}
 

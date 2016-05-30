@@ -40,7 +40,7 @@ static bool init_cpu_manager(CpuManager& _manager) noexcept;
 
 Emulator::Emulator() noexcept
 {
-	LOG("Creating XChip Emulator object...");
+	Log("Creating XChip Emulator object...");
 }
 
 
@@ -50,7 +50,7 @@ Emulator::~Emulator()
 	if(_initialized) 
 		this->Dispose();
 
-	LOG("Destroying XChip Emulator object...");
+	Log("Destroying XChip Emulator object...");
 }
 
 
@@ -214,7 +214,7 @@ void Emulator::Reset()
 
 bool Emulator::SetRender(UniqueRender rend) 
 { 
-	LOG("Setting new iRender...");
+	Log("Setting new iRender...");
 	_renderPlugin = std::move(rend);
 	return InitRender();
 }
@@ -224,7 +224,7 @@ bool Emulator::SetRender(UniqueRender rend)
 
 bool Emulator::SetInput(UniqueInput input) 
 {
-	LOG("Setting new iInput...");
+	Log("Setting new iInput...");
 	_inputPlugin = std::move(input);
 	return InitInput();
 }
@@ -234,7 +234,7 @@ bool Emulator::SetInput(UniqueInput input)
 
 bool Emulator::SetSound(UniqueSound sound) 
 {
-	LOG("Setting new iSound...");
+	Log("Setting new iSound...");
 	_soundPlugin = std::move(sound);
 	return InitSound();
 }
@@ -246,13 +246,13 @@ UniqueRender Emulator::SwapRender(UniqueRender rend)
 { 
 	if (rend.get()) 
 	{
-		LOG("Swapping iRender...");
+		Log("Swapping iRender...");
 		_renderPlugin.Swap(rend);
 		InitRender();
 		return rend;
 	}
 
-	LOG("Swapping iRender to nullptr...");
+	Log("Swapping iRender to nullptr...");
 	_manager.SetRender(nullptr);
 	return std::move(_renderPlugin);
 }
@@ -264,13 +264,13 @@ UniqueInput Emulator::SwapInput(UniqueInput input)
 { 
 	if (input.get())
 	{
-		LOG("Swapping iInput...");
+		Log("Swapping iInput...");
 		_inputPlugin.Swap(input);
 		InitInput();
 		return input;
 	}
 
-	LOG("Swapping iInput to nullptr...");
+	Log("Swapping iInput to nullptr...");
 	_manager.SetInput(nullptr);
 	return std::move(_inputPlugin);
 }
@@ -282,13 +282,13 @@ UniqueSound Emulator::SwapSound(UniqueSound sound)
 { 
 	if (sound.get())
 	{
-		LOG("Swapping iSound...");
+		Log("Swapping iSound...");
 		_soundPlugin.Swap(sound);
 		InitSound();
 		return sound;
 	}
 
-	LOG("Swapping iSound to nullptr...");
+	Log("Swapping iSound to nullptr...");
 	_manager.SetSound(nullptr);
 	return std::move(_soundPlugin);
 }
@@ -312,7 +312,7 @@ bool Emulator::InitRender()
 
 
 	if (!rend) {
-		LOGerr("Cannot Initialize iRender: nullptr");
+		LogError("Cannot Initialize iRender: nullptr");
 		return false;
 	} 
 	else if (rend->IsInitialized()) {
@@ -340,7 +340,7 @@ bool Emulator::InitInput()
 
 
 	if (!input) {
-		LOGerr("Cannot Initialize iInput: nullptr");
+		LogError("Cannot Initialize iInput: nullptr");
 		return false;
 	}
 	else if (input->IsInitialized()) {
@@ -394,7 +394,7 @@ bool Emulator::InitSound()
 	});
 
 	if (!sound)  {
-		LOGerr("Cannot Initialize iSound: nullptr");
+		LogError("Cannot Initialize iSound: nullptr");
 		return false;
 	}
 	else if (sound->IsInitialized()) {

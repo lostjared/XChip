@@ -49,8 +49,8 @@ bool DLoader::Load(const std::string& dlPath)
 		if (!newHandle)
 		{
 			const char* error = dlerror();
-			LOGerr("Could not load shared library: %s or %s ...\n", dlPath.c_str(), dlPathFix.c_str());
-			LOGerr("Error: %s\n", error);
+			LOGerr("Could not load shared library: %s or %s ...", dlPath.c_str(), dlPathFix.c_str());
+			LOGerr("Error: %s", error);
 			return false;
 		}
 	}
@@ -67,8 +67,8 @@ bool DLoader::Load(const std::string& dlPath)
 		if (!newHandle)
 		{
 			const int errorCode = GetLastError();
-			LOGerr("Could not load %s, or %s ...\n", dlPath.c_str(), dlPathFix.c_str());
-			LOGerr("Error Code: %s\n", errorCode);
+			LogError("Could not load %s, or %s...", dlPath.c_str(), dlPathFix.c_str());
+			LogError("Error Code: %d", errorCode);
 			return false;
 		}
 	}
@@ -117,7 +117,7 @@ void* DLoader::GetSymbol(const std::string& symbolName)
 	const char* error = dlerror();
 	if(error)
 	{
-		LOGerr("Failed to get symbol addr: %s\n", error);
+		LOGerr("Failed to get symbol addr: %s", error);
 		return nullptr;
 	}
 	
@@ -127,7 +127,7 @@ void* DLoader::GetSymbol(const std::string& symbolName)
 	const auto errorCode = GetLastError();
 	if (!symbolAddr && errorCode)
 	{
-		LOGerr("Failed to get symbol addr: Error Code: %d\n", errorCode);
+		LogError("Failed to get symbol addr: Error Code: %d", errorCode);
 		return nullptr;
 	}
 

@@ -43,7 +43,7 @@ static void free_cpu_arr(T*& arr) noexcept;
 
 CpuManager::CpuManager() noexcept
 {
-	LOG("Creating CpuManager object...\n");
+	Log("Creating CpuManager object...");
 	// init all members to 0
 	memset(&_cpu, 0, sizeof(Cpu)); 
 }
@@ -53,7 +53,7 @@ CpuManager::CpuManager() noexcept
 CpuManager::~CpuManager()
 {
 	this->Dispose();
-	LOG("Destroying CpuManager object...\n");
+	Log("Destroying CpuManager object...");
 }
 
 
@@ -72,7 +72,7 @@ bool CpuManager::SetMemory(const size_t size)
 {
 	if ( !alloc_cpu_arr(_cpu.memory, size)) 
 	{
-		LOGerr("Cannot allocate Cpu memory size: %zu\n", size);
+		LogError("Cannot allocate Cpu memory size: %zu", size);
 		return false;
 	}
 
@@ -85,7 +85,7 @@ bool CpuManager::SetRegisters(const size_t size)
 {
 	if ( !alloc_cpu_arr(_cpu.registers, size)) 
 	{
-		LOGerr("Cannot allocate Cpu registers size: %zu\n", size);
+		LogError("Cannot allocate Cpu registers size: %zu", size);
 		return false;
 	}
 
@@ -97,7 +97,7 @@ bool CpuManager::SetStack(const size_t size)
 {
 	if ( !alloc_cpu_arr(_cpu.stack, size) )
 	{
-		LOGerr("Cannot allocate Cpu stack size: %zu\n", size);
+		LogError("Cannot allocate Cpu stack size: %zu", size);
 		return false;
 	}
 
@@ -109,7 +109,7 @@ bool CpuManager::SetGfxRes(const utility::Vec2i& res)
 {
 	if ( !alloc_cpu_arr(_cpu.gfx, res.x * res.y) )
 	{
-		LOGerr("Cannot allocate Cpu memory size: %d\n", + res.x*res.y);
+		LogError("Cannot allocate Cpu memory size: %d", + res.x*res.y);
 		_gfxRes = 0;
 		return false;
 	}
@@ -125,7 +125,7 @@ bool CpuManager::SetGfxRes(const int w, const int h)
 {
 	if ( !alloc_cpu_arr(_cpu.gfx, w * h) )
 	{
-		LOGerr("Cannot allocate Cpu memory size: %d\n", w*h);
+		LogError("Cannot allocate Cpu memory size: %d", w*h);
 		_gfxRes = 0;
 		return false;
 	}
@@ -145,7 +145,7 @@ bool CpuManager::ResizeMemory(const std::size_t size)
 
 	if ( !realloc_cpu_arr(_cpu.memory, size)) 
 	{
-		LOGerr("Cannot reallocate Cpu memory to size: %zu\n", size);
+		LogError("Cannot reallocate Cpu memory to size: %zu", size);
 		return false;
 	}
 
@@ -159,7 +159,7 @@ bool CpuManager::ResizeRegisters(const size_t size)
 {
 	if (!realloc_cpu_arr(_cpu.registers, size))
 	{
-		LOGerr("Cannot reallocate Cpu registers to size: %zu\n",  size);
+		LogError("Cannot reallocate Cpu registers to size: %zu",  size);
 		return false;
 	}
 
@@ -173,7 +173,7 @@ bool CpuManager::ResizeStack(const size_t size)
 {
 	if (!realloc_cpu_arr(_cpu.stack, size))
 	{
-		LOGerr("Cannot reallocate Cpu stack to size: %zu\n", size);
+		LogError("Cannot reallocate Cpu stack to size: %zu", size);
 		return false;
 	}
 
@@ -221,13 +221,14 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
 	ASSERT_MSG(arr_size(_cpu.memory) > at, "parameter 'at' greater than Cpu::memory");
 
-	LOG("Loading %s\n", fileName);
+	Log("Loading %s", fileName);
 
 	auto *const file = std::fopen(fileName, "rb");
 
 	if (!file)
 	{
-		LOGerr("Error at opening ROM file, interrupting Chip8 instance.\n");
+		const auto errorCode = errno;
+		LogError("Error at opening ROM file: %s", strerror(errorCode));
 		return false;
 	}
 
@@ -245,12 +246,12 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 	// careful to compare unsigned values, and subtracting them
 	if ( (arr_size(_cpu.memory) - at) < fileSize)
 	{
-		LOGerr("Error, ROM size not compatible!\n");
+		LogError("Error, ROM size not compatible!");
 		return false;
 	}
 
 	std::fread(_cpu.memory + at, 1, fileSize, file);
-	LOG("Load Done!\n");
+	Log("Load Done!");
 	return true;
 }
 

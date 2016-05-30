@@ -189,7 +189,7 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 
 	if (!pluginLoader)
 	{
-		LOGerr("Failed to get the plugin loader symbol!\n");
+		LogError("Failed to get the plugin loader symbol!");
 		return false;
 	}
 
@@ -198,7 +198,7 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 
 	if (!iplug)
 	{
-		LOGerr("PluginLoader function in %s, returned a null plugin!\n", dlPath.c_str());
+		LogError("PluginLoader function in %s, returned a null plugin!", dlPath.c_str());
 		return false;
 	}
 
@@ -207,7 +207,7 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 
 	if(!newPlugin)
 	{
-		LOGerr("Error Loading plugin: %s. Failed to dynamic cast from iPlugin!\n", dlPath.c_str());
+		LogError("Error Loading plugin: %s. Failed to dynamic cast from iPlugin!", dlPath.c_str());
 		call_deleter(_dloader, iplug);
 		return false;
 	}
@@ -270,14 +270,14 @@ void UniquePlugin<T>::call_deleter(utility::DLoader& dloader, iPlugin* plugin) n
 		pluginDeleter(plugin);
 	else
 	{
-		LOGerr("Failed to load plugin deleter. trying GetPluginDeleter method...\n");
+		LogError("Failed to load plugin deleter. trying GetPluginDeleter method...");
 		pluginDeleter = plugin->GetPluginDeleter();
 
 		if(pluginDeleter)
 			pluginDeleter(plugin);
 		else 
 		{
-			LOGerr("GetPluginDeleter failed...  Trying deleting in place, prepare for crash...\n");
+			LogError("GetPluginDeleter failed...  Trying deleting in place, prepare for crash...");
 			delete plugin;
 		}
 	

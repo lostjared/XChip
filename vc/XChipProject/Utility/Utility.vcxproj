@@ -36,6 +36,7 @@
     <ClCompile Include="..\..\..\XChip\src\Utility\Alloc.cpp" />
     <ClCompile Include="..\..\..\XChip\src\Utility\CliOpts.cpp" />
     <ClCompile Include="..\..\..\XChip\src\Utility\DLoader.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\Utility\Log.cpp" />
     <ClCompile Include="..\..\..\XChip\src\Utility\Process.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

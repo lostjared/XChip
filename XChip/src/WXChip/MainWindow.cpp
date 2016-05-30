@@ -131,7 +131,7 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 		_romPath += '/';
 #endif
 		_romPath += str.c_str();
-		std::cout << "Start Rom At Path: " << _romPath << "\n";
+		std::cout << "Start Rom At Path: " << _romPath << "";
 
 		StartEmulator();
 		

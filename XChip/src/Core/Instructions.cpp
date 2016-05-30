@@ -54,7 +54,7 @@ InstrTable instrTable[16] =
 
 void unknown_opcode(CpuManager& cpuMan)
 {
-	LOGerr("Unknown Opcode: $%x\n", cpuMan.GetOpcode());
+	LogError("Unknown Opcode: $%x", cpuMan.GetOpcode());
 	cpuMan.SetFlags(Cpu::EXIT);
 }
 
@@ -135,7 +135,7 @@ void op_0xxx(CpuManager& cpuMan)
 		
 			if (!cpuMan.GetRender()->SetResolution(defaultRes))
 			{
-				LOGerr("Could not unset extended resolution mode!");
+				LogError("Could not unset extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
 
@@ -158,7 +158,7 @@ void op_0xxx(CpuManager& cpuMan)
 		
 			if(!cpuMan.GetRender()->SetResolution( extendedRes ))
 			{
-				LOGerr("Could not set extended resolution mode!");
+				LogError("Could not set extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
 

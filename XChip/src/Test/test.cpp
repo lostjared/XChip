@@ -29,50 +29,27 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 int main(int argc, char **argv)
 {
-	using xchip::Emulator;
-	using xchip::UniqueRender;
-	using xchip::UniqueInput;
-	using xchip::UniqueSound;
-	using xchip::PluginLoader;
+	using namespace xchip;
+	using namespace utility;
+
+	LogError("Error opcode unknown $%x", 2222332449923);
 
 
-	if(argc < 2)
+	std::cout << "Last Error: " << GetLastLogError() << std::endl;
+
+	static xchip::Emulator emu;
+
+	if (!emu.Initialize()) 
 	{
-		xchip::utility::LOGerr("No game to load.");
-		return EXIT_FAILURE;
+		std::cout << "Last Error: " << GetLastLogError() << std::endl;
+		return -1;
 	}
 
-	Emulator emulator;
-	UniqueRender render;
-	UniqueInput input;
-	UniqueSound sound;
-
-
-	if (!(render.Load("./XChipSDLRender") &&
-		input.Load("./XChipSDLInput") &&
-		sound.Load("./XChipSDLSound")))
+	if(!emu.LoadRom("NO NO"))
 	{
-		xchip::utility::LOGerr("Could not load plugins");
-		return EXIT_FAILURE;
+		std::cout << "Last Error: " << GetLastLogError() << std::endl;
+		return -1;
 	}
-
-	if (!emulator.Initialize(std::move(render), std::move(input), std::move(sound)))
-		return EXIT_FAILURE;
-	else if (!emulator.LoadRom(argv[1]))
-		return EXIT_FAILURE;
-	
-
-	while (!emulator.GetExitFlag())
-	{
-		emulator.UpdateSystems();
-		emulator.HaltForNextFlag();
-		if (emulator.GetInstrFlag())
-			emulator.ExecuteInstr();
-		if (emulator.GetDrawFlag())
-			emulator.Draw();
-	}
-
-
 
 
 	return EXIT_SUCCESS;

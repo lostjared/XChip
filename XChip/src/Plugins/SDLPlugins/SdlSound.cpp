@@ -57,7 +57,7 @@ inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * le
 
 SdlSound::SdlSound() noexcept
 {
-	LOG("Creating SdlSound object...\n");
+	Log("Creating SdlSound object...");
 }
 
 
@@ -67,7 +67,7 @@ SdlSound::~SdlSound()
 	if (_initialized)
 		this->Dispose();
 
-	LOG("Destroying SdlSound object...\n");
+	Log("Destroying SdlSound object...");
 }
 
 
@@ -95,7 +95,7 @@ bool SdlSound::Initialize() noexcept
 
 	
 	if (!_specs) {
-		LOGerr("Could not allocate memory for SDL_AudioSpecs\n");
+		LogError("Could not allocate memory for SDL_AudioSpecs");
 		return false;
 	}
 
@@ -252,7 +252,7 @@ bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 
 	if (_dev < 2) 
 	{
-		LOGerr("SdlSound: Failed to open audio device: %s\n", SDL_GetError());
+		LogError("SdlSound: Failed to open audio device: %s", SDL_GetError());
 		return false;
 	}
 
@@ -337,7 +337,7 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 
 	if(!sdlsound)
 	{
-		LOGerr("XCHIP_FreePlugin: dynamic_cast from iPlugin* to SdlSound* Failed\n");
+		LogError("XCHIP_FreePlugin: dynamic_cast from iPlugin* to SdlSound* Failed");
 		std::exit(EXIT_FAILURE);
 	}
 

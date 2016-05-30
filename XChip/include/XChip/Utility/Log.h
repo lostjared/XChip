@@ -20,20 +20,24 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_UTILITY_LOG_H
 #define _XCHIP_UTILITY_LOG_H
+
+
 #include <string>
 #include "StdintDef.h"
 
 namespace xchip { namespace utility {
-	
+
+
+
 namespace literals 
 {
 	inline std::string operator"" _s(const char* str, size_t) noexcept { return std::string(str); }
 }
 
 
-extern void LOG(const char* fmtString, ...) noexcept;
-extern void LOGerr(const char* fmtString, ...) noexcept;
-
+extern void Log(const char* fmtString, ...) noexcept;
+extern void LogError(const char* fmtString, ...) noexcept;
+extern const std::string& GetLastLogError() noexcept;
 
 
 
