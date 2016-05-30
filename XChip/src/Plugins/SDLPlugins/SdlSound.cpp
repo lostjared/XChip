@@ -23,8 +23,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <SDL2/SDL.h>
 
+#include <SDL2/SDL.h>
 #include <XChip/Plugins/SDLPlugins/SdlSound.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Timer.h>
@@ -35,7 +35,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip {
 
-extern "C" void  XCHIP_EXPORT XCHIP_FreePlugin(const iPlugin*);
+using namespace utility;
+
+extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
+
+
 
 
 inline float SdlSound::GetCurFreq() const { return _curFreq * _specs[Have].freq; }
@@ -48,9 +52,12 @@ inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * le
 
 
 
+
+
+
 SdlSound::SdlSound() noexcept
 {
-	utility::LOG("Creating SdlSound object...");
+	LOG("Creating SdlSound object...");
 }
 
 
@@ -60,14 +67,14 @@ SdlSound::~SdlSound()
 	if (_initialized)
 		this->Dispose();
 
-	utility::LOG("Destroying SdlSound object...");
+	LOG("Destroying SdlSound object...");
 }
 
 
 
 bool SdlSound::Initialize() noexcept
 {
-	using namespace utility::literals;
+	using namespace literals;
 
 	if (_initialized)
 		this->Dispose();
@@ -77,7 +84,7 @@ bool SdlSound::Initialize() noexcept
 		return false;
 
 
-	const auto cleanup = utility::make_scope_exit([this]() noexcept 
+	const auto cleanup = make_scope_exit([this]() noexcept 
 	{
 		if (!this->_initialized)
 			this->Dispose();
@@ -88,7 +95,7 @@ bool SdlSound::Initialize() noexcept
 
 	
 	if (!_specs) {
-		utility::LOGerr("Could not allocate memory for SDL_AudioSpecs");
+		LOGerr("Could not allocate memory for SDL_AudioSpecs");
 		return false;
 	}
 
@@ -231,7 +238,7 @@ void SdlSound::Stop() noexcept
 
 bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 {
-	using namespace utility::literals;
+	using namespace literals;
 
 	memset(&want, 0, sizeof(SDL_AudioSpec));
 	want.freq = 44100;
@@ -245,7 +252,7 @@ bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 
 	if (_dev < 2) 
 	{
-		utility::LOGerr("SdlSound: Failed to open audio device: "_s + SDL_GetError());
+		LOGerr("SdlSound: Failed to open audio device: "_s + SDL_GetError());
 		return false;
 	}
 
@@ -305,6 +312,17 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlSound();
@@ -319,14 +337,23 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 
 	if(!sdlsound)
 	{
-		utility::LOGerr("XCHIP_FreePlugin: dynamic_cast iMediaPlugin* to SdlRender* Failed");
+		LOGerr("XCHIP_FreePlugin: dynamic_cast from iPlugin* to SdlSound* Failed");
 		std::exit(EXIT_FAILURE);
 	}
 
 	delete sdlsound;
-
-	return;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

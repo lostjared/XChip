@@ -110,9 +110,6 @@ void SettingsWindow::UpdateConfigStr()
 	_configStr += (const char*) _fps->GetLineText(0).c_str();
 	_configStr += " -CHZ ";
 	_configStr += (const char*) _cpuHz->GetLineText(0).c_str();
-	_configStr += " -RES ";
-	_configStr += (const char*) _emuRes->GetStringSelection().c_str();
-	_configStr += " ";
 }
 
 
@@ -148,17 +145,6 @@ void SettingsWindow::CreateControls()
 
 	_fps = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, defaultFPS,
                                                wxPoint(100,40), wxSize(100,20), 0, fpsValidator);
-
-	_emuResText = make_unique<wxStaticText>(_panel.get(), ID_TEXT4, _T("Resolution: "), 
-                                                wxPoint(10, 70), wxSize(65, 25));
-
-	
-	wxString sizeChoices[] = { "320x240", "640x480", "1280x720", "1920x1080", "FULLSCREEN" };
-	
-
-	_emuRes = make_unique<wxComboBox>(_panel.get(), ID_RES, _T("320x240"), 
-                                              wxPoint(100, 70), wxSize(200,25), 5, sizeChoices, wxCB_READONLY);
-
 
 	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BTN_OK, _T("Ok"), 
                                            wxPoint(10, 150), wxSize(100,25));
@@ -268,7 +254,6 @@ void SettingsWindow::ResetTextControls()
 	_cpuHz->Clear();
 	*_fps << defaultFPS;
 	*_cpuHz << defaultCpuFreq;
-	_emuRes->SetSelection(0);
 }
 
 

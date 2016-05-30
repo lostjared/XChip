@@ -358,8 +358,9 @@ bool Emulator::InitInput()
 
 		do
 		{		
-			emulator->UpdateSystems();
-
+			emulator->GetRender()->UpdateEvents();
+			emulator->UpdateTimers();
+			
 			if (emulator->GetExitFlag())
 				return false;
 

@@ -18,7 +18,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+#include <cstdlib>
 #include <SDL2/SDL_events.h>
+
 #include <XChip/Plugins/SDLPlugins/SdlInput.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
@@ -28,10 +30,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _SDLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlInput is not initialized")
 
 namespace xchip {
+
 using namespace utility;
 
 
-extern "C"  XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
+extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
 
 
@@ -59,7 +62,7 @@ SdlInput::~SdlInput()
 
 bool SdlInput::Initialize() noexcept
 {
-	using namespace utility::literals;
+	using namespace literals;
 
 	if (_initialized)
 		this->Dispose();
@@ -89,7 +92,7 @@ bool SdlInput::Initialize() noexcept
 
 	catch (const std::exception& err)
 	{
-		utility::LOGerr("Could not initialize SdlInput::_keyPairs : "_s + err.what());
+		LOGerr("Could not initialize SdlInput::_keyPairs : "_s + err.what());
 		return false;
 	}
 
@@ -135,6 +138,7 @@ PluginDeleter SdlInput::GetPluginDeleter() const noexcept
 bool SdlInput::IsKeyPressed(const Key key) const noexcept
 {
 	_SDLINPUT_INITIALIZED_ASSERT_();
+	ASSERT_MSG(static_cast<size_t>(key) < _keyPaits.size(), "Key greater than keypairs");
 	return _keyboardState[_keyPairs[static_cast<size_t>(key)].second] == SDL_TRUE;
 }
 
@@ -191,16 +195,15 @@ bool SdlInput::UpdateKeys() noexcept
 Key SdlInput::WaitKeyPress() noexcept
 {
 	_SDLINPUT_INITIALIZED_ASSERT_();
+	
 	if (_waitClbk != nullptr)
 	{
 		const auto begin = _keyPairs.crbegin();
 		const auto end = _keyPairs.crend();
 		
-		while (true)
+		while (_waitClbk(_waitClbkArg))
 		{
-			if(!_waitClbk(_waitClbkArg))
-				break;
-			if (UpdateKeys())
+			if (this->UpdateKeys())
 			{
 				for (auto itr = begin; itr != end; ++itr)
 				{
@@ -214,6 +217,8 @@ Key SdlInput::WaitKeyPress() noexcept
 
 	return Key::NO_KEY_PRESSED;
 }
+
+
 
 
 
@@ -242,6 +247,16 @@ void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback)
 
 
 
+
+
+
+
+
+
+
+
+
+
 extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlInput();
@@ -254,12 +269,22 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 	const auto* sdlinput = dynamic_cast<const SdlInput*>( plugin );
 	if(! sdlinput )
 	{
-		utility::LOGerr("XCHIP_FreePlugin: dynamic_cast iMediaPlugin to sdlinput failed!");
+		LOGerr("XCHIP_FreePlugin: dynamic_cast iPlugin to SdlInput failed!");
 		std::exit(EXIT_FAILURE);
 	}
 	
 	delete sdlinput;
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

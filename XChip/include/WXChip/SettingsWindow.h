@@ -77,8 +77,6 @@ private:
 	std::unique_ptr<wxTextCtrl> _fps;
 	std::unique_ptr<wxStaticText> _cpuHzTxt;
 	std::unique_ptr<wxTextCtrl> _cpuHz;
-	std::unique_ptr<wxStaticText> _emuResText;
-	std::unique_ptr<wxComboBox> _emuRes;
 	std::unique_ptr<wxCheckBox> _emuFullScreen;
 	std::unique_ptr<wxButton> _buttonOk;
 	std::unique_ptr<wxButton> _buttonCancel;
