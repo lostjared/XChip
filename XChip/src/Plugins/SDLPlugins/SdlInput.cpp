@@ -138,7 +138,7 @@ PluginDeleter SdlInput::GetPluginDeleter() const noexcept
 bool SdlInput::IsKeyPressed(const Key key) const noexcept
 {
 	_SDLINPUT_INITIALIZED_ASSERT_();
-	ASSERT_MSG(static_cast<size_t>(key) < _keyPaits.size(), "Key greater than keypairs");
+	ASSERT_MSG(static_cast<size_t>(key) < _keyPairs.size(), "Key greater than keypairs");
 	return _keyboardState[_keyPairs[static_cast<size_t>(key)].second] == SDL_TRUE;
 }
 

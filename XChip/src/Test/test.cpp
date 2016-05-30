@@ -45,11 +45,8 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	if(!emu.LoadRom("NO NO"))
-	{
-		std::cout << "Last Error: " << GetLastLogError() << std::endl;
-		return -1;
-	}
+
+	emu.Draw();
 
 
 	return EXIT_SUCCESS;

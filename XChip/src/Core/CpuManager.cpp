@@ -45,7 +45,8 @@ CpuManager::CpuManager() noexcept
 {
 	Log("Creating CpuManager object...");
 	// init all members to 0
-	memset(&_cpu, 0, sizeof(Cpu)); 
+	memset(&_cpu, 0, sizeof(Cpu));
+	SetFlags( Cpu::BAD_RENDER | Cpu::BAD_INPUT | Cpu::BAD_SOUND ); 
 }
 
 

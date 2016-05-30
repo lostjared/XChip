@@ -33,8 +33,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #else
 
 // else, includes...
+#include <cassert>
 #include "Log.h"
-#define ASSERT_MSG(cond, msg) { if(!(cond)) { xchip::utility::LOGerr(msg); assert(cond); } }
+#define ASSERT_MSG(cond, msg) { if(!(cond)) { xchip::utility::LogError(msg); assert(cond); } }
 
 
 
