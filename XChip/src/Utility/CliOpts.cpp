@@ -155,7 +155,7 @@ std::string CliOpts::GetFullProcName()
 	if (writeSize == MAX_PATH)
 	{
 		const auto errorCode = GetLastError();
-		LOGerr("Error in GetModuleFileName ErrorCode: "_s + std::to_string(errorCode));
+		LOGerr("Error in GetModuleFileName ErrorCode: %d\n", errorCode);
 		return std::string();
 
 	}
@@ -177,7 +177,7 @@ std::string CliOpts::GetFullProcName()
 	if (writeSize == -1)
 	{
 		const auto errorCode = errno;
-		LOGerr("Error in readlink: "_s + strerror(errorCode));
+		LOGerr("Error in readlink: %s", strerror(errorCode));
 		return std::string();
 	}
 
@@ -193,7 +193,7 @@ std::string CliOpts::GetFullProcName()
 
 	if (_NSGetExecutablePath(buffer, &size) != 0)
 	{
-		LOGerr("_NSGetExecutablePath failed. output size: " + std::to_string(size));
+		LOGerr("_NSGetExecutablePath failed. output size: %d\n", size);
 		return std::string();
 	}
 	

@@ -73,7 +73,7 @@ bool Process::Run(const std::string &app)
 	if(pipe(fd) == -1)
 	{
 		const int err = errno;
-		LOGerr("Could not open pipe: "_s + strerror(err));
+		LOGerr("Could not open pipe: %s\n", strerror(err));
 		return false;
 	}
 
@@ -85,7 +85,7 @@ bool Process::Run(const std::string &app)
 	if(_pid == -1)
 	{
 		const int err = errno;
-		LOGerr("Could not create child process: "_s + strerror(err));
+		LOGerr("Could not create child process: %s\n",  strerror(err));
 		return false;
 	}
 
@@ -98,8 +98,8 @@ bool Process::Run(const std::string &app)
 		if(execl("/bin/sh", "sh", "-c", app.c_str(), NULL))
 		{
 			const int err = errno;
-			LOGerr("Could not execute command: "_s + app);
-			LOGerr("Error: "_s + strerror(err));
+			LOGerr("Could not execute command: %s\n", app.c_str());
+			LOGerr("Error: %s\n", strerror(err));
 			exit(EXIT_FAILURE);
 		}
 

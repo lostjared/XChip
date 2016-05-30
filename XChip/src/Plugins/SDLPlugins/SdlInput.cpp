@@ -45,7 +45,7 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
 SdlInput::SdlInput() noexcept
 {
-	LOG("Creating SdlInput object...");
+	LOG("Creating SdlInput object...\n");
 }
 
 
@@ -54,7 +54,7 @@ SdlInput::~SdlInput()
 	if (_keyboardState)
 		this->Dispose();
 
-	LOG("Destroying SdlInput object...");
+	LOG("Destroying SdlInput object...\n");
 }
 
 
@@ -73,7 +73,7 @@ bool SdlInput::Initialize() noexcept
 
 	if (!_keyboardState) 
 	{
-		LOGerr("Cannot get Keyboard State: "_s + SDL_GetError());
+		LOGerr("Cannot get Keyboard State: %s\n", SDL_GetError());
 		return false;
 	}
 
@@ -92,7 +92,7 @@ bool SdlInput::Initialize() noexcept
 
 	catch (const std::exception& err)
 	{
-		LOGerr("Could not initialize SdlInput::_keyPairs : "_s + err.what());
+		LOGerr("Could not initialize SdlInput::_keyPairs : %s\n", err.what());
 		return false;
 	}
 
@@ -269,7 +269,7 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 	const auto* sdlinput = dynamic_cast<const SdlInput*>( plugin );
 	if(! sdlinput )
 	{
-		LOGerr("XCHIP_FreePlugin: dynamic_cast iPlugin to SdlInput failed!");
+		LOGerr("XCHIP_FreePlugin: dynamic_cast iPlugin to SdlInput failed!\n");
 		std::exit(EXIT_FAILURE);
 	}
 	

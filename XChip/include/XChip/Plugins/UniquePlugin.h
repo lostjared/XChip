@@ -177,8 +177,7 @@ T* UniquePlugin<T>::get()
 template<class T>
 bool UniquePlugin<T>::Load(const std::string& dlPath)
 {
-	using namespace utility::literals;
-	using utility::DLoader;
+	using namespace utility;
 
 	DLoader newLoader;
 
@@ -190,7 +189,7 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 
 	if (!pluginLoader)
 	{
-		utility::LOGerr("Failed to get the plugin loader symbol!");
+		LOGerr("Failed to get the plugin loader symbol!\n");
 		return false;
 	}
 
@@ -199,7 +198,7 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 
 	if (!iplug)
 	{
-		utility::LOGerr("PluginLoader function in "_s + dlPath + ", returned a null plugin.");
+		LOGerr("PluginLoader function in %s, returned a null plugin!\n", dlPath.c_str());
 		return false;
 	}
 
@@ -208,8 +207,7 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 
 	if(!newPlugin)
 	{
-		utility::LOGerr("Error Loading plugin: "_s + dlPath);
-		utility::LOGerr("failed to dynamic cast from iPlugin.");
+		LOGerr("Error Loading plugin: %s. Failed to dynamic cast from iPlugin!\n", dlPath.c_str());
 		call_deleter(_dloader, iplug);
 		return false;
 	}
@@ -264,20 +262,22 @@ void UniquePlugin<T>::Swap(UniquePlugin& other) noexcept
 template<class T>
 void UniquePlugin<T>::call_deleter(utility::DLoader& dloader, iPlugin* plugin) noexcept
 {
+	using namespace utility;
+
 	auto pluginDeleter = reinterpret_cast<PluginDeleter>( dloader.GetSymbol(XCHIP_FREE_PLUGIN_SYM) );
 
 	if(pluginDeleter)
 		pluginDeleter(plugin);
 	else
 	{
-		utility::LOGerr("Failed to load plugin deleter. trying GetPluginDeleter method...");
+		LOGerr("Failed to load plugin deleter. trying GetPluginDeleter method...\n");
 		pluginDeleter = plugin->GetPluginDeleter();
 
 		if(pluginDeleter)
 			pluginDeleter(plugin);
 		else 
 		{
-			utility::LOGerr("GetPluginDeleter failed...  Trying deleting in place, prepare for crash...");
+			LOGerr("GetPluginDeleter failed...  Trying deleting in place, prepare for crash...\n");
 			delete plugin;
 		}
 	

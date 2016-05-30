@@ -33,21 +33,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #else
 
 // else, includes...
-#include <cassert>
-#include <cstdio>
-
-
-namespace xchip { namespace utility {
-// save space on binary
-static void print_assert(const char* msg) noexcept
-{
-	static const char* ASSERT_FMT_STRING = "ASSERT_MSG: %s!!\n";
-	std::fprintf(stderr, ASSERT_FMT_STRING, msg);
-}
-
-}}
-
-#define ASSERT_MSG(cond, msg) { if(!(cond)) { xchip::utility::print_assert(msg); assert(cond); } }
+#include "Log.h"
+#define ASSERT_MSG(cond, msg) { if(!(cond)) { xchip::utility::LOGerr(msg"\n"); assert(cond); } }
 
 
 

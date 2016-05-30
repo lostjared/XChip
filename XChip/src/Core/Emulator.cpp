@@ -422,7 +422,7 @@ static void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelay
 {	
 	using namespace xchip::utility::literals;
 
-	instrTimer.SetTargetTime(358_hz);
+	instrTimer.SetTargetTime(380_hz);
 	frameTimer.SetTargetTime(60_hz);
 	chDelayTimer.SetTargetTime(60_hz);
 }
