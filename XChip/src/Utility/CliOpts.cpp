@@ -176,8 +176,7 @@ std::string CliOpts::GetFullProcName()
 
 	if (writeSize == -1)
 	{
-		const auto errorCode = errno;
-		LOGerr("Error in readlink: %s", strerror(errorCode));
+		LogError("Error in readlink");
 		return std::string();
 	}
 
@@ -193,7 +192,7 @@ std::string CliOpts::GetFullProcName()
 
 	if (_NSGetExecutablePath(buffer, &size) != 0)
 	{
-		LOGerr("_NSGetExecutablePath failed. output size: %d", size);
+		LogError("_NSGetExecutablePath failed. output size: %d", size);
 		return std::string();
 	}
 	

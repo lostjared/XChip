@@ -19,7 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 #include <cstdio>
-#include <stdarg.h>
+#include <cstring>
+#include <cstdarg>
 #include <XChip/Utility/Log.h>
 
 
@@ -31,13 +32,16 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 namespace xchip { namespace utility {
 
 
-static std::string errstr;
+static std::string errstr(512, '\0');
 
 void Log(const char* fmtString, ...) noexcept
 {
 	va_list args;
 	va_start(args, fmtString);
-	std::vfprintf(stdout, fmtString, args);
+
+	if(std::vfprintf(stdout, fmtString, args) < 0 )
+		LogError("Failed to print Log");
+
 	std::fprintf(stdout, "\n");
 	va_end(args);
 }
@@ -45,15 +49,34 @@ void Log(const char* fmtString, ...) noexcept
 
 void LogError(const char* fmtString, ...) noexcept
 {
+	const auto errnoCode = errno;
 	va_list args;
 	va_start(args, fmtString);
 	
-	errstr.clear();
-	errstr.resize(strlen(fmtString) + 400);
-	std::vsprintf(&errstr[0], fmtString, args);
-	std::fprintf(stderr, errstr.c_str());
-	std::fprintf(stderr, "\n");
-	
+	// write the message to buffer and get writeSize
+	const auto writeSize = std::vsprintf(&errstr[0], fmtString, args);
+
+	if(writeSize > 0)
+	{
+		if(errnoCode) 
+		{
+			std::sprintf(&errstr[writeSize], ": %s\n", strerror(errnoCode));
+		}
+		else 
+		{
+			errstr[writeSize] = '\n';
+			errstr[writeSize+1] = '\0';
+		}
+
+		// print
+		std::fprintf(stderr, errstr.c_str());
+	}
+	else
+	{
+		perror("Error in LogError vsprintf!!:");
+	}
+
+
 	va_end(args);
 }
 

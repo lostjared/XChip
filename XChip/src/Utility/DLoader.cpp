@@ -49,8 +49,8 @@ bool DLoader::Load(const std::string& dlPath)
 		if (!newHandle)
 		{
 			const char* error = dlerror();
-			LOGerr("Could not load shared library: %s or %s ...", dlPath.c_str(), dlPathFix.c_str());
-			LOGerr("Error: %s", error);
+			LogError("Could not load shared library: %s or %s ...", dlPath.c_str(), dlPathFix.c_str());
+			LogError("Error: %s", error);
 			return false;
 		}
 	}
@@ -117,7 +117,7 @@ void* DLoader::GetSymbol(const std::string& symbolName)
 	const char* error = dlerror();
 	if(error)
 	{
-		LOGerr("Failed to get symbol addr: %s", error);
+		LogError("Failed to get symbol addr: %s", error);
 		return nullptr;
 	}
 	

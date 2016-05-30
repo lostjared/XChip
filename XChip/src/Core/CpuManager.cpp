@@ -227,8 +227,7 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 	if (!file)
 	{
-		const auto errorCode = errno;
-		LogError("Error at opening ROM file: %s", strerror(errorCode));
+		LogError("Error at opening ROM file \'%s\'", fileName);
 		return false;
 	}
 

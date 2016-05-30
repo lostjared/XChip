@@ -39,6 +39,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <regex>
 #include <stdexcept>
 
+#include <XChip/Utility/ScopeExit.h>
 #include <XChip/Utility/CliOpts.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Memory.h>
@@ -63,7 +64,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 {
 	using xchip::utility::make_unique;
 
-	std::cout << "Creating MainWindow..." << std::endl;
+	xchip::utility::Log("Creating MainWindow...");
 
 	ComputeEmuAppPath();
 	CreateControls();
@@ -95,7 +96,7 @@ MainWindow::~MainWindow()
 {
 	StopEmulator();
 	Destroy();
-	std::cout << "Destroying MainWindow..." << std::endl;
+	xchip::utility::Log("Destroying MainWindow...");
 }
 
 
@@ -131,7 +132,8 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 		_romPath += '/';
 #endif
 		_romPath += str.c_str();
-		std::cout << "Start Rom At Path: " << _romPath << "";
+
+		xchip::utility::Log("Start Rom At Path: %s", _romPath.c_str());
 
 		StartEmulator();
 		
@@ -148,7 +150,7 @@ void MainWindow::OnLoadSettings(wxCommandEvent&)
 
 void MainWindow::OnStartRom(wxCommandEvent&)
 {
-	std::cout << "Starting Rom...\n";
+	xchip::utility::Log("Starting Rom...");
 	StartEmulator();
 }
 
@@ -179,7 +181,7 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 		return;
 
 	_romPath = openDialog.GetPath().c_str();
-	std::cout << "Selected File: " << _romPath << std::endl;
+	xchip::utility::Log("Selected File: %s", _romPath.c_str());
 	StartEmulator();
 }
 
@@ -188,7 +190,8 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 void MainWindow::StartEmulator()
 {
 	StopEmulator();
-	_process.Run(_emuApp + "-ROM \"" + _romPath + "\" " + _settingsWin->GetEmuConfigStr());
+	if(!_process.Run(_emuApp + "-ROM \"" + _romPath + "\" " + _settingsWin->GetEmuConfigStr()))
+		throw std::runtime_error(xchip::utility::GetLastLogError());
 }
 
 
@@ -247,8 +250,10 @@ void MainWindow::CreateControls()
 
 void MainWindow::LoadList(const std::string &dirPath)
 {
+	using namespace xchip::utility;
 
-	if (dirPath == "nopath") return;
+	if (dirPath == "nopath") 
+		return;
 
 	wxArrayString strings;
 
@@ -256,9 +261,11 @@ void MainWindow::LoadList(const std::string &dirPath)
 
 	DIR *dir = opendir(dirPath.c_str());
 
+	const auto cleanup = make_scope_exit([&dir]() noexcept { closedir(dir); });
+
 	if (dir == NULL)
 	{
-		std::cerr << "Error could not open directory.\n";
+		LogError("Error could not open directory.");
 		return;
 	}
 
@@ -280,9 +287,6 @@ void MainWindow::LoadList(const std::string &dirPath)
 			}
 		}
 	}
-
-	closedir(dir);
-
 
 	if (!strings.IsEmpty())
 	{
@@ -315,7 +319,7 @@ void MainWindow::ComputeEmuAppPath()
 	_emuApp.insert(0, "\"");
 	_emuApp += "\" ";
 
-	std::cout << "_emuApp after compute: " << _emuApp << std::endl;
+	xchip::utility::Log("_emuApp after compute: %s", _emuApp.c_str());
 
 }
 
