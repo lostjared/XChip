@@ -61,9 +61,7 @@ struct Cpu
 		EXTENDED_MODE       = 0x00000010,
 		BAD_RENDER          = 0x00000020,
 		BAD_INPUT           = 0x00000040,
-		BAD_SOUND           = 0x00000080,
-		DEFAULT_FONT_LOADED = 0x00000100,
-		HIRES_FONT_LOADED   = 0x00000200
+		BAD_SOUND           = 0x00000080
 	};
 };
 

@@ -279,8 +279,7 @@ inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
 
 inline void CpuManager::CleanMemory() 
 { 
-	utility::arr_zero(_cpu.memory);
-	UnsetFlags( Cpu::DEFAULT_FONT_LOADED | Cpu::HIRES_FONT_LOADED ); 
+	utility::arr_zero(_cpu.memory); 
 }
 
 inline void CpuManager::CleanRegisters() 

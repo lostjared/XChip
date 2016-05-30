@@ -195,7 +195,6 @@ void CpuManager::LoadDefaultFont()
                     "Memory size is too low");
 
 	memcpy(_cpu.memory, chip8DefaultFont, arr_size(chip8DefaultFont));
-	SetFlags(Cpu::DEFAULT_FONT_LOADED);
 }
 
 void CpuManager::LoadHiResFont()
@@ -215,7 +214,6 @@ void CpuManager::LoadHiResFont()
                   "Hi res font is over 0x200 memory area");
 
 	memcpy(_cpu.memory + at, chip8HiResFont, arr_size(chip8HiResFont));
-	SetFlags(Cpu::HIRES_FONT_LOADED);
 }
 
 
