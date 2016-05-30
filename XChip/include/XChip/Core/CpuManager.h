@@ -84,9 +84,9 @@ public:
 	uint32_t& GetGfx(const size_t offset);
 	uint32_t& GetGfx(const utility::Vec2i& point);
 	uint32_t& GetGfx(const int x, const int y);
+	
 
-
-
+	void FetchOpcode();
 	bool SetMemory(const size_t size);
 	bool SetRegisters(const size_t size);
 	bool SetStack(const size_t size);
@@ -253,6 +253,13 @@ inline uint32_t& CpuManager::GetGfx(const int x, const int y)
 {
 	ASSERT_MSG(_gfxRes.x >= x && _gfxRes.y >= y, "GFX overflow"); 
 	return _cpu.gfx[ ( _gfxRes.x * y ) + x]; 
+}
+
+
+inline void CpuManager::FetchOpcode()
+{
+	_cpu.opcode = _cpu.memory[_cpu.pc] << 8 | _cpu.memory[_cpu.pc+1];
+	_cpu.pc += 2;
 }
 
 

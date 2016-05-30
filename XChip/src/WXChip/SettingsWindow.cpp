@@ -234,7 +234,7 @@ void SettingsWindow::OnSetRenderPlugin(wxCommandEvent&)
 	*_plugRenText << value;
 }
 
-void SettingsWindow::OnSetInputPlugin(wxCommandEvent &event)
+void SettingsWindow::OnSetInputPlugin(wxCommandEvent&)
 {
 	wxFileDialog dlg(this, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	
@@ -247,7 +247,7 @@ void SettingsWindow::OnSetInputPlugin(wxCommandEvent &event)
 	
 }
 
-void SettingsWindow::OnSetSoundPlugin(wxCommandEvent &event)
+void SettingsWindow::OnSetSoundPlugin(wxCommandEvent&)
 {
 
 	wxFileDialog dlg(this, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);

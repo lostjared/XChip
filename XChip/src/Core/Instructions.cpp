@@ -67,8 +67,7 @@ void unknown_opcode(CpuManager& cpuMan)
 void execute_instruction(CpuManager& cpuMan)
 {
 	// decode the next opcode 
-	cpuMan.SetOpcode(( cpuMan.GetMemory( cpuMan.GetPC() ) << 8 ) | cpuMan.GetMemory(cpuMan.GetPC() + 1) );
-	cpuMan.SetPC( cpuMan.GetPC() + 2 );
+	cpuMan.FetchOpcode();
 
 	ASSERT_MSG(static_cast<size_t>(OPMSN) < arr_size(instrTable), "Instruction Table Overflow!");
 	
@@ -96,13 +95,15 @@ void op_0xxx(CpuManager& cpuMan)
 		case 0x00FB: // 0x00FB* SuperChip: scrolls display 4 pixels right:
 		{
 			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
-			const auto res = cpuMan.GetRender()->GetResolution();
+			const auto& res = cpuMan.GetGfxRes();
+			
 			for( int y = 0; y < res.y; ++y )
 			{
 				uint32_t* lineBeg = cpuMan.GetGfx() + res.x * y;
 				std::memmove(lineBeg+4, lineBeg, sizeof(uint32_t) * (res.x-4));
 				std::fill(lineBeg, lineBeg+4, 0);
 			}
+
 			break;
 		}
 
@@ -110,7 +111,8 @@ void op_0xxx(CpuManager& cpuMan)
 		case 0x00FC: // 0x00FC* SuperChip: scrolls display 4 pixels left:
 		{
 			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
-			const auto res = cpuMan.GetRender()->GetResolution();
+			const auto& res = cpuMan.GetGfxRes();
+			
 			for( int y = 0; y < res.y; ++y )
 			{
 				uint32_t* lineBeg = cpuMan.GetGfx() + res.x * y;
@@ -118,6 +120,7 @@ void op_0xxx(CpuManager& cpuMan)
 				std::memmove(lineBeg, lineBeg+4, sizeof(uint32_t) * (res.x-4));
 				std::fill(lineEnd-4, lineEnd, 0); 
 			}
+			
 			break;
 		}
 
@@ -131,7 +134,9 @@ void op_0xxx(CpuManager& cpuMan)
 		case 0x00FE: // 0x00FE* SuperChip:  Disable extended screen mode
 		{
 			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
+			
 			constexpr utility::Vec2i defaultRes(64,32);
+		
 			if (!cpuMan.GetRender()->SetResolution(defaultRes))
 			{
 				utility::LOGerr("Could not set extended resolution mode!");
@@ -142,9 +147,7 @@ void op_0xxx(CpuManager& cpuMan)
 			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
 			cpuMan.UnsetFlags(Cpu::EXTENDED_MODE);
 			
-			auto itr = std::find(std::begin(instrTable), std::end(instrTable), op_DXYN_ex);
-			if( itr != std::end(instrTable))
-				*itr = op_DXYN;
+			instrTable[0xD] = &op_DXYN;
 
 			break;
 
@@ -154,7 +157,9 @@ void op_0xxx(CpuManager& cpuMan)
 		case 0x00FF: // 0x00FF* SuperChip: Enable extended screen mode 
 		{
 			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
+			
 			constexpr utility::Vec2i extendedRes(128, 64);
+		
 			if(!cpuMan.GetRender()->SetResolution( extendedRes ))
 			{
 				utility::LOGerr("Could not set extended resolution mode!");
@@ -165,22 +170,19 @@ void op_0xxx(CpuManager& cpuMan)
 			cpuMan.GetRender()->SetBuffer(cpuMan.GetGfx());
 			cpuMan.SetFlags(Cpu::EXTENDED_MODE);
 			
-			auto itr = std::find(std::begin(instrTable), std::end(instrTable), op_DXYN);
-			if( itr != std::end(instrTable))
-				*itr = op_DXYN_ex;
+			instrTable[0xD] = &op_DXYN_ex;
 
 			break;
 		}
 
 
-
 		default: // 0NNN or 00CN
 		{
-			if( (cpuMan.GetOpcode(0x00F0) >> 4) == 0xC )
+			if( (cpuMan.GetOpcode(0x00F0)) == 0x00C0 )
 			{
 				ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 				// 00CN* SuperChip: Scroll display N lines down:
-				const auto res = cpuMan.GetRender()->GetResolution();
+				const auto& res = cpuMan.GetGfxRes();
 				uint32_t* gfx = cpuMan.GetGfx();
 				const int lines = N;			
 			    for (int i = res.y - 1; i >= lines; --i)
@@ -373,15 +375,19 @@ void op_EXxx(CpuManager& cpuMan)
 	{
 		case 0xE: // EX9E  Skips the next instruction if the key stored in VX is pressed.
 			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_INPUT), "Cpu::Input, null or not initialized!");
+			
 			if (cpuMan.GetInput()->IsKeyPressed((Key)VX))
 				cpuMan.SetPC( cpuMan.GetPC() + 2 );
+			
 			break;
 
 
 		case 0x1: // 0xEXA1  Skips the next instruction if the key stored in VX isn't pressed.
 			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_INPUT), "Cpu::Input, null or not initialized!");
+			
 			if (!cpuMan.GetInput()->IsKeyPressed((Key)VX))
 				cpuMan.SetPC( cpuMan.GetPC() + 2 );
+			
 			break;
 
 		default: 
@@ -547,8 +553,8 @@ void op_8XY7(CpuManager& cpuMan)
 void op_8XYE(CpuManager& cpuMan)
 {
 	auto& vx = VX;
-	VF = (vx & 0x80) >> 7;  // check the most significant bit
-	vx = (vx << 1) & 0xFF;
+	VF = ((vx & 0x80) == 0x80) ? 1 : 0;  // check the most significant bit
+	vx = vx << 1;
 }
 
 
@@ -577,8 +583,8 @@ static InstrTable op_FXxx_Table[] =
 
 void op_FXxx(CpuManager& cpuMan) // 9 instructions.
 {
-	ASSERT_MSG(static_cast<size_t>(N) < arr_size(op_FXxx_Table),
-		"op_FXxx_Table overflow...");
+	ASSERT_MSG(static_cast<size_t>(N) < arr_size(op_FXxx_Table), 
+               "op_FXxx_Table overflow...");
 
 	op_FXxx_Table[N](cpuMan);
 }
@@ -625,14 +631,14 @@ void op_FXx5(CpuManager& cpuMan)
 
 		case 0x55: //FX55  Stores V0 to VX in memory starting at address I
 			ASSERT_MSG(static_cast<size_t>(X+1) < (cpuMan.GetMemorySize() - cpuMan.GetIndexRegister()),
-				"memory overflow");
+                       "memory overflow");
 
 			std::copy_n(cpuMan.GetRegisters(), X+1, &cpuMan.GetMemory(cpuMan.GetIndexRegister()));
 			break;
 
 		case 0x65: //FX65  Fills V0 to VX with values from memory starting at address I.
 			ASSERT_MSG(static_cast<size_t>(X+1) < cpuMan.GetRegistersSize(),
-				"registers overflow");
+                        "registers overflow");
 
 			std::copy_n(&cpuMan.GetMemory(cpuMan.GetIndexRegister()), X+1, cpuMan.GetRegisters());
 			break;
@@ -640,18 +646,13 @@ void op_FXx5(CpuManager& cpuMan)
 		case 0x75: // 0xFX75* SuperChip: Store V0...VX in RPL user flags ( X <= 7 )
 		{
 			constexpr auto rplOffset = arr_size(fonts::chip8DefaultFont) + arr_size(fonts::chip8HiResFont);
-			auto* const rpl = cpuMan.GetMemory() + rplOffset;
-			std::copy_n(cpuMan.GetRegisters(),  VX, rpl);
-//			utility::LOGerr("opcode 0xFX75 not implemented.");
+			std::copy_n(cpuMan.GetRegisters(),  VX, cpuMan.GetMemory() + rplOffset);
 			break;
-
 		}
 		case 0x85: // 0xFX85* SuperChip: Read V0...VX from RPL user flags ( X <= 7 )
 		{
 			constexpr auto rplOffset = arr_size(fonts::chip8DefaultFont) + arr_size(fonts::chip8HiResFont);
-			const auto* const rpl = cpuMan.GetMemory() + rplOffset;
-			std::copy_n(rpl, VX, cpuMan.GetRegisters());
-//			utility::LOGerr("opcode 0xFX85 not implemented.");
+			std::copy_n(cpuMan.GetMemory() + rplOffset, VX, cpuMan.GetRegisters());
 			break;
 		}
 		default: 
@@ -673,13 +674,8 @@ void op_FX18(CpuManager& cpuMan)
 
 	cpuMan.SetSoundTimer(VX);
 
-	if (cpuMan.GetSoundTimer() > 0) {
+	if (cpuMan.GetSoundTimer() > 0)
 		cpuMan.GetSound()->Play(cpuMan.GetSoundTimer());
-	}
-	else {
-		if (cpuMan.GetSound()->IsPlaying())
-			cpuMan.GetSound()->Stop();
-	}
 }
 
 
@@ -711,7 +707,7 @@ void op_FX29(CpuManager& cpuMan)
 void op_FX33(CpuManager& cpuMan)
 {
 	ASSERT_MSG(cpuMan.GetMemorySize() > (cpuMan.GetIndexRegister() + 2),
-		"Cpu::I + 2 overflows Cpu::memory!");
+                "Cpu::I + 2 overflows Cpu::memory!");
 
 	auto* memory = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 	const uint8_t vx = VX;
@@ -730,6 +726,13 @@ void op_FX33(CpuManager& cpuMan)
 
 
 /******** OP_FXxx END *********/
+
+
+
+
+
+
+
 
 
 
