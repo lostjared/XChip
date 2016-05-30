@@ -139,7 +139,7 @@ void op_0xxx(CpuManager& cpuMan)
 		
 			if (!cpuMan.GetRender()->SetResolution(defaultRes))
 			{
-				utility::LOGerr("Could not set extended resolution mode!");
+				utility::LOGerr("Could not unset extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
 
