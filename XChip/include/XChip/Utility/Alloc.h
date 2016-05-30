@@ -24,9 +24,7 @@ template<class T>
 enable_if_t<is_pointer<T>::value && !is_same<remove_all_t<T>, uint8_t>::value,
 size_t> arr_size(const T arr) noexcept
 {
-	ASSERT_MSG(arr != nullptr,
-		"Alloc.h::arr_size: attempt to get size from nullptr");
-
+	ASSERT_MSG(arr != nullptr, "attempt to get size from nullptr");
 	const auto size = reinterpret_cast<const size_t*>(arr) - 1;
 	return (*size) / sizeof(remove_all_t<T>);
 }
@@ -35,8 +33,7 @@ template<class T>
 enable_if_t<is_pointer<T>::value && is_same<remove_all_t<T>, uint8_t>::value,
 size_t> arr_size(const T arr) noexcept
 {
-	ASSERT_MSG(arr != nullptr,
-		"Alloc.h::arr_size: attempt to get size from nullptr");
+	ASSERT_MSG(arr != nullptr, "attempt to get size from nullptr");
 	const auto size = reinterpret_cast<const size_t*>(arr) - 1;
 	return *size;
 

@@ -27,7 +27,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip { namespace utility {
 	
-namespace literals {
+namespace literals 
+{
 	inline std::string operator"" _s(const char* str, std::size_t) noexcept { return std::string(str); }
 }
 

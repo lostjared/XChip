@@ -29,7 +29,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip {
 
-using namespace utility;
+using namespace xchip::utility;
+using namespace xchip::utility::literals;
 
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
@@ -57,7 +58,6 @@ SdlRender::~SdlRender()
 
 bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 {
-	using namespace literals;
 
 	if (_initialized)
 		this->Dispose();
@@ -170,7 +170,7 @@ Color SdlRender::GetDrawColor() const noexcept
 Color SdlRender::GetBackgroundColor() const noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	using namespace literals;
+	
 
 	Color color;
 	
@@ -190,11 +190,9 @@ Color SdlRender::GetBackgroundColor() const noexcept
 Vec2i SdlRender::GetResolution() const noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	
-	using namespace literals;
-
 
 	Vec2i res;
+
 	if( SDL_QueryTexture(_texture, nullptr, nullptr, &res.x, &res.y) )
 	{
 		LOGerr("Failed to get SDL_Texture resolution: "_s + SDL_GetError());
@@ -279,7 +277,6 @@ void SdlRender::SetWindowName(const char* name) noexcept
 bool SdlRender::SetResolution(const Vec2i& res) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	using namespace literals;
 
 	_pitch = res.x * sizeof(uint32_t);
 	
@@ -311,8 +308,6 @@ void SdlRender::SetWindowSize(const Vec2i& size) noexcept
 bool SdlRender::SetFullScreen(const bool val) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-
-	using namespace literals;
 
 
 	if(val)
@@ -354,8 +349,6 @@ bool SdlRender::SetDrawColor(const Color& color) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	
-	using namespace literals;
-
 	if(SDL_SetTextureColorMod(_texture, color.r, color.g, color.b))
 	{
 		LOGerr("Failed to set texture draw color: "_s + SDL_GetError());
@@ -373,8 +366,6 @@ bool SdlRender::SetDrawColor(const Color& color) noexcept
 bool SdlRender::SetBackgroundColor(const Color& color) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-
-	using namespace literals;
 
 	if(SDL_SetRenderDrawColor(_rend, color.r, color.g, color.b, 0xff))
 	{
@@ -445,7 +436,6 @@ void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback
 
 bool SdlRender::CreateTexture(const int w, const int h)
 {
-	using namespace literals;
 	auto* const surface = SDL_CreateRGBSurface(0, w, h, 32, 0,0,0,0);
 
 	if(!surface)

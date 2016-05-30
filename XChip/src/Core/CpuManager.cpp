@@ -183,17 +183,40 @@ bool CpuManager::ResizeStack(const size_t size)
 }
 
 
-
-
-void CpuManager::LoadFont(const uint8_t* font, const size_t size, const size_t at)
+void CpuManager::LoadDefaultFont()
 {
+	using namespace xchip::fonts;
+
+	// default font is loaded right in the first memory bytes
+	// default font : [0] -> [DEFAULT_FONT_SIZE - 1] 
+
 	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
-	ASSERT_MSG(arr_size(_cpu.memory) > at, "Memory Overflow, at is offbounds");
-	ASSERT_MSG((arr_size(_cpu.memory) - at) >= size, "font size greater than Cpu::memory");
-	memcpy(_cpu.memory + at, font, size);
+	ASSERT_MSG((arr_size(_cpu.memory) >= arr_size(chip8DefaultFont)), 
+                    "Memory size is too low");
+
+	memcpy(_cpu.memory, chip8DefaultFont, arr_size(chip8DefaultFont));
+	SetFlags(Cpu::DEFAULT_FONT_LOADED);
 }
 
+void CpuManager::LoadHiResFont()
+{
+	using namespace xchip::fonts;
 
+	// hi res font is loaded right after the default font
+	// default font : [0] -> [DEFAULT_FONT_SIZE - 1]
+	// hi res font : [ DEFAULT_FONT_SIZE ] -> [ HI_RES_FONT_SIZE - 1 ]
+
+	constexpr const auto at = arr_size(chip8DefaultFont); 
+	
+	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
+	ASSERT_MSG( arr_size(_cpu.memory) >= ( at + arr_size(chip8HiResFont)), 
+                   "Memory size is too low");
+	ASSERT_MSG((at + arr_size(chip8HiResFont)) < 0x200, 
+                  "Hi res font is over 0x200 memory area");
+
+	memcpy(_cpu.memory + at, chip8HiResFont, arr_size(chip8HiResFont));
+	SetFlags(Cpu::HIRES_FONT_LOADED);
+}
 
 
 bool CpuManager::LoadRom(const char* fileName, const size_t at)

@@ -23,7 +23,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include "Cpu.h"
 #include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Vector2.h>
- 
+#include <XChip/Core/Fonts.h> 
 
 namespace xchip {
 
@@ -104,7 +104,8 @@ public:
 	void SetIndexRegister(const size_t index);
 	void SetPC(const size_t offset);
 	void SetSP(const size_t offset);
-	void LoadFont(const uint8_t* font, const size_t size, const size_t at);
+	void LoadDefaultFont();
+	void LoadHiResFont();
 	bool LoadRom(const char* file, const size_t at);
 	void SetRender(iRender* render);
 	void SetInput(iInput* input);
@@ -119,6 +120,9 @@ public:
 	void CleanRegisters();
 	void CleanStack();
 	void CleanGfx();
+
+	static constexpr size_t GetDefaultFontIndex();
+	static constexpr size_t GetHiResFontIndex();
 
 private:
 	Cpu _cpu;
@@ -146,8 +150,6 @@ inline size_t CpuManager::GetStackSize() const { return utility::arr_size(_cpu.s
 inline size_t CpuManager::GetGfxSize() const { return utility::arr_size(_cpu.gfx); }
 inline const utility::Vec2i& CpuManager::GetGfxRes() const { return _gfxRes; }
 
-
-
 inline const iRender* CpuManager::GetRender() const { return _cpu.render; }
 inline const iInput* CpuManager::GetInput() const { return _cpu.input; }
 inline const iSound* CpuManager::GetSound() const { return _cpu.sound; }
@@ -156,6 +158,7 @@ inline const uint8_t* CpuManager::GetRegisters() const { return _cpu.registers; 
 inline const size_t* CpuManager::GetStack() const { return _cpu.stack; }
 inline const uint32_t* CpuManager::GetGfx() const { return _cpu.gfx; }
 inline const Cpu& CpuManager::GetCpu() const { return _cpu; }
+
 
 
 inline const uint8_t& CpuManager::GetMemory(const size_t offset) const 
@@ -276,7 +279,8 @@ inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
 
 inline void CpuManager::CleanMemory() 
 { 
-	utility::arr_zero(_cpu.memory); 
+	utility::arr_zero(_cpu.memory);
+	UnsetFlags( Cpu::DEFAULT_FONT_LOADED | Cpu::HIRES_FONT_LOADED ); 
 }
 
 inline void CpuManager::CleanRegisters() 
@@ -302,7 +306,8 @@ inline void CpuManager::CleanGfx()
 
 
 
-
+inline constexpr size_t CpuManager::GetDefaultFontIndex() { return 0; }
+inline constexpr size_t CpuManager::GetHiResFontIndex() { return utility::arr_size(fonts::chip8DefaultFont);  }
 
 
 

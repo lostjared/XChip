@@ -19,7 +19,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 #include <XChip/Core/Emulator.h>
-#include <XChip/Core/Fonts.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/ScopeExit.h>
 
@@ -27,18 +26,21 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 namespace xchip {
-using utility::literals::operator""_hz;
 
+using namespace xchip::utility;
+
+
+static void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer) noexcept;
 static bool init_cpu_manager(CpuManager& _manager) noexcept;
 
 
 
+
+
+
 Emulator::Emulator() noexcept
-	: _instrTimer(358_hz),
-	_frameTimer(60_hz),
-	_chDelayTimer(60_hz)
 {
-	utility::LOG("Creating Emulator object...");
+	LOG("Creating XChip Emulator object...");
 }
 
 
@@ -48,12 +50,8 @@ Emulator::~Emulator()
 	if(_initialized) 
 		this->Dispose();
 
-	utility::LOG("Destroying Emulator object...");
+	LOG("Destroying XChip Emulator object...");
 }
-
-
-
-
 
 
 
@@ -61,16 +59,16 @@ Emulator::~Emulator()
 
 bool Emulator::Initialize() noexcept
 {
-
 	if (_initialized) 
 		this->Dispose();
 
-	const auto scope = utility::make_scope_exit([this]() noexcept 
+	const auto scope = make_scope_exit([this]() noexcept 
 	{
 		if (!this->_initialized)
 			this->Dispose();
 	});
 
+	init_emu_timers(_instrTimer, _frameTimer, _chDelayTimer);
 
 	if(init_cpu_manager(_manager))
 	{
@@ -92,7 +90,7 @@ bool Emulator::Initialize(UniqueRender&& render, UniqueInput&& input, UniqueSoun
 	if (_initialized) 
 		this->Dispose();
 
-	const auto scope = utility::make_scope_exit([this]() noexcept 
+	const auto scope = make_scope_exit([this]() noexcept 
 	{
 		if (!this->_initialized)
 			this->Dispose();
@@ -102,16 +100,20 @@ bool Emulator::Initialize(UniqueRender&& render, UniqueInput&& input, UniqueSoun
 	_inputPlugin = move(input);
 	_soundPlugin = move(sound);
 
-	if(!init_cpu_manager(_manager))
-		return false;
+	init_emu_timers(_instrTimer, _frameTimer, _chDelayTimer);
 
-	// try to init all interfaces before returning something...
-	if (!( InitRender() & InitInput() & InitSound()) ) 
-		return false;
-
-	CleanFlags();
-	_initialized = true;
-	return true;
+	if(init_cpu_manager(_manager))
+	{
+		// try to init all interfaces before returning something...
+		if (( InitRender() & InitInput() & InitSound()) ) 
+		{
+			CleanFlags();
+			_initialized = true;
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 
@@ -134,7 +136,7 @@ void Emulator::HaltForNextFlag() const
 	{
 		const auto instrRemain = _instrTimer.GetRemain();
 		const auto frameRemain = _frameTimer.GetRemain();
-		utility::Timer::Halt((instrRemain < frameRemain) ? instrRemain : frameRemain);
+		Timer::Halt((instrRemain < frameRemain) ? instrRemain : frameRemain);
 	}
 }
 
@@ -142,8 +144,6 @@ void Emulator::HaltForNextFlag() const
 
 void Emulator::UpdateTimers()
 {
-	using namespace utility::literals;
-
 	if (!_manager.GetFlags(Cpu::INSTR) && _instrTimer.Finished())
 	{
 		_manager.SetFlags(Cpu::INSTR);
@@ -184,6 +184,7 @@ void Emulator::UpdateSystems()
 
 void Emulator::CleanFlags()
 {
+	// clean flags but keep bad flags.
 	const auto badFlags = _manager.GetFlags(Cpu::BAD_RENDER | Cpu::BAD_INPUT | Cpu::BAD_SOUND);
 	_manager.CleanFlags();
 	_manager.SetFlags(badFlags);
@@ -193,12 +194,13 @@ void Emulator::CleanFlags()
 
 void Emulator::Reset()
 {
-	ASSERT_MSG(!_manager.GetFlags(Cpu::BAD_SOUND), "BAD SOUND");
 
-	if(_manager.GetSound()->IsPlaying())
-		_manager.GetSound()->Stop();
+	if(!_manager.GetFlags(Cpu::BAD_SOUND))
+	{
+		if(_manager.GetSound()->IsPlaying())
+			_manager.GetSound()->Stop();
+	}
 
-	
 	CleanFlags();
 	_manager.CleanGfx();
 	_manager.CleanStack();
@@ -212,7 +214,7 @@ void Emulator::Reset()
 
 bool Emulator::SetRender(UniqueRender rend) 
 { 
-	utility::LOG("Setting new iRender...");
+	LOG("Setting new iRender...");
 	_renderPlugin = std::move(rend);
 	return InitRender();
 }
@@ -222,7 +224,7 @@ bool Emulator::SetRender(UniqueRender rend)
 
 bool Emulator::SetInput(UniqueInput input) 
 {
-	utility::LOG("Setting new iInput...");
+	LOG("Setting new iInput...");
 	_inputPlugin = std::move(input);
 	return InitInput();
 }
@@ -232,7 +234,7 @@ bool Emulator::SetInput(UniqueInput input)
 
 bool Emulator::SetSound(UniqueSound sound) 
 {
-	utility::LOG("Setting new iSound...");
+	LOG("Setting new iSound...");
 	_soundPlugin = std::move(sound);
 	return InitSound();
 }
@@ -244,13 +246,13 @@ UniqueRender Emulator::SwapRender(UniqueRender rend)
 { 
 	if (rend.get()) 
 	{
-		utility::LOG("Swapping iRender...");
+		LOG("Swapping iRender...");
 		_renderPlugin.Swap(rend);
 		InitRender();
 		return rend;
 	}
 
-	utility::LOG("Swapping iRender to nullptr...");
+	LOG("Swapping iRender to nullptr...");
 	_manager.SetRender(nullptr);
 	return std::move(_renderPlugin);
 }
@@ -262,13 +264,13 @@ UniqueInput Emulator::SwapInput(UniqueInput input)
 { 
 	if (input.get())
 	{
-		utility::LOG("Swapping iInput...");
+		LOG("Swapping iInput...");
 		_inputPlugin.Swap(input);
 		InitInput();
 		return input;
 	}
 
-	utility::LOG("Swapping iInput to nullptr...");
+	LOG("Swapping iInput to nullptr...");
 	_manager.SetInput(nullptr);
 	return std::move(_inputPlugin);
 }
@@ -280,13 +282,13 @@ UniqueSound Emulator::SwapSound(UniqueSound sound)
 { 
 	if (sound.get())
 	{
-		utility::LOG("Swapping iSound...");
+		LOG("Swapping iSound...");
 		_soundPlugin.Swap(sound);
 		InitSound();
 		return sound;
 	}
 
-	utility::LOG("Swapping iSound to nullptr...");
+	LOG("Swapping iSound to nullptr...");
 	_manager.SetSound(nullptr);
 	return std::move(_soundPlugin);
 }
@@ -303,14 +305,14 @@ UniqueSound Emulator::SwapSound(UniqueSound sound)
 bool Emulator::InitRender()
 {
 	iRender* const rend = _renderPlugin.get();
-	const auto end_scope = utility::make_scope_exit([this]()noexcept 
+	const auto end_scope = make_scope_exit([this]()noexcept 
 	{ 
 		_manager.SetRender(_renderPlugin.get());
 	});
 
 
 	if (!rend) {
-		utility::LOGerr("Cannot Initialize iRender: nullptr");
+		LOGerr("Cannot Initialize iRender: nullptr");
 		return false;
 	} 
 	else if (rend->IsInitialized()) {
@@ -331,14 +333,14 @@ bool Emulator::InitRender()
 bool Emulator::InitInput()
 {
 	iInput* const input = _inputPlugin.get();
-	const auto end_scope = utility::make_scope_exit([this]()noexcept
+	const auto end_scope = make_scope_exit([this]()noexcept
 	{
 		_manager.SetInput(_inputPlugin.get());
 	});
 
 
 	if (!input) {
-		utility::LOGerr("Cannot Initialize iInput: nullptr");
+		LOGerr("Cannot Initialize iInput: nullptr");
 		return false;
 	}
 	else if (input->IsInitialized()) {
@@ -386,13 +388,13 @@ bool Emulator::InitInput()
 bool Emulator::InitSound()
 {
 	iSound* const sound = _soundPlugin.get();
-	const auto end_scope = utility::make_scope_exit([this]()noexcept
+	const auto end_scope = make_scope_exit([this]()noexcept
 	{
 		_manager.SetSound(_soundPlugin.get());
 	});
 
 	if (!sound)  {
-		utility::LOGerr("Cannot Initialize iSound: nullptr");
+		LOGerr("Cannot Initialize iSound: nullptr");
 		return false;
 	}
 	else if (sound->IsInitialized()) {
@@ -416,13 +418,19 @@ bool Emulator::InitSound()
 
 
 
+static void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer) noexcept
+{	
+	using namespace xchip::utility::literals;
+
+	instrTimer.SetTargetTime(358_hz);
+	frameTimer.SetTargetTime(60_hz);
+	chDelayTimer.SetTargetTime(60_hz);
+}
+
+
+
 static bool init_cpu_manager(CpuManager& manager) noexcept
 {
-
-	using fonts::chip8DefaultFont;
-	using fonts::chip8HiResFont;
-	using utility::arr_size;
-
 	// init the CPU
 	if (manager.SetMemory(0xFFFF)
 		&& manager.SetRegisters(0x10)
@@ -430,8 +438,8 @@ static bool init_cpu_manager(CpuManager& manager) noexcept
 		&& manager.SetGfxRes(64, 32))
 	{
 		manager.SetPC(0x200);
-		manager.LoadFont(chip8DefaultFont, arr_size(chip8DefaultFont), 0);
-		manager.LoadFont(chip8HiResFont, arr_size(chip8HiResFont), arr_size(chip8DefaultFont));
+		manager.LoadDefaultFont();
+		manager.LoadHiResFont();
 		return true;
 	}
 

@@ -35,7 +35,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip {
 
-using namespace utility;
+using namespace xchip::utility;
 
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
@@ -74,7 +74,7 @@ SdlSound::~SdlSound()
 
 bool SdlSound::Initialize() noexcept
 {
-	using namespace literals;
+	using namespace xchip::utility::literals;
 
 	if (_initialized)
 		this->Dispose();
@@ -238,7 +238,7 @@ void SdlSound::Stop() noexcept
 
 bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 {
-	using namespace literals;
+	using namespace xchip::utility::literals;
 
 	memset(&want, 0, sizeof(SDL_AudioSpec));
 	want.freq = 44100;

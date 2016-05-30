@@ -27,7 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip { namespace instructions {
 
-using utility::arr_size;
+using namespace xchip::utility;
 
 
 #define OPMSN ((cpuMan.GetOpcode(0xf000) >> 12)) // opcode most significant nibble
@@ -54,8 +54,6 @@ InstrTable instrTable[16] =
 
 void unknown_opcode(CpuManager& cpuMan)
 {
-	using namespace utility;
-	using namespace utility::literals;
 	LOGerr("Unknown Opcode: ", Endl::No);
 	LOGerr(cpuMan.GetOpcode(), Fmt::Hex);
 	cpuMan.SetFlags(Cpu::EXIT);
@@ -71,7 +69,6 @@ void execute_instruction(CpuManager& cpuMan)
 
 	ASSERT_MSG(static_cast<size_t>(OPMSN) < arr_size(instrTable), "Instruction Table Overflow!");
 	
-
 	// send the opcode most significant nibble to the first instruction table
 	instrTable[OPMSN](cpuMan);
 }
@@ -135,11 +132,11 @@ void op_0xxx(CpuManager& cpuMan)
 		{
 			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 			
-			constexpr utility::Vec2i defaultRes(64,32);
+			constexpr Vec2i defaultRes(64,32);
 		
 			if (!cpuMan.GetRender()->SetResolution(defaultRes))
 			{
-				utility::LOGerr("Could not unset extended resolution mode!");
+				LOGerr("Could not unset extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
 
@@ -158,11 +155,11 @@ void op_0xxx(CpuManager& cpuMan)
 		{
 			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 			
-			constexpr utility::Vec2i extendedRes(128, 64);
+			constexpr Vec2i extendedRes(128, 64);
 		
 			if(!cpuMan.GetRender()->SetResolution( extendedRes ))
 			{
-				utility::LOGerr("Could not set extended resolution mode!");
+				LOGerr("Could not set extended resolution mode!");
 				cpuMan.SetFlags(Cpu::EXIT);
 			}
 
@@ -431,7 +428,7 @@ static InstrTable op_8XYx_Table[16] =
 void op_8XYx(CpuManager& cpuMan)
 {
 	ASSERT_MSG(static_cast<size_t>(N) < arr_size(op_8XYx_Table),
-		"op_8XYx_Table Overflow!");
+                   "op_8XYx_Table Overflow!");
 
 	// call it
 	op_8XYx_Table[N](cpuMan);
@@ -593,7 +590,7 @@ void op_FXxx(CpuManager& cpuMan) // 9 instructions.
 // Set I to the Hi Res font corresponding the digit in VX
 void op_FX30(CpuManager& cpuMan)
 {
-	cpuMan.SetIndexRegister( arr_size(fonts::chip8DefaultFont) + (VX*10) );
+	cpuMan.SetIndexRegister( cpuMan.GetHiResFontIndex() + (VX*10) );
 }
 
 
@@ -631,14 +628,14 @@ void op_FXx5(CpuManager& cpuMan)
 
 		case 0x55: //FX55  Stores V0 to VX in memory starting at address I
 			ASSERT_MSG(static_cast<size_t>(X+1) < (cpuMan.GetMemorySize() - cpuMan.GetIndexRegister()),
-                       "memory overflow");
+                                     "memory overflow");
 
 			std::copy_n(cpuMan.GetRegisters(), X+1, &cpuMan.GetMemory(cpuMan.GetIndexRegister()));
 			break;
 
 		case 0x65: //FX65  Fills V0 to VX with values from memory starting at address I.
 			ASSERT_MSG(static_cast<size_t>(X+1) < cpuMan.GetRegistersSize(),
-                        "registers overflow");
+                                    "registers overflow");
 
 			std::copy_n(&cpuMan.GetMemory(cpuMan.GetIndexRegister()), X+1, cpuMan.GetRegisters());
 			break;
@@ -693,7 +690,7 @@ void op_FX1E(CpuManager& cpuMan)
 void op_FX29(CpuManager& cpuMan)
 {
 	// Characters 0-F (in hexadecimal) are represented by a 4x5 font.
-	cpuMan.SetIndexRegister( VX * 5 );
+	cpuMan.SetIndexRegister( cpuMan.GetDefaultFontIndex() + (VX * 5)  );
 }
 
 

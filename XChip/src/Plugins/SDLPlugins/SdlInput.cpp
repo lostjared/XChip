@@ -31,7 +31,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip {
 
-using namespace utility;
+using namespace xchip::utility;
 
 
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
@@ -62,7 +62,7 @@ SdlInput::~SdlInput()
 
 bool SdlInput::Initialize() noexcept
 {
-	using namespace literals;
+	using namespace xchip::utility::literals;
 
 	if (_initialized)
 		this->Dispose();
@@ -73,7 +73,7 @@ bool SdlInput::Initialize() noexcept
 
 	if (!_keyboardState) 
 	{
-		LOGerr("Cannot get Keyboard State");
+		LOGerr("Cannot get Keyboard State: "_s + SDL_GetError());
 		return false;
 	}
 
