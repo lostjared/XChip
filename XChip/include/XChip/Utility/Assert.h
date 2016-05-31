@@ -33,10 +33,39 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #else
 
 // else, includes...
+#if defined(__linux__) || defined(__APPLE__)
+#include <signal.h>
+#endif
+
 #include <cassert>
 #include "Log.h"
-#define ASSERT_MSG(cond, msg) { if(!(cond)) { xchip::utility::LogError(msg); assert(cond); } }
 
+#ifdef _WIN32
+#define DEBUG_BREAK() __debugbreak()
+#elif defined(__linux__) || defined(__APPLE__)
+#define DEBUG_BREAK() raise(SIGTRAP)
+#endif
+
+#define _XCHIP_MACRO_STR_EX_(x) #x
+#define _XCHIP_MACRO_STR_(x) _XCHIP_MACRO_STR_EX_(x)
+
+#define ASSERT_MSG(cond, msg)                                            \
+{                                                                        \
+    using xchip::utility::LogError;                                      \
+    if(!(cond))                                                          \
+    {                                                                    \
+        LogError("\n                          \n"                        \
+                 "****************************\n"                        \
+                 "*                          *\n"                        \
+                 "*    !ASSERTION FAILED!    *\n"                        \
+                 "*                          *\n"                        \
+                 "****************************");                        \
+        LogError("CONDITION: "#cond"\n"                                  \
+                 "MESSAGE:   " msg "\n"                                  \
+                 "FILE: " __FILE__ ":" _XCHIP_MACRO_STR_(__LINE__)"\n"); \
+        DEBUG_BREAK();                                                   \
+    }                                                                    \
+}
 
 
 
