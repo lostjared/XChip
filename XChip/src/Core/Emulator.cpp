@@ -194,12 +194,8 @@ void Emulator::CleanFlags()
 
 void Emulator::Reset()
 {
-
 	if(!_manager.GetFlags(Cpu::BAD_SOUND))
-	{
-		if(_manager.GetSound()->IsPlaying())
-			_manager.GetSound()->Stop();
-	}
+		_soundPlugin->Stop();
 
 	CleanFlags();
 	_manager.CleanGfx();
@@ -357,7 +353,6 @@ bool Emulator::InitInput()
 	{
 		auto* const emulator = (Emulator*) g_emulator;
 		
-
 		do
 		{		
 			emulator->GetRender()->UpdateEvents();

@@ -54,7 +54,7 @@ InstrTable instrTable[16] =
 
 void unknown_opcode(CpuManager& cpuMan)
 {
-	LogError("Unknown Opcode: $%x", cpuMan.GetOpcode());
+	LogError("Unknown Opcode: $%X", cpuMan.GetOpcode());
 	cpuMan.SetFlags(Cpu::EXIT);
 }
 

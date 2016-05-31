@@ -252,23 +252,20 @@ void MainWindow::LoadList(const std::string &dirPath)
 {
 	using namespace xchip::utility;
 
-	if (dirPath == "nopath") 
+	if (dirPath == _settingsWin->GetDirPath() || dirPath == "nopath") 
 		return;
-
-	wxArrayString strings;
-
-	_listBox->Clear();
 
 	DIR *dir = opendir(dirPath.c_str());
 
-	const auto cleanup = make_scope_exit([&dir]() noexcept { closedir(dir); });
-
-	if (dir == NULL)
+	if (dir == nullptr)
 	{
 		LogError("Error could not open directory.");
 		return;
 	}
 
+	// close the dir in every exit path from this function
+	const auto cleanup = make_scope_exit([&dir]() noexcept { closedir(dir); });	
+	wxArrayString dirFiles;
 	dirent *e;
 
 	while ((e = readdir(dir)))
@@ -278,26 +275,19 @@ void MainWindow::LoadList(const std::string &dirPath)
 			std::string file = e->d_name;
 			std::regex exp1("ch8$", std::regex_constants::icase);
 			std::regex exp2("([0-9a-zA-Z_\\ ]+)", std::regex_constants::icase);
-			bool isTag = std::regex_search(file, exp1);
-			bool isTag2 = std::regex_match(file, exp2);
-			if (isTag || isTag2)
-			{
-				wxString w(e->d_name);
-				strings.Add(w);
-			}
+			// if found in 1 regex search, avoid doing the other search
+			bool isTag = std::regex_search(file, exp1) || std::regex_match(file, exp2);
+			if (isTag) 
+				dirFiles.Add(wxString(e->d_name));
 		}
 	}
 
-	if (!strings.IsEmpty())
+	if(!dirFiles.IsEmpty())
 	{
-		_listBox->InsertItems(strings, 0);
+		_listBox->Clear();
+		_listBox->InsertItems(dirFiles,0);
 		_settingsWin->SetDirPath(dirPath);
 	}
-	else
-	{
-		_settingsWin->SetDirPath("");
-	}
-	
 }
 
 

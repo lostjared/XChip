@@ -72,12 +72,12 @@ private:
 
 
 template<class T>
-UniquePlugin<T>::UniquePlugin(const nullptr_t)
+inline UniquePlugin<T>::UniquePlugin(const nullptr_t)
 {
 }
 
 template<class T>
-UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs) noexcept
+inline UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs) noexcept
 	:  _dloader(std::move(rhs._dloader)),
 	_plugin(rhs._plugin)
 {
@@ -87,7 +87,7 @@ UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs) noexcept
 
 
 template<class T>
-UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs) noexcept
+inline UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs) noexcept
 {
 	this->Swap(rhs);
 	return *this;
@@ -96,7 +96,7 @@ UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs) noexcept
 
 
 template<class T>
-UniquePlugin<T>::~UniquePlugin()
+inline UniquePlugin<T>::~UniquePlugin()
 {
 	this->Free();
 }
@@ -106,28 +106,28 @@ UniquePlugin<T>::~UniquePlugin()
 
 
 template<class T>
-bool UniquePlugin<T>::operator!=(const T* addr) const
+inline bool UniquePlugin<T>::operator!=(const T* addr) const
 {
 	return _plugin != addr;
 }
 
 
 template<class T>
-bool UniquePlugin<T>::operator==(const T* addr) const
+inline bool UniquePlugin<T>::operator==(const T* addr) const
 {
 	return _plugin == addr;
 }
 
 
 template<class T>
-bool UniquePlugin<T>::operator!=(const UniquePlugin& other) const
+inline bool UniquePlugin<T>::operator!=(const UniquePlugin& other) const
 {
 	return this->_plugin != other._plugin;
 }
 
 
 template<class T>
-bool UniquePlugin<T>::operator==(const UniquePlugin& other) const
+inline bool UniquePlugin<T>::operator==(const UniquePlugin& other) const
 {
 	return this->_plugin == other._plugin;
 }
@@ -136,7 +136,7 @@ bool UniquePlugin<T>::operator==(const UniquePlugin& other) const
 
 
 template<class T>
-UniquePlugin<T>::operator bool() const
+inline UniquePlugin<T>::operator bool() const
 {
 	return _plugin != nullptr;
 }
@@ -145,14 +145,14 @@ UniquePlugin<T>::operator bool() const
 
 
 template<class T>
-const T* UniquePlugin<T>::operator->() const
+inline const T* UniquePlugin<T>::operator->() const
 {
 	return _plugin;
 }
 
 
 template<class T>
-const T* UniquePlugin<T>::get() const
+inline const T* UniquePlugin<T>::get() const
 {
 	return _plugin;
 }
@@ -160,14 +160,14 @@ const T* UniquePlugin<T>::get() const
 
 
 template<class T>
-T* UniquePlugin<T>::operator->()
+inline T* UniquePlugin<T>::operator->()
 {
 	return _plugin;
 }
 
 
 template<class T>
-T* UniquePlugin<T>::get()
+inline T* UniquePlugin<T>::get()
 {
 	return _plugin;
 }
