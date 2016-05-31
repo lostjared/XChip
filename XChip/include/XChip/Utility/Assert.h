@@ -41,9 +41,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include "Log.h"
 
 #ifdef _WIN32
-#define DEBUG_BREAK() __debugbreak()
+#define _XCHIP_DEBUG_BREAK_() __debugbreak()
 #elif defined(__linux__) || defined(__APPLE__)
-#define DEBUG_BREAK() raise(SIGTRAP)
+#define _XCHIP_DEBUG_BREAK_() raise(SIGTRAP)
 #endif
 
 #define _XCHIP_MACRO_STR_EX_(x) #x
@@ -63,7 +63,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
         LogError("CONDITION: "#cond"\n"                                  \
                  "MESSAGE:   " msg "\n"                                  \
                  "FILE: " __FILE__ ":" _XCHIP_MACRO_STR_(__LINE__)"\n"); \
-        DEBUG_BREAK();                                                   \
+        _XCHIP_DEBUG_BREAK_();                                           \
     }                                                                    \
 }
 
