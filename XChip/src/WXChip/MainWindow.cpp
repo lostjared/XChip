@@ -252,7 +252,7 @@ void MainWindow::LoadList(const std::string &dirPath)
 {
 	using namespace xchip::utility;
 
-	if (dirPath == _settingsWin->GetDirPath() || dirPath == "nopath") 
+	if (dirPath == "nopath" || dirPath == _settingsWin->GetDirPath())
 		return;
 
 	DIR *dir = opendir(dirPath.c_str());

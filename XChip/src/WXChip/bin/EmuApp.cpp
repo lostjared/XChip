@@ -36,7 +36,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <XChip/Core/Emulator.h>
 #include <XChip/Utility/Log.h>
-#include <XChip/Utility/Assert.h>
 #include <XChip/Utility/CliOpts.h>
 
 
@@ -85,13 +84,14 @@ int main(int argc, char **argv)
 	using xchip::UniqueRender;
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
+	using namespace xchip::utility;
 	using namespace xchip::utility::literals;
 	
 #if defined(__linux__) || defined(__APPLE__) 
 
 	if (signal(SIGINT, signals_sigint) == SIG_ERR)
 	{
-		std::cerr << "Could not install signal handler!" << std::endl;
+		LogError("Could not install signal handler");
 		return EXIT_FAILURE;
 	}
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
 	if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrl_handler, true))
 	{
-		std::cerr << "Could not install Console Ctrl Handler: " << GetLastError() << std::endl;
+		LogError("Could not install Console Ctrl Handler. Error Code: %d", GetLastError())
 		return EXIT_FAILURE;
 	}
 
@@ -108,8 +108,7 @@ int main(int argc, char **argv)
 	if (argc < 2) 
 	{
 		std::cout << "Usage:" << std::endl
-		          << "EmuApp -ROM game/rom/path -REN render/plugin/path " 
-                  << " -INP input/plugin/path -SND sound/plugin/path  OPTIONS..." << std::endl;
+		          << "EmuApp -ROM game/rom/path" << std::endl;
 		return EXIT_SUCCESS;
 	}
 	
@@ -119,7 +118,7 @@ int main(int argc, char **argv)
 		if(!g_emulator.Initialize())
 			throw std::runtime_error(xchip::utility::GetLastLogError());
 
-		const xchip::utility::CliOpts opts(argc-1, argv+1);
+		const CliOpts opts(argc-1, argv+1);
 		const auto romPath = opts.GetOpt("-ROM");
 		
 		if (romPath.empty())
