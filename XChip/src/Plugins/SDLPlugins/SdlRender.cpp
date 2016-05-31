@@ -162,7 +162,7 @@ Color SdlRender::GetDrawColor() const noexcept
 
 	uint8_t r, g, b;
 	SDL_GetTextureColorMod(_texture, &r, &g, &b);
-	return Color(r, g, b);
+	return {r, g, b};
 
 }
 
@@ -173,7 +173,7 @@ Color SdlRender::GetBackgroundColor() const noexcept
 	
 	uint8_t r, g, b;	
 	if(SDL_GetRenderDrawColor(_rend, &r, &g, &b, nullptr) == 0)
-		return Color(r, g, b);
+		return {r, g, b};
 	
 	LogError("Could not get render draw color: %s", SDL_GetError());
 	return {0, 0, 0};
@@ -189,7 +189,7 @@ Vec2i SdlRender::GetResolution() const noexcept
 
 	int x, y;
 	if( SDL_QueryTexture(_texture, nullptr, nullptr, &x, &y) == 0)
-		return Vec2i(x, y);
+		return {x, y};
 	
 	LogError("Failed to get SDL_Texture resolution: %s", SDL_GetError());
 	return {0, 0};
@@ -204,7 +204,7 @@ Vec2i SdlRender::GetWindowSize() const noexcept
 
 	int x, y;
 	SDL_GetWindowSize(_window, &x, &y);
-	return Vec2i(x, y);
+	return {x, y};
 }
 
 
