@@ -1,5 +1,8 @@
 project(Core)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
+
+# exceptions and rtti are NOT used on Core.
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
+
 file(GLOB_RECURSE SRC ./*.cpp)
 file(GLOB_RECURSE HEADERS XChip/*.h)
 add_library(${PROJECT_NAME} ${HEADERS} ${SRC})

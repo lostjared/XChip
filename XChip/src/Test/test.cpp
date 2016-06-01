@@ -28,8 +28,19 @@ int main(int argc, char **argv)
 {
 	using LoadPtr = xchip::iPlugin* (*)();
 	using FreePtr = void (*)(xchip::iPlugin*);
-	volatile auto x=reinterpret_cast<void volatile * volatile >(&xchip::utility::LogError);
-	volatile auto y=reinterpret_cast<void volatile * volatile >(&xchip::utility::Log);
+
+	// need to make sure that the functions that the 
+	// dynamic library used from Utility / Core are
+	// linked into the caller binary. Cuz 
+	// Utility and Core are not compiled with -fPIC
+	// so they can't be linked to a shared library.
+	// but if needed, the -fPIC flag can be added easily.
+
+	// removing these lines causes segmentation fault
+	volatile auto x=&xchip::utility::LogError;
+	volatile auto y=&xchip::utility::Log;
+
+
 	auto handle = dlopen("./XChipSFMLInput.so", RTLD_LAZY);
 
 	auto loadFun = (LoadPtr) dlsym(handle, "XCHIP_LoadPlugin");
