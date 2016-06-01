@@ -27,6 +27,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #define _SFMLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized, "SfmlInput is not initiaized")
 
+#define _XCHIP_PLUGIN_NAME_ "XCHIP SFML INPUT BY DHUST"
+#define _XCHIP_PLUGIN_VER_ "0.1"
+
 namespace xchip {
 
 using namespace xchip::utility;
@@ -38,7 +41,7 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin);
 
 SfmlInput::SfmlInput()
 {
-	Log("Creating SfmlInput Object...");
+	Log("Creating " _XCHIP_PLUGIN_NAME_ " Object...");
 }
 
 SfmlInput::~SfmlInput()
@@ -46,7 +49,7 @@ SfmlInput::~SfmlInput()
 	if(_initialized)
 		this->Dispose();
 
-	Log("Destroying SfmlInput Object...");
+	Log("Destroying " _XCHIP_PLUGIN_NAME_ " Object...");
 }
 
 
@@ -107,14 +110,14 @@ bool SfmlInput::IsInitialized() const noexcept
 
 const char* SfmlInput::GetPluginName() const noexcept
 {
-	return "XChip - SFML Input by Dhust";
+	return _XCHIP_PLUGIN_NAME_;
 }
 
 
 
 const char* SfmlInput::GetPluginVersion() const noexcept
 {
-	return "beta 0.1";
+	return _XCHIP_PLUGIN_VER_;
 }
 
 
@@ -157,6 +160,7 @@ bool SfmlInput::UpdateKeys() noexcept
 Key SfmlInput::WaitKeyPress() noexcept
 {
 	_SFMLINPUT_INITIALIZED_ASSERT_();
+
 	if( _waitCallback )
 	{
 		while(_waitCallback(_waitArg))
