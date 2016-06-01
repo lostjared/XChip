@@ -56,7 +56,6 @@ public:
 	using EscapeKeyCallback = void(*)(const void*);
 
 	virtual bool Initialize() noexcept = 0;
-	virtual Key GetPressedKey() const noexcept = 0;
 	virtual bool IsKeyPressed(const Key key) const noexcept = 0;
 	virtual bool UpdateKeys() noexcept = 0;
 	virtual Key WaitKeyPress() noexcept = 0;

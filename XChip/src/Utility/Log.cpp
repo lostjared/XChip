@@ -59,17 +59,12 @@ void LogError(const char* fmtString, ...) noexcept
 	if(writeSize > 0)
 	{
 		if(errnoCode) 
-		{
-			std::sprintf(&errstr[writeSize], ": %s\n", strerror(errnoCode));
-		}
+			std::sprintf(&errstr[writeSize], ": %s", strerror(errnoCode));
 		else 
-		{
-			errstr[writeSize] = '\n';
-			errstr[writeSize+1] = '\0';
-		}
+			errstr[writeSize] = '\0';
 
 		// print
-		std::fprintf(stderr, errstr.c_str());
+		std::fprintf(stderr, "%s\n", errstr.c_str());
 	}
 	else
 	{

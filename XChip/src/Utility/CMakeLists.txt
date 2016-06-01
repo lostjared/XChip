@@ -1,4 +1,7 @@
 project(Utility)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
+
 file(GLOB_RECURSE SRC ./*.cpp)
 file(GLOB_RECURSE HEADERS XChip/*.h)
 

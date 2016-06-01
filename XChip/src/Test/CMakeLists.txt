@@ -1,6 +1,7 @@
 if(${BUILD_TEST} STREQUAL "ON")
 	project(XChipTest)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
 	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/Test)
 	add_executable(${PROJECT_NAME} test.cpp)
-	target_link_libraries(${PROJECT_NAME} Core)
+	target_link_libraries(${PROJECT_NAME} dl Core Utility)
 endif()

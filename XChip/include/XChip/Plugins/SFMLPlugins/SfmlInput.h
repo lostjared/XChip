@@ -18,57 +18,58 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_SDLINPUT_H_
-#define _XCHIP_SDLINPUT_H_
+#ifndef _XCHIP_SFMLINPUT_H_
+#define _XCHIP_SFMLINPUT_H_
 
+
+#include <utility>
 #include <vector>
-
-#include <SDL2/SDL_events.h>
+#include <SFML/Window/Keyboard.hpp>
 #include <XChip/Plugins/iInput.h>
 
 
- 
-
 namespace xchip {
 
-	
-class SdlInput final : public iInput
+
+
+class SfmlInput final : public iInput
 {
-	using SDL_Scancode = int;
-	using KeyPair = std::pair<Key, SDL_Scancode>;
-	static constexpr const char* const PLUGIN_NAME = "SdlInput";
-	static constexpr const char* const PLUGIN_VER = "SdlInput 1.0. Using SDL2";
+	using KeyPair = std::pair<Key, sf::Keyboard::Key>;
 public:
-	SdlInput() noexcept;
-	~SdlInput();
-	
+	using WaitKeyCallback = bool(*)(const void*);
+	using ResetKeyCallback = void(*)(const void*);
+	using EscapeKeyCallback = void(*)(const void*);
+
+	SfmlInput();
+	~SfmlInput();
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
 	bool IsInitialized() const noexcept override;
 	const char* GetPluginName() const noexcept override;
 	const char* GetPluginVersion() const noexcept override;
 	PluginDeleter GetPluginDeleter() const noexcept override;
-	bool IsKeyPressed(const Key key) const noexcept override;
 
+	bool IsKeyPressed(const Key key) const noexcept override;
 	bool UpdateKeys() noexcept override;
 	Key WaitKeyPress() noexcept override;
-
+	
+	
 	void SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) noexcept override;
 	void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) noexcept override;
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept override;
-
 private:
 	std::vector<KeyPair> _keyPairs;
-	const unsigned char* _keyboardState = nullptr;
-	WaitKeyCallback _waitClbk = nullptr;
-	ResetKeyCallback _resetClbk = nullptr;
-	EscapeKeyCallback _escapeClbk = nullptr;
-	const void* _waitClbkArg;
-	const void* _resetClbkArg;
-	const void* _escapeClbkArg;
+	
+	const void* _waitArg = nullptr;
+	const void* _resetArg = nullptr;
+	const void* _escapeArg = nullptr;
+	WaitKeyCallback _waitCallback = nullptr;
+	ResetKeyCallback _resetCallback = nullptr;
+	EscapeKeyCallback _escapeCallback = nullptr;
 	bool _initialized = false;
-
 };
+
+
 
 
 
@@ -88,9 +89,6 @@ private:
 
 
 
-
-
-
-
-
 #endif
+
+

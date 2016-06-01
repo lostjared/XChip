@@ -144,21 +144,6 @@ bool SdlInput::IsKeyPressed(const Key key) const noexcept
 
 
 
-Key SdlInput::GetPressedKey() const noexcept
-{
-	_SDLINPUT_INITIALIZED_ASSERT_();
-	for (const auto& keyPair : _keyPairs)
-	{
-		if (_keyboardState[keyPair.second])
-			return keyPair.first;
-	}
-
-	return Key::NO_KEY_PRESSED;
-}
-
-
-
-
 bool SdlInput::UpdateKeys() noexcept
 {
 	_SDLINPUT_INITIALIZED_ASSERT_();

@@ -20,34 +20,30 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <csignal>
 #include <iostream>
-
-#include <XChip/Core/Emulator.h> 
-#include <XChip/Plugins.h>
-#include <XChip/Utility.h>
-
-
+#include <dlfcn.h>
+#include <XChip/Plugins/iPlugin.h>
+#include <XChip/Utility/Log.h>
 
 int main(int argc, char **argv)
 {
-	using namespace xchip;
-	using namespace utility;
+	using LoadPtr = xchip::iPlugin* (*)();
+	using FreePtr = void (*)(xchip::iPlugin*);
+	volatile auto x=reinterpret_cast<void volatile * volatile >(&xchip::utility::LogError);
+	volatile auto y=reinterpret_cast<void volatile * volatile >(&xchip::utility::Log);
+	auto handle = dlopen("./XChipSFMLInput.so", RTLD_LAZY);
 
-	LogError("Error opcode unknown $%x", 2222332449923);
+	auto loadFun = (LoadPtr) dlsym(handle, "XCHIP_LoadPlugin");
+	
+	auto plugin = loadFun();
 
+	std::cout << plugin->GetPluginName() << std::endl;
+	std::cout << plugin->GetPluginVersion() << std::endl;
 
-	std::cout << "Last Error: " << GetLastLogError() << std::endl;
+	auto freeFun = (FreePtr) dlsym(handle, "XCHIP_FreePlugin");
 
-	static xchip::Emulator emu;
+	freeFun(plugin);
 
-	if (!emu.Initialize()) 
-	{
-		std::cout << "Last Error: " << GetLastLogError() << std::endl;
-		return -1;
-	}
-
-
-	emu.Draw();
-
+	dlclose(handle);
 
 	return EXIT_SUCCESS;
 }

@@ -10,7 +10,7 @@ set(UNDEFINED_SANITIZER "OFF" CACHE STRING "-fsanitize=undefined")
 
 #set on plugins libraries to build
 set(BUILD_SDL_PLUGINS "OFF" CACHE STRING "")
-
+set(BUILD_SFML_PLUGINS "OFF" CACHE STRING "")
 
 #build Test ?
 set(BUILD_TEST "OFF" CACHE STRING "")
