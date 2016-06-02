@@ -29,7 +29,9 @@ template<class T>
 inline enable_if_t<is_pointer<T>::value && !is_same<remove_all_t<T>, uint8_t>::value,
 size_t> arr_size(const T arr)
 {
-	ASSERT_MSG(arr != nullptr, "attempt to get size from nullptr");
+	if(!arr)
+		return 0;
+
 	const auto size = reinterpret_cast<const size_t*>(arr) - 1;
 	return (*size) / sizeof(remove_all_t<T>);
 }
@@ -39,7 +41,9 @@ template<class T>
 inline enable_if_t<is_pointer<T>::value && is_same<remove_all_t<T>, uint8_t>::value,
 size_t> arr_size(const T arr)
 {
-	ASSERT_MSG(arr != nullptr, "attempt to get size from nullptr");
+	if(!arr)
+		return 0;
+
 	const auto size = reinterpret_cast<const size_t*>(arr) - 1;
 	return *size;
 

@@ -22,11 +22,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _XCHIP_SFMLINPUT_H_
 
 
-#include <utility>
-#include <vector>
 #include <SFML/Window/Keyboard.hpp>
 #include <XChip/Plugins/iInput.h>
-
+#include <XChip/Utility/Vector.h>
 
 namespace xchip {
 
@@ -34,7 +32,7 @@ namespace xchip {
 
 class SfmlInput final : public iInput
 {
-	using KeyPair = std::pair<Key, sf::Keyboard::Key>;
+	struct KeyPair { Key chip8Key; sf::Keyboard::Key sfKey; };
 public:
 	using WaitKeyCallback = bool(*)(const void*);
 	using ResetKeyCallback = void(*)(const void*);
@@ -58,7 +56,7 @@ public:
 	void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) noexcept override;
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept override;
 private:
-	std::vector<KeyPair> _keyPairs;
+	utility::Vector<KeyPair> _keyPairs;
 	
 	const void* _waitArg = nullptr;
 	const void* _resetArg = nullptr;

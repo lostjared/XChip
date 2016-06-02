@@ -18,6 +18,64 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+// TESTING Vector, it's a version of std::vector for POD types only
+#include <iostream>
+#include <XChip/Utility/Vector.h>
+
+struct Pod
+{
+	int key;
+	char value;
+	uint64_t x[1000];
+};
+
+std::ostream& operator<<(std::ostream& os, const Pod& pod)
+{
+	os << "{ " << pod.key << ", " << pod.value << " } " << std::endl;
+	return os;
+}
+
+
+
+int main()
+{
+	using namespace xchip;
+	using namespace xchip::utility;
+
+	const auto print = [](const Vector<Pod>& vec) { for(auto& i : vec) std::cout << i << std::endl; };
+
+	Vector<Pod> vec;
+	// initialize must always be called after using this
+	if(!vec.initialize())
+		return 0;
+
+	Vector<Pod> vec2 (std::move(vec));
+
+
+	while(true)
+	{
+		if(vec2.resize(vec2.size() + 1000))
+			continue;
+		else
+			break;
+	}
+
+	std::cout << "vec2 size after loop: " << vec2.size() << std::endl;
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+#if 0
+
 #include <csignal>
 #include <iostream>
 #ifdef _WIN32
@@ -88,3 +146,5 @@ int main(int argc, char **argv)
 
 
 
+
+#endif

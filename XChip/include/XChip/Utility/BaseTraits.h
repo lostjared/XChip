@@ -200,6 +200,18 @@ struct is_numeric :
 
 
 
+template<class T>
+inline constexpr size_t toSizeT(T value) { return static_cast<size_t>(value); }
+
+
+
+
+
+
+
+
+
+
 
 }}
 
