@@ -189,8 +189,8 @@ void load_plugins(const xchip::utility::CliOpts& opts)
 		{"-SND", set_plugin<xchip::UniqueSound>}
 	};
 
-	const auto begin = std::cbegin(pluginPairs);
-	const auto end = std::cend(pluginPairs);
+	const auto begin = std::begin(pluginPairs);
+	const auto end = std::end(pluginPairs);
 	for(auto itr = begin; itr != end; ++itr)
 	{
 		const auto opt = opts.GetOpt(itr->first);
@@ -209,7 +209,12 @@ void set_plugin(const std::string& path)
 
 	if (path.empty())
 	{
-		if (!plugin.Load(DefaultPluginPath<PluginType>()))
+#ifdef _WIN32
+		if (!plugin.Load(DefaultPluginPath<PluginType>()))			
+#elif defined(__linux__) || defined(__APPLE__)
+		if (!plugin.Load(CliOpts::GetFullProcDir() + DefaultPluginPath<PluginType>()))
+#endif
+
 			throw std::runtime_error(xchip::utility::GetLastLogError());
 	}
 	else if (!plugin.Load(path))
