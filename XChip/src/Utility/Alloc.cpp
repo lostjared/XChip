@@ -58,29 +58,6 @@ void* realloc_arr(void* from, const size_t size) noexcept
 
 
 
-void free_arr(const void* block) noexcept
-{
-	ASSERT_MSG(block != nullptr, "attempt to free null pointer!");
-	std::free(((size_t*)block) - 1);
-}
-
-
-
-
-void arr_zero(void* arr) noexcept
-{
-	ASSERT_MSG(arr != nullptr, "attempt to clean nullptr");
-	memset(arr, 0, arr_size(reinterpret_cast<uint8_t*>(arr)));
-}
-
-
-void arr_zero(void* arr, const size_t size) noexcept
-{
-	ASSERT_MSG(arr != nullptr, "attempt to clean nullptr");
-	memset(arr, 0, size);
-}
-
-
 
 
 
