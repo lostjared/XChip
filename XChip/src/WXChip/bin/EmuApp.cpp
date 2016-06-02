@@ -138,6 +138,12 @@ int main(int argc, char **argv)
 		std::cerr << "Exception: " << err.what() << std::endl;
 		return EXIT_FAILURE;
 	}
+	
+	if(!g_emulator.Good())
+	{
+		LogError("Could not initialize emulator!");
+		return EXIT_FAILURE;
+	}
 
 	while (!g_emulator.GetExitFlag())
 	{

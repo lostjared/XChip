@@ -21,11 +21,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifndef _XCHIP_SDLINPUT_H_
 #define _XCHIP_SDLINPUT_H_
 
-#include <vector>
 
 #include <SDL2/SDL_events.h>
 #include <XChip/Plugins/iInput.h>
-
+#include <XChip/Utility/Vector.h>
 
  
 
@@ -35,7 +34,7 @@ namespace xchip {
 class SdlInput final : public iInput
 {
 	using SDL_Scancode = int;
-	using KeyPair = std::pair<Key, SDL_Scancode>;
+	struct KeyPair { Key chip8Key; SDL_Scancode sdlKey; };
 	static constexpr const char* const PLUGIN_NAME = "SdlInput";
 	static constexpr const char* const PLUGIN_VER = "SdlInput 1.0. Using SDL2";
 public:
@@ -58,7 +57,7 @@ public:
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept override;
 
 private:
-	std::vector<KeyPair> _keyPairs;
+	utility::Vector<KeyPair> _keyPairs;
 	const unsigned char* _keyboardState = nullptr;
 	WaitKeyCallback _waitClbk = nullptr;
 	ResetKeyCallback _resetClbk = nullptr;

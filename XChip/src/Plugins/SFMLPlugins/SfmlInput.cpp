@@ -24,6 +24,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <XChip/Utility/Alloc.h>
 #include <XChip/Utility/Log.h>
 #include <XChip/Utility/Assert.h>
+#include <XChip/Utility/BaseTraits.h>
 
 #define _SFMLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized, "SfmlInput is not initiaized")
 
@@ -59,27 +60,22 @@ bool SfmlInput::Initialize() noexcept
 	if(_initialized)
 		this->Dispose();
 
-	try 
+	
+	if(_keyPairs.empty())
 	{
-		if(_keyPairs.empty())
-		{
-			_keyPairs = std::vector<KeyPair>
-			{
-				{ Key::KEY_0, sf::Keyboard::Numpad0 }, { Key::KEY_1, sf::Keyboard::Numpad7 }, 
-				{ Key::KEY_2, sf::Keyboard::Numpad8 }, { Key::KEY_3, sf::Keyboard::Numpad9 }, 
-				{ Key::KEY_4, sf::Keyboard::Numpad4 }, { Key::KEY_5, sf::Keyboard::Numpad5 },
-				{ Key::KEY_6, sf::Keyboard::Numpad6 }, { Key::KEY_7, sf::Keyboard::Numpad1 }, 
-				{ Key::KEY_8, sf::Keyboard::Numpad2 }, { Key::KEY_9, sf::Keyboard::Numpad3 }, 
-				{ Key::KEY_A, sf::Keyboard::Subtract }, { Key::KEY_B, sf::Keyboard::Add },
-				{ Key::KEY_C, sf::Keyboard::Divide },  { Key::KEY_D, sf::Keyboard::Multiply },
-				{ Key::KEY_E, sf::Keyboard::Comma }, { Key::KEY_F, sf::Keyboard::Period }
-			};
-		}
-	}
-	catch(std::exception& err)
-	{
-		LogError("Failed to initialize _keyPairs: %s", err.what());
-		return false;
+		bool ret = _keyPairs.initialize({
+			{ Key::KEY_0, sf::Keyboard::Numpad0 }, { Key::KEY_1, sf::Keyboard::Numpad7 }, 
+			{ Key::KEY_2, sf::Keyboard::Numpad8 }, { Key::KEY_3, sf::Keyboard::Numpad9 }, 
+			{ Key::KEY_4, sf::Keyboard::Numpad4 }, { Key::KEY_5, sf::Keyboard::Numpad5 },
+			{ Key::KEY_6, sf::Keyboard::Numpad6 }, { Key::KEY_7, sf::Keyboard::Numpad1 }, 
+			{ Key::KEY_8, sf::Keyboard::Numpad2 }, { Key::KEY_9, sf::Keyboard::Numpad3 }, 
+			{ Key::KEY_A, sf::Keyboard::Subtract }, { Key::KEY_B, sf::Keyboard::Add },
+			{ Key::KEY_C, sf::Keyboard::Divide },  { Key::KEY_D, sf::Keyboard::Multiply },
+			{ Key::KEY_E, sf::Keyboard::Comma }, { Key::KEY_F, sf::Keyboard::Period }
+		});
+
+		if(!ret)
+			return false;
 	}
 
 	_initialized = true;
@@ -132,7 +128,7 @@ PluginDeleter SfmlInput::GetPluginDeleter() const noexcept
 bool SfmlInput::IsKeyPressed(const Key key) const noexcept
 {
 	_SFMLINPUT_INITIALIZED_ASSERT_();
-	if( sf::Keyboard::isKeyPressed(_keyPairs[static_cast<size_t>(key)].second) )
+	if( sf::Keyboard::isKeyPressed(_keyPairs[toSizeT(key)].sfKey) )
 		return true;
 
 	return false;
@@ -168,8 +164,8 @@ Key SfmlInput::WaitKeyPress() noexcept
 			if(UpdateKeys())
 			{
 				for(const auto& kpair : _keyPairs)
-					if( sf::Keyboard::isKeyPressed(kpair.second) )
-						return kpair.first;
+					if( sf::Keyboard::isKeyPressed(kpair.sfKey) )
+						return kpair.chip8Key;
 			}
 		}
 	}
