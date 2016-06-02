@@ -20,14 +20,17 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <csignal>
 #include <iostream>
+#ifdef _WIN32
+#include <windows.h>
+#elif defined(__linux__) || defined(__APPLE__)
 #include <dlfcn.h>
+#endif
 #include <XChip/Plugins/iPlugin.h>
-#include <XChip/Utility/Log.h>
 
 int main(int argc, char **argv)
 {
-	using LoadPtr = xchip::iPlugin* (*)();
-	using FreePtr = void (*)(xchip::iPlugin*);
+	using xchip::PluginLoader;
+	using xchip::PluginDeleter;
 
 	// need to make sure that the functions that the 
 	// dynamic library used from Utility / Core are
@@ -37,25 +40,40 @@ int main(int argc, char **argv)
 	// but if needed, the -fPIC flag can be added easily.
 
 	// removing these lines causes segmentation fault
-	volatile auto x=&xchip::utility::LogError;
-	volatile auto y=&xchip::utility::Log;
+	//volatile auto x=&xchip::utility::LogError;
+	//volatile auto y=&xchip::utility::Log;
+
+#ifdef _WIN32
+	auto handle = LoadLibrary("XChipSFMLInput.dll");
+	
+	auto loadFun = (PluginLoader)GetProcAddress(handle, XCHIP_LOAD_PLUGIN_SYM);
+
+	auto freeFun = (PluginDeleter)GetProcAddress(handle, XCHIP_FREE_PLUGIN_SYM);
 
 
+	auto plugin = loadFun();
+	std::cout << plugin->GetPluginName() << std::endl;
+	std::cout << plugin->GetPluginVersion() << std::endl;
+
+	freeFun(plugin);
+	FreeLibrary(handle);
+
+#elif defined(__linux__) || defined(__APPLE__)
 	auto handle = dlopen("./XChipSFMLInput.so", RTLD_LAZY);
 
-	auto loadFun = (LoadPtr) dlsym(handle, "XCHIP_LoadPlugin");
-	
+	auto loadFun = (LoadPtr)dlsym(handle, "XCHIP_LoadPlugin");
+
 	auto plugin = loadFun();
 
 	std::cout << plugin->GetPluginName() << std::endl;
 	std::cout << plugin->GetPluginVersion() << std::endl;
 
-	auto freeFun = (FreePtr) dlsym(handle, "XCHIP_FreePlugin");
+	auto freeFun = (FreePtr)dlsym(handle, "XCHIP_FreePlugin");
 
 	freeFun(plugin);
 
 	dlclose(handle);
-
+#endif
 	return EXIT_SUCCESS;
 }
 

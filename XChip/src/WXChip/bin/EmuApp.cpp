@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
 	if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrl_handler, true))
 	{
-		LogError("Could not install Console Ctrl Handler. Error Code: %d", GetLastError())
+		LogError("Could not install Console Ctrl Handler. Error Code: %d", GetLastError());
 		return EXIT_FAILURE;
 	}
 
@@ -112,6 +112,7 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 	
+
 	try
 	{
 		// initialize with no plugins.
@@ -159,11 +160,11 @@ int main(int argc, char **argv)
 template<class P>
 constexpr const char* DefaultPluginPath();
 #ifdef _WIN32
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "\\plugins\\XChipSDLRender";}
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "\\plugins\\XChipSDLInput";}
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "\\plugins\\XChipSDLSound"; }
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "XChipSDLRender.dll";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "XChipSDLInput.dll";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "XChipSDLSound.dll"; }
 #elif defined(__linux__) || defined(__APPLE__)
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "/plugins/XChipSDLRender";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "/plugins/XChipSDLRender"; }
 template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "/plugins/XChipSDLInput";}
 template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "/plugins/XChipSDLSound";}
 #endif
@@ -174,6 +175,11 @@ void set_plugin(const std::string& path);
 
 void load_plugins(const xchip::utility::CliOpts& opts)
 {
+#ifdef _WIN32
+	// a search dir for dlls 
+	SetDllDirectory((xchip::utility::CliOpts::GetFullProcDir() + "\\plugins\\").c_str());
+#endif
+
 	using PluginConfigPair = std::pair<const char*, void(*)(const std::string&)>;
 	
 	const PluginConfigPair pluginPairs[] = 
@@ -183,14 +189,15 @@ void load_plugins(const xchip::utility::CliOpts& opts)
 		{"-SND", set_plugin<xchip::UniqueSound>}
 	};
 
-	const auto begin = std::begin(pluginPairs);
-	const auto end = std::end(pluginPairs);
+	const auto begin = std::cbegin(pluginPairs);
+	const auto end = std::cend(pluginPairs);
 	for(auto itr = begin; itr != end; ++itr)
 	{
 		const auto opt = opts.GetOpt(itr->first);
 		itr->second(opt);
 	}
 }
+
 
 template<class PluginType>
 void set_plugin(const std::string& path)
@@ -202,9 +209,7 @@ void set_plugin(const std::string& path)
 
 	if (path.empty())
 	{
-		const auto completePath = CliOpts::GetFullProcDir() + DefaultPluginPath<PluginType>();
-
-		if (!plugin.Load(completePath))
+		if (!plugin.Load(DefaultPluginPath<PluginType>()))
 			throw std::runtime_error(xchip::utility::GetLastLogError());
 	}
 	else if (!plugin.Load(path))

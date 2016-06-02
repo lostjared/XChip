@@ -210,8 +210,6 @@ void SfmlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback
 
 
 
-
-
 extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SfmlInput();

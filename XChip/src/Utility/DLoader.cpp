@@ -49,8 +49,9 @@ bool DLoader::Load(const std::string& dlPath)
 		if (!newHandle)
 		{
 			const char* error = dlerror();
-			LogError("Could not load shared library: %s or %s\n"
-                                 "Error: %s", dlPath.c_str(), dlPathFix.c_str(), error);
+			LogError("Could not load shared library: %s or %s\nError: %s", 
+                      dlPath.c_str(), dlPathFix.c_str(), error);
+
 			return false;
 		}
 	}
@@ -67,8 +68,8 @@ bool DLoader::Load(const std::string& dlPath)
 		if (!newHandle)
 		{
 			const int errorCode = GetLastError();
-			LogError("Could not load %s, or %s...", dlPath.c_str(), dlPathFix.c_str());
-			LogError("Error Code: %d", errorCode);
+			LogError("Could not load %s, or %s\nErrorCode %d", 
+                      dlPath.c_str(), dlPathFix.c_str(), errorCode);
 			return false;
 		}
 	}
