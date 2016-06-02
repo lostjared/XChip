@@ -104,7 +104,7 @@ Vector<TYPE>& Vector<TYPE>::operator=(Vector&& other)
 template<class TYPE>
 inline bool Vector<TYPE>::empty() const
 {
-	return _size == 1 || _size == 0;
+	return _size < 2;
 }
 
 
@@ -306,14 +306,14 @@ bool Vector<TYPE>::emplace_back(Args&& ...args)
 
 	if( this->capacity() > _size )
 	{
-		_data[_size-1] = TYPE{ std::forward<Args>(args)... };
+		_data[_size-1] = { std::forward<Args>(args)... };
 		++_size;
 		return true;
 	}
 
 	else if(this->reserve(_size + 5)) 
 	{	
-		_data[_size-1] = TYPE{std::forward<Args>(args)...};
+		_data[_size-1] = { std::forward<Args>(args)...};
 		++_size;
 		return true;
 	}

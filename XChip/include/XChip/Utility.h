@@ -35,6 +35,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include "Utility/StdintDef.h"
 #include "Utility/Timer.h"
 #include "Utility/Traits.h"
+#include "Utility/Vector.h"
 #include "Utility/Vector2.h"
 #include "Utility/CliOpts.h"
 
