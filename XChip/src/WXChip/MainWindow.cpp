@@ -300,8 +300,7 @@ void MainWindow::ComputeEmuAppPath()
 	constexpr const char* const finalEmuAppPath = "/bin/EmuApp";
 #endif
 
-	_emuApp = xchip::utility::CliOpts::GetFullProcDir();
-	_emuApp += finalEmuAppPath;
+	_emuApp = xchip::utility::CliOpts::GetFullProcDir() + finalEmuAppPath;
 
 	if (!std::ifstream(_emuApp).good())
 		throw std::runtime_error("Could not find EmuApp executable!");
