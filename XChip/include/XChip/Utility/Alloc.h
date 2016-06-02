@@ -1,7 +1,7 @@
 #ifndef _XCHIP_UTILITY_ALLOC_H_
 #define _XCHIP_UTILITY_ALLOC_H_
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 #include "StdintDef.h"
 #include "BaseTraits.h"
 #include "Assert.h"
