@@ -45,9 +45,9 @@ public:
 	Vector& operator=(const Vector&) = delete;
 
 	Vector() = default;
-	Vector(Vector&& other);
+	Vector(Vector&& other) noexcept;
 	~Vector();
-	Vector& operator=(Vector&& other);
+	Vector& operator=(Vector&& other) noexcept;
 
 	bool empty() const;
 	size_t size() const;
@@ -63,12 +63,12 @@ public:
 
 	bool initialize();
 	bool initialize(const TYPE* data, const size_t size);
+	bool initialize(const Vector& other);
+	void initialize(Vector&& other) noexcept;
 	bool initialize(const TYPE* begin, const TYPE* end); 
 	bool initialize(std::initializer_list<TYPE> list);
 	template<size_t sz>
 	bool initialize(TYPE(&data)[sz]);
-	bool initialize(const Vector& other);
-	void initialize(Vector&& other);
 	bool push_back(const TYPE& type);
 	template<class ...Args>
 	bool emplace_back(Args&& ...args);
@@ -84,8 +84,8 @@ public:
 	TYPE& operator[](size_t offset);
 
 	bool copy(const Vector& other);
-	void swap(Vector& other);
-	void free();
+	void swap(Vector& other) noexcept;
+	void free() noexcept;
 
 
 private:
@@ -99,7 +99,7 @@ private:
 
 
 template<class TYPE>
-Vector<TYPE>::Vector(Vector&& other)
+Vector<TYPE>::Vector(Vector&& other) noexcept
 	: _data(other._data),
 	_size(other._size)
 {
@@ -116,7 +116,7 @@ Vector<TYPE>::~Vector()
 
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::operator=(Vector&& other)
+Vector<TYPE>& Vector<TYPE>::operator=(Vector&& other) noexcept
 {
 	this->swap(other);
 }
@@ -217,6 +217,19 @@ bool Vector<TYPE>::initialize(const TYPE* data, const size_t size)
 }
 
 
+template<class TYPE>
+inline bool Vector<TYPE>::initialize(const Vector& other)
+{
+	return this->initialize(other._data, other._size);
+}
+
+
+
+template<class TYPE>
+inline void Vector<TYPE>::initialize(Vector&& other) noexcept
+{
+	this->swap(other);
+}
 
 
 template<class TYPE>
@@ -244,19 +257,7 @@ inline bool Vector<TYPE>::initialize(TYPE(&data)[sz])
 
 
 
-template<class TYPE>
-inline bool Vector<TYPE>::initialize(const Vector& other)
-{
-	return this->initialize(other._data, other._size);
-}
 
-
-
-template<class TYPE>
-inline void Vector<TYPE>::initialize(Vector&& other)
-{
-	this->swap(other);
-}
 
 
 
@@ -430,7 +431,7 @@ bool Vector<TYPE>::copy(const Vector& other)
 
 
 template<class TYPE>
-void Vector<TYPE>::swap(Vector& other)
+void Vector<TYPE>::swap(Vector& other) noexcept
 {
 	if( this != &other )
 	{
@@ -448,7 +449,7 @@ void Vector<TYPE>::swap(Vector& other)
 
 
 template<class TYPE>
-inline void Vector<TYPE>::free()
+inline void Vector<TYPE>::free() noexcept
 {
 	if(_data)
 	{
