@@ -32,11 +32,14 @@ void* alloc_arr(const size_t size) noexcept
 	ASSERT_MSG(size > 0, "attempt to alloc array of size 0");
 
 	auto* const block = (size_t*) std::malloc(size + sizeof(size_t));
-	if (!block)
-		return nullptr;
-
-	*block = size;
-	return block + 1;
+	
+	if (block)
+	{
+		*block = size;
+		return block + 1;
+	}
+	
+	return nullptr;
 }
 
 
@@ -47,12 +50,14 @@ void* realloc_arr(void* from, const size_t size) noexcept
 	ASSERT_MSG(size > 0, "attempt to realloc to size 0!");
 
 	auto* const block = (size_t*) std::realloc(((size_t*)from-1), size + sizeof(size_t));
-	if(!block)
-		return nullptr;
 
-	*block = size;
-	return block + 1;
+	if(block)
+	{
+		*block = size;
+		return block + 1;
+	}
 
+	return nullptr;
 }
 
 
