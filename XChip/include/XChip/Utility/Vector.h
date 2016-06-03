@@ -61,7 +61,7 @@ public:
 	const TYPE& operator[](size_t offset) const;
 
 
-	bool initialize();
+	bool initialize(const size_t vectorSize = 1);
 	bool initialize(const TYPE* data, const size_t size);
 	bool initialize(const Vector& other);
 	void initialize(Vector&& other) noexcept;
@@ -127,7 +127,7 @@ Vector<TYPE>& Vector<TYPE>::operator=(Vector&& other) noexcept
 template<class TYPE>
 inline bool Vector<TYPE>::empty() const
 {
-	return _size < 2;
+	return _size == 0;
 }
 
 
@@ -184,7 +184,9 @@ inline const TYPE* Vector<TYPE>::data() const
 template<class TYPE>
 inline const TYPE& Vector<TYPE>::operator[](size_t offset) const
 {
-	ASSERT_MSG( offset < arr_size(_data), "offset overflow");
+	ASSERT_MSG( _data != nullptr && offset < arr_size(_data), 
+		"offset overflow or not initialized vector");
+
 	return _data[offset];
 }
 
@@ -195,10 +197,15 @@ inline const TYPE& Vector<TYPE>::operator[](size_t offset) const
 
 
 template<class TYPE>
-inline bool Vector<TYPE>::initialize()
+inline bool Vector<TYPE>::initialize(const size_t vectorSize)
 {
-	return this->resize(1);
+	if (this->resize(vectorSize > 1 ? vectorSize : 1))
+		return true;
+
+	return false;
 }
+
+
 
 
 
@@ -217,10 +224,12 @@ bool Vector<TYPE>::initialize(const TYPE* data, const size_t size)
 }
 
 
+
+
 template<class TYPE>
 inline bool Vector<TYPE>::initialize(const Vector& other)
 {
-	return this->initialize(other._data, other._size);
+	return this->initialize(other._data, other.capacity());
 }
 
 
@@ -259,10 +268,6 @@ inline bool Vector<TYPE>::initialize(TYPE(&data)[sz])
 
 
 
-
-
-
-
 template<class TYPE>
 inline TYPE* Vector<TYPE>::begin()
 {
@@ -291,10 +296,11 @@ inline TYPE* Vector<TYPE>::data()
 template<class TYPE>
 inline TYPE& Vector<TYPE>::operator[](size_t offset)
 {
-	ASSERT_MSG( offset < arr_size(_data), "offset overflow");
+	ASSERT_MSG( _data != nullptr && offset < arr_size(_data), 
+		"offset overflow or not initialized vector");
+
 	return _data[offset];
 }
-
 
 
 
@@ -303,48 +309,43 @@ inline TYPE& Vector<TYPE>::operator[](size_t offset)
 template<class TYPE>
 bool Vector<TYPE>::push_back(const TYPE& type)
 {
-	ASSERT_MSG(_size, "Vector not initialized!");
-
 	if( this->capacity() > _size )
 	{	
-		_data[_size-1] = type;
-		++_size;
+		_data[_size++] = type;
 		return true;
 	}
 
 	else if(this->reserve(_size + 5)) 
 	{
-		_data[_size-1] = type;
-		++_size;
+		_data[_size++] = type;
 		return true;
 	}
 
 	return false;
 }
+
+
+
+
 
 template<class TYPE>
 template<class ...Args>
 bool Vector<TYPE>::emplace_back(Args&& ...args)
 {
-	ASSERT_MSG(_size, "Vector not initialized!");
-
 	if( this->capacity() > _size )
 	{
-		_data[_size-1] = { std::forward<Args>(args)... };
-		++_size;
+		_data[_size++] = { std::forward<Args>(args)... };
 		return true;
 	}
 
 	else if(this->reserve(_size + 5)) 
 	{	
-		_data[_size-1] = { std::forward<Args>(args)...};
-		++_size;
+		_data[_size++] = { std::forward<Args>(args)...};
 		return true;
 	}
 
 	return false;
 }
-
 
 
 
@@ -354,10 +355,10 @@ bool Vector<TYPE>::emplace_back(Args&& ...args)
 template<class TYPE>
 void Vector<TYPE>::clear()
 {
-	ASSERT_MSG(_size, "Vector is not initialized");
-	std::memset(_data, 0, sizeof(TYPE) * _size);
-	_size = 1;
+	_size = 0;
 }
+
+
 
 
 
@@ -388,10 +389,11 @@ bool Vector<TYPE>::reserve(const size_t size)
 
 
 
+
+
 template<class TYPE>
 bool Vector<TYPE>::resize(const size_t size)
 {
-	// TODO: err check
 	if(this->reserve(size))
 	{
 		_size = size;
@@ -406,6 +408,7 @@ bool Vector<TYPE>::resize(const size_t size)
 
 
 
+
 template<class TYPE>
 bool Vector<TYPE>::copy(const Vector& other)
 {
@@ -413,7 +416,7 @@ bool Vector<TYPE>::copy(const Vector& other)
 	{
 		Vector<TYPE> tmp;
 		
-		if( tmp.initialize(other._data, other._size) )
+		if( tmp.initialize(other._data, other.capacity()) )
 		{
 			this->swap(tmp);
 			return true;
@@ -424,6 +427,8 @@ bool Vector<TYPE>::copy(const Vector& other)
 
 	return true;
 }
+
+
 
 
 
@@ -448,6 +453,8 @@ void Vector<TYPE>::swap(Vector& other) noexcept
 
 
 
+
+
 template<class TYPE>
 inline void Vector<TYPE>::free() noexcept
 {
@@ -458,6 +465,12 @@ inline void Vector<TYPE>::free() noexcept
 		_size = 0;
 	}
 }
+
+
+
+
+
+
 
 
 

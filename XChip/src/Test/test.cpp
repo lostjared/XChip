@@ -20,6 +20,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 // TESTING Vector, it's a version of std::vector for POD types only
 #include <iostream>
+#include <vector>
 #include <XChip/Utility/Vector.h>
 
 struct Pod
@@ -35,32 +36,52 @@ std::ostream& operator<<(std::ostream& os, const Pod& pod)
 	return os;
 }
 
-
-
-int main()
+void VecTest()
 {
 	using namespace xchip;
 	using namespace xchip::utility;
+	const auto print = [](const Vector<int>& vec) {
+		for (size_t i = 0; i < vec.size(); ++i)
+			std::cout << "vec[" << i << "] = " << vec[i] << std::endl;
+	};
 
-	const auto print = [](const Vector<Pod>& vec) { for(auto& i : vec) std::cout << i << std::endl; };
+	Vector<int> x;
+	x.resize(8);
+	x.push_back(555);
 
-	Vector<Pod> vec;
-	// initialize must always be called after using this
-	if(!vec.initialize())
-		return 0;
+	std::cout << "x size: " << x.size() << std::endl;
 
-	Vector<Pod> vec2 (std::move(vec));
+	x.push_back(666);
+
+	std::cout << "x size: " << x.size() << std::endl;
+
+	print(x);
+}
+
+int main()
+{
 
 
-	while(true)
-	{
-		if(vec2.resize(vec2.size() + 1000))
-			continue;
-		else
-			break;
-	}
+	const auto print = [](const std::vector<int>& vec) {
+		for (size_t i = 0; i < vec.size(); ++i)
+			std::cout << "vec[" << i << "] = " << vec[i] << std::endl;
+	};
 
-	std::cout << "vec2 size after loop: " << vec2.size() << std::endl;
+	std::vector<int> x;
+
+	x.resize(8);
+
+	x.push_back(555);
+	std::cout << "x size: " << x.size() << std::endl;
+
+	x.push_back(666);
+	std::cout << "x size: " << x.size() << std::endl;
+
+	print(x);
+
+	std::cout << "\t VEC TEST: " << std::endl;
+	VecTest();
+
 
 	return 0;
 }
