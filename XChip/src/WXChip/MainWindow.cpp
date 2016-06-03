@@ -237,7 +237,7 @@ void MainWindow::CreateControls()
                                                    wxPoint(230, 400), wxSize(100, 25));
 
 
-	_settingsWin = make_unique<SettingsWindow>("WXChip - Settings", wxPoint(150, 150), wxSize(430, 220));
+	_settingsWin = make_unique<SettingsWindow>("WXChip - Settings", wxPoint(150, 150), wxSize(800, 600));
 
 }
 
