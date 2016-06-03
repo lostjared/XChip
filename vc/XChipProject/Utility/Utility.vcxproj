@@ -31,6 +31,7 @@
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\StdintDef.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Timer.h" />
     <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Traits.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XChip\src\Utility\Alloc.cpp" />
