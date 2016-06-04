@@ -281,7 +281,7 @@ void op_ANNN(CpuManager& cpuMan)
 // BNNN: jumps to the address NNN plus V0
 void op_BNNN(CpuManager& cpuMan)
 {
-	cpuMan.SetPC(  ((NNN + cpuMan.GetRegisters(0)) & 0xFFFF)  );
+	cpuMan.SetPC( NNN + cpuMan.GetRegisters(0) );
 }
 
 
@@ -301,8 +301,7 @@ void op_DXYN(CpuManager& cpuMan)
 	ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 
 	VF = 0;
-	const auto& res = cpuMan.GetGfxRes();
-	const auto resDec = res - 1;
+	const auto res = cpuMan.GetGfxRes() - 1;
 	const auto vx = VX;
 	const auto vy = VY;
 	const int height = N;
@@ -312,7 +311,7 @@ void op_DXYN(CpuManager& cpuMan)
 	{
 		for (int j = 0; j < 8; ++j)
 		{
-			auto& gfxPixel = cpuMan.GetGfx((vx + j) & resDec.x,  (vy + i) & resDec.y);
+			auto& gfxPixel = cpuMan.GetGfx((vx + j) & res.x,  (vy + i) & res.y);
 			const bool memoryBit = (*_8bitRow & (1 << (7 - j))) != 0;
 			VF |= ((gfxPixel != 0) && memoryBit);
 			gfxPixel ^= (memoryBit) ? 0xFFFFFFFF : 0;
@@ -336,8 +335,7 @@ void op_DXYN_ex(CpuManager& cpuMan)
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
-	const auto& res = cpuMan.GetGfxRes();
-	const auto resDec = res - 1;
+	const auto res = cpuMan.GetGfxRes() - 1;
 	const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 
 	for(int i = 0; i < 16; ++i, ++_8bitRow)
@@ -350,7 +348,7 @@ void op_DXYN_ex(CpuManager& cpuMan)
 				++_8bitRow;
 			}
 
-			auto& gfxPixel = cpuMan.GetGfx((vx + j) & resDec.x,  (vy + i) & resDec.y);
+			auto& gfxPixel = cpuMan.GetGfx((vx + j) & res.x,  (vy + i) & res.y);
 			const bool memoryBit = (*_8bitRow & (1 << (7 - bitmask))) != 0;
 			VF |= ((gfxPixel > 0) & memoryBit);
 			gfxPixel ^= (memoryBit) ? 0xFFFFFFFF : 0;
@@ -390,9 +388,6 @@ void op_EXxx(CpuManager& cpuMan)
 			unknown_opcode(cpuMan); 
 			break;
 	}
-
-
-
 }
 
 
@@ -451,8 +446,7 @@ void op_8XY0(CpuManager& cpuMan)
 // 8XY1: set VX to VX | VY
 void op_8XY1(CpuManager& cpuMan)
 {
-	auto& vx = VX;
-	vx = (VY | vx);
+	VX |= VY;
 }
 
 
@@ -464,8 +458,7 @@ void op_8XY1(CpuManager& cpuMan)
 // 8XY2: sets VX to VX and VY
 void op_8XY2(CpuManager& cpuMan)
 {
-	auto& vx = VX;
-	vx = (VY & vx);
+	VX &= VY;
 }
 
 
@@ -476,8 +469,7 @@ void op_8XY2(CpuManager& cpuMan)
 // 8XY3: sets VX to VX xor VY
 void op_8XY3(CpuManager& cpuMan)
 {
-	auto& vx = VX;
-	vx = ((VY ^ vx) & 0xFF);
+	VX ^= VY;
 }
 
 
@@ -488,7 +480,7 @@ void op_8XY3(CpuManager& cpuMan)
 // 8XY4: Adds VY to VX . VF is set to 1 when theres a carry, and to 0 when there isn't
 void op_8XY4(CpuManager& cpuMan)
 {
-	auto& vx = VX;
+	uint8_t& vx = VX;
 	uint16_t result = vx + VY; // compute sum
 	VF = (result & 0xff00) != 0 ? 1 : 0; // check carry
 	vx = (result & 0xff);
@@ -498,46 +490,34 @@ void op_8XY4(CpuManager& cpuMan)
 
 
 
-
-
 // 8XY5: VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
 void op_8XY5(CpuManager& cpuMan)
 {
-	auto const vy = VY;
-	auto& vx = VX;
-	VF = vx > vy; // checking if theres is a borrow
+	const uint8_t vy = VY;
+	uint8_t& vx = VX;
+	VF = vy > vx  ? 0 : 1; // check borrow ( VY > VX )
 	vx -= vy;
 }
-
-
-
-
-
-
 
 
 // 8XY6: Shifts VX right by one. VF is set to the value of the least significant bit of VX before the shift.
 void op_8XY6(CpuManager& cpuMan)
 {
-	auto& vx = VX;
+	uint8_t& vx = VX;
 	VF = vx & 0x1; // check the least significant bit
 	vx >>= 1;
 }
 
 
-
-
-
-
-
 // 8XY7: Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
 void op_8XY7(CpuManager& cpuMan)
 {
-	const auto vy = VY;
-	auto &vx = VX; 
-	VF = vy > vx; // check borrow ( VY > VX )
+	const uint8_t vy = VY;
+	uint8_t& vx = VX; 
+	VF = vx > vy ? 0 : 1; // check borrow ( VX > VY )
 	vx = vy - vx;
 }
+
 
 
 
@@ -548,7 +528,7 @@ void op_8XY7(CpuManager& cpuMan)
 // 8XYE Shifts VX left by one. VF is set to the value of the most significant bit of VX before the shift.
 void op_8XYE(CpuManager& cpuMan)
 {
-	auto& vx = VX;
+	uint8_t& vx = VX;
 	VF = ((vx & 0x80) == 0x80) ? 1 : 0;  // check the most significant bit
 	vx = vx << 1;
 }
@@ -680,7 +660,7 @@ void op_FX18(CpuManager& cpuMan)
 // FX1E   Adds VX to I.
 void op_FX1E(CpuManager& cpuMan)
 {
-	cpuMan.SetIndexRegister( ((cpuMan.GetIndexRegister() + VX) & 0xFFFF) );
+	cpuMan.SetIndexRegister( cpuMan.GetIndexRegister() + VX );
 }
 
 
@@ -722,6 +702,9 @@ void op_FX33(CpuManager& cpuMan)
 
 
 /******** OP_FXxx END *********/
+
+
+
 
 
 
