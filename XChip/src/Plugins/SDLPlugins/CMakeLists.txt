@@ -16,9 +16,9 @@ add_library(XChipSDLRender SHARED ${HEADERS} ${RENDER_PLUGIN})
 add_library(XChipSDLInput SHARED ${HEADERS} ${INPUT_PLUGIN})
 add_library(XChipSDLSound SHARED ${HEADERS} ${SOUND_PLUGIN})
 
-target_link_libraries(XChipSDLRender SDL2)
-target_link_libraries(XChipSDLInput SDL2)
-target_link_libraries(XChipSDLSound SDL2)
+target_link_libraries(XChipSDLRender SDL2 UtilityFPIC)
+target_link_libraries(XChipSDLInput SDL2 UtilityFPIC)
+target_link_libraries(XChipSDLSound SDL2 UtilityFPIC)
 
 
 INSTALL(TARGETS XChipSDLRender XChipSDLInput XChipSDLSound 
