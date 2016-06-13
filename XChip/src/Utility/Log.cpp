@@ -62,9 +62,9 @@ void LogError(const char* fmtString, ...) noexcept
 			std::sprintf(&errstr[writeSize], ": %s", strerror(errnoCode));
 			errno = 0;
 		}
-		else 
+		else { 
 			errstr[writeSize] = '\0';
-
+		}
 		// print
 		std::fprintf(stderr, "%s\n", errstr.c_str());
 	}

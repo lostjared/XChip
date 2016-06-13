@@ -87,6 +87,13 @@ int main(int argc, char **argv)
 	using namespace xchip::utility;
 	using namespace xchip::utility::literals;
 	
+	if (argc < 2) 
+	{
+		std::cerr << "Usage: " << argv[0] << " -ROM <rompath>\n";
+		return EXIT_FAILURE;
+	}
+	
+
 #if defined(__linux__) || defined(__APPLE__) 
 
 	if (signal(SIGINT, signals_sigint) == SIG_ERR)
@@ -105,13 +112,7 @@ int main(int argc, char **argv)
 
 #endif
 
-	if (argc < 2) 
-	{
-		std::cout << "Usage:" << std::endl
-		          << "EmuApp -ROM game/rom/path" << std::endl;
-		return EXIT_SUCCESS;
-	}
-	
+
 
 	try
 	{
@@ -132,18 +133,17 @@ int main(int argc, char **argv)
 		load_plugins(opts);
 		configure_emulator(opts);
 
+		if(!g_emulator.Good())
+			throw std::runtime_error("Could not initialize emulator!");
+		
 	}
 	catch(std::exception& err)
 	{
-		std::cerr << "Exception: " << err.what() << std::endl;
+		std::cerr << "Exception: " << err.what() << '\n';
 		return EXIT_FAILURE;
 	}
 	
-	if(!g_emulator.Good())
-	{
-		LogError("Could not initialize emulator!");
-		return EXIT_FAILURE;
-	}
+
 
 	while (!g_emulator.GetExitFlag())
 	{
@@ -156,9 +156,8 @@ int main(int argc, char **argv)
 	}
 
 
+
 	return EXIT_SUCCESS;
-
-
 }
 
 
@@ -215,6 +214,7 @@ void set_plugin(const std::string& path)
 
 	if (path.empty())
 	{
+
 #ifdef _WIN32
 		if (!plugin.Load(DefaultPluginPath<PluginType>()))			
 #elif defined(__linux__) || defined(__APPLE__)
@@ -245,7 +245,7 @@ void fps_config(const std::string& arg);
 
 void configure_emulator(const xchip::utility::CliOpts& opts)
 {
-	std::cout << "\n\nconfigure_emulator: \n\n";
+	std::cout << "\n*** setting up the emulator ***\n";
 
 
 	using ConfigFunc = void(*)(const std::string&);
@@ -272,8 +272,7 @@ void configure_emulator(const xchip::utility::CliOpts& opts)
 			itr->second(opt);
 	}
 
-
-	std::cout << "\n\nconfigure_emulator done.\n\n";
+	std::cout << "*** setting up done ***\n\n";
 }
 
 
@@ -292,7 +291,7 @@ void res_config(const std::string& arg)
 
 	try
 	{
-		std::cout << "Setting Resolution..." << std::endl;
+		std::cout << "setting window size...\n";
 
 		if(!g_emulator.GetRender())
 			throw std::runtime_error("null Render");
@@ -317,14 +316,14 @@ void res_config(const std::string& arg)
 			g_emulator.GetRender()->SetWindowSize(res);
 		}
 
-		std::cout << "Render Resolution: " << g_emulator.GetRender()->GetWindowSize() << std::endl; 
-		std::cout << "Done." << std::endl;
+		std::cout << "render window size: " << g_emulator.GetRender()->GetWindowSize() << '\n'; 
+		std::cout << "done.\n";
 
 	}
 
 	catch(std::exception& e)
 	{
-		std::cerr << "Failed to set Render resolution: " << e.what() << std::endl;
+		std::cerr << "failed to set window size: " << e.what() << '\n';
 	}
 
 
@@ -337,15 +336,15 @@ void cfq_config(const std::string& arg)
 {
 	try
 	{
-		std::cout << "Setting Cpu Frequency..." << std::endl;		
+		std::cout << "setting CPU frequency...\n";		
 		const auto cfq = std::stoi(arg);
 		g_emulator.SetCpuFreq(cfq);
-		std::cout << "Cpu Frequency: " << g_emulator.GetCpuFreq() << std::endl;
-		std::cout << "Done." << std::endl;
+		std::cout << "CPU frequency: " << g_emulator.GetCpuFreq() << '\n';
+		std::cout << "done.\n";
 	}
 	catch(std::exception& e)
 	{
-		std::cerr << "Failed to set Cpu Frequency: " << e.what() << std::endl;
+		std::cerr << "failed to set CPU frequency: " << e.what() << '\n';
 	}
 
 }
@@ -356,19 +355,19 @@ void sfq_config(const std::string& arg)
 {
 	try
 	{
-		std::cout << "Setting Sound Tone..." << std::endl;
+		std::cout << "setting sound tone...\n";
 		const auto sfq = std::stof(arg);
 
 		if(!g_emulator.GetSound())
 			throw std::runtime_error("null Sound");
 
 		g_emulator.GetSound()->SetSoundFreq(sfq);
-		std::cout << "Sound Freq: " << g_emulator.GetSound()->GetSoundFreq() << std::endl;
-		std::cout << "Done." << std::endl;
+		std::cout << "sound tone frequency: " << g_emulator.GetSound()->GetSoundFreq() << '\n';
+		std::cout << "done.\n";
 	}
 	catch(std::exception& e)
 	{
-		std::cerr << "Failed to set Sound Tone: " << e.what() << std::endl;
+		std::cerr << "Failed to set sound tone: " << e.what() << '\n';
 	}
 	
 }
@@ -382,22 +381,22 @@ void col_config(const std::string& arg)
 {
 	try
 	{
-		std::cout << "Setting Render Color..." << std::endl;
+		std::cout << "setting render color...\n";
 		const auto color = get_arg_rgb(arg);
 
 		if(!g_emulator.GetRender())
 			throw std::runtime_error("null Render");
 
-		if(!g_emulator.GetRender()->SetDrawColor(color))
+		else if(!g_emulator.GetRender()->SetDrawColor(color))
 			throw std::runtime_error(xchip::utility::GetLastLogError());
 
-		std::cout << "Render Color: " << g_emulator.GetRender()->GetDrawColor() << std::endl;
-		std::cout << "Done." << std::endl;
+		std::cout << "render color: " << g_emulator.GetRender()->GetDrawColor() << '\n';
+		std::cout << "done.\n";
 		
 	}
 	catch(std::exception& e)
 	{
-		std::cerr << "Failed to set Render Color: " << e.what() << std::endl;
+		std::cerr << "Failed to set render color: " << e.what() << '\n';
 	}
 
 }
@@ -413,7 +412,7 @@ void bkg_config(const std::string& arg)
 {
 	try
 	{
-		std::cout << "Setting Background Color..." << std::endl;
+		std::cout << "setting background color...\n";
 		
 		const auto color = get_arg_rgb(arg);
 
@@ -423,13 +422,13 @@ void bkg_config(const std::string& arg)
 		if(!g_emulator.GetRender()->SetBackgroundColor(color))
 			throw std::runtime_error(xchip::utility::GetLastLogError());
 
-		std::cout << "Background Color: " << g_emulator.GetRender()->GetBackgroundColor() << std::endl;
-		std::cout << "Done." << std::endl;
+		std::cout << "background color: " << g_emulator.GetRender()->GetBackgroundColor() << '\n';
+		std::cout << "done.\n";
 		
 	}
 	catch(std::exception& e)
 	{
-		std::cerr << "Failed to set Render Color: " << e.what() << std::endl;
+		std::cerr << "Failed to set render background color: " << e.what() << '\n';
 	}
 
 }
@@ -442,15 +441,15 @@ void fps_config(const std::string& arg)
 {
 	try
 	{
-		std::cout << "Setting Emulator FPS..." << std::endl;
+		std::cout << "setting emulator FPS...\n";
 		const auto fps = std::stoi(arg);
 		g_emulator.SetFps(fps);
-		std::cout << "Emulator FPS: " << g_emulator.GetFps() << std::endl;
-		std::cout << "Done." << std::endl;
+		std::cout << "emulator FPS: " << g_emulator.GetFps() << '\n';
+		std::cout << "done.\n";
 	}
 	catch(std::exception& e)
 	{
-		std::cerr << "Failed to set Emulator FPS: " << e.what() << std::endl;
+		std::cerr << "Failed to set emulator FPS: " << e.what() << '\n';
 	}
 
 }
@@ -460,20 +459,25 @@ xchip::utility::Color get_arg_rgb(const std::string& arg)
 {
 	const auto firstSeparator = arg.find('x');
 
-	if (firstSeparator == std::string::npos)
-		throw std::invalid_argument("missing the \'x\' separator");
-
+	
 	const auto secondSeparator = arg.find('x', firstSeparator + 1);
 
-	if (secondSeparator == std::string::npos)
-		throw std::invalid_argument("missing the second \'x\' separator");
-
-	unsigned long rgb[3] =
+	if (firstSeparator == std::string::npos || 
+         secondSeparator == std::string::npos)
 	{
-		std::stoul(arg.substr(0, firstSeparator)),
-		std::stoul(arg.substr(firstSeparator + 1, secondSeparator)),
-		std::stoul(arg.substr(secondSeparator + 1, arg.size()))
-	};
+		throw std::runtime_error("Bad color input format. Please use rgb format, example: 255x255x255");
+	}
+
+	unsigned long rgb[3];
+	
+	try  {
+		rgb[0] = std::stoul(arg.substr(0, firstSeparator));
+		rgb[1] = std::stoul(arg.substr(firstSeparator + 1, secondSeparator));
+		rgb[2] = std::stoul(arg.substr(secondSeparator + 1, arg.size()));
+	} 
+	catch(std::exception& err) {
+		throw std::runtime_error("Bad color input values, Please use values between 0-255, example: 0x255x127");
+	}
 
 	for (auto& col : rgb)
 	{
@@ -494,16 +498,16 @@ xchip::utility::Color get_arg_rgb(const std::string& arg)
 #if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum)
 {
-	std::cout << "Received sigint! signum: " << signum << std::endl;
-	std::cout << "Closing Application!" << std::endl;
+	std::cout << "Received sigint! signum: " << signum << '\n';
+	std::cout << "Closing Application!\n";
 	g_emulator.SetExitFlag(true);
 }
 
 #elif defined(_WIN32)
 bool _stdcall ctrl_handler(DWORD ctrlType)
 {
-	std::cout << "Received ctrlType: " << ctrlType << std::endl;
-	std::cout << "Closing Application!" << std::endl;
+	std::cout << "Received ctrlType: " << ctrlType << '\n';
+	std::cout << "Closing Application!\n";
 	g_emulator.SetExitFlag(true);
 	return true;
 }

@@ -54,14 +54,14 @@ struct Cpu
 	
 	enum Flags : uint32_t 
 	{ 
-		EXIT  = 0x0000001,
-		PAUSE = 0x00000002,
-		INSTR = 0x00000004,
-		DRAW  = 0x00000008,
-		EXTENDED_MODE       = 0x00000010,
-		BAD_RENDER          = 0x00000020,
-		BAD_INPUT           = 0x00000040,
-		BAD_SOUND           = 0x00000080
+		EXIT  = 0x01,
+		PAUSE = 0x02,
+		INSTR = 0x04,
+		DRAW  = 0x08,
+		EXTENDED_MODE = 0x10,
+		BAD_RENDER = 0x20,
+		BAD_INPUT = 0x40,
+		BAD_SOUND = 0x80
 	};
 };
 

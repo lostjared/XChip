@@ -135,13 +135,13 @@ void SettingsWindow::CreateControls()
 
 
 	_cpuHzTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT3,_T("CPU Hz: "), 
-                                                 wxPoint(220,40), wxSize(60,25));
+                                                 wxPoint(220,45), wxSize(60,25));
 
 	_cpuHz = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL3, defaultCpuFreq, 
                                                   wxPoint(320,40), wxSize(100,20), 0, cpuFreqValidator);
 
 	_fpsTxt = make_unique<wxStaticText>(_panel.get(), ID_TEXT2,_T("FPS: "), 
-                                             wxPoint(10,40), wxSize(60,25));
+                                             wxPoint(10,45), wxSize(60,25));
 
 	_fps = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, defaultFPS,
                                                wxPoint(100,40), wxSize(100,20), 0, fpsValidator);
