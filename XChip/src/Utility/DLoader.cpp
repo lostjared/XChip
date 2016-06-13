@@ -50,7 +50,7 @@ bool DLoader::Load(const std::string& dlPath)
 		{
 			const char* error = dlerror();
 			LogError("Could not load shared library: %s or %s\nError: %s", 
-                      dlPath.c_str(), dlPathFix.c_str(), error);
+                                  dlPath.c_str(), dlPathFix.c_str(), error);
 
 			return false;
 		}

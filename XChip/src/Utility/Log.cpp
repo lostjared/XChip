@@ -19,8 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 #include <cstdio>
-#include <cstring>
 #include <cstdarg>
+#include <cstring>
 #include <XChip/Utility/Log.h>
 
 
@@ -54,12 +54,13 @@ void LogError(const char* fmtString, ...) noexcept
 	va_start(args, fmtString);
 	
 	// write the message to buffer and get writeSize
-	const auto writeSize = std::vsprintf(&errstr[0], fmtString, args);
+	const auto errstrSize = errstr.size();
+	const auto writeSize = std::vsnprintf(&errstr[0], errstrSize, fmtString, args);
 
 	if(writeSize > 0)
 	{
 		if(errnoCode) { 
-			std::sprintf(&errstr[writeSize], ": %s", strerror(errnoCode));
+			std::snprintf(&errstr[writeSize], errstrSize - writeSize, ": %s", strerror(errnoCode));
 			errno = 0;
 		}
 		else { 
@@ -77,7 +78,7 @@ void LogError(const char* fmtString, ...) noexcept
 	va_end(args);
 }
 
-extern const std::string& GetLastLogError() noexcept
+const std::string& GetLastLogError() noexcept
 {
 	return errstr;
 }
