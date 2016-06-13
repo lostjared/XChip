@@ -1,7 +1,7 @@
 project(Utility)
 
 # exceptions and rtti are NOT used on Utility.
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
 
 
 file(GLOB_RECURSE SRC ./*.cpp)
