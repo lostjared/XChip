@@ -218,9 +218,12 @@ void CpuManager::LoadHiResFont()
 
 bool CpuManager::LoadRom(const char* fileName, const size_t at)
 {
+	// if the parameter 'at' is greater than _cpu.memory array,
+	// or the _cpu.memory ptr is null. It is the caller's error,
+	// so here's an assert for that purpose.
 
 	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
-	ASSERT_MSG(arr_size(_cpu.memory) > at, "parameter 'at' greater than Cpu::memory");
+	ASSERT_MSG(arr_size(_cpu.memory) > at, "parameter 'at' greater than Cpu::memory size");
 
 	Log("Loading %s", fileName);
 
@@ -243,7 +246,6 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 	
 	
 	// check if file size will not overflow emulated memory size
-	// careful to compare unsigned values, and subtracting them
 	if ( (arr_size(_cpu.memory) - at) < fileSize)
 	{
 		LogError("Error, ROM size not compatible!");
