@@ -15,6 +15,11 @@ set(BUILD_SFML_PLUGINS "OFF" CACHE STRING "")
 #build Test ?
 set(BUILD_TEST "OFF" CACHE STRING "")
 
+
+#build EmuApp ?
+set(BUILD_EMUAPP "OFF" CACHE STRING "")
+
+
 # build WXChip ?
 set(BUILD_WXCHIP "OFF" CACHE STRING "")
 
