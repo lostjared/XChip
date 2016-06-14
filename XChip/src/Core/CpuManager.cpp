@@ -231,7 +231,7 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 	if (!file)
 	{
-		LogError("Error at opening ROM file \'%s\'", fileName);
+		LogError("Error opening ROM file \'%s\'", fileName);
 		return false;
 	}
 
@@ -246,9 +246,11 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 	
 	
 	// check if file size will not overflow emulated memory size
-	if ( (arr_size(_cpu.memory) - at) < fileSize)
+	if ( (arr_size(_cpu.memory) - at) <= fileSize)
 	{
-		LogError("Error, ROM size not compatible!");
+		LogError("Error, size of \'%s\' does not fit in memory at %zu! memory size: %zu, file size: %zu", 
+                           fileName, at, arr_size(_cpu.memory), fileSize);
+
 		return false;
 	}
 
