@@ -250,7 +250,14 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 		return false;
 	}
 
-	std::fread(_cpu.memory + at, 1, fileSize, file);
+	const auto readSize = std::fread(_cpu.memory + at, 1, fileSize, file);
+
+	if( readSize != fileSize ) 
+	{
+		LogError("Could not read the file properly. bytes asked %zu , bytes read %zu", fileSize, readSize);
+		return false;
+	}
+
 	Log("Load Done!");
 	return true;
 }
