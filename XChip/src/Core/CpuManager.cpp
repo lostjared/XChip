@@ -254,7 +254,8 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 	if( readSize != fileSize ) 
 	{
-		LogError("Could not read the file properly. bytes asked %zu , bytes read %zu", fileSize, readSize);
+		LogError("Could not read the file \'%s\' properly. bytes asked %zu , bytes read %zu", 
+                          fileName, fileSize, readSize);
 		return false;
 	}
 
