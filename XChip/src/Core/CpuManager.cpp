@@ -22,13 +22,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <XChip/Plugins/iRender.h>
 #include <XChip/Plugins/iInput.h>
 #include <XChip/Plugins/iSound.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Utility/ScopeExit.h>
-#include <XChip/Utility/Assert.h>
+#include <XChip/Utils/Log.h>
+#include <XChip/Utils/ScopeExit.h>
+#include <XChip/Utils/Assert.h>
  
 namespace xchip {
 
-using namespace xchip::utility;
+using namespace xchip::utils;
 
 static void check_cpu_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept;
 template<class T>
@@ -106,7 +106,7 @@ bool CpuManager::SetStack(const size_t size)
 }
 
 
-bool CpuManager::SetGfxRes(const utility::Vec2i& res)
+bool CpuManager::SetGfxRes(const utils::Vec2i& res)
 {
 	if ( !alloc_cpu_arr(_cpu.gfx, res.x * res.y) )
 	{

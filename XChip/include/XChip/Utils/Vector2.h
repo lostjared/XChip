@@ -18,14 +18,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_UTILITY_VECTOR2_H_
-#define _XCHIP_UTILITY_VECTOR2_H_
+#ifndef _XCHIP_UTILS_VECTOR2_H_
+#define _XCHIP_UTILS_VECTOR2_H_
 #include <iostream>
 
 
 
 
-namespace xchip { namespace utility {
+namespace xchip { namespace utils {
 
 
 template<class T>

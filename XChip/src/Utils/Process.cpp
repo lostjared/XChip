@@ -25,12 +25,12 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <string>
 #include <algorithm>
 
-#include <XChip/Utility/Log.h>
-#include <XChip/Utility/Process.h>
-#include <XChip/Utility/ScopeExit.h>
-#include <XChip/Utility/Timer.h>
+#include <XChip/Utils/Log.h>
+#include <XChip/Utils/Process.h>
+#include <XChip/Utils/ScopeExit.h>
+#include <XChip/Utils/Timer.h>
 
-namespace xchip { namespace utility { 
+namespace xchip { namespace utils { 
 	
 #if defined(__APPLE__) || defined(__linux__)
 	

@@ -1,4 +1,4 @@
-add_subdirectory(Utility)
+add_subdirectory(Utils)
 add_subdirectory(Core)
 add_subdirectory(Plugins)
 add_subdirectory(Test)

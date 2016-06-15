@@ -31,12 +31,12 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
-#include <XChip/Utility/StdintDef.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Utility/CliOpts.h>
+#include <XChip/Utils/Ints.h>
+#include <XChip/Utils/Log.h>
+#include <XChip/Utils/CliOpts.h>
 
 
-namespace xchip { namespace utility {
+namespace xchip { namespace utils {
 
 
 

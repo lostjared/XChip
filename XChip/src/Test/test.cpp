@@ -18,8 +18,74 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+
+
+
+#include <cstdlib>
 #include <iostream>
-#include <XChip/Utility/CliOpts.h>
+#include <XChip/Utils/RWrap.h>
+
+using namespace xchip;
+using namespace xchip::utils;
+
+
+int main(int argc, char** argv)
+{
+	if( argc < 2 )
+	{
+		std::cerr << "USAGE: " << argv[0] << " <filename> \n";
+		return EXIT_FAILURE;
+	}
+
+
+	auto file = make_rwrap<std::FILE*>(nullptr, [](std::FILE** pp) noexcept { if((*pp)!=nullptr) std::fclose((*pp)); });
+
+	file = std::fopen(argv[1], "r");
+
+	if( !file )
+	{
+		std::cerr << "COULD NOT OPEN FILE \'" << argv[1] << '\'' << '\n';
+		return EXIT_FAILURE;
+	}
+
+
+	std::fseek(file, 0, SEEK_END);
+	const auto size = std::ftell(file);
+	std::fseek(file, 0, SEEK_SET);
+
+
+	auto buffer = make_rwrap<char*>(nullptr, [](char** pp) noexcept { if((*pp)!=nullptr) std::free((*pp)); });
+
+
+	buffer = (char*) std::malloc(sizeof(char) * (size+1));
+
+
+	if( buffer == nullptr )
+	{
+		std::cerr << "COULD NOT ALLOCATE BUFFER\n";
+		return EXIT_FAILURE;
+	}
+
+
+	const auto readSize = std::fread(buffer, 1, size, file);
+	buffer[readSize] = '\0';
+	std::cout << buffer << std::endl;
+	return EXIT_SUCCESS;
+}
+
+
+
+
+
+
+
+
+#if 0
+
+
+
+#include <iostream>
+#include <XChip/Utils/CliOpts.h>
 
 
 
@@ -30,7 +96,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 int main(int argc, char **argv)
 {
 	using namespace xchip;
-	using namespace xchip::utility;
+	using namespace xchip::utils;
 
 	CliOpts opts(argc-1, argv+1);
 
@@ -46,7 +112,7 @@ int main(int argc, char **argv)
 
 
 
-
+#endif
 
 
 #if 0
@@ -54,7 +120,7 @@ int main(int argc, char **argv)
 // TESTING Vector, it's a version of std::vector for POD types only
 #include <iostream>
 #include <vector>
-#include <XChip/Utility/Vector.h>
+#include <XChip/Utils/Vector.h>
 
 struct Pod
 {
@@ -72,7 +138,7 @@ std::ostream& operator<<(std::ostream& os, const Pod& pod)
 void VecTest()
 {
 	using namespace xchip;
-	using namespace xchip::utility;
+	using namespace xchip::utils;
 	const auto print = [](const Vector<int>& vec) {
 		for (size_t i = 0; i < vec.size(); ++i)
 			std::cout << "vec[" << i << "] = " << vec[i] << std::endl;
@@ -145,15 +211,15 @@ int main(int argc, char **argv)
 	using xchip::PluginDeleter;
 
 	// need to make sure that the functions that the 
-	// dynamic library used from Utility / Core are
+	// dynamic library used from Utils / Core are
 	// linked into the caller binary. Cuz 
-	// Utility and Core are not compiled with -fPIC
+	// Utils and Core are not compiled with -fPIC
 	// so they can't be linked to a shared library.
 	// but if needed, the -fPIC flag can be added easily.
 
 	// removing these lines causes segmentation fault
-	//volatile auto x=&xchip::utility::LogError;
-	//volatile auto y=&xchip::utility::Log;
+	//volatile auto x=&xchip::utils::LogError;
+	//volatile auto y=&xchip::utils::Log;
 
 #ifdef _WIN32
 	auto handle = LoadLibrary("XChipSFMLInput.dll");

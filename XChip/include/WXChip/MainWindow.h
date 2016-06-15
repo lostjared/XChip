@@ -24,7 +24,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <string>
 
 #include <wx/frame.h>
-#include <XChip/Utility/Process.h>
+#include <XChip/Utils/Process.h>
 #include <WXChip/SettingsWindow.h>
 
 class MainWindow final : public wxFrame
@@ -59,7 +59,7 @@ private:
 	std::unique_ptr<SettingsWindow> _settingsWin;
 	std::string _emuApp;
 	std::string _romPath;
-	xchip::utility::Process _process;
+	xchip::utils::Process _process;
 	wxDECLARE_EVENT_TABLE();
 };
 

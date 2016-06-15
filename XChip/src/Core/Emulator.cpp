@@ -19,15 +19,15 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 #include <XChip/Core/Emulator.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Utility/ScopeExit.h>
+#include <XChip/Utils/Log.h>
+#include <XChip/Utils/ScopeExit.h>
 
 
 
 
 namespace xchip {
 
-using namespace xchip::utility;
+using namespace xchip::utils;
 
 
 static void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer) noexcept;
@@ -415,7 +415,7 @@ bool Emulator::InitSound()
 
 static void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer) noexcept
 {	
-	using namespace xchip::utility::literals;
+	using namespace xchip::utils::literals;
 
 	instrTimer.SetTargetTime(380_hz);
 	frameTimer.SetTargetTime(60_hz);

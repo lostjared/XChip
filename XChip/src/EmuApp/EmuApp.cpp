@@ -35,8 +35,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <vector>
 
 #include <XChip/Core/Emulator.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Utility/CliOpts.h>
+#include <XChip/Utils/Log.h>
+#include <XChip/Utils/CliOpts.h>
 
 
 /*******************************************************************************************
@@ -64,8 +64,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 static xchip::Emulator g_emulator;
 
 
-void load_plugins(const xchip::utility::CliOpts& opts);
-void configure_emulator(const xchip::utility::CliOpts& opts);
+void load_plugins(const xchip::utils::CliOpts& opts);
+void configure_emulator(const xchip::utils::CliOpts& opts);
 
 #if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum);
@@ -84,8 +84,8 @@ int main(int argc, char **argv)
 	using xchip::UniqueRender;
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
-	using namespace xchip::utility;
-	using namespace xchip::utility::literals;
+	using namespace xchip::utils;
+	using namespace xchip::utils::literals;
 	
 	if (argc < 2) 
 	{
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 	{
 		// initialize with no plugins.
 		if(!g_emulator.Initialize())
-			throw std::runtime_error(xchip::utility::GetLastLogError());
+			throw std::runtime_error(xchip::utils::GetLastLogError());
 
 		const CliOpts opts(argc-1, argv+1);
 		const auto romPath = opts.GetOpt("-ROM");
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
 			throw std::runtime_error("Missing -ROM argument");
 		
 		else if (!g_emulator.LoadRom(romPath))
-			throw std::runtime_error(xchip::utility::GetLastLogError());
+			throw std::runtime_error(xchip::utils::GetLastLogError());
 	
 
 		load_plugins(opts);
@@ -178,11 +178,11 @@ template<class PluginType>
 void set_plugin(const std::string& path);
 
 
-void load_plugins(const xchip::utility::CliOpts& opts)
+void load_plugins(const xchip::utils::CliOpts& opts)
 {
 #ifdef _WIN32
 	// a search dir for dlls 
-	SetDllDirectory((xchip::utility::CliOpts::GetFullProcDir() + "\\plugins\\").c_str());
+	SetDllDirectory((xchip::utils::CliOpts::GetFullProcDir() + "\\plugins\\").c_str());
 #endif
 
 	using PluginConfigPair = std::pair<const char*, void(*)(const std::string&)>;
@@ -207,8 +207,8 @@ void load_plugins(const xchip::utility::CliOpts& opts)
 template<class PluginType>
 void set_plugin(const std::string& path)
 {
-	using namespace xchip::utility::literals;
-	using xchip::utility::CliOpts;
+	using namespace xchip::utils::literals;
+	using xchip::utils::CliOpts;
 
 	PluginType plugin;
 
@@ -221,21 +221,21 @@ void set_plugin(const std::string& path)
 		if (!plugin.Load(CliOpts::GetFullProcDir() + DefaultPluginPath<PluginType>()))
 #endif
 
-			throw std::runtime_error(xchip::utility::GetLastLogError());
+			throw std::runtime_error(xchip::utils::GetLastLogError());
 	}
 	else if (!plugin.Load(path))
 	{
-		throw std::runtime_error(xchip::utility::GetLastLogError());
+		throw std::runtime_error(xchip::utils::GetLastLogError());
 	}
 
 	if (!g_emulator.SetPlugin(std::move(plugin)))
-		throw std::runtime_error(xchip::utility::GetLastLogError());
+		throw std::runtime_error(xchip::utils::GetLastLogError());
 
 }
 
 
 
-xchip::utility::Color get_arg_rgb(const std::string& arg);
+xchip::utils::Color get_arg_rgb(const std::string& arg);
 void res_config(const std::string& arg);
 void cfq_config(const std::string& arg);
 void sfq_config(const std::string& arg);
@@ -243,7 +243,7 @@ void col_config(const std::string& arg);
 void bkg_config(const std::string& arg);
 void fps_config(const std::string& arg);
 
-void configure_emulator(const xchip::utility::CliOpts& opts)
+void configure_emulator(const xchip::utils::CliOpts& opts)
 {
 	std::cout << "\n*** setting up the emulator ***\n";
 
@@ -287,7 +287,7 @@ void configure_emulator(const xchip::utility::CliOpts& opts)
 
 void res_config(const std::string& arg)
 {
-	using xchip::utility::Vec2i;
+	using xchip::utils::Vec2i;
 
 	try
 	{
@@ -300,7 +300,7 @@ void res_config(const std::string& arg)
 		if(arg == "FULLSCREEN")
 		{
 			if(!g_emulator.GetRender()->SetFullScreen(true))
-				throw std::runtime_error(xchip::utility::GetLastLogError());
+				throw std::runtime_error(xchip::utils::GetLastLogError());
 		}
 
 		else
@@ -388,7 +388,7 @@ void col_config(const std::string& arg)
 			throw std::runtime_error("null Render");
 
 		else if(!g_emulator.GetRender()->SetDrawColor(color))
-			throw std::runtime_error(xchip::utility::GetLastLogError());
+			throw std::runtime_error(xchip::utils::GetLastLogError());
 
 		std::cout << "render color: " << g_emulator.GetRender()->GetDrawColor() << '\n';
 		std::cout << "done.\n";
@@ -420,7 +420,7 @@ void bkg_config(const std::string& arg)
 			throw std::runtime_error("null Render");
 
 		if(!g_emulator.GetRender()->SetBackgroundColor(color))
-			throw std::runtime_error(xchip::utility::GetLastLogError());
+			throw std::runtime_error(xchip::utils::GetLastLogError());
 
 		std::cout << "background color: " << g_emulator.GetRender()->GetBackgroundColor() << '\n';
 		std::cout << "done.\n";
@@ -455,7 +455,7 @@ void fps_config(const std::string& arg)
 }
 
 
-xchip::utility::Color get_arg_rgb(const std::string& arg)
+xchip::utils::Color get_arg_rgb(const std::string& arg)
 {
 	const auto firstSeparator = arg.find('x');
 

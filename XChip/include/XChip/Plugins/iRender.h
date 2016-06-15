@@ -20,9 +20,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_PLUGINS_IRENDER_H_
 #define _XCHIP_PLUGINS_IRENDER_H_
-#include <XChip/Utility/StdintDef.h>
-#include <XChip/Utility/Color.h>
-#include <XChip/Utility/Vector2.h>
+#include <XChip/Utils/Ints.h>
+#include <XChip/Utils/Color.h>
+#include <XChip/Utils/Vector2.h>
 #include "iPlugin.h"
  
 namespace xchip {
@@ -35,22 +35,22 @@ public:
 	using WinCloseCallback = void(*)(const void*);
 	using WinResizeCallback = void(*)(const void*);
 
-	virtual bool Initialize(const utility::Vec2i& winSize, const utility::Vec2i& resolution) noexcept = 0;
+	virtual bool Initialize(const utils::Vec2i& winSize, const utils::Vec2i& resolution) noexcept = 0;
 	
 	virtual const char* GetWindowName() const noexcept = 0;
 	virtual const uint32_t* GetBuffer() const noexcept = 0;
-	virtual utility::Vec2i GetResolution() const noexcept = 0;
-	virtual utility::Vec2i GetWindowSize() const noexcept = 0;
-	virtual utility::Color GetDrawColor() const noexcept = 0;
-	virtual utility::Color GetBackgroundColor() const noexcept = 0;
+	virtual utils::Vec2i GetResolution() const noexcept = 0;
+	virtual utils::Vec2i GetWindowSize() const noexcept = 0;
+	virtual utils::Color GetDrawColor() const noexcept = 0;
+	virtual utils::Color GetBackgroundColor() const noexcept = 0;
 
 	virtual bool UpdateEvents() noexcept = 0;
 	virtual void SetWindowName(const char* name) noexcept = 0;
-	virtual bool SetResolution(const utility::Vec2i& res) noexcept = 0;
-	virtual void SetWindowSize(const utility::Vec2i& size) noexcept = 0;
+	virtual bool SetResolution(const utils::Vec2i& res) noexcept = 0;
+	virtual void SetWindowSize(const utils::Vec2i& size) noexcept = 0;
 	virtual bool SetFullScreen(const bool value) noexcept = 0;
-	virtual bool SetDrawColor(const utility::Color& color) noexcept = 0;
-	virtual bool SetBackgroundColor(const utility::Color& color) noexcept = 0;
+	virtual bool SetDrawColor(const utils::Color& color) noexcept = 0;
+	virtual bool SetBackgroundColor(const utils::Color& color) noexcept = 0;
 	virtual void SetBuffer(const uint32_t* gfx) noexcept = 0;
 	virtual void DrawBuffer() noexcept = 0;
 	virtual void HideWindow() noexcept = 0;

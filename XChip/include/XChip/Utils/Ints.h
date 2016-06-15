@@ -18,37 +18,37 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_UTILITY_COLOR_H_
-#define _XCHIP_UTILITY_COLOR_H_
-#include <iostream>
-#include "StdintDef.h"
+#ifndef _XCHIP_STDINT_H_
+#define _XCHIP_STDINT_H_
+
+#include <cstdint>
+#include <cstddef>
 
 
-namespace xchip { namespace utility {
+namespace xchip {
 
 
-struct Color
-{
-	constexpr Color() : r(0), g(0), b(0) {};
-	constexpr Color(uint8_t r_, uint8_t g_, uint8_t b_) 
-		: r(r_), g(g_), b(b_) {};
+using std::uint8_t;
+using std::uint16_t;
+using std::uint32_t;
+using std::uint64_t;
 
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-};
+using std::int8_t;
+using std::int16_t;
+using std::int32_t;
+using std::int64_t;
 
 
-inline std::ostream& operator<<(std::ostream& os, const Color& color)
-{	
-	os << "R(" << +color.r << ") G(" << +color.g << ") B(" << +color.b << ")";
-	return os;
+using std::size_t;
+using std::uintptr_t;
+
+using std::intptr_t;
+using std::nullptr_t;
+
+
+
+
 }
-
-
-}}
-
-
 
 
 

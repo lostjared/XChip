@@ -18,35 +18,21 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_UTILITY_CLIOPTS_H_
-#define _XCHIP_UTILITY_CLIOPTS_H_
-#include <string>
-#include <vector>
+#ifndef _XCHIP_UTILS_TRAITS_H_
+#define _XCHIP_UTILS_TRAITS_H_
+#include <type_traits>
+#include "BaseTraits.h"
 
-namespace xchip { namespace utility {
+namespace xchip { namespace utils {  
 
+template<class T>
+using underlying_type_t = typename std::underlying_type<T>::type;
 
-
-class CliOpts : public std::vector<std::string>
+template<class T> 
+constexpr underlying_type_t<T> toUtype(T t) noexcept
 {
-	using ArgVec = std::vector<std::string>;
-public:
-	CliOpts(int argc, char** argv);
-	CliOpts(std::vector<std::string>&& cliArgs);
-	std::string GetOpt(const std::string& match) const;
-	bool RemoveOpt(const std::string& match);
-	static std::string GetFullProcName();
-	static std::string GetFullProcDir();
-private:
-	ArgVec::const_iterator GetOptItr(const std::string& match) const;
-	mutable bool _isSub = false;
-};
-
-
-
-
-
-
+	return static_cast<underlying_type_t<T>>(t);
+}
 
 
 }}

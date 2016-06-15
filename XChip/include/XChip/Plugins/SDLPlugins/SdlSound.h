@@ -22,7 +22,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _XCHIP_SDLSOUND_H_
 
 #include <XChip/Plugins/iSound.h>
-#include <XChip/Utility/StdintDef.h>
+#include <XChip/Utils/Ints.h>
 
 
 

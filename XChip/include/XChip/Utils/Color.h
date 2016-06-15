@@ -18,24 +18,56 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_UTILITY_TRAITS_H_
-#define _XCHIP_UTILITY_TRAITS_H_
-#include <type_traits>
-#include "BaseTraits.h"
+#ifndef _XCHIP_UTILS_COLOR_H_
+#define _XCHIP_UTILS_COLOR_H_
+#include <iostream>
+#include "Ints.h"
 
-namespace xchip { namespace utility {  
 
-template<class T>
-using underlying_type_t = typename std::underlying_type<T>::type;
+namespace xchip { namespace utils {
 
-template<class T> 
-constexpr underlying_type_t<T> toUtype(T t) noexcept
+
+struct Color
 {
-	return static_cast<underlying_type_t<T>>(t);
+	constexpr Color() : r(0), g(0), b(0) {};
+	constexpr Color(uint8_t r_, uint8_t g_, uint8_t b_) 
+		: r(r_), g(g_), b(b_) {};
+
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+};
+
+
+inline std::ostream& operator<<(std::ostream& os, const Color& color)
+{	
+	os << "R(" << +color.r << ") G(" << +color.g << ") B(" << +color.b << ")";
+	return os;
 }
 
 
-} }
+}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

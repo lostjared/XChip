@@ -26,7 +26,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <wx/msgdlg.h>
 
 #include <string>
-#include <XChip/Utility/Memory.h>
+#include <XChip/Utils/Memory.h>
 #include <WXChip/MainWindow.h>
 #include <WXChip/Main.h>
 
@@ -35,7 +35,7 @@ wxIMPLEMENT_APP(WXChip);
 
 bool WXChip::OnInit()
 {
-	using xchip::utility::make_unique;
+	using xchip::utils::make_unique;
 
 	try 
 	{

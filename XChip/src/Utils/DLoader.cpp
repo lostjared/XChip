@@ -1,8 +1,8 @@
-#include <XChip/Utility/DLoader.h>
-#include <XChip/Utility/Assert.h>
-#include <XChip/Utility/Log.h>
+#include <XChip/Utils/DLoader.h>
+#include <XChip/Utils/Assert.h>
+#include <XChip/Utils/Log.h>
 
-namespace xchip { namespace utility {
+namespace xchip { namespace utils {
 
 
 DLoader::DLoader(DLoader&& rhs) noexcept

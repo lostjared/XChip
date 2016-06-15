@@ -22,7 +22,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <cstdio>
 #include <cstdarg>
 #include <cstring>
-#include <XChip/Utility/Log.h>
+#include <XChip/Utils/Log.h>
 
 
 
@@ -30,7 +30,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
-namespace xchip { namespace utility {
+namespace xchip { namespace utils {
 
 
 static std::string errstr(512, '\0');

@@ -22,16 +22,16 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <SDL2/SDL_events.h>
 
 #include <XChip/Plugins/SDLPlugins/SdlInput.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Utility/ScopeExit.h>
-#include <XChip/Utility/Assert.h>
+#include <XChip/Utils/Log.h>
+#include <XChip/Utils/ScopeExit.h>
+#include <XChip/Utils/Assert.h>
 
 
 #define _SDLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlInput is not initialized")
 
 namespace xchip {
 
-using namespace xchip::utility;
+using namespace xchip::utils;
 
 
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
@@ -62,7 +62,7 @@ SdlInput::~SdlInput()
 
 bool SdlInput::Initialize() noexcept
 {
-	using namespace xchip::utility::literals;
+	using namespace xchip::utils::literals;
 
 	if (_initialized)
 		this->Dispose();
@@ -132,7 +132,7 @@ PluginDeleter SdlInput::GetPluginDeleter() const noexcept
 
 bool SdlInput::IsKeyPressed(const Key key) const noexcept
 {
-	using utility::toSizeT;
+	using utils::toSizeT;
 	_SDLINPUT_INITIALIZED_ASSERT_();
 	return _keyboardState[_keyPairs[toSizeT(key)].sdlKey] == SDL_TRUE;
 }

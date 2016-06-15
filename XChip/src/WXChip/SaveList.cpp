@@ -20,7 +20,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 #include <string>
-#include <XChip/Utility/Log.h>
+#include <XChip/Utils/Log.h>
 #include <WXChip/SaveList.h>
 
 void saveDirectory(const std::string &text, const std::string &fps, const std::string &cpufreq)
@@ -29,7 +29,7 @@ void saveDirectory(const std::string &text, const std::string &fps, const std::s
 	file.open("romlist.dat", std::ios::out);
 	if(!file.is_open())
 	{
-		xchip::utility::LogError("Error could not open file");
+		xchip::utils::LogError("Error could not open file");
 		return;
 	}
 	

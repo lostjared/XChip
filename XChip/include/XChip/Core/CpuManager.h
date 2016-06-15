@@ -20,10 +20,15 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_CPU_MANAGER_H_
 #define _XCHIP_CPU_MANAGER_H_
+
+
+
 #include "Cpu.h"
-#include <XChip/Utility/Alloc.h>
-#include <XChip/Utility/Vector2.h>
-#include <XChip/Core/Fonts.h> 
+#include <XChip/Utils/Alloc.h>
+#include <XChip/Utils/Vector2.h>
+#include <XChip/Core/Fonts.h>
+
+
 
 namespace xchip {
 
@@ -51,7 +56,7 @@ public:
 	size_t GetRegistersSize() const;
 	size_t GetStackSize() const;
 	size_t GetGfxSize() const;
-	const utility::Vec2i& GetGfxRes() const;
+	const utils::Vec2i& GetGfxRes() const;
 
 
 	const iRender* GetRender() const;
@@ -66,7 +71,7 @@ public:
 	const uint8_t& GetRegisters(const size_t offset) const;
 	const size_t& GetStack(const size_t offset) const;
 	const uint32_t& GetGfx(const size_t offset) const;
-	const uint32_t& GetGfx(const utility::Vec2i& point) const;
+	const uint32_t& GetGfx(const utils::Vec2i& point) const;
 	const uint32_t& GetGfx(const int x, const int y) const;
 
 
@@ -82,7 +87,7 @@ public:
 	uint8_t& GetRegisters(const size_t offset);
 	size_t& GetStack(const size_t offset);
 	uint32_t& GetGfx(const size_t offset);
-	uint32_t& GetGfx(const utility::Vec2i& point);
+	uint32_t& GetGfx(const utils::Vec2i& point);
 	uint32_t& GetGfx(const int x, const int y);
 	
 
@@ -90,7 +95,7 @@ public:
 	bool SetMemory(const size_t size);
 	bool SetRegisters(const size_t size);
 	bool SetStack(const size_t size);
-	bool SetGfxRes(const utility::Vec2i& res);
+	bool SetGfxRes(const utils::Vec2i& res);
 	bool SetGfxRes(const int w, const int h);
 	bool ResizeMemory(const size_t size);
 	bool ResizeRegisters(const size_t size);
@@ -126,7 +131,7 @@ public:
 
 private:
 	Cpu _cpu;
-	utility::Vec2i _gfxRes = {0, 0};
+	utils::Vec2i _gfxRes = {0, 0};
 };
 
 
@@ -144,11 +149,11 @@ inline uint32_t CpuManager::GetFlags(const uint32_t flags) const { return _cpu.f
 inline size_t CpuManager::GetIndexRegister() const { return _cpu.I; }
 inline size_t CpuManager::GetPC() const { return _cpu.pc; }
 inline size_t CpuManager::GetSP() const { return _cpu.sp; }
-inline size_t CpuManager::GetMemorySize() const { return utility::arr_size(_cpu.memory); }
-inline size_t CpuManager::GetRegistersSize() const { return utility::arr_size(_cpu.registers); }
-inline size_t CpuManager::GetStackSize() const { return utility::arr_size(_cpu.stack); }
-inline size_t CpuManager::GetGfxSize() const { return utility::arr_size(_cpu.gfx); }
-inline const utility::Vec2i& CpuManager::GetGfxRes() const { return _gfxRes; }
+inline size_t CpuManager::GetMemorySize() const { return utils::arr_size(_cpu.memory); }
+inline size_t CpuManager::GetRegistersSize() const { return utils::arr_size(_cpu.registers); }
+inline size_t CpuManager::GetStackSize() const { return utils::arr_size(_cpu.stack); }
+inline size_t CpuManager::GetGfxSize() const { return utils::arr_size(_cpu.gfx); }
+inline const utils::Vec2i& CpuManager::GetGfxRes() const { return _gfxRes; }
 
 inline const iRender* CpuManager::GetRender() const { return _cpu.render; }
 inline const iInput* CpuManager::GetInput() const { return _cpu.input; }
@@ -189,7 +194,7 @@ inline const uint32_t& CpuManager::GetGfx(const size_t offset) const
 }
 
 
-inline const uint32_t& CpuManager::GetGfx(const utility::Vec2i& point) const  
+inline const uint32_t& CpuManager::GetGfx(const utils::Vec2i& point) const  
 {
 	ASSERT_MSG(_gfxRes.x >= point.x && _gfxRes.y >= point.y, "GFX overflow"); 
 	return _cpu.gfx[ ( _gfxRes.x * point.y ) + point.x]; 
@@ -245,7 +250,7 @@ inline uint32_t& CpuManager::GetGfx(const size_t offset)
 }
 
 
-inline uint32_t& CpuManager::GetGfx(const utility::Vec2i& point)
+inline uint32_t& CpuManager::GetGfx(const utils::Vec2i& point)
 {
 	ASSERT_MSG(_gfxRes.x >= point.x && _gfxRes.y >= point.y, "GFX overflow"); 
 	return _cpu.gfx[ ( _gfxRes.x * point.y ) + point.x]; 
@@ -279,12 +284,12 @@ inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
 
 inline void CpuManager::CleanMemory() 
 { 
-	utility::arr_zero(_cpu.memory); 
+	utils::arr_zero(_cpu.memory); 
 }
 
 inline void CpuManager::CleanRegisters() 
 { 
-	utility::arr_zero(_cpu.registers);
+	utils::arr_zero(_cpu.registers);
 	_cpu.I = 0;
 	_cpu.delayTimer = 0;
 	_cpu.soundTimer = 0;
@@ -293,20 +298,20 @@ inline void CpuManager::CleanRegisters()
 
 inline void CpuManager::CleanStack()
 {
-	utility::arr_zero(_cpu.stack);
+	utils::arr_zero(_cpu.stack);
 	_cpu.sp = 0;
 }
 
 
 inline void CpuManager::CleanGfx() 
 { 
-	utility::arr_zero(_cpu.gfx); 
+	utils::arr_zero(_cpu.gfx); 
 }
 
 
 
 inline constexpr size_t CpuManager::GetDefaultFontIndex() { return 0; }
-inline constexpr size_t CpuManager::GetHiResFontIndex() { return utility::arr_size(fonts::chip8DefaultFont);  }
+inline constexpr size_t CpuManager::GetHiResFontIndex() { return utils::arr_size(fonts::chip8DefaultFont);  }
 
 
 

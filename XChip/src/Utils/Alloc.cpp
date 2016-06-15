@@ -18,34 +18,50 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_UTILITY_MEMORY_H_
-#define _XCHIP_UTILITY_MEMORY_H_
-#include <memory>
-#include "Traits.h"
+#include <cstdlib>
+#include <XChip/Utils/Alloc.h>
+#include <XChip/Utils/Assert.h>
+
  
-namespace xchip { namespace utility {
+
+namespace xchip { namespace utils {
 
 
-
-template<class T, class... Args>
-inline enable_if_t<!std::is_array<T>::value,
-	std::unique_ptr<T>> make_unique(Args&&... args)
+void* alloc_arr(const size_t size) noexcept
 {
-	return (std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
+	ASSERT_MSG(size > 0, "attempt to alloc array of size 0");
+
+	auto* const block = (size_t*) std::malloc(size + sizeof(size_t));
+	
+	if (block)
+	{
+		*block = size;
+		return block + 1;
+	}
+	
+	return nullptr;
 }
 
 
-template<class T>
-inline enable_if_t<std::is_array<T>::value && std::extent<T>::value == 0,
-	std::unique_ptr<T>> make_unique(const std::size_t sz)
+
+void* realloc_arr(void* from, const size_t size) noexcept
 {
-	typedef typename std::remove_extent<T>::type elem;
-	return (std::unique_ptr<T>(new elem[sz]()));
+	ASSERT_MSG(from != nullptr, "attempt to realloc from null pointer!");
+	ASSERT_MSG(size > 0, "attempt to realloc to size 0!");
+
+	auto* const block = (size_t*) std::realloc(((size_t*)from-1), size + sizeof(size_t));
+
+	if(block)
+	{
+		*block = size;
+		return block + 1;
+	}
+
+	return nullptr;
 }
 
-template<class T, class... Args>
-enable_if_t<std::extent<T>::value != 0,
-	void> make_unique(Args&&...) = delete;
+
+
 
 
 
@@ -53,6 +69,3 @@ enable_if_t<std::extent<T>::value != 0,
 
 
 }}
-
-
-#endif

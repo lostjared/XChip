@@ -21,13 +21,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <algorithm>
 #include <XChip/Plugins.h>
 #include <XChip/Core.h>
-#include <XChip/Utility.h>
+#include <XChip/Utils.h>
 
 
 
 namespace xchip { namespace instructions {
 
-using namespace xchip::utility;
+using namespace xchip::utils;
 
 
 #define OPMSN ((cpuMan.GetOpcode(0xf000) >> 12)) // opcode most significant nibble

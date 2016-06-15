@@ -21,16 +21,16 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <cstdlib>
 
 #include <XChip/Plugins/SDLPlugins/SdlRender.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Utility/ScopeExit.h>
-#include <XChip/Utility/Assert.h>
+#include <XChip/Utils/Log.h>
+#include <XChip/Utils/ScopeExit.h>
+#include <XChip/Utils/Assert.h>
 
 #define _SDLRENDER_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlRender is not initialized")
 
 namespace xchip {
 
-using namespace xchip::utility;
-using namespace xchip::utility::literals;
+using namespace xchip::utils;
+using namespace xchip::utils::literals;
 
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 

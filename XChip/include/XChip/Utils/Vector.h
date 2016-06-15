@@ -21,19 +21,20 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
-#ifndef _XCHIP_UTILITY_VECTOR_H_
-#define _XCHIP_UTILITY_VECTOR_H_
+#ifndef _XCHIP_UTILS_VECTOR_H_
+#define _XCHIP_UTILS_VECTOR_H_
+
 #include <cstdlib>
 #include <cstring>
-#include <type_traits>
 #include <initializer_list>
+#include "BaseTraits.h"
 #include "Alloc.h"
 #include "Assert.h"
 #include "Log.h"
 
 
 
-namespace xchip { namespace utility {
+namespace xchip { namespace utils {
 
 
 template<class TYPE>
@@ -334,13 +335,13 @@ bool Vector<TYPE>::emplace_back(Args&& ...args)
 {
 	if( this->capacity() > _size )
 	{
-		_data[_size++] = { std::forward<Args>(args)... };
+		_data[_size++] = { forward<Args>(args)... };
 		return true;
 	}
 
 	else if(this->reserve(_size + 5)) 
 	{	
-		_data[_size++] = { std::forward<Args>(args)...};
+		_data[_size++] = { forward<Args>(args)...};
 		return true;
 	}
 

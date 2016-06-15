@@ -18,29 +18,46 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+#ifndef _XCHIP_UTILS_LOG_H
+#define _XCHIP_UTILS_LOG_H
 
-#ifndef _XCHIP_UTILITY_H_
-#define _XCHIP_UTILITY_H_
 
+#include <string>
+#include "Ints.h"
 
-#include "Utility/Alloc.h"
-#include "Utility/Assert.h"
-#include "Utility/BaseTraits.h"
-#include "Utility/Color.h"
-#include "Utility/DLoader.h"
-#include "Utility/Log.h"
-#include "Utility/Memory.h"
-#include "Utility/Process.h"
-#include "Utility/ScopeExit.h"
-#include "Utility/StdintDef.h"
-#include "Utility/Timer.h"
-#include "Utility/Traits.h"
-#include "Utility/Vector.h"
-#include "Utility/Vector2.h"
-#include "Utility/CliOpts.h"
+namespace xchip { namespace utils {
 
 
 
+namespace literals 
+{
+	inline std::string operator"" _s(const char* str, size_t) { return std::string(str); }
+}
 
 
-#endif
+extern void Log(const char* fmtString, ...) noexcept;
+extern void LogError(const char* fmtString, ...) noexcept;
+extern const std::string& GetLastLogError() noexcept;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}}
+
+
+
+#endif // LOG_H

@@ -20,13 +20,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_EMULATOR_H_
 #define _XCHIP_EMULATOR_H_
+
 #include <string>
 
 #include "CpuManager.h"
 #include "Instructions.h"
 #include <XChip/Plugins.h>
-#include <XChip/Utility/Timer.h>
-#include <XChip/Utility/Assert.h>
+#include <XChip/Utils/Timer.h>
+#include <XChip/Utils/Assert.h>
 
  
 
@@ -96,9 +97,9 @@ private:
 	bool InitSound();
 
 	CpuManager _manager;
-	utility::Timer _instrTimer;
-	utility::Timer _frameTimer;
-	utility::Timer _chDelayTimer;
+	utils::Timer _instrTimer;
+	utils::Timer _frameTimer;
+	utils::Timer _chDelayTimer;
 	UniqueRender _renderPlugin;
 	UniqueInput _inputPlugin;
 	UniqueSound _soundPlugin;
@@ -118,30 +119,19 @@ inline const iRender* Emulator::GetRender() const { return _manager.GetRender();
 inline const iInput* Emulator::GetInput() const { return _manager.GetInput(); }
 inline const iSound* Emulator::GetSound() const { return _manager.GetSound(); }
 
-inline int Emulator::GetCpuFreq() const 
+inline int Emulator::GetCpuFreq() const { return _instrTimer.GetTargetHz(); }
+inline int Emulator::GetFps() const { return _frameTimer.GetTargetHz(); }
+
+inline void Emulator::SetCpuFreq(int value)
 {
-	using namespace utility::literals;
-	return static_cast<int>(1_sec / _instrTimer.GetTarget());
+	utils::Clamp(value, 60, 50000);
+	_instrTimer.SetTargetHz(value);
 }
 
-inline int Emulator::GetFps() const 
+inline void Emulator::SetFps(int value)
 {
-	using namespace utility::literals;
-	return static_cast<int>(1_sec / _frameTimer.GetTarget());
-}
-
-
-
-inline void Emulator::SetCpuFreq(const int value)
-{
-	using namespace utility::literals;
-	_instrTimer.SetTargetTime(operator""_hz(value > 0 ? value : 1));
-}
-
-inline void Emulator::SetFps(const int value)
-{
-	using namespace utility::literals;
-	_frameTimer.SetTargetTime(operator""_hz(value > 0 ? value : 1));
+	utils::Clamp(value, 10, 1000);
+	_frameTimer.SetTargetHz(value);
 }
 
 

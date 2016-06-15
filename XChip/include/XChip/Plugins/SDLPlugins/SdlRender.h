@@ -39,7 +39,7 @@ class SdlRender final : public iRender
 public:
 	SdlRender() noexcept;
 	~SdlRender();
-	bool Initialize(const utility::Vec2i& winSize, const utility::Vec2i& res) noexcept override;
+	bool Initialize(const utils::Vec2i& winSize, const utils::Vec2i& res) noexcept override;
 	void Dispose() noexcept override;
 	
 	bool IsInitialized() const noexcept override;
@@ -48,17 +48,17 @@ public:
 	PluginDeleter GetPluginDeleter() const noexcept override;
 	const char* GetWindowName() const noexcept override;
 	const uint32_t* GetBuffer() const noexcept override;
-	utility::Color GetDrawColor() const noexcept override;
-	utility::Color GetBackgroundColor() const noexcept override;
-	utility::Vec2i GetResolution() const noexcept override;
-	utility::Vec2i GetWindowSize() const noexcept override;
+	utils::Color GetDrawColor() const noexcept override;
+	utils::Color GetBackgroundColor() const noexcept override;
+	utils::Vec2i GetResolution() const noexcept override;
+	utils::Vec2i GetWindowSize() const noexcept override;
 	
 	void SetWindowName(const char* name) noexcept override;
 	void SetBuffer(const uint32_t* gfx) noexcept override;
-	bool SetDrawColor(const utility::Color& color) noexcept override;
-	bool SetBackgroundColor(const utility::Color& color) noexcept override;
-	bool SetResolution(const utility::Vec2i& res) noexcept override;
-	void SetWindowSize(const utility::Vec2i& size) noexcept override;
+	bool SetDrawColor(const utils::Color& color) noexcept override;
+	bool SetBackgroundColor(const utils::Color& color) noexcept override;
+	bool SetResolution(const utils::Vec2i& res) noexcept override;
+	void SetWindowSize(const utils::Vec2i& size) noexcept override;
 	bool SetFullScreen(const bool val) noexcept override;
 	bool UpdateEvents() noexcept override;
 	void DrawBuffer() noexcept override;

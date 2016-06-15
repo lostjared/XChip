@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_UTILITY_TIMER_H
-#define _XCHIP_UTILITY_TIMER_H
+#ifndef _XCHIP_UTILS_TIMER_H
+#define _XCHIP_UTILS_TIMER_H
 #include <chrono>
 
 #if defined(__linux__) ||  defined(__CYGWIN32__) || defined(__APPLE__)
@@ -33,9 +33,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #endif
 
 
-
+#include "BaseTraits.h"
  
-namespace xchip { namespace utility {
+namespace xchip { namespace utils {
 
 
 namespace literals {
@@ -57,11 +57,17 @@ public:
 	Timer() noexcept = default;
 	Timer(const Micro& target) noexcept;
 
-	const Micro& GetTarget() const;
+	const Micro& GetTargetTime() const;
+	int GetTargetHz() const;
 	Duration GetRemain() const;
 	bool Finished() const;
 	void SetTargetTime(const Micro& target);
 	void Start();
+
+	template<class T>
+	enable_if_t<is_numeric<T>::value> SetTargetHz(const T);
+
+
 	static void Halt(const Nano& nano);
 private:
 	std::chrono::steady_clock::time_point m_startPoint = std::chrono::steady_clock::now();
@@ -74,7 +80,10 @@ private:
 inline Timer::Timer(const Micro& target) noexcept : 
 	m_target(target) {}
 
-inline const Timer::Micro& Timer::GetTarget() const { return m_target; }
+inline const Timer::Micro& Timer::GetTargetTime() const { return m_target; }
+
+inline int Timer::GetTargetHz() const { return static_cast<int>(literals::operator""_sec(1) / m_target); }
+
 
 inline Timer::Duration Timer::GetRemain() const
 {
@@ -89,8 +98,18 @@ inline bool Timer::Finished() const
 }
 
 
-inline void Timer::SetTargetTime(const Micro& target) { m_target = target; }
+
 inline void Timer::Start() { m_startPoint = std::chrono::steady_clock::now(); }
+
+
+inline void Timer::SetTargetTime(const Micro& target) { m_target = target; }
+
+
+template<class T>
+inline enable_if_t<is_numeric<T>::value> Timer::SetTargetHz(const T val) { this->SetTargetTime(literals::operator""_hz(val)); }
+
+
+
 
 
 inline void Timer::Halt(const Timer::Nano& nano)

@@ -18,50 +18,34 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#include <cstdlib>
-#include <XChip/Utility/Alloc.h>
-#include <XChip/Utility/Assert.h>
+#ifndef _XCHIP_UTILS_SCOPE_EXIT_H_
+#define _XCHIP_UTILS_SCOPE_EXIT_H_
+#include "BaseTraits.h"
 
- 
-
-namespace xchip { namespace utility {
+namespace xchip { namespace utils {
 
 
-void* alloc_arr(const size_t size) noexcept
+
+
+template<class F>
+struct ScopeExit
 {
-	ASSERT_MSG(size > 0, "attempt to alloc array of size 0");
-
-	auto* const block = (size_t*) std::malloc(size + sizeof(size_t));
-	
-	if (block)
-	{
-		*block = size;
-		return block + 1;
+	constexpr ScopeExit(F&& fun) noexcept : _fun(forward<F>(fun)) {
+		static_assert(noexcept(fun()) == true, "ScopeExit functor must be noexcept!");
 	}
-	
-	return nullptr;
+	~ScopeExit() noexcept { _fun(); }
+	ScopeExit(ScopeExit&& rhs) noexcept = default;
+	ScopeExit(const ScopeExit&) = delete;
+	ScopeExit& operator=(const ScopeExit&) = delete;
+private:
+	F _fun;
+};
+
+
+template<class T>
+constexpr inline ScopeExit<T> make_scope_exit(T&& t) noexcept {
+	return ScopeExit<T>(forward<T>(t));
 }
-
-
-
-void* realloc_arr(void* from, const size_t size) noexcept
-{
-	ASSERT_MSG(from != nullptr, "attempt to realloc from null pointer!");
-	ASSERT_MSG(size > 0, "attempt to realloc to size 0!");
-
-	auto* const block = (size_t*) std::realloc(((size_t*)from-1), size + sizeof(size_t));
-
-	if(block)
-	{
-		*block = size;
-		return block + 1;
-	}
-
-	return nullptr;
-}
-
-
-
 
 
 
@@ -69,3 +53,13 @@ void* realloc_arr(void* from, const size_t size) noexcept
 
 
 }}
+
+
+
+
+
+
+
+
+
+#endif

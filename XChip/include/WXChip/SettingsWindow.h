@@ -23,14 +23,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _WXCHIP_SETTINGS_WINDOW_H_
 
 #include <wx/frame.h>
-#include <XChip/Utility/Color.h>
-#include <XChip/Utility/Vector2.h>
-#include <XChip/Utility/Memory.h>
+#include <XChip/Utils/Color.h>
+#include <XChip/Utils/Vector2.h>
+#include <XChip/Utils/Memory.h>
 
 class SettingsWindow : public wxFrame
 {
-	using Color = xchip::utility::Color;
-	using Vec2i = xchip::utility::Vec2i;
+	using Color = xchip::utils::Color;
+	using Vec2i = xchip::utils::Vec2i;
 	static constexpr const auto* const defaultCpuFreq = _T("380");
 	static constexpr const auto* const defaultFPS = _T("60.00");
 

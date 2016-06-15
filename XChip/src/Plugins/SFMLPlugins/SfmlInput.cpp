@@ -21,10 +21,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 #include <XChip/Plugins/SFMLPlugins/SfmlInput.h>
-#include <XChip/Utility/Alloc.h>
-#include <XChip/Utility/Log.h>
-#include <XChip/Utility/Assert.h>
-#include <XChip/Utility/BaseTraits.h>
+#include <XChip/Utils/Log.h>
+#include <XChip/Utils/Assert.h>
+#include <XChip/Utils/BaseTraits.h>
 
 #define _SFMLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized, "SfmlInput is not initiaized")
 
@@ -33,7 +32,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip {
 
-using namespace xchip::utility;
+using namespace xchip::utils;
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin);
 
 

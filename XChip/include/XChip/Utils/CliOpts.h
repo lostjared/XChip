@@ -18,33 +18,29 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_UTILITY_STDINTDEF_H_
-#define _XCHIP_UTILITY_STDINTDEF_H_
-#include <cstdint>
-#include <cstddef>
+#ifndef _XCHIP_UTILS_CLIOPTS_H_
+#define _XCHIP_UTILS_CLIOPTS_H_
+#include <string>
+#include <vector>
 
-
-namespace xchip {
-
-
+namespace xchip { namespace utils {
 
 
 
-using std::uint8_t;
-using std::uint16_t;
-using std::uint32_t;
-using std::uint64_t;
-
-using std::int8_t;
-using std::int16_t;
-using std::int32_t;
-using std::int64_t;
-
-
-using std::size_t;
-using std::uintptr_t;
-using std::intptr_t;
-using std::nullptr_t;
+class CliOpts : public std::vector<std::string>
+{
+	using ArgVec = std::vector<std::string>;
+public:
+	CliOpts(int argc, char** argv);
+	CliOpts(std::vector<std::string>&& cliArgs);
+	std::string GetOpt(const std::string& match) const;
+	bool RemoveOpt(const std::string& match);
+	static std::string GetFullProcName();
+	static std::string GetFullProcDir();
+private:
+	ArgVec::const_iterator GetOptItr(const std::string& match) const;
+	mutable bool _isSub = false;
+};
 
 
 
@@ -53,27 +49,7 @@ using std::nullptr_t;
 
 
 
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}}
 
 
 

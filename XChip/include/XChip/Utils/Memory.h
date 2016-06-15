@@ -18,35 +18,35 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_SCOPE_EXIT_H_
-#define _XCHIP_SCOPE_EXIT_H_
-#include <utility>
+#ifndef _XCHIP_UTILS_MEMORY_H_
+#define _XCHIP_UTILS_MEMORY_H_
+
+#include <memory>
+#include "Traits.h"
+ 
+namespace xchip { namespace utils {
 
 
-namespace xchip { namespace utility {
 
-
-
-
-template<class F>
-struct ScopeExit
+template<class T, class... Args>
+inline enable_if_t<!std::is_array<T>::value,
+	std::unique_ptr<T>> make_unique(Args&&... args)
 {
-	constexpr ScopeExit(F fun) noexcept : _fun(std::move(fun)) {
-		static_assert(noexcept(fun()) == true, "ScopeExit functor must be noexcept!");
-	}
-	~ScopeExit() noexcept { _fun(); }
-	ScopeExit(ScopeExit&& rhs) noexcept = default;
-	ScopeExit(const ScopeExit&) = delete;
-	ScopeExit& operator=(const ScopeExit&) = delete;
-private:
-	F _fun;
-};
+	return (std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
+}
 
 
 template<class T>
-constexpr inline ScopeExit<T> make_scope_exit(T&& t) noexcept {
-	return ScopeExit<T>(std::forward<T>(t));
+inline enable_if_t<std::is_array<T>::value && std::extent<T>::value == 0,
+	std::unique_ptr<T>> make_unique(const std::size_t sz)
+{
+	typedef typename std::remove_extent<T>::type elem;
+	return (std::unique_ptr<T>(new elem[sz]()));
 }
+
+template<class T, class... Args>
+enable_if_t<std::extent<T>::value != 0,
+	void> make_unique(Args&&...) = delete;
 
 
 
@@ -54,13 +54,6 @@ constexpr inline ScopeExit<T> make_scope_exit(T&& t) noexcept {
 
 
 }}
-
-
-
-
-
-
-
 
 
 #endif

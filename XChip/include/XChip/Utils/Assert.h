@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_UTILITY_ASSERT_H_
-#define _XCHIP_UTILITY_ASSERT_H_
+#ifndef _XCHIP_UTILS_ASSERT_H_
+#define _XCHIP_UTILS_ASSERT_H_
 
 
 #if !_DEBUG
@@ -51,7 +51,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #define ASSERT_MSG(cond, msg)                                            \
 {                                                                        \
-    using xchip::utility::LogError;                                      \
+    using xchip::utils::LogError;                                        \
     if(!(cond))                                                          \
     {                                                                    \
         LogError("\n                          \n"                        \

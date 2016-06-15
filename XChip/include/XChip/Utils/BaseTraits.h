@@ -18,20 +18,37 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_BASETRAITS_H_
-#define _XCHIP_BASETRAITS_H_
-#include "StdintDef.h"
+#ifndef _XCHIP_UTILS_BASETRAITS_H_
+#define _XCHIP_UTILS_BASETRAITS_H_
+#include "Ints.h"
 
-namespace xchip { namespace utility {
-	
+namespace xchip { namespace utils {
+
+
 // basic metaprogramming return types: true, false
 struct true_type { static constexpr bool value = true; };
 struct false_type { static constexpr bool value = false; };
+
+
 
 // type_is: return the given type itself
 template<class T>
 struct type_is { using type = T; };
 
+template<class T>
+using type_is_t = typename type_is<T>::type;
+
+
+
+// is const
+template<class T>
+struct is_const : false_type {};
+template<class T>
+struct is_const<const T> : true_type {};
+
+// C++14 variable template
+//template<class T>
+//constexpr bool is_const_v = is_const<T>::value;
 
 
 
@@ -152,7 +169,7 @@ template<class T>
 struct enable_if<false, T> {};
 
 
-template<bool cond, class T>
+template<bool cond, class T = void>
 using enable_if_t = typename enable_if<cond, T>::type;
 
 
@@ -202,6 +219,39 @@ struct is_numeric :
 
 template<class T>
 inline constexpr size_t toSizeT(T value) { return static_cast<size_t>(value); }
+
+
+template<class T>
+inline enable_if_t<is_numeric<T>::value> Clamp(T& lval, const T min, const T max)
+{
+     if(lval < min)
+          lval = min;
+     else if(lval > max)
+          lval = max;
+}
+
+
+template<class T>
+inline enable_if_t<!is_numeric<T>::value> Clamp(T& lval, const T& min, const T& max)
+{
+     if(lval < min)
+          lval = min;
+     else if(lval > max)
+          lval = max;
+}
+
+
+
+// move and forward
+template<class T>
+inline constexpr 
+conditional_t<is_const<T>::value, T&, T&&>  move(T& t) { return static_cast<conditional_t<is_const<T>::value, T&, T&&>>(t); }
+
+template<class T>
+inline constexpr 
+T&& forward(remove_reference_t<T>& t) { return static_cast<T&&>(t); }
+
+
 
 
 

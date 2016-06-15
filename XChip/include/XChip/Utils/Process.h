@@ -21,8 +21,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_UTILITY_PROCESS_H_
-#define _XCHIP_UTILITY_PROCESS_H_
+#ifndef _XCHIP_UTILS_PROCESS_H_
+#define _XCHIP_UTILS_PROCESS_H_
 
 #if defined(__APPLE__) || defined(__linux__)
 #include <signal.h>
@@ -37,7 +37,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <process.h>
 
 #else
-#error "Unknown Plataform utility Process"
+#error "Unknown Plataform utils Process"
 #endif
 
 
@@ -48,7 +48,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
-namespace xchip { namespace utility {
+namespace xchip { namespace utils {
 	
 	
 class Process
