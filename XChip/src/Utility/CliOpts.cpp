@@ -79,9 +79,9 @@ std::string CliOpts::GetOpt(const std::string& match) const
 CliOpts::ArgVec::const_iterator CliOpts::GetOptItr(const std::string& match) const
 {
 	const auto matchSize = match.size();
-	const auto begin = this->begin();
-	const auto end = this->end();
-	for (auto itr = begin; itr != end; ++itr)
+	const auto end = this->cend();
+
+	for (auto itr = this->begin(); itr != end; ++itr)
 	{
 		const auto argSize = itr->size();
 		if (argSize == matchSize)
@@ -89,7 +89,10 @@ CliOpts::ArgVec::const_iterator CliOpts::GetOptItr(const std::string& match) con
 			if (*itr == match)
 			{
 				_isSub = false;
-				return ++itr;
+				if((itr+1) != end)
+					return ++itr;
+				else
+					return itr;
 			}
 
 		}
@@ -115,16 +118,17 @@ CliOpts::ArgVec::const_iterator CliOpts::GetOptItr(const std::string& match) con
 bool CliOpts::RemoveOpt(const std::string& match)
 {
 	auto itr = GetOptItr(match);
-	if (itr != this->end())
+	const auto end = this->cend();
+
+	if (itr != end)
 	{
-		if (_isSub)
+		if (_isSub || *itr == match)
 		{
 			this->erase(itr);
 		}
-
 		else
 		{
-			itr = this->erase(itr - 1);
+			itr = this->erase(itr);
 			this->erase(itr);
 		}
 
@@ -170,7 +174,7 @@ std::string CliOpts::GetFullProcName()
 #elif defined(__linux__)
 
 
-	constexpr const size_t BUFF_LEN = 256;
+	constexpr const size_t BUFF_LEN = 400;
 	char buffer[BUFF_LEN];
 	auto writeSize = readlink("/proc/self/exe", buffer, BUFF_LEN);
 

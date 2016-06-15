@@ -190,8 +190,7 @@ void CpuManager::LoadDefaultFont()
 	// default font : [0] -> [DEFAULT_FONT_SIZE - 1] 
 
 	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
-	ASSERT_MSG((arr_size(_cpu.memory) >= arr_size(chip8DefaultFont)), 
-                    "Memory size is too low");
+	ASSERT_MSG((arr_size(_cpu.memory) >= arr_size(chip8DefaultFont)), "Memory size is too low");
 
 	memcpy(_cpu.memory, chip8DefaultFont, arr_size(chip8DefaultFont));
 }
@@ -207,10 +206,8 @@ void CpuManager::LoadHiResFont()
 	constexpr const auto at = arr_size(chip8DefaultFont); 
 	
 	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
-	ASSERT_MSG( arr_size(_cpu.memory) >= ( at + arr_size(chip8HiResFont)), 
-                   "Memory size is too low");
-	ASSERT_MSG((at + arr_size(chip8HiResFont)) < 0x200, 
-                  "Hi res font is over 0x200 memory area");
+	ASSERT_MSG( arr_size(_cpu.memory) >= ( at + arr_size(chip8HiResFont)), "Memory size is too low");
+	ASSERT_MSG((at + arr_size(chip8HiResFont)) < 0x200, "Hi res font is over 0x200 memory area");
 
 	memcpy(_cpu.memory + at, chip8HiResFont, arr_size(chip8HiResFont));
 }

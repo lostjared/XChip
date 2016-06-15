@@ -18,6 +18,39 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+#include <iostream>
+#include <XChip/Utility/CliOpts.h>
+
+
+
+
+
+
+
+int main(int argc, char **argv)
+{
+	using namespace xchip;
+	using namespace xchip::utility;
+
+	CliOpts opts(argc-1, argv+1);
+
+
+	opts.RemoveOpt("OPTION_B");
+
+	for(const auto& arg : opts)
+		std::cout << arg << '\n';
+}
+
+
+
+
+
+
+
+
+
+#if 0
+
 // TESTING Vector, it's a version of std::vector for POD types only
 #include <iostream>
 #include <vector>
@@ -90,7 +123,7 @@ int main()
 
 
 
-
+#endif
 
 
 
