@@ -36,25 +36,32 @@ struct X
 
 int main()
 {
-	auto _p = make_rwrap<X*>(nullptr, [](X** pp)noexcept { if((*pp)) std::free((*pp)); });
+	auto x = make_rwrap<X*>((X*)std::malloc(sizeof(X)), [](X* x)noexcept { std::free(x); });
+	auto x2 = move(x);
+
+	if(nullptr == x)
+	{
+		std::cerr << "FAILED TO ALLOCATE MEMORY\n";
+		return EXIT_FAILURE;
+	}
 
 
-	_p = (X*) std::malloc(sizeof(X));
+	x->x = 20;
+	x->y = -14;
 
-	_p->x = 20;
-	_p->y = -14;
+	std::cout << "x->x: " << x->x << '\n';
+	std::cout << "x->y: " << x->y << '\n';
 
-	std::cout << "_p->x: " << _p->x << '\n';
-	std::cout << "_p->y: " << _p->y << '\n';
+	const auto& _cp = x;
 
+	// _cp->x = 10; error
+	// _cp->y = -10; error
 
-	const auto& _cp = _p;
+	// (*_cp).x = 10; error
+	// (*_cp).y = -10; error
 
-	_cp->x = 10;
-	_cp->y = -10;
-
-	std::cout << "_p->x: " << _p->x << '\n';
-	std::cout << "_p->y: " << _p->y << '\n';
+	std::cout << "_p->x: " << _cp->x << '\n';
+	std::cout << "_p->y: " << _cp->y << '\n';
 
 
 
