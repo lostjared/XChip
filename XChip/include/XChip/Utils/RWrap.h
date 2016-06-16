@@ -31,8 +31,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 namespace xchip { namespace utils {
 
 
-
-
 template<class T, class F>
 class RWrap
 {
@@ -47,7 +45,6 @@ public:
 
 
 	RWrap(RWrap&&) = default;
-
 	constexpr RWrap(F&& f);
 	constexpr RWrap(T&& t, F&& f);
 	~RWrap();
@@ -87,10 +84,8 @@ public:
 	T operator--(int);
 
 	T& operator=(const T other);
-	UT& operator*();
-	UT& operator->();
-
-	
+	auto operator*() -> remove_reference_t<decltype(*T())>&;
+	auto operator->() -> remove_reference_t<decltype(*T())>&;
 
 private:
 	F _f;
@@ -118,7 +113,7 @@ RWrap<T, F>::RWrap(T&& t, F&& f)
 }
 
 template<class T, class F>
-RWrap<T, F>::~RWrap()
+inline RWrap<T, F>::~RWrap()
 {
 	_f(&_t);
 }
@@ -217,12 +212,11 @@ inline T& RWrap<T, F>::operator=(const T other) { _t = other; return _t; }
 
 
 template<class T, class F>
-inline typename RWrap<T, F>::UT& RWrap<T, F>::operator*() { return *_t; }
-
+inline auto RWrap<T, F>::operator*() -> remove_reference_t<decltype(*T())>& { return *_t; }
 
 
 template<class T, class F>
-inline typename RWrap<T, F>::UT& RWrap<T, F>::operator->() { return *_t;}
+inline auto RWrap<T, F>::operator->() -> remove_reference_t<decltype(*T())>& { return *_t;}
 
 
 
@@ -234,18 +228,10 @@ inline constexpr RWrap<T, F>::operator T() const { return _t; }
 
 
 
-
-
-
-
-
 template<class T, class F>
-inline constexpr RWrap<T, F> 
-	make_rwrap(T&& t, F&& f) { return RWrap<T, F>(forward<T>(t), forward<F>(f)); }
-
+inline constexpr RWrap<T, F> make_rwrap(T&& t, F&& f) { return RWrap<T, F>(forward<T>(t), forward<F>(f)); }
 template<class T, class F>
-inline constexpr RWrap<T, F> 
-	make_rwrap(F&& f) { return RWrap<T, F>(forward<F>(f)); }
+inline constexpr RWrap<T, F> make_rwrap(F&& f) { return RWrap<T, F>(forward<F>(f)); }
 
 
 

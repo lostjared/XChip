@@ -132,9 +132,9 @@ PluginDeleter SdlInput::GetPluginDeleter() const noexcept
 
 bool SdlInput::IsKeyPressed(const Key key) const noexcept
 {
-	using utils::toSizeT;
 	_SDLINPUT_INITIALIZED_ASSERT_();
-	return _keyboardState[_keyPairs[toSizeT(key)].sdlKey] == SDL_TRUE;
+
+	return _keyboardState[_keyPairs[ToSizeT(key)].sdlKey] == SDL_TRUE;
 }
 
 

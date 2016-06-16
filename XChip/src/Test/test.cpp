@@ -29,6 +29,48 @@ using namespace xchip;
 using namespace xchip::utils;
 
 
+struct X
+{
+	int x, y;
+};
+
+int main()
+{
+	auto _p = make_rwrap<X*>(nullptr, [](X** pp)noexcept { if((*pp)) std::free((*pp)); });
+
+
+	_p = (X*) std::malloc(sizeof(X));
+
+	_p->x = 20;
+	_p->y = -14;
+
+	std::cout << "_p->x: " << _p->x << '\n';
+	std::cout << "_p->y: " << _p->y << '\n';
+
+
+	const auto& _cp = _p;
+
+	_cp->x = 10;
+	_cp->y = -10;
+
+	std::cout << "_p->x: " << _p->x << '\n';
+	std::cout << "_p->y: " << _p->y << '\n';
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+#if 0
 int main(int argc, char** argv)
 {
 	if( argc < 2 )
@@ -76,7 +118,7 @@ int main(int argc, char** argv)
 
 
 
-
+#endif
 
 
 

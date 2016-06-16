@@ -127,7 +127,7 @@ PluginDeleter SfmlInput::GetPluginDeleter() const noexcept
 bool SfmlInput::IsKeyPressed(const Key key) const noexcept
 {
 	_SFMLINPUT_INITIALIZED_ASSERT_();
-	if( sf::Keyboard::isKeyPressed(_keyPairs[toSizeT(key)].sfKey) )
+	if( sf::Keyboard::isKeyPressed(_keyPairs[ToSizeT(key)].sfKey) )
 		return true;
 
 	return false;
