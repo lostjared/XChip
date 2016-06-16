@@ -36,8 +36,8 @@ struct X
 
 int main()
 {
-	auto x = make_rwrap<X*>((X*)std::malloc(sizeof(X)), [](X* x)noexcept { std::free(x); });
-	auto x2 = move(x);
+	auto x = make_rwrap<X*>((X*)std::malloc(sizeof(X) * 5), [](X* x)noexcept { std::free(x); });
+
 
 	if(nullptr == x)
 	{
@@ -60,10 +60,20 @@ int main()
 	// (*_cp).x = 10; error
 	// (*_cp).y = -10; error
 
-	std::cout << "_p->x: " << _cp->x << '\n';
-	std::cout << "_p->y: " << _cp->y << '\n';
+	std::cout << "_cp->x: " << _cp->x << '\n';
+	std::cout << "_cp->y: " << _cp->y << '\n';
+
+	(x+1)->x = 20;
+	(x+1)->y = -19;
+
+	std::cout << "(_cp+1)->x: " << (_cp+1)->x << '\n';
+	std::cout << "(_cp+1)->y: " << (_cp+1)->y << '\n';
 
 
+
+
+
+	const auto moved2 = move(x);
 
 }
 
