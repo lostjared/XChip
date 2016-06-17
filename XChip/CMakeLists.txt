@@ -4,24 +4,26 @@ project(XChip)
 
 
 
+# sanitizers to check leaks and undefined behavior
+option(ADDRESS_SANITIZER OFF)
+option(UNDEFINED_SANITIZER OFF)
 
-set(MEMORY_SANITIZER "OFF" CACHE STRING "-fsanitize=memory")
-set(UNDEFINED_SANITIZER "OFF" CACHE STRING "-fsanitize=undefined")
 
 #set on plugins libraries to build
-set(BUILD_SDL_PLUGINS "OFF" CACHE STRING "")
-set(BUILD_SFML_PLUGINS "OFF" CACHE STRING "")
+option(BUILD_SDL_PLUGINS OFF)
+option(BUILD_SFML_PLUGINS OFF)
+
 
 #build Test ?
-set(BUILD_TEST "OFF" CACHE STRING "")
+option(BUILD_TEST OFF)
 
 
 #build EmuApp ?
-set(BUILD_EMUAPP "OFF" CACHE STRING "")
+option(BUILD_EMUAPP OFF)
 
 
 # build WXChip ?
-set(BUILD_WXCHIP "OFF" CACHE STRING "")
+option(BUILD_WXCHIP OFF)
 
 
 # compiler settings flags
@@ -50,11 +52,12 @@ elseif(${CMAKE_BUILD_TYPE} STREQUAL "Bench")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g  -DNDEBUG")
 endif()
 
-if(${MEMORY_SANITIZER} STREQUAL "ON")
+
+if( ADDRESS_SANITIZER )
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 endif()
 
-if(${UNDEFINED_SANITIZER} STREQUAL "ON")
+if( UNDEFINED_SANITIZER )
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
 endif()
 

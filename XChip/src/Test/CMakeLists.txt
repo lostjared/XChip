@@ -1,4 +1,4 @@
-if(${BUILD_TEST} STREQUAL "ON")
+if(BUILD_TEST)
 	project(XChipTest)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
 	add_executable(${PROJECT_NAME} test.cpp)

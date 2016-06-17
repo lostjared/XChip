@@ -1,4 +1,6 @@
-if(${BUILD_WXCHIP} STREQUAL "ON")
+
+if( BUILD_WXCHIP )
+
 	PROJECT(WXChip)
 	# find and include wxWidgets dependencies
 	FIND_PACKAGE(wxWidgets REQUIRED html adv core base net aui xrc qa richtext )
