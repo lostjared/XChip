@@ -32,7 +32,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <algorithm>
 #include <utility>
 #include <fstream>
-#include <vector>
 
 #include <XChip/Core/Emulator.h>
 #include <XChip/Utils/Log.h>
