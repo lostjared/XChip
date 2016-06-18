@@ -67,9 +67,10 @@ public:
 	RWrap(RWrap&) = delete;
 
 
-	RWrap(RWrap&&);
+	
 	constexpr RWrap(F&& f);
 	constexpr RWrap(T&& t, F&& f);
+	RWrap(RWrap&&);
 	~RWrap();
 
 
@@ -122,7 +123,7 @@ RWrap<T, F>::RWrap(T&& t, F&& f)
 
 
 template<class T, class F>
-RWrap<T, F>::RWrap(RWrap&& other)
+inline RWrap<T, F>::RWrap(RWrap&& other)
 	: _f(move(other._f)),
 	_t(move(other._t))
 {
@@ -161,7 +162,7 @@ inline const typename RWrap<T, F>::UT& RWrap<T, F>::operator[](const V val) cons
 
 
 template<class T, class F>
-const typename RWrap<T, F>::UT& RWrap<T, F>::operator*() const { return *_t; }
+inline const typename RWrap<T, F>::UT& RWrap<T, F>::operator*() const { return *_t; }
 
 
 template<class T, class F>
