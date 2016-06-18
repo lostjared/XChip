@@ -40,25 +40,27 @@ class RWrap
 	// Exemple: if T is int*. UT is int, if T is int**, UT is int*
 	using UT = remove_reference_t<type_is_t<decltype(*T())>>;
 
+
 	template<class _T, class _F>
-	friend inline constexpr bool operator==(const RWrap<_T, _F>&, const  typename RWrap<_T, _F>::UT* const);
+	friend inline constexpr bool operator==(const RWrap<_T, _F>&, const typename RWrap<_T, _F>::UT* const);
 	template<class _T, class _F>
 	friend inline constexpr bool operator==(const typename RWrap<_T, _F>::UT* const, const RWrap<_T, _F>&);
 
 	template<class _T, class _F>
-	friend inline constexpr bool operator!=(const RWrap<_T, _F>&, const  typename RWrap<_T, _F>::UT* const);
+	friend inline constexpr bool operator!=(const RWrap<_T, _F>&, const typename RWrap<_T, _F>::UT* const);
 	template<class _T, class _F>
 	friend inline constexpr bool operator!=(const typename RWrap<_T, _F>::UT* const, const RWrap<_T, _F>&);
 
 	template<class _T, class _F>
-	friend inline constexpr _T operator+(const RWrap<_T, _F>&, const  typename RWrap<_T, _F>::UT* const);
+	friend inline constexpr _T operator+(const RWrap<_T, _F>&, const typename RWrap<_T, _F>::UT* const);
 	template<class _T, class _F>
 	friend inline constexpr _T operator+(const typename RWrap<_T, _F>::UT* const, const RWrap<_T, _F>&);
 
 	template<class _T, class _F>
-	friend inline constexpr _T operator-(const RWrap<_T, _F>&, const  typename RWrap<_T, _F>::UT* const);
+	friend inline constexpr _T operator-(const RWrap<_T, _F>&, const typename RWrap<_T, _F>::UT* const);
 	template<class _T, class _F>
 	friend inline constexpr _T operator-(const typename RWrap<_T, _F>::UT* const, const RWrap<_T, _F>&);
+
 
 
 public:
