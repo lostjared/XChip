@@ -24,7 +24,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <SFML/Window/Keyboard.hpp>
 #include <XChip/Plugins/iInput.h>
-#include <XChip/Utils/Vector.h>
+#include <Xlib/Vector.h>
 
 namespace xchip {
 
@@ -56,7 +56,7 @@ public:
 	void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) noexcept override;
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept override;
 private:
-	utils::Vector<KeyPair> _keyPairs;
+	xlib::Vector<KeyPair> _keyPairs;
 	
 	const void* _waitArg = nullptr;
 	const void* _resetArg = nullptr;
