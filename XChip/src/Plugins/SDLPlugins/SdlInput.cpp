@@ -22,16 +22,16 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <SDL2/SDL_events.h>
 
 #include <XChip/Plugins/SDLPlugins/SdlInput.h>
-#include <Xlib/Log.h>
-#include <Xlib/ScopeExit.h>
-#include <Xlib/Assert.h>
+#include <Utix/Log.h>
+#include <Utix/ScopeExit.h>
+#include <Utix/Assert.h>
 
 
 #define _SDLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlInput is not initialized")
 
 namespace xchip {
 
-using namespace xlib;
+using namespace utix;
 
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
@@ -56,7 +56,7 @@ SdlInput::~SdlInput()
 
 bool SdlInput::Initialize() noexcept
 {
-	using namespace xlib::literals;
+	using namespace utix::literals;
 
 	if (_initialized)
 		this->Dispose();

@@ -33,9 +33,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <utility>
 #include <fstream>
 
+
+#include <Utix/Log.h>
+#include <Utix/CliOpts.h>
+#include <Utix/Common.h>
+
+
 #include <XChip/Core/Emulator.h>
-#include <XChip/Utils/Log.h>
-#include <XChip/Utils/CliOpts.h>
+
 
 
 /*******************************************************************************************
@@ -63,8 +68,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 static xchip::Emulator g_emulator;
 
 
-void load_plugins(const xchip::utils::CliOpts& opts);
-void configure_emulator(const xchip::utils::CliOpts& opts);
+void load_plugins(const utix::CliOpts& opts);
+void configure_emulator(const utix::CliOpts& opts);
 
 #if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum);
@@ -83,8 +88,8 @@ int main(int argc, char **argv)
 	using xchip::UniqueRender;
 	using xchip::UniqueInput;
 	using xchip::UniqueSound;
-	using namespace xchip::utils;
-	using namespace xchip::utils::literals;
+	using namespace utix;
+	using namespace utix::literals;
 	
 	if (argc < 2) 
 	{
@@ -117,7 +122,7 @@ int main(int argc, char **argv)
 	{
 		// initialize with no plugins.
 		if(!g_emulator.Initialize())
-			throw std::runtime_error(xchip::utils::GetLastLogError());
+			throw std::runtime_error(utix::GetLastLogError());
 
 		const CliOpts opts(argc-1, argv+1);
 		const auto romPath = opts.GetOpt("-ROM");
@@ -126,7 +131,7 @@ int main(int argc, char **argv)
 			throw std::runtime_error("Missing -ROM argument");
 		
 		else if (!g_emulator.LoadRom(romPath))
-			throw std::runtime_error(xchip::utils::GetLastLogError());
+			throw std::runtime_error(utix::GetLastLogError());
 	
 
 		load_plugins(opts);
@@ -177,11 +182,11 @@ template<class PluginType>
 void set_plugin(const std::string& path);
 
 
-void load_plugins(const xchip::utils::CliOpts& opts)
+void load_plugins(const utix::CliOpts& opts)
 {
 #ifdef _WIN32
 	// a search dir for dlls 
-	SetDllDirectory((xchip::utils::CliOpts::GetFullProcDir() + "\\plugins\\").c_str());
+	SetDllDirectory((utix::CliOpts::GetFullProcDir() + "\\plugins\\").c_str());
 #endif
 
 	using PluginConfigPair = std::pair<const char*, void(*)(const std::string&)>;
@@ -206,8 +211,8 @@ void load_plugins(const xchip::utils::CliOpts& opts)
 template<class PluginType>
 void set_plugin(const std::string& path)
 {
-	using namespace xchip::utils::literals;
-	using xchip::utils::CliOpts;
+	using namespace utix::literals;
+	using utix::CliOpts;
 
 	PluginType plugin;
 
@@ -217,24 +222,24 @@ void set_plugin(const std::string& path)
 #ifdef _WIN32
 		if (!plugin.Load(DefaultPluginPath<PluginType>()))			
 #elif defined(__linux__) || defined(__APPLE__)
-		if (!plugin.Load(CliOpts::GetFullProcDir() + DefaultPluginPath<PluginType>()))
+		if (!plugin.Load(utix::GetFullProcDir() + DefaultPluginPath<PluginType>()))
 #endif
 
-			throw std::runtime_error(xchip::utils::GetLastLogError());
+			throw std::runtime_error(utix::GetLastLogError());
 	}
 	else if (!plugin.Load(path))
 	{
-		throw std::runtime_error(xchip::utils::GetLastLogError());
+		throw std::runtime_error(utix::GetLastLogError());
 	}
 
 	if (!g_emulator.SetPlugin(std::move(plugin)))
-		throw std::runtime_error(xchip::utils::GetLastLogError());
+		throw std::runtime_error(utix::GetLastLogError());
 
 }
 
 
 
-xchip::utils::Color get_arg_rgb(const std::string& arg);
+utix::Color get_arg_rgb(const std::string& arg);
 void res_config(const std::string& arg);
 void cfq_config(const std::string& arg);
 void sfq_config(const std::string& arg);
@@ -242,7 +247,7 @@ void col_config(const std::string& arg);
 void bkg_config(const std::string& arg);
 void fps_config(const std::string& arg);
 
-void configure_emulator(const xchip::utils::CliOpts& opts)
+void configure_emulator(const utix::CliOpts& opts)
 {
 	std::cout << "\n*** setting up the emulator ***\n";
 
@@ -286,7 +291,7 @@ void configure_emulator(const xchip::utils::CliOpts& opts)
 
 void res_config(const std::string& arg)
 {
-	using xchip::utils::Vec2i;
+	using utix::Vec2i;
 
 	try
 	{
@@ -299,7 +304,7 @@ void res_config(const std::string& arg)
 		if(arg == "FULLSCREEN")
 		{
 			if(!g_emulator.GetRender()->SetFullScreen(true))
-				throw std::runtime_error(xchip::utils::GetLastLogError());
+				throw std::runtime_error(utix::GetLastLogError());
 		}
 
 		else
@@ -387,7 +392,7 @@ void col_config(const std::string& arg)
 			throw std::runtime_error("null Render");
 
 		else if(!g_emulator.GetRender()->SetDrawColor(color))
-			throw std::runtime_error(xchip::utils::GetLastLogError());
+			throw std::runtime_error(utix::GetLastLogError());
 
 		std::cout << "render color: " << g_emulator.GetRender()->GetDrawColor() << '\n';
 		std::cout << "done.\n";
@@ -419,7 +424,7 @@ void bkg_config(const std::string& arg)
 			throw std::runtime_error("null Render");
 
 		if(!g_emulator.GetRender()->SetBackgroundColor(color))
-			throw std::runtime_error(xchip::utils::GetLastLogError());
+			throw std::runtime_error(utix::GetLastLogError());
 
 		std::cout << "background color: " << g_emulator.GetRender()->GetBackgroundColor() << '\n';
 		std::cout << "done.\n";
@@ -454,7 +459,7 @@ void fps_config(const std::string& arg)
 }
 
 
-xchip::utils::Color get_arg_rgb(const std::string& arg)
+utix::Color get_arg_rgb(const std::string& arg)
 {
 	const auto firstSeparator = arg.find('x');
 

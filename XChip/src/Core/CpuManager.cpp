@@ -19,9 +19,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 
-#include <Xlib/Log.h>
-#include <Xlib/ScopeExit.h>
-#include <Xlib/Assert.h>
+#include <Utix/Log.h>
+#include <Utix/ScopeExit.h>
+#include <Utix/Assert.h>
 
 #include <XChip/Core/CpuManager.h>
 #include <XChip/Plugins/iRender.h>
@@ -31,7 +31,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  
 namespace xchip {
 
-using namespace xlib;
+using namespace utix;
 
 static void check_cpu_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept;
 template<class T>
@@ -109,7 +109,7 @@ bool CpuManager::SetStack(const size_t size)
 }
 
 
-bool CpuManager::SetGfxRes(const xlib::Vec2i& res)
+bool CpuManager::SetGfxRes(const Vec2i& res)
 {
 	if ( !alloc_cpu_arr(_cpu.gfx, res.x * res.y) )
 	{

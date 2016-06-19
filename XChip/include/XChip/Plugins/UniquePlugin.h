@@ -24,11 +24,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _XCHIP_PLUGINS_UNIQUEPLUGIN_H_
 
 #include "iPlugin.h"
-#include <XChip/Utils/DLoader.h>
-#include <XChip/Utils/Log.h>
-#include <XChip/Utils/ScopeExit.h>
-#include <XChip/Utils/Ints.h>
-#include <XChip/Utils/BaseTraits.h>
+#include <Utix/DLoader.h>
+#include <Utix/Log.h>
+#include <Utix/ScopeExit.h>
+#include <Utix/Ints.h>
+#include <Utix/BaseTraits.h>
 
 namespace xchip {
 
@@ -37,9 +37,9 @@ namespace xchip {
 template<class T>
 class UniquePlugin
 {
-	static_assert(utils::is_same<T, iRender>::value || 
-		           utils::is_same<T, iInput>::value || 
-		           utils::is_same<T, iSound>::value, 
+	static_assert(utix::is_same<T, iRender>::value || 
+		           utix::is_same<T, iInput>::value || 
+		           utix::is_same<T, iSound>::value, 
 		           "UniquePlugin must be a type of iPlugin interface");
 public:
 	UniquePlugin(const UniquePlugin& rhs) = delete;
@@ -64,8 +64,8 @@ public:
 
 
 private:
-	static void call_deleter(utils::DLoader&, iPlugin*) noexcept;
-	utils::DLoader _dloader;
+	static void call_deleter(utix::DLoader&, iPlugin*) noexcept;
+	utix::DLoader _dloader;
 	T* _plugin = nullptr;
 };
 
@@ -177,7 +177,7 @@ inline T* UniquePlugin<T>::get()
 template<class T>
 bool UniquePlugin<T>::Load(const std::string& dlPath)
 {
-	using namespace utils;
+	using namespace utix;
 
 	DLoader newLoader;
 
@@ -260,9 +260,9 @@ void UniquePlugin<T>::Swap(UniquePlugin& other) noexcept
 
 
 template<class T>
-void UniquePlugin<T>::call_deleter(utils::DLoader& dloader, iPlugin* plugin) noexcept
+void UniquePlugin<T>::call_deleter(utix::DLoader& dloader, iPlugin* plugin) noexcept
 {
-	using namespace utils;
+	using namespace utix;
 
 	auto pluginDeleter = reinterpret_cast<PluginDeleter>( dloader.GetSymbol(XCHIP_FREE_PLUGIN_SYM) );
 

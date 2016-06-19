@@ -20,9 +20,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_PLUGINS_IRENDER_H_
 #define _XCHIP_PLUGINS_IRENDER_H_
-#include <Xlib/Ints.h>
-#include <Xlib/Color.h>
-#include <Xlib/Vector2.h>
+#include <Utix/Ints.h>
+#include <Utix/Color.h>
+#include <Utix/Vector2.h>
 #include "iPlugin.h"
  
 namespace xchip {
@@ -35,22 +35,22 @@ public:
 	using WinCloseCallback = void(*)(const void*);
 	using WinResizeCallback = void(*)(const void*);
 
-	virtual bool Initialize(const xlib::Vec2i& winSize, const xlib::Vec2i& resolution) noexcept = 0;
+	virtual bool Initialize(const utix::Vec2i& winSize, const utix::Vec2i& resolution) noexcept = 0;
 	
 	virtual const char* GetWindowName() const noexcept = 0;
 	virtual const uint32_t* GetBuffer() const noexcept = 0;
-	virtual xlib::Vec2i GetResolution() const noexcept = 0;
-	virtual xlib::Vec2i GetWindowSize() const noexcept = 0;
-	virtual xlib::Color GetDrawColor() const noexcept = 0;
-	virtual xlib::Color GetBackgroundColor() const noexcept = 0;
+	virtual utix::Vec2i GetResolution() const noexcept = 0;
+	virtual utix::Vec2i GetWindowSize() const noexcept = 0;
+	virtual utix::Color GetDrawColor() const noexcept = 0;
+	virtual utix::Color GetBackgroundColor() const noexcept = 0;
 
 	virtual bool UpdateEvents() noexcept = 0;
 	virtual void SetWindowName(const char* name) noexcept = 0;
-	virtual bool SetResolution(const xlib::Vec2i& res) noexcept = 0;
-	virtual void SetWindowSize(const xlib::Vec2i& size) noexcept = 0;
+	virtual bool SetResolution(const utix::Vec2i& res) noexcept = 0;
+	virtual void SetWindowSize(const utix::Vec2i& size) noexcept = 0;
 	virtual bool SetFullScreen(const bool value) noexcept = 0;
-	virtual bool SetDrawColor(const xlib::Color& color) noexcept = 0;
-	virtual bool SetBackgroundColor(const xlib::Color& color) noexcept = 0;
+	virtual bool SetDrawColor(const utix::Color& color) noexcept = 0;
+	virtual bool SetBackgroundColor(const utix::Color& color) noexcept = 0;
 	virtual void SetBuffer(const uint32_t* gfx) noexcept = 0;
 	virtual void DrawBuffer() noexcept = 0;
 	virtual void HideWindow() noexcept = 0;

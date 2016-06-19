@@ -21,15 +21,16 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifndef _XCHIP_EMULATOR_H_
 #define _XCHIP_EMULATOR_H_
 
-#include <string>
+#include <Utix/Log.h>
+#include <Utix/Timer.h>
+#include <Utix/Assert.h>
+#include <Utix/Common.h>
 
+#include <XChip/Plugins.h>
 #include "CpuManager.h"
 #include "Instructions.h"
-#include <XChip/Plugins.h>
-#include <Xlib/Log.h>
-#include <Xlib/Timer.h>
-#include <Xlib/Assert.h>
-#include <Xlib/Common.h>
+
+
  
 
 namespace xchip {
@@ -98,9 +99,9 @@ private:
 	bool InitSound();
 
 	CpuManager _manager;
-	xlib::Timer _instrTimer;
-	xlib::Timer _frameTimer;
-	xlib::Timer _chDelayTimer;
+	utix::Timer _instrTimer;
+	utix::Timer _frameTimer;
+	utix::Timer _chDelayTimer;
 	UniqueRender _renderPlugin;
 	UniqueInput _inputPlugin;
 	UniqueSound _soundPlugin;
@@ -125,13 +126,13 @@ inline int Emulator::GetFps() const { return _frameTimer.GetTargetHz(); }
 
 inline void Emulator::SetCpuFreq(int value)
 {
-	xlib::Clamp(value, 60, 50000);
+	utix::Clamp(value, 60, 50000);
 	_instrTimer.SetTargetHz(value);
 }
 
 inline void Emulator::SetFps(int value)
 {
-	xlib::Clamp(value, 10, 1000);
+	utix::Clamp(value, 10, 1000);
 	_frameTimer.SetTargetHz(value);
 }
 

@@ -9,7 +9,7 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set(CMAKE_SHARED_MODULE_PREFIX "")
 
 add_library(XChipSFMLInput SHARED ${HEADERS} ${INPUT_PLUGIN})
-target_link_libraries(XChipSFMLInput sfml-window UtilsFPIC)
+target_link_libraries(XChipSFMLInput sfml-window UtixFPIC)
 
 
 INSTALL(TARGETS XChipSFMLInput  DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/Plugins/SFMLPlugins)

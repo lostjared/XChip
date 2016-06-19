@@ -26,7 +26,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 namespace xchip { namespace instructions {
 
-using namespace xlib;
+using namespace utix;
 
 
 #define OPMSN ((cpuMan.GetOpcode(0xf000) >> 12)) // opcode most significant nibble
