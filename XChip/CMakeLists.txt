@@ -70,16 +70,12 @@ endif()
 
 # build dependencies sources
 # Xlib:
-
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/Xlib/Xlib)
 
 # include/link directories
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(PROJECT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(XLIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/Xlib/Xlib/include)
-
-
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/Xlib/Xlib/src)
-
 
 
 include_directories(${PROJECT_INCLUDE_DIR} /usr/local/include)
