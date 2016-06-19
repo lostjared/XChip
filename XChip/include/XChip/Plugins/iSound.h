@@ -20,7 +20,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _XCHIP_PLUGINS_ISOUND_H_
 #define _XCHIP_PLUGINS_ISOUND_H_
-#include <XChip/Utils/Ints.h>
+#include <Utix/Ints.h>
 #include "iPlugin.h"
 
  

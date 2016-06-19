@@ -30,7 +30,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 #include <wx/valnum.h>
-#include <XChip/Utils/Log.h>
+#include <Utix/Log.h>
 #include <WXChip/SaveList.h>
 #include <WXChip/SettingsWindow.h>
 
@@ -115,7 +115,7 @@ void SettingsWindow::UpdateConfigStr()
 
 void SettingsWindow::CreateControls()
 {
-	using xchip::utils::make_unique;
+	using utix::make_unique;
 
 
 	_panel = make_unique<wxPanel>(this, wxID_ANY);

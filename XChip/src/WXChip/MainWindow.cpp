@@ -39,10 +39,12 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <regex>
 #include <stdexcept>
 
-#include <XChip/Utils/ScopeExit.h>
-#include <XChip/Utils/CliOpts.h>
-#include <XChip/Utils/Log.h>
-#include <XChip/Utils/Memory.h>
+#include <Utix/ScopeExit.h>
+#include <Utix/Common.h>
+#include <Utix/CliOpts.h>
+#include <Utix/Log.h>
+#include <Utix/Memory.h>
+
 #include <WXChip/Main.h>
 #include <WXChip/SaveList.h>
 #include <WXChip/MainWindow.h>
@@ -62,9 +64,9 @@ wxEND_EVENT_TABLE()
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
 	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
-	using xchip::utils::make_unique;
+	using utix::make_unique;
 
-	xchip::utils::Log("Creating MainWindow...");
+	utix::Log("Creating MainWindow...");
 
 	ComputeEmuAppPath();
 	CreateControls();
@@ -96,7 +98,7 @@ MainWindow::~MainWindow()
 {
 	StopEmulator();
 	Destroy();
-	xchip::utils::Log("Destroying MainWindow...");
+	utix::Log("Destroying MainWindow...");
 }
 
 
@@ -133,7 +135,7 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 #endif
 		_romPath += str.c_str();
 
-		xchip::utils::Log("Start Rom At Path: %s", _romPath.c_str());
+		utix::Log("Start Rom At Path: %s", _romPath.c_str());
 
 		StartEmulator();
 		
@@ -150,7 +152,7 @@ void MainWindow::OnLoadSettings(wxCommandEvent&)
 
 void MainWindow::OnStartRom(wxCommandEvent&)
 {
-	xchip::utils::Log("Starting Rom...");
+	utix::Log("Starting Rom...");
 	StartEmulator();
 }
 
@@ -181,7 +183,7 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 		return;
 
 	_romPath = openDialog.GetPath().c_str();
-	xchip::utils::Log("Selected File: %s", _romPath.c_str());
+	utix::Log("Selected File: %s", _romPath.c_str());
 	StartEmulator();
 }
 
@@ -191,7 +193,7 @@ void MainWindow::StartEmulator()
 {
 	StopEmulator();
 	if(!_process.Run(_emuApp + "-ROM \"" + _romPath + "\" " + _settingsWin->GetEmuConfigStr()))
-		throw std::runtime_error(xchip::utils::GetLastLogError());
+		throw std::runtime_error(utix::GetLastLogError());
 }
 
 
@@ -208,7 +210,7 @@ void MainWindow::StopEmulator()
 
 void MainWindow::CreateControls()
 {
-	using xchip::utils::make_unique;
+	using utix::make_unique;
 
 
 	wxArrayString strings;
@@ -250,7 +252,7 @@ void MainWindow::CreateControls()
 
 void MainWindow::LoadList(const std::string &dirPath)
 {
-	using namespace xchip::utils;
+	using namespace utix;
 
 	if (dirPath == "nopath" || dirPath == _settingsWin->GetDirPath())
 		return;
@@ -300,7 +302,7 @@ void MainWindow::ComputeEmuAppPath()
 	constexpr const char* const finalEmuAppPath = "/bin/EmuApp";
 #endif
 
-	_emuApp = xchip::utils::CliOpts::GetFullProcDir() + finalEmuAppPath;
+	_emuApp = utix::GetFullProcDir() + finalEmuAppPath;
 
 	if (!std::ifstream(_emuApp).good())
 		throw std::runtime_error("Could not find EmuApp executable!");
@@ -308,7 +310,7 @@ void MainWindow::ComputeEmuAppPath()
 	_emuApp.insert(0, "\"");
 	_emuApp += "\" ";
 
-	xchip::utils::Log("_emuApp after compute: %s", _emuApp.c_str());
+	utix::Log("_emuApp after compute: %s", _emuApp.c_str());
 
 }
 
