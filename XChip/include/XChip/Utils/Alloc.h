@@ -73,7 +73,7 @@ size_t> arr_size(const T arr)
 
 
 template<class T, const size_t sz>
-constexpr size_t arr_size(const T(&)[sz])
+inline constexpr size_t arr_size(const T(&)[sz])
 {
 	return sz;
 }
@@ -92,14 +92,14 @@ inline void arr_zero(T(&arr)[sz])
 
 inline void arr_zero(void* arr)
 {
-	ASSERT_MSG(arr != nullptr, "attempt to clean nullptr");
+	ASSERT_MSG(arr != nullptr, "attempt to zero array from nullptr");
 	memset(arr, 0, arr_size(reinterpret_cast<uint8_t*>(arr)));
 }
 
 
 inline void arr_zero(void* arr, const size_t size)
 {
-	ASSERT_MSG(arr != nullptr, "attempt to clean nullptr");
+	ASSERT_MSG(arr != nullptr, "attempt to zero array from nullptr");
 	memset(arr, 0, size);
 }
 

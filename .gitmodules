@@ -1,0 +1,3 @@
+[submodule "XChip/dependencies/Xlib"]
+	path = XChip/dependencies/Xlib
+	url = git@github.com:dhustkoder/Xlib.git

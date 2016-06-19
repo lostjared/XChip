@@ -68,4 +68,5 @@ set(PROJECT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${PROJECT_INCLUDE_DIR} /usr/local/include) 
 link_directories(/usr/local/lib)
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/Xlib/Xlib)
 add_subdirectory(${PROJECT_SOURCE_DIR})

@@ -221,6 +221,7 @@ template<class T>
 inline constexpr size_t ToSizeT(T value) { return static_cast<size_t>(value); }
 
 
+
 template<class T>
 inline enable_if_t<is_numeric<T>::value> Clamp(T& lval, const T min, const T max)
 {
@@ -239,6 +240,7 @@ inline enable_if_t<!is_numeric<T>::value> Clamp(T& lval, const T& min, const T& 
      else if(lval > max)
           lval = max;
 }
+
 
 
 

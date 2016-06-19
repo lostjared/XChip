@@ -77,8 +77,18 @@ private:
 
 
 
+
+
+
+
+
+
 inline Timer::Timer(const Micro& target) noexcept : 
-	m_target(target) {}
+	m_target(target) 
+{
+
+}
+
 
 inline const Timer::Micro& Timer::GetTargetTime() const { return m_target; }
 
