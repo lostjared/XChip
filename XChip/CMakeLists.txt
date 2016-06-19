@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.8)
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 project(XChip)
     
@@ -24,6 +24,9 @@ option(BUILD_EMUAPP OFF)
 
 # build WXChip ?
 option(BUILD_WXCHIP OFF)
+
+
+
 
 
 # compiler settings flags
@@ -62,11 +65,31 @@ if( UNDEFINED_SANITIZER )
 endif()
 
 
+
+
+
+# build dependencies sources
+# Xlib:
+
+
+# include/link directories
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(PROJECT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(XLIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/Xlib/Xlib/include)
 
-include_directories(${PROJECT_INCLUDE_DIR} /usr/local/include) 
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/Xlib/Xlib/src)
+
+
+
+include_directories(${PROJECT_INCLUDE_DIR} /usr/local/include)
+include_directories(XLIB_INCLUDE_DIR)
 link_directories(/usr/local/lib)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/Xlib/Xlib)
+
+
+
+
+
+# finally builds XChip ....
 add_subdirectory(${PROJECT_SOURCE_DIR})
