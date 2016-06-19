@@ -19,15 +19,15 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 #include <XChip/Core/Emulator.h>
-#include <XChip/Utils/Log.h>
-#include <XChip/Utils/ScopeExit.h>
+#include <Xlib/Log.h>
+#include <Xlib/ScopeExit.h>
 
 
 
 
 namespace xchip {
 
-using namespace xchip::utils;
+using namespace xlib;
 
 
 static void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer) noexcept;
@@ -136,7 +136,7 @@ void Emulator::HaltForNextFlag() const
 	{
 		const auto instrRemain = _instrTimer.GetRemain();
 		const auto frameRemain = _frameTimer.GetRemain();
-		Timer::Halt((instrRemain < frameRemain) ? instrRemain : frameRemain);
+		xlib::Sleep((instrRemain < frameRemain) ? instrRemain : frameRemain);
 	}
 }
 
@@ -415,7 +415,7 @@ bool Emulator::InitSound()
 
 static void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer) noexcept
 {	
-	using namespace xchip::utils::literals;
+	using namespace xlib::literals;
 
 	instrTimer.SetTargetTime(380_hz);
 	frameTimer.SetTargetTime(60_hz);
