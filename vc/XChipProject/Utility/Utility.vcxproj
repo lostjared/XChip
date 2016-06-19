@@ -19,26 +19,29 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Alloc.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Assert.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\BaseTraits.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\CliOpts.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\DLoader.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Log.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Memory.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Process.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\ScopeExit.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\StdintDef.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Timer.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Traits.h" />
-    <ClInclude Include="..\..\..\XChip\include\XChip\Utility\Vector.h" />
+    <ClCompile Include="..\..\..\XChip\src\Utils\Alloc.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\Utils\CliOpts.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\Utils\DLoader.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\Utils\Log.cpp" />
+    <ClCompile Include="..\..\..\XChip\src\Utils\Process.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\XChip\src\Utility\Alloc.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\Utility\CliOpts.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\Utility\DLoader.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\Utility\Log.cpp" />
-    <ClCompile Include="..\..\..\XChip\src\Utility\Process.cpp" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Alloc.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Assert.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\BaseTraits.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\CliOpts.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Color.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\DLoader.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Ints.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Log.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Memory.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Process.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\RWrap.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\ScopeExit.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Timer.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Traits.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Vector.h" />
+    <ClInclude Include="..\..\..\XChip\include\XChip\Utils\Vector2.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1C423C1C-5AE6-43A5-9B82-90257927A0ED}</ProjectGuid>

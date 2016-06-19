@@ -18,6 +18,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\XChip\src\EmuApp\EmuApp.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2AD166F5-7CFD-45BB-8DFC-B7DD63B206E9}</ProjectGuid>
     <RootNamespace>EmuApp</RootNamespace>
@@ -134,9 +137,6 @@
       <AdditionalDependencies>Utility.lib;Core.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\XChip\src\WXChip\bin\EmuApp.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
