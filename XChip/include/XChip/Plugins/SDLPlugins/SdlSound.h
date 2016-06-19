@@ -21,8 +21,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifndef _XCHIP_SDLSOUND_H_
 #define _XCHIP_SDLSOUND_H_
 
+#include <Utix/Ints.h>
 #include <XChip/Plugins/iSound.h>
-#include <XChip/Utils/Ints.h>
+
 
 
 

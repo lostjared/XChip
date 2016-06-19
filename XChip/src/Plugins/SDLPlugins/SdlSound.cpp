@@ -25,17 +25,20 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <cstring>
 
 #include <SDL2/SDL.h>
+
+#include <Utix/Log.h>
+#include <Utix/Timer.h>
+#include <Utix/ScopeExit.h>
+#include <Utix/Assert.h>
+
 #include <XChip/Plugins/SDLPlugins/SdlSound.h>
-#include <XChip/Utils/Log.h>
-#include <XChip/Utils/Timer.h>
-#include <XChip/Utils/ScopeExit.h>
-#include <XChip/Utils/Assert.h>
+
  
 #define _SDLSOUND_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlSound is not initialized")
 
 namespace xchip {
 
-using namespace xchip::utils;
+using namespace utix;
 
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
@@ -74,7 +77,7 @@ SdlSound::~SdlSound()
 
 bool SdlSound::Initialize() noexcept
 {
-	using namespace xchip::utils::literals;
+	using namespace utix::literals;
 
 	if (_initialized)
 		this->Dispose();
@@ -238,7 +241,7 @@ void SdlSound::Stop() noexcept
 
 bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 {
-	using namespace xchip::utils::literals;
+	using namespace utix::literals;
 
 	memset(&want, 0, sizeof(SDL_AudioSpec));
 	want.freq = 44100;
