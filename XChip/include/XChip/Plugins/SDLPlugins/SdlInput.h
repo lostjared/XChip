@@ -25,7 +25,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_scancode.h>
 #include <XChip/Plugins/iInput.h>
-#include <Utix/Vector.h>
+#include <Utix/PodVector.h>
 
  
 
@@ -57,7 +57,7 @@ public:
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept override;
 
 private:
-	utix::Vector<KeyPair> _keyPairs;
+	utix::PodVector<KeyPair> _keyPairs;
 	const unsigned char* _keyboardState = nullptr;
 	WaitKeyCallback _waitClbk = nullptr;
 	ResetKeyCallback _resetClbk = nullptr;
