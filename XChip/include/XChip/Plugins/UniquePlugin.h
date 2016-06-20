@@ -64,12 +64,11 @@ public:
 
 
 private:
-	static void call_deleter(utix::DLoader&, iPlugin*) noexcept;
 	utix::DLoader _dloader;
 	T* _plugin = nullptr;
 };
 
-
+inline void call_deleter(utix::DLoader&, iPlugin*) noexcept;
 
 template<class T>
 inline UniquePlugin<T>::UniquePlugin(const nullptr_t)
@@ -194,21 +193,21 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 	}
 
 
-	auto iplug = static_cast<iPlugin*>(pluginLoader());
+	auto newPlugin = static_cast<iPlugin*>(pluginLoader());
 
-	if (!iplug)
+	if (!newPlugin)
 	{
 		LogError("PluginLoader function in %s, returned a null plugin!", dlPath.c_str());
 		return false;
 	}
 
 
-	T* newPlugin = dynamic_cast<T*>(iplug);
+	T* newPluginCast = dynamic_cast<T*>(newPlugin);
 
-	if(!newPlugin)
+	if(!newPluginCast)
 	{
 		LogError("Error Loading plugin: %s. Failed to dynamic cast from iPlugin!", dlPath.c_str());
-		call_deleter(_dloader, iplug);
+		call_deleter(newLoader, newPlugin);
 		return false;
 	}
 
@@ -217,7 +216,7 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 		call_deleter(_dloader, _plugin);
 
 	_dloader = std::move(newLoader);
-	_plugin = newPlugin;
+	_plugin = newPluginCast;
 	return true;
 }
 
@@ -255,12 +254,7 @@ void UniquePlugin<T>::Swap(UniquePlugin& other) noexcept
 
 
 
-
-
-
-
-template<class T>
-void UniquePlugin<T>::call_deleter(utix::DLoader& dloader, iPlugin* plugin) noexcept
+inline void call_deleter(utix::DLoader& dloader, iPlugin* plugin) noexcept
 {
 	using namespace utix;
 

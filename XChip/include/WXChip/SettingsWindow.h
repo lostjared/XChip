@@ -23,6 +23,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define _WXCHIP_SETTINGS_WINDOW_H_
 
 #include <wx/frame.h>
+#include <wx/string.h>
+
 #include <Utix/Color.h>
 #include <Utix/Vector2.h>
 #include <Utix/Memory.h>
@@ -70,6 +72,9 @@ private:
 	void ResetTextControls();
 
 	std::string _configStr;
+	wxString defaultRender;
+	wxString defaultInput;
+	wxString defaultSound;
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _dirTxt;
 	std::unique_ptr<wxTextCtrl> _dirPath;

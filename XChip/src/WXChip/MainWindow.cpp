@@ -228,18 +228,18 @@ void MainWindow::CreateControls()
 
 
 	_startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), 
-                                           wxPoint(10, 400), wxSize(100, 25));
+                                           wxPoint(10, 400), wxSize(100, 35));
 
 
 	_settings = make_unique<wxButton>(_panel.get(), ID_LOADROMDIR, _T("Load Roms"), 
-                                           wxPoint(120, 400), wxSize(100, 25));
+                                           wxPoint(120, 400), wxSize(100, 35));
 
 
 	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), 
-                                                   wxPoint(230, 400), wxSize(100, 25));
+                                                   wxPoint(230, 400), wxSize(100, 35));
 
 
-	_settingsWin = make_unique<SettingsWindow>("WXChip - Settings", wxPoint(150, 150), wxSize(800, 600));
+	_settingsWin = make_unique<SettingsWindow>("WXChip - Settings", wxPoint(150, 150), wxSize(720, 360));
 
 }
 

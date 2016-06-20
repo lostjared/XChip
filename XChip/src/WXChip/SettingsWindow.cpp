@@ -31,6 +31,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <wx/valnum.h>
 #include <Utix/Log.h>
+#include <Utix/Common.h>
 #include <WXChip/SaveList.h>
 #include <WXChip/SettingsWindow.h>
 
@@ -57,6 +58,10 @@ SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos, const 
 	: wxFrame(NULL, wxID_ANY, title, pos, size, 
                   wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
+	const wxString procPath = utix::GetFullProcDir();
+	defaultRender = (procPath + "/bin/plugins/XChipSDLRender");
+	defaultInput = (procPath + "/bin/plugins/XChipSDLInput");
+	defaultSound = (procPath + "/bin/plugins/XChipSDLSound");
 
 	CreateControls();
 	UpdateConfigStr();
@@ -110,6 +115,12 @@ void SettingsWindow::UpdateConfigStr()
 	_configStr += (const char*) _fps->GetLineText(0).c_str();
 	_configStr += " -CHZ ";
 	_configStr += (const char*) _cpuHz->GetLineText(0).c_str();
+	_configStr += " -REN ";
+	_configStr += (const char*) _plugRenText->GetLineText(0).c_str();
+	_configStr += " -INP ";
+	_configStr += (const char*) _plugInText->GetLineText(0).c_str();
+	_configStr += " -SND ";
+	_configStr += (const char*) _plugSndText->GetLineText(0).c_str();
 }
 
 
@@ -146,36 +157,35 @@ void SettingsWindow::CreateControls()
 	_fps = make_unique<wxTextCtrl>(_panel.get(), ID_TEXTCTRL1, defaultFPS,
                                                wxPoint(100,40), wxSize(100,20), 0, fpsValidator);
 
-	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BTN_OK, _T("Ok"), 
-                                           wxPoint(10, 150), wxSize(100,25));
 
-	_buttonCancel = make_unique<wxButton>(_panel.get(), ID_BTN_CANCEL, _T("Cancel"), 
-                                               wxPoint(120, 150), wxSize(100,25));
-
-	_buttonDefault = make_unique<wxButton>(_panel.get(), ID_BTN_DEFAULT, _T("Default"), 
-                                                wxPoint(230,150), wxSize(100,25));
-	
 
 	_plugRenDir = make_unique<wxButton>(_panel.get(), ID_PLUGRENDIR, _T("Render Plugin"),
-                                             wxPoint(10, 115), wxSize(140, 25));
+                                             wxPoint(10, 115), wxSize(140, 33));
 	
-	_plugRenText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGRENTEXT, _T(""),
-                                                wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
-	
+	_plugRenText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGRENTEXT, defaultRender,
+                                                wxPoint(165, 120), wxSize(200, 20), wxTE_READONLY);
 	
 	_plugInDir = make_unique<wxButton>(_panel.get(), ID_PLUGINDIR, _T("Input Plugin"),
-                                            wxPoint(10, 115), wxSize(140, 25));
+                                            wxPoint(10, 155), wxSize(140, 33));
 
-	
-	_plugInText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGINTEXT, _T(""),
-                                           wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
-	
-	
+	_plugInText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGINTEXT, defaultInput,
+                                           wxPoint(165, 160), wxSize(200, 20), wxTE_READONLY);
+		
 	_plugSndDir = make_unique<wxButton>(_panel.get(), ID_PLUGSNDDIR, _T("Sound Plugin"),
-                                         wxPoint(10, 115), wxSize(140, 25));
+                                         wxPoint(10, 195), wxSize(140, 33));
 	
-	_plugSndText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGSNDTEXT, _T(""), 
-                                           wxPoint(165, 123), wxSize(200, 20), wxTE_READONLY);
+	_plugSndText = make_unique<wxTextCtrl>(_panel.get(), ID_PLUGSNDTEXT, defaultSound, 
+                                           wxPoint(165, 200), wxSize(200, 20), wxTE_READONLY);
+
+
+	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BTN_OK, _T("Ok"), 
+                                           wxPoint(10, 250), wxSize(100, 35));
+
+	_buttonCancel = make_unique<wxButton>(_panel.get(), ID_BTN_CANCEL, _T("Cancel"), 
+                                               wxPoint(120, 250), wxSize(100, 35));
+
+	_buttonDefault = make_unique<wxButton>(_panel.get(), ID_BTN_DEFAULT, _T("Default"), 
+                                                wxPoint(230,250), wxSize(100, 35));
 	
 }
 
@@ -216,8 +226,8 @@ void SettingsWindow::OnSetRenderPlugin(wxCommandEvent&)
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 	
-	wxString value = dlg.GetPath();
-	*_plugRenText << value;
+	_plugRenText->Clear();
+	*_plugRenText << dlg.GetPath();
 }
 
 void SettingsWindow::OnSetInputPlugin(wxCommandEvent&)
@@ -226,9 +236,9 @@ void SettingsWindow::OnSetInputPlugin(wxCommandEvent&)
 	
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
-	
-	wxString value = dlg.GetPath();
-	*_plugRenText << value;
+
+	_plugInText->Clear();
+	*_plugInText << dlg.GetPath();
 
 	
 }
@@ -241,8 +251,8 @@ void SettingsWindow::OnSetSoundPlugin(wxCommandEvent&)
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 	
-	wxString value = dlg.GetPath();
-	*_plugRenText << value;
+	_plugSndText->Clear();
+	*_plugSndText << dlg.GetPath();
 	
 }
 
@@ -252,8 +262,15 @@ void SettingsWindow::ResetTextControls()
 {
 	_fps->Clear();
 	_cpuHz->Clear();
+	_plugRenText->Clear();
+	_plugInText->Clear();
+	_plugSndText->Clear();
+
 	*_fps << defaultFPS;
 	*_cpuHz << defaultCpuFreq;
+	*_plugRenText << defaultRender;
+	*_plugInText << defaultInput;
+	*_plugSndText << defaultSound;
 }
 
 
