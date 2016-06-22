@@ -69,18 +69,18 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)\Plugins\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)\Plugins\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -90,7 +90,7 @@
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Utility.lib;sfml-main.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Utix.lib;sfml-main.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\lib;$(SolutionDir)$(Configuration)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -102,7 +102,7 @@
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Utility.lib;sfml-main.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Utix.lib;Utility.lib;sfml-main.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -117,7 +117,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Utility.lib;sfml-main.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Utix.lib;sfml-main.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\lib;$(SolutionDir)$(Configuration)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -133,7 +133,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Utility.lib;sfml-main.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Utix.lib;Utix.lib;sfml-main.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

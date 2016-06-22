@@ -186,7 +186,7 @@ void load_plugins(const utix::CliOpts& opts)
 {
 #ifdef _WIN32
 	// a search dir for dlls 
-	SetDllDirectory((utix::CliOpts::GetFullProcDir() + "\\plugins\\").c_str());
+	SetDllDirectory((utix::GetFullProcDir() + "\\plugins\\").c_str());
 #endif
 
 	using PluginConfigPair = std::pair<const char*, void(*)(const std::string&)>;

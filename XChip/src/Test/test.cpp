@@ -23,10 +23,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <cstdlib>
 #include <iostream>
-#include <XChip/Utils/RWrap.h>
+#include <Utix/RWrap.h>
 
-using namespace xchip;
-using namespace xchip::utils;
+using namespace utix;
 
 
 struct X
