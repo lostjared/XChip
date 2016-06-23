@@ -306,8 +306,19 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 
 	if(val)
 	{
-		if(SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP))
+		int oldx, oldy;
+		SDL_DisplayMode displayMode;
+		SDL_GetWindowPosition(_window, &oldx, &oldy);
+		SDL_SetWindowPosition(_window, 0, 0);
+
+		if(SDL_GetCurrentDisplayMode(0, &displayMode) == 0)
+			SDL_SetWindowSize(_window, displayMode.w, displayMode.h);
+		else
+			LogError("Could not get display mode, %s", SDL_GetError());
+
+		if(SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN))
 		{
+			SDL_SetWindowPosition(_window, oldx, oldy);
 			LogError("Error while setting SdlRender Fullscreen: %s", SDL_GetError());
 			return false;
 		}
