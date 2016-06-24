@@ -33,13 +33,13 @@ namespace xchip {
 
 using namespace utix;
 
-static void check_cpu_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept;
+inline void set_plugin_flag(Cpu::Flags flag, const iPlugin* plugin, CpuManager& man);
 template<class T>
-static bool alloc_cpu_arr(T*& arr, const size_t size) noexcept;
+inline bool alloc_cpu_arr(const size_t size, T*&);
 template<class T>
-static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept;
+inline bool realloc_cpu_arr(const size_t size, T*&);
 template<class T>
-static void free_cpu_arr(T*& arr) noexcept;
+inline void free_cpu_arr(T*& arr);
 
 
 
@@ -74,7 +74,7 @@ void CpuManager::Dispose() noexcept
 
 bool CpuManager::SetMemory(const size_t size)
 {
-	if ( !alloc_cpu_arr(_cpu.memory, size)) 
+	if ( !alloc_cpu_arr(size, _cpu.memory) ) 
 	{
 		LogError("Cannot allocate Cpu memory size: %zu", size);
 		return false;
@@ -87,7 +87,7 @@ bool CpuManager::SetMemory(const size_t size)
 
 bool CpuManager::SetRegisters(const size_t size)
 {
-	if ( !alloc_cpu_arr(_cpu.registers, size)) 
+	if ( !alloc_cpu_arr(size, _cpu.registers) )  
 	{
 		LogError("Cannot allocate Cpu registers size: %zu", size);
 		return false;
@@ -99,7 +99,7 @@ bool CpuManager::SetRegisters(const size_t size)
 
 bool CpuManager::SetStack(const size_t size)
 {
-	if ( !alloc_cpu_arr(_cpu.stack, size) )
+	if ( !alloc_cpu_arr(size, _cpu.stack) )
 	{
 		LogError("Cannot allocate Cpu stack size: %zu", size);
 		return false;
@@ -111,7 +111,7 @@ bool CpuManager::SetStack(const size_t size)
 
 bool CpuManager::SetGfxRes(const Vec2i& res)
 {
-	if ( !alloc_cpu_arr(_cpu.gfx, res.x * res.y) )
+	if ( !alloc_cpu_arr(res.x * res.y, _cpu.gfx) )
 	{
 		LogError("Cannot allocate Cpu memory size: %d", + res.x*res.y);
 		_gfxRes = 0;
@@ -127,7 +127,7 @@ bool CpuManager::SetGfxRes(const Vec2i& res)
 
 bool CpuManager::SetGfxRes(const int w, const int h)
 {
-	if ( !alloc_cpu_arr(_cpu.gfx, w * h) )
+	if ( !alloc_cpu_arr(w * h, _cpu.gfx) )
 	{
 		LogError("Cannot allocate Cpu memory size: %d", w*h);
 		_gfxRes = 0;
@@ -147,7 +147,7 @@ bool CpuManager::SetGfxRes(const int w, const int h)
 bool CpuManager::ResizeMemory(const std::size_t size)
 {
 
-	if ( !realloc_cpu_arr(_cpu.memory, size)) 
+	if ( !realloc_cpu_arr(size, _cpu.memory) ) 
 	{
 		LogError("Cannot reallocate Cpu memory to size: %zu", size);
 		return false;
@@ -161,7 +161,7 @@ bool CpuManager::ResizeMemory(const std::size_t size)
 
 bool CpuManager::ResizeRegisters(const size_t size)
 {
-	if (!realloc_cpu_arr(_cpu.registers, size))
+	if (!realloc_cpu_arr(size, _cpu.registers) )
 	{
 		LogError("Cannot reallocate Cpu registers to size: %zu",  size);
 		return false;
@@ -175,7 +175,7 @@ bool CpuManager::ResizeRegisters(const size_t size)
 
 bool CpuManager::ResizeStack(const size_t size)
 {
-	if (!realloc_cpu_arr(_cpu.stack, size))
+	if (!realloc_cpu_arr(size, _cpu.stack) )
 	{
 		LogError("Cannot reallocate Cpu stack to size: %zu", size);
 		return false;
@@ -272,21 +272,21 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 void CpuManager::SetRender(iRender* render) 
 {
-	check_cpu_plugin(*this, render, Cpu::BAD_RENDER);
+	set_plugin_flag(Cpu::BAD_RENDER, render, *this);
 	_cpu.render = render; 
 }
 
 
 void CpuManager::SetInput(iInput* input) 
 {
-	check_cpu_plugin(*this, input, Cpu::BAD_INPUT);
+	set_plugin_flag(Cpu::BAD_INPUT, input, *this);
 	_cpu.input = input; 
 }
 
 
 void CpuManager::SetSound(iSound* sound) 
 {
-	check_cpu_plugin(*this, sound, Cpu::BAD_SOUND);
+	set_plugin_flag(Cpu::BAD_SOUND, sound, *this);
 	_cpu.sound = sound; 
 }
 
@@ -332,10 +332,10 @@ iSound* CpuManager::SwapSound(iSound* sound)
 
 
 // local static functions
-static bool __alloc_arr(void*& arr, const size_t size) noexcept;
-static bool __realloc_arr(void*& arr, const size_t size) noexcept;
+inline bool __alloc_arr(const size_t size, void*& arr);
+inline bool __realloc_arr(const size_t size, void*& arr);
 
-static void check_cpu_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags flag) noexcept
+inline void set_plugin_flag(Cpu::Flags flag, const iPlugin* plugin, CpuManager& man)
 {
 	if (!plugin)
 		man.SetFlags(flag);
@@ -350,7 +350,7 @@ static void check_cpu_plugin(CpuManager& man, const iPlugin* plugin, Cpu::Flags 
 
 
 template<class T>
-static bool alloc_cpu_arr(T*& arr, const size_t size) noexcept
+inline bool alloc_cpu_arr(const size_t size, T*& arr)
 {
 	if (arr != nullptr)
 	{
@@ -361,13 +361,13 @@ static bool alloc_cpu_arr(T*& arr, const size_t size) noexcept
 			free_arr(arr);
 	}
 
-	return __alloc_arr(reinterpret_cast<void*&>(arr), sizeof(T) * size);
+	return __alloc_arr(sizeof(T) * size, reinterpret_cast<void*&>(arr));
 }
 
 
 
 template<class T>
-static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept
+inline bool realloc_cpu_arr(const size_t size, T*& arr)
 {
 	if (arr != nullptr)
 	{
@@ -375,16 +375,16 @@ static bool realloc_cpu_arr(T*& arr, const size_t size) noexcept
 			return true;
 		
 		else
-			return __realloc_arr(reinterpret_cast<void*&>(arr), sizeof(T) * size);
+			return __realloc_arr(sizeof(T) * size, reinterpret_cast<void*&>(arr));
 	}	
 
-	return __alloc_arr(reinterpret_cast<void*&>(arr), sizeof(T) * size);	
+	return __alloc_arr(sizeof(T) * size, reinterpret_cast<void*&>(arr));	
 }
 
 
 
 template<class T>
-static void free_cpu_arr(T*& arr) noexcept
+inline void free_cpu_arr(T*& arr)
 {
 	if(arr != nullptr)
 	{
@@ -396,7 +396,7 @@ static void free_cpu_arr(T*& arr) noexcept
 
 
 
-static bool __alloc_arr(void*& arr, const size_t size) noexcept
+inline bool __alloc_arr(const size_t size, void*& arr)
 {
 	arr = alloc_arr(size);
 	
@@ -412,7 +412,7 @@ static bool __alloc_arr(void*& arr, const size_t size) noexcept
 
 
 
-static bool __realloc_arr(void*& arr, const size_t size) noexcept
+inline bool __realloc_arr(const size_t size, void*& arr)
 {
 	arr = realloc_arr(arr, size);
 	return arr != nullptr;

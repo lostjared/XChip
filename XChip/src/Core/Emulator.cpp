@@ -30,8 +30,8 @@ namespace xchip {
 using namespace utix;
 
 
-static void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer) noexcept;
-static bool init_cpu_manager(CpuManager& _manager) noexcept;
+inline void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer);
+inline bool init_cpu_manager(CpuManager& _manager);
 
 
 
@@ -413,7 +413,7 @@ bool Emulator::InitSound()
 
 
 
-static void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer) noexcept
+inline void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer)
 {	
 	using namespace utix::literals;
 
@@ -424,7 +424,7 @@ static void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelay
 
 
 
-static bool init_cpu_manager(CpuManager& manager) noexcept
+inline bool init_cpu_manager(CpuManager& manager)
 {
 	// init the CPU
 	if (manager.SetMemory(0xFFFF)

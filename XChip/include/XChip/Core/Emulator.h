@@ -126,13 +126,13 @@ inline int Emulator::GetFps() const { return _frameTimer.GetTargetHz(); }
 
 inline void Emulator::SetCpuFreq(int value)
 {
-	utix::Clamp(value, 60, 50000);
+	utix::Clamp(60, 50000, &value);
 	_instrTimer.SetTargetHz(value);
 }
 
 inline void Emulator::SetFps(int value)
 {
-	utix::Clamp(value, 10, 1000);
+	utix::Clamp(10, 1000, &value);
 	_frameTimer.SetTargetHz(value);
 }
 
