@@ -211,6 +211,8 @@ Vec2i SdlRender::GetWindowSize() const noexcept
 
 Vec2i SdlRender::GetWindowPosition() const noexcept
 {
+	_SDLRENDER_INITIALIZED_ASSERT_();
+
 	int x, y;
 	SDL_GetWindowPosition(_window, &x, &y);
 	return { x, y };
@@ -323,11 +325,14 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 	{
 		if(IsFullScreen())
 			return true;
-		// get size / pos before the fullscreen
+
+		// get current size / pos before setting fullscreen
 		oldSize = this->GetWindowSize();
 		oldPos = this->GetWindowPosition();
 
-		// set size to display max size, and pos 0, 0
+		// set size to desktop's size, and pos 0, 0
+		// so the window fits the screen perfectly even without a proper Window Manager
+
 		SDL_DisplayMode dispMode;
 
 		if(SDL_GetCurrentDisplayMode(0, &dispMode))
