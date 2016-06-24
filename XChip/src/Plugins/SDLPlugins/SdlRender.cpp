@@ -209,6 +209,13 @@ Vec2i SdlRender::GetWindowSize() const noexcept
 }
 
 
+Vec2i SdlRender::GetWindowPosition() const noexcept
+{
+	int x, y;
+	SDL_GetWindowPosition(_window, &x, &y);
+	return { x, y };
+}
+
 
 
 
@@ -295,7 +302,11 @@ void SdlRender::SetWindowSize(const Vec2i& size) noexcept
 }
 
 
-
+void SdlRender::SetWindowPosition(const Vec2i& pos) noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	SDL_SetWindowPosition(_window, pos.x, pos.y);
+}
 
 
 
@@ -303,22 +314,34 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 
+	static Vec2i oldSize = { 0, 0 };
+	static Vec2i oldPos = { 0, 0 };
+
+	const auto IsFullScreen = [this]() { return (SDL_GetWindowFlags(_window) & SDL_WINDOW_FULLSCREEN) != 0; };
 
 	if(val)
 	{
-		int oldx, oldy;
-		SDL_DisplayMode displayMode;
-		SDL_GetWindowPosition(_window, &oldx, &oldy);
-		SDL_SetWindowPosition(_window, 0, 0);
+		if(IsFullScreen())
+			return true;
+		// get size / pos before the fullscreen
+		oldSize = this->GetWindowSize();
+		oldPos = this->GetWindowPosition();
 
-		if(SDL_GetCurrentDisplayMode(0, &displayMode) == 0)
-			SDL_SetWindowSize(_window, displayMode.w, displayMode.h);
+		// set size to display max size, and pos 0, 0
+		SDL_DisplayMode dispMode;
+
+		if(SDL_GetCurrentDisplayMode(0, &dispMode))
+			LogError("Could not get display mode: %s", SDL_GetError());
 		else
-			LogError("Could not get display mode, %s", SDL_GetError());
+			this->SetWindowSize({ dispMode.w, dispMode.h });
+
+		this->SetWindowPosition({0,0});
 
 		if(SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN))
 		{
-			SDL_SetWindowPosition(_window, oldx, oldy);
+			this->SetWindowSize(oldSize);
+			this->SetWindowPosition(oldPos);
+
 			LogError("Error while setting SdlRender Fullscreen: %s", SDL_GetError());
 			return false;
 		}
@@ -331,12 +354,17 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 
 	else
 	{
-
+		if( !IsFullScreen() )
+			return true;
+		
 		if(SDL_SetWindowFullscreen(_window, 0))
 		{
 			LogError("Error while setting SdlRender Windowed: %s", SDL_GetError());
 			return false;
 		}
+		
+		this->SetWindowSize(oldSize);
+		this->SetWindowPosition(oldPos);
 	}
 
 

@@ -189,21 +189,19 @@ void load_plugins(const utix::CliOpts& opts)
 	SetDllDirectory((utix::GetFullProcDir() + "\\plugins\\").c_str());
 #endif
 
-	using PluginConfigPair = std::pair<const char*, void(*)(const std::string&)>;
+	using ConfigPair = std::pair<const char*, void(*)(const std::string&)>;
 	
-	const PluginConfigPair pluginPairs[] = 
+	const ConfigPair configPairs[] = 
 	{
 		{"-REN", set_plugin<xchip::UniqueRender>},
 		{"-INP", set_plugin<xchip::UniqueInput>},
 		{"-SND", set_plugin<xchip::UniqueSound>}
 	};
 
-	const auto begin = std::begin(pluginPairs);
-	const auto end = std::end(pluginPairs);
-	for(auto itr = begin; itr != end; ++itr)
+	for(const auto& it : configPairs)
 	{
-		const auto opt = opts.GetOpt(itr->first);
-		itr->second(opt);
+		const auto opt = opts.GetOpt(it.first);
+		it.second(opt);
 	}
 }
 
@@ -255,7 +253,7 @@ void configure_emulator(const utix::CliOpts& opts)
 	using ConfigFunc = void(*)(const std::string&);
 	using ConfigPair = std::pair<const char*, ConfigFunc>;
 
-	ConfigPair configTable[] = 
+	ConfigPair configPairs[] = 
 	{
 		{"-RES", res_config},
 		{"-CHZ", cfq_config},
@@ -265,15 +263,12 @@ void configure_emulator(const utix::CliOpts& opts)
 		{"-FPS", fps_config}
 	};
 
-	const auto begin = std::begin(configTable);
-	const auto end = std::end(configTable);
-
-	for(auto itr = begin; itr != end; ++itr)
+	for(const auto& it : configPairs)
 	{
-		const auto opt = opts.GetOpt(itr->first);
+		const auto opt = opts.GetOpt(it.first);
 		
 		if(!opt.empty())
-			itr->second(opt);
+			it.second(opt);
 	}
 
 	std::cout << "*** setting up done ***\n\n";

@@ -52,13 +52,15 @@ public:
 	utix::Color GetBackgroundColor() const noexcept override;
 	utix::Vec2i GetResolution() const noexcept override;
 	utix::Vec2i GetWindowSize() const noexcept override;
-	
+	utix::Vec2i GetWindowPosition() const noexcept override;
+
 	void SetWindowName(const char* name) noexcept override;
 	void SetBuffer(const uint32_t* gfx) noexcept override;
 	bool SetDrawColor(const utix::Color& color) noexcept override;
 	bool SetBackgroundColor(const utix::Color& color) noexcept override;
 	bool SetResolution(const utix::Vec2i& res) noexcept override;
 	void SetWindowSize(const utix::Vec2i& size) noexcept override;
+	void SetWindowPosition(const utix::Vec2i& pos) noexcept override;
 	bool SetFullScreen(const bool val) noexcept override;
 	bool UpdateEvents() noexcept override;
 	void DrawBuffer() noexcept override;

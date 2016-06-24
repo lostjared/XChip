@@ -41,6 +41,7 @@ public:
 	virtual const uint32_t* GetBuffer() const noexcept = 0;
 	virtual utix::Vec2i GetResolution() const noexcept = 0;
 	virtual utix::Vec2i GetWindowSize() const noexcept = 0;
+	virtual utix::Vec2i GetWindowPosition() const noexcept = 0;
 	virtual utix::Color GetDrawColor() const noexcept = 0;
 	virtual utix::Color GetBackgroundColor() const noexcept = 0;
 
@@ -48,6 +49,7 @@ public:
 	virtual void SetWindowName(const char* name) noexcept = 0;
 	virtual bool SetResolution(const utix::Vec2i& res) noexcept = 0;
 	virtual void SetWindowSize(const utix::Vec2i& size) noexcept = 0;
+	virtual void SetWindowPosition(const utix::Vec2i& pos) noexcept = 0;
 	virtual bool SetFullScreen(const bool value) noexcept = 0;
 	virtual bool SetDrawColor(const utix::Color& color) noexcept = 0;
 	virtual bool SetBackgroundColor(const utix::Color& color) noexcept = 0;
