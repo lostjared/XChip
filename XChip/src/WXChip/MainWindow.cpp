@@ -1,7 +1,7 @@
 /*
 
 WXChip - chip8 emulator using XChip library and a wxWidgets gui.
-Copyright (C) 2016  Jared Bruni.
+Copyright (C) 2016  Jared Bruni, Rafael Moura.
 
 
 This program is free software: you can redistribute it and/or modify
@@ -53,11 +53,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(wxID_EXIT, MainWindow::OnExit)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
-EVT_MENU(MainWindow::ID_LoadRom, MainWindow::OnLoadRom)
+EVT_MENU(ID_MENU_BAR_LOAD_ROM, MainWindow::OnMenuBarLoadRom)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
-EVT_BUTTON(ID_STARTROM, MainWindow::OnStartRom)
-EVT_BUTTON(ID_LOADROMDIR, MainWindow::OnLoadRomDir)
-EVT_BUTTON(ID_EMUSET, MainWindow::OnLoadSettings)
+EVT_BUTTON(ID_BUTTON_LOAD_ROM, MainWindow::OnButtonLoadRom)
+EVT_BUTTON(ID_BUTTON_SELECT_DIR, MainWindow::OnButtonSelectDir)
+EVT_BUTTON(ID_BUTTON_SETTINGS, MainWindow::OnButtonSettings)
 wxEND_EVENT_TABLE()
 
 
@@ -65,15 +65,14 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 	using utix::make_unique;
-
-	utix::Log("Creating MainWindow...");
-
+	utix::Log("Constructing WXChip MainWindow");
+	
 	ComputeEmuAppPath();
 	CreateControls();
 
 	auto menuFile = make_unique<wxMenu>();
 
-	menuFile->Append(ID_LoadRom, "&LoadRom...\tCtrl-L", "Load a game rom");
+	menuFile->Append(ID_MENU_BAR_LOAD_ROM, "&Load Rom...\tCtrl-L", "Load a game rom");
 	menuFile->AppendSeparator();
 	menuFile->Append(wxID_EXIT);
 
@@ -83,8 +82,10 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
 	auto menuBar = make_unique<wxMenuBar>();
 
-	if (!menuBar->Append(menuFile.get(), "&File") || !menuBar->Append(menuHelp.release(), "&Help"))
+	if (!menuBar->Append(menuFile.get(), "&File") 
+		|| !menuBar->Append(menuHelp.release(), "&Help")) {
 		throw std::runtime_error("could not append a menu into wxMenuBar");
+	}
 
 	menuFile.release();
 	SetMenuBar(menuBar.release());
@@ -96,9 +97,9 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
 MainWindow::~MainWindow()
 {
+	utix::Log("Destroying MainWindow...");
 	StopEmulator();
 	Destroy();
-	utix::Log("Destroying MainWindow...");
 }
 
 
@@ -114,7 +115,7 @@ void MainWindow::OnExit(wxCommandEvent&)
 
 void MainWindow::OnAbout(wxCommandEvent&)
 {
-	wxMessageBox("WXChip - Chip8 Emulator",
+	wxMessageBox("WXChip - wxWidgets GUI for XChip",
 		"About WXChip", wxOK | wxICON_INFORMATION);
 }
 
@@ -143,21 +144,21 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 }
 
 
-void MainWindow::OnLoadSettings(wxCommandEvent&)
+void MainWindow::OnButtonSettings(wxCommandEvent&)
 {
 	_settingsWin->Show(true);
 }
 
 
 
-void MainWindow::OnStartRom(wxCommandEvent&)
+void MainWindow::OnButtonLoadRom(wxCommandEvent&)
 {
 	utix::Log("Starting Rom...");
 	StartEmulator();
 }
 
 
-void MainWindow::OnLoadRomDir(wxCommandEvent&)
+void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 {
 	wxDirDialog dlg(NULL, "Choose input directory", "",
 		wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
@@ -172,19 +173,18 @@ void MainWindow::OnLoadRomDir(wxCommandEvent&)
 
 
 
-void MainWindow::OnLoadRom(wxCommandEvent&)
+void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 {
 	StopEmulator();
 
 	wxFileDialog openDialog(this, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-	// the user didn't select any file ?
-	if (openDialog.ShowModal() == wxID_CANCEL)
-		return;
-
-	_romPath = openDialog.GetPath().c_str();
-	utix::Log("Selected File: %s", _romPath.c_str());
-	StartEmulator();
+	if (openDialog.ShowModal() == wxID_OK) 
+	{
+		_romPath = openDialog.GetPath().c_str();
+		utix::Log("Selected File: %s", _romPath.c_str());
+		StartEmulator();
+	}
 }
 
 
@@ -192,7 +192,7 @@ void MainWindow::OnLoadRom(wxCommandEvent&)
 void MainWindow::StartEmulator()
 {
 	StopEmulator();
-	if(!_process.Run(_emuApp + "-ROM \"" + _romPath + "\" " + _settingsWin->GetEmuConfigStr()))
+	if(!_process.Run(_emuApp + "-ROM \"" + _romPath + "\" " + _settingsWin->GetArguments()))
 		throw std::runtime_error(utix::GetLastLogError());
 }
 
@@ -227,19 +227,19 @@ void MainWindow::CreateControls()
 	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
 
 
-	_startRom = make_unique<wxButton>(_panel.get(), ID_STARTROM, _T("Start Rom"), 
+	_buttonLoadRom = make_unique<wxButton>(_panel.get(), ID_BUTTON_LOAD_ROM, _T("Load Rom"), 
                                            wxPoint(10, 400), wxSize(100, 35));
 
 
-	_settings = make_unique<wxButton>(_panel.get(), ID_LOADROMDIR, _T("Load Roms"), 
-                                           wxPoint(120, 400), wxSize(100, 35));
+	_buttonSelectDir = make_unique<wxButton>(_panel.get(), ID_BUTTON_SELECT_DIR, _T("Select Directory"), 
+                                           wxPoint(120, 400), wxSize(110, 35));
 
 
-	_emulatorSettings = make_unique<wxButton>(_panel.get(), ID_EMUSET, _T("Settings"), 
-                                                   wxPoint(230, 400), wxSize(100, 35));
+	_buttonSettings = make_unique<wxButton>(_panel.get(), ID_BUTTON_SETTINGS, _T("Settings"), 
+                                                   wxPoint(240, 400), wxSize(100, 35));
 
 
-	_settingsWin = make_unique<SettingsWindow>("WXChip - Settings", wxPoint(150, 150), wxSize(720, 360));
+	_settingsWin = make_unique<SettingsWindow>("WXChip - Settings", wxPoint(150, 150));
 
 }
 

@@ -1,7 +1,7 @@
 /*
 
 WXChip - chip8 emulator using XChip library and a wxWidgets gui.
-Copyright (C) 2016  Jared Bruni.
+Copyright (C) 2016  Jared Bruni, Rafael Moura.
 
 
 This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #ifndef _WXCHIP_MAINWINDOW_H_
 #define _WXCHIP_MAINWINDOW_H_
-#include <string>
 
+
+#include <string>
 #include <wx/frame.h>
 #include <Utix/Process.h>
 #include <WXChip/SettingsWindow.h>
@@ -30,7 +31,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 class MainWindow final : public wxFrame
 {
 public:
-	enum { ID_LoadRom, ID_TEXT, ID_LISTBOX, ID_STARTROM, ID_LOADROM, ID_EMUSET, ID_LOADROMDIR };
+	enum 
+	{ 
+		ID_MENU_BAR_LOAD_ROM, ID_TEXT, ID_LISTBOX, 
+		ID_BUTTON_LOAD_ROM, ID_BUTTON_SELECT_DIR, ID_BUTTON_SETTINGS
+	};
+
+	
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	~MainWindow();
 
@@ -39,10 +46,10 @@ private:
 	void OnExit(wxCommandEvent& ev);
 	void OnAbout(wxCommandEvent& ev);
 	void OnLDown(wxMouseEvent& ev);
-	void OnStartRom(wxCommandEvent& ev);
-	void OnLoadSettings(wxCommandEvent& ev);
-	void OnLoadRomDir(wxCommandEvent& ev);
-	void OnLoadRom(wxCommandEvent& ev);
+	void OnButtonLoadRom(wxCommandEvent& ev);
+	void OnButtonSettings(wxCommandEvent& ev);
+	void OnButtonSelectDir(wxCommandEvent& ev);
+	void OnMenuBarLoadRom(wxCommandEvent& ev);
 	void StartEmulator();
 	void StopEmulator();	
 	void CreateControls();
@@ -53,9 +60,9 @@ private:
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _text;
 	std::unique_ptr<wxListBox> _listBox;
-	std::unique_ptr<wxButton> _startRom;
-	std::unique_ptr<wxButton> _settings;
-	std::unique_ptr<wxButton> _emulatorSettings;
+	std::unique_ptr<wxButton> _buttonLoadRom;
+	std::unique_ptr<wxButton> _buttonSelectDir;
+	std::unique_ptr<wxButton> _buttonSettings;
 	std::unique_ptr<SettingsWindow> _settingsWin;
 	std::string _emuApp;
 	std::string _romPath;

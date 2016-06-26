@@ -1,7 +1,7 @@
 /*
 
 WXChip - chip8 emulator using XChip library and a wxWidgets gui.
-Copyright (C) 2016  Jared Bruni.
+Copyright (C) 2016  Jared Bruni, Rafael Moura.
 
 
 This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,6 @@ class WXChip final : public wxApp
 {
 public:
 	bool OnInit() override;
-	int OnExit() override;
 
 private:
 	MainWindow* _mainwin;

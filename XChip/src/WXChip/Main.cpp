@@ -1,7 +1,7 @@
 /*
 
 WXChip - chip8 emulator using XChip library and a wxWidgets gui.
-Copyright (C) 2016  Jared Bruni.
+Copyright (C) 2016  Jared Bruni, Rafael Moura.
 
 
 This program is free software: you can redistribute it and/or modify
@@ -48,15 +48,9 @@ bool WXChip::OnInit()
 	catch(std::exception& err) 
 	{
 		wxMessageBox(err.what(), wxT("Fatal Exception"), wxICON_ERROR);
+		return false;
 	}
 
 
 	return true;
-}
-
-
-
-int WXChip::OnExit()
-{
-	return 0;
 }
