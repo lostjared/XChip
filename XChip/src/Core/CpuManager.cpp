@@ -33,13 +33,13 @@ namespace xchip {
 
 using namespace utix;
 
-inline void set_plugin_flag(Cpu::Flags flag, const iPlugin* plugin, CpuManager& man);
+inline void set_plugin_flag(Cpu::Flags flag, const iPlugin* plugin, CpuManager* man);
 template<class T>
-inline bool alloc_cpu_arr(const size_t size, T*&);
+inline bool alloc_cpu_arr(const size_t size, T**);
 template<class T>
-inline bool realloc_cpu_arr(const size_t size, T*&);
+inline bool realloc_cpu_arr(const size_t size, T**);
 template<class T>
-inline void free_cpu_arr(T*& arr);
+inline void free_cpu_arr(T** arr);
 
 
 
@@ -65,79 +65,71 @@ CpuManager::~CpuManager()
 
 void CpuManager::Dispose() noexcept
 {
-	free_cpu_arr(_cpu.gfx);
-	free_cpu_arr(_cpu.stack);
-	free_cpu_arr(_cpu.registers);
-	free_cpu_arr(_cpu.memory);
+	free_cpu_arr(&_cpu.gfx);
+	free_cpu_arr(&_cpu.stack);
+	free_cpu_arr(&_cpu.registers);
+	free_cpu_arr(&_cpu.memory);
 }
 
 
 bool CpuManager::SetMemory(const size_t size)
 {
-	if ( !alloc_cpu_arr(size, _cpu.memory) ) 
-	{
-		LogError("Cannot allocate Cpu memory size: %zu", size);
-		return false;
-	}
+	if (alloc_cpu_arr(size, &_cpu.memory))
+		return true;
 
-	return true;
+	LogError("Cannot allocate Cpu memory size: %zu", size);
+	return false;
 }
 
 
 
 bool CpuManager::SetRegisters(const size_t size)
 {
-	if ( !alloc_cpu_arr(size, _cpu.registers) )  
-	{
-		LogError("Cannot allocate Cpu registers size: %zu", size);
-		return false;
-	}
+	if (alloc_cpu_arr(size, &_cpu.registers))
+		return true;
 
-	return true;
+	LogError("Cannot allocate Cpu registers size: %zu", size);
+	return false;
 }
 
 
 bool CpuManager::SetStack(const size_t size)
 {
-	if ( !alloc_cpu_arr(size, _cpu.stack) )
-	{
-		LogError("Cannot allocate Cpu stack size: %zu", size);
-		return false;
-	}
+	if (alloc_cpu_arr(size, &_cpu.stack))
+		return true;
 
-	return true;
+	LogError("Cannot allocate Cpu stack size: %zu", size);
+	return false;
 }
 
 
 bool CpuManager::SetGfxRes(const Vec2i& res)
 {
-	if ( !alloc_cpu_arr(res.x * res.y, _cpu.gfx) )
+	if (alloc_cpu_arr(res.x * res.y, &_cpu.gfx)) 
 	{
-		LogError("Cannot allocate Cpu memory size: %d", + res.x*res.y);
-		_gfxRes = 0;
-		return false;
+		_gfxRes = res;
+		return true;
 	}
 
-	_gfxRes = res;
-
-	return true;
+	LogError("Cannot allocate Cpu memory size: %d", + res.x*res.y);
+	_gfxRes = 0;
+	return false;
 }
 
 
 
 bool CpuManager::SetGfxRes(const int w, const int h)
 {
-	if ( !alloc_cpu_arr(w * h, _cpu.gfx) )
+	if (alloc_cpu_arr(w * h, &_cpu.gfx)) 
 	{
-		LogError("Cannot allocate Cpu memory size: %d", w*h);
-		_gfxRes = 0;
-		return false;
+		_gfxRes.x = w;
+		_gfxRes.y = h;
+		return true;
 	}
 
-	_gfxRes.x = w;
-	_gfxRes.y = h;
-
-	return true;
+	LogError("Cannot allocate Cpu memory size: %d", w*h);
+	_gfxRes = 0;
+	return false;
 }
 
 
@@ -146,28 +138,23 @@ bool CpuManager::SetGfxRes(const int w, const int h)
 
 bool CpuManager::ResizeMemory(const std::size_t size)
 {
-
-	if ( !realloc_cpu_arr(size, _cpu.memory) ) 
-	{
-		LogError("Cannot reallocate Cpu memory to size: %zu", size);
-		return false;
-	}
+	if (realloc_cpu_arr(size, &_cpu.memory)) 
+		return true;
 
 
-	return true;
+	LogError("Cannot reallocate Cpu memory to size: %zu", size);
+	return false;
 }
 
 
 
 bool CpuManager::ResizeRegisters(const size_t size)
 {
-	if (!realloc_cpu_arr(size, _cpu.registers) )
-	{
-		LogError("Cannot reallocate Cpu registers to size: %zu",  size);
-		return false;
-	}
+	if (realloc_cpu_arr(size, &_cpu.registers))
+		return true;
 
-	return true;
+	LogError("Cannot reallocate Cpu registers to size: %zu",  size);
+	return false;
 }
 
 
@@ -175,13 +162,11 @@ bool CpuManager::ResizeRegisters(const size_t size)
 
 bool CpuManager::ResizeStack(const size_t size)
 {
-	if (!realloc_cpu_arr(size, _cpu.stack) )
-	{
-		LogError("Cannot reallocate Cpu stack to size: %zu", size);
-		return false;
-	}
+	if (realloc_cpu_arr(size, &_cpu.stack))
+		return true;
 
-	return true;
+	LogError("Cannot reallocate Cpu stack to size: %zu", size);
+	return false;
 }
 
 
@@ -272,21 +257,21 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 void CpuManager::SetRender(iRender* render) 
 {
-	set_plugin_flag(Cpu::BAD_RENDER, render, *this);
+	set_plugin_flag(Cpu::BAD_RENDER, render, this);
 	_cpu.render = render; 
 }
 
 
 void CpuManager::SetInput(iInput* input) 
 {
-	set_plugin_flag(Cpu::BAD_INPUT, input, *this);
+	set_plugin_flag(Cpu::BAD_INPUT, input, this);
 	_cpu.input = input; 
 }
 
 
 void CpuManager::SetSound(iSound* sound) 
 {
-	set_plugin_flag(Cpu::BAD_SOUND, sound, *this);
+	set_plugin_flag(Cpu::BAD_SOUND, sound, this);
 	_cpu.sound = sound; 
 }
 
@@ -326,83 +311,74 @@ iSound* CpuManager::SwapSound(iSound* sound)
 
 
 
-
-
-
-
-
 // local functions
-inline bool __alloc_arr(const size_t size, void*& arr);
-inline bool __realloc_arr(const size_t size, void*& arr);
+inline bool __alloc_arr(const size_t bytes, void** arr);
+inline bool __realloc_arr(const size_t bytes, void** arr);
 
-inline void set_plugin_flag(Cpu::Flags flag, const iPlugin* plugin, CpuManager& man)
+inline void set_plugin_flag(Cpu::Flags flag, const iPlugin* plugin, CpuManager* man)
 {
 	if (!plugin)
-		man.SetFlags(flag);
+		man->SetFlags(flag);
 	else if (!plugin->IsInitialized())
-		man.SetFlags(flag);
+		man->SetFlags(flag);
 	else
-		man.UnsetFlags(flag);
+		man->UnsetFlags(flag);
 }
 
 
-
-
-
 template<class T>
-inline bool alloc_cpu_arr(const size_t size, T*& arr)
+inline bool alloc_cpu_arr(const size_t size, T** arr)
 {
-	if (arr != nullptr)
+	if ((*arr) != nullptr)
 	{
-		if (size == arr_size(arr))
+		if (size == arr_size(*arr))
 			return true;
 		
 		else
-			free_arr(arr);
+			free_arr(*arr);
 	}
 
-	return __alloc_arr(sizeof(T) * size, reinterpret_cast<void*&>(arr));
+	return __alloc_arr(sizeof(T) * size, reinterpret_cast<void**>(arr));
 }
 
 
 
 template<class T>
-inline bool realloc_cpu_arr(const size_t size, T*& arr)
+inline bool realloc_cpu_arr(const size_t size, T** arr)
 {
-	if (arr != nullptr)
+	if ((*arr) != nullptr)
 	{
-		if(size == arr_size(arr))
+		if(size == arr_size(*arr))
 			return true;
 		
 		else
-			return __realloc_arr(sizeof(T) * size, reinterpret_cast<void*&>(arr));
+			return __realloc_arr(sizeof(T) * size, reinterpret_cast<void**>(arr));
 	}	
 
-	return __alloc_arr(sizeof(T) * size, reinterpret_cast<void*&>(arr));	
+	return __alloc_arr(sizeof(T) * size, reinterpret_cast<void**>(arr));	
 }
 
 
 
 template<class T>
-inline void free_cpu_arr(T*& arr)
+inline void free_cpu_arr(T** arr)
 {
-	if(arr != nullptr)
+	if((*arr) != nullptr)
 	{
-		free_arr(arr);
-		arr = nullptr;
+		free_arr(*arr);
+		(*arr) = nullptr;
 	}
-
 }
 
 
 
-inline bool __alloc_arr(const size_t size, void*& arr)
+inline bool __alloc_arr(const size_t bytes, void** arr)
 {
-	arr = alloc_arr(size);
+	(*arr) = alloc_arr(bytes);
 	
-	if (arr)
+	if((*arr))
 	{
-		arr_zero(arr, size);
+		arr_zero(*arr, bytes);
 		return true;
 	}
 
@@ -411,11 +387,10 @@ inline bool __alloc_arr(const size_t size, void*& arr)
 
 
 
-
-inline bool __realloc_arr(const size_t size, void*& arr)
+inline bool __realloc_arr(const size_t bytes, void** arr)
 {
-	arr = realloc_arr(arr, size);
-	return arr != nullptr;
+	(*arr) = realloc_arr(*arr, bytes);
+	return (*arr) != nullptr;
 }
 
 
