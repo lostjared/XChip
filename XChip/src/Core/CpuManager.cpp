@@ -331,7 +331,7 @@ iSound* CpuManager::SwapSound(iSound* sound)
 
 
 
-// local static functions
+// local functions
 inline bool __alloc_arr(const size_t size, void*& arr);
 inline bool __realloc_arr(const size_t size, void*& arr);
 

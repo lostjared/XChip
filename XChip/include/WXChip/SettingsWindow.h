@@ -19,6 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+// TODO: save configurations on file
+
 #ifndef _WXCHIP_SETTINGS_WINDOW_H_
 #define _WXCHIP_SETTINGS_WINDOW_H_
 
@@ -30,10 +32,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <Utix/Vector2.h>
 #include <Utix/Memory.h>
 
+
+
+
+
 class SettingsWindow : public wxFrame
 {
-	using Color = utix::Color;
-	using Vec2i = utix::Vec2i;
+	// default compile time values
 	static constexpr const auto* const default_cpu_hz = _T("380");
 	static constexpr const auto* const default_fps = _T("60.00");
 	static constexpr const char* const default_render_relative_path = "/bin/plugins/XChipSDLRender";
@@ -48,10 +53,11 @@ class SettingsWindow : public wxFrame
 	wxString default_render_full_path;
 	wxString default_input_full_path;
 	wxString default_sound_full_path;
+
 public:
 	enum 
 	{ 
-		ID_ROMS_DIR_TEXT = 1, ID_ROMS_DIR_TEXT_CTRL, 
+		ID_ROMS_DIR_TEXT, ID_ROMS_DIR_TEXT_CTRL, 
 		ID_FPS_TEXT, ID_FPS_TEXT_CTRL, 
 		ID_CPU_HZ_TEXT, ID_CPU_HZ_TEXT_CTRL,
 		ID_BUTTON_BKG_COLOR, ID_BUTTON_FG_COLOR, 
@@ -61,13 +67,25 @@ public:
 		ID_BUTTON_OK, ID_BUTTON_CANCEL, ID_BUTTON_DEFAULT
 	};
 
-	SettingsWindow(const wxString &title, const wxPoint &pos);
+	SettingsWindow(const SettingsWindow&) = delete;
+	SettingsWindow(SettingsWindow&&) = delete;
+	SettingsWindow& operator=(const SettingsWindow&) = delete;
+	SettingsWindow& operator=(SettingsWindow&&) = delete;
 
+
+	SettingsWindow(wxFrame* parent, const wxString &title, const wxPoint &pos);
 	const std::string& GetArguments() const;
-	std::string GetDirPath() const;	
+	std::string GetDirPath() const;
 	void SetDirPath(const std::string& path);
-	void SaveSettings();
+
+
 private:
+	void CreateControls();
+	void CreateButtons();
+	void CreateTexts();
+	void UpdateConfigStr();
+	void ResetSettings();
+
 	void OnCloseWindow(wxCloseEvent &event);
 	void OnCancel(wxCommandEvent& event);
 	void OnOkay(wxCommandEvent& event);
@@ -77,17 +95,13 @@ private:
 	void OnSetSoundPlugin(wxCommandEvent& event);
 	void OnSetBKGColor(wxCommandEvent& event);
 	void OnSetFGColor(wxCommandEvent& event);
-	void UpdateConfigStr();
-	void CreateControls();
-	void ResetSettings();
-
 
 	wxColour _bkgColor;
 	wxColour _fgColor;
-
-	std::string _configStr;
+	
 	std::string _bkgColorStr;
 	std::string _fgColorStr;
+	std::string _configStr;
 
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _romsDirTxt;
@@ -96,14 +110,14 @@ private:
 	std::unique_ptr<wxTextCtrl> _fpsTxtCtrl;
 	std::unique_ptr<wxStaticText> _cpuHzTxt;
 	std::unique_ptr<wxTextCtrl> _cpuHzTxtCtrl;
+	std::unique_ptr<wxTextCtrl> _renderTxtCtrl;
+	std::unique_ptr<wxTextCtrl> _inputTxtCtrl;
+	std::unique_ptr<wxTextCtrl> _soundTxtCtrl;
 	std::unique_ptr<wxButton> _buttonBKGColor;
 	std::unique_ptr<wxButton> _buttonFGColor;
 	std::unique_ptr<wxButton> _buttonRender;
 	std::unique_ptr<wxButton> _buttonInput;
 	std::unique_ptr<wxButton> _buttonSound;
-	std::unique_ptr<wxTextCtrl> _renderTxtCtrl;
-	std::unique_ptr<wxTextCtrl> _inputTxtCtrl;
-	std::unique_ptr<wxTextCtrl> _soundTxtCtrl;
 	std::unique_ptr<wxButton> _buttonOk;
 	std::unique_ptr<wxButton> _buttonCancel;
 	std::unique_ptr<wxButton> _buttonDefault;

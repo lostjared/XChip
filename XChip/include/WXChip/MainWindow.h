@@ -33,16 +33,22 @@ class MainWindow final : public wxFrame
 public:
 	enum 
 	{ 
-		ID_MENU_BAR_LOAD_ROM, ID_TEXT, ID_LISTBOX, 
+		ID_MENU_BAR_LOAD_ROM, ID_ROMS_TEXT, ID_LISTBOX, 
 		ID_BUTTON_LOAD_ROM, ID_BUTTON_SELECT_DIR, ID_BUTTON_SETTINGS
 	};
 
-	
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 	~MainWindow();
 
 
 private:
+	void CreateControls();
+	void CreateMenuBar();
+	void StartEmulator();
+	void StopEmulator();
+	void LoadList(const std::string &dirPath);
+	void ComputeEmuAppPath();
+
 	void OnExit(wxCommandEvent& ev);
 	void OnAbout(wxCommandEvent& ev);
 	void OnLDown(wxMouseEvent& ev);
@@ -50,15 +56,10 @@ private:
 	void OnButtonSettings(wxCommandEvent& ev);
 	void OnButtonSelectDir(wxCommandEvent& ev);
 	void OnMenuBarLoadRom(wxCommandEvent& ev);
-	void StartEmulator();
-	void StopEmulator();	
-	void CreateControls();
-	void LoadList(const std::string &dirPath);
-	void ComputeEmuAppPath();
 
 
 	std::unique_ptr<wxPanel> _panel;
-	std::unique_ptr<wxStaticText> _text;
+	std::unique_ptr<wxStaticText> _romsTxt;
 	std::unique_ptr<wxListBox> _listBox;
 	std::unique_ptr<wxButton> _buttonLoadRom;
 	std::unique_ptr<wxButton> _buttonSelectDir;
@@ -67,6 +68,7 @@ private:
 	std::string _emuApp;
 	std::string _romPath;
 	utix::Process _process;
+	
 	wxDECLARE_EVENT_TABLE();
 };
 

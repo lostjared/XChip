@@ -33,9 +33,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <WXChip/SettingsWindow.h>
 
 
-static void ExecuteWxColourDialog(wxFrame* frame, wxColour* color, std::string* str);
-
-
+// .cpp local functions
+namespace {
+static void ExecuteWxColourDialog(wxFrame* const frame, wxColour* const color, std::string* const str);
+static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl* const text_ctrl);
+}
 
 
 wxBEGIN_EVENT_TABLE(SettingsWindow, wxFrame)
@@ -51,9 +53,11 @@ EVT_BUTTON(ID_BUTTON_FG_COLOR, SettingsWindow::OnSetFGColor)
 wxEND_EVENT_TABLE()
 
 
+
+
+
 constexpr decltype(SettingsWindow::default_cpu_hz) SettingsWindow::default_cpu_hz;
 constexpr decltype(SettingsWindow::default_fps) SettingsWindow::default_fps;
-
 constexpr const unsigned long SettingsWindow::default_bkg_color;
 constexpr const unsigned long SettingsWindow::default_fg_color;
 constexpr const char* const SettingsWindow::default_bkg_color_str;
@@ -63,24 +67,29 @@ constexpr const char* const SettingsWindow::default_input_relative_path;
 constexpr const char* const SettingsWindow::default_sound_relative_path;
 
 
-SettingsWindow::SettingsWindow(const wxString &title, const wxPoint &pos)
-	: wxFrame(NULL, wxID_ANY, title, pos, wxSize(450, 360), 
+
+
+
+
+SettingsWindow::SettingsWindow(wxFrame* parent, const wxString &title, const wxPoint &pos)
+	: wxFrame(parent, wxID_ANY, title, pos, wxSize(450, 360), 
                   wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX),
 	_bkgColor(default_bkg_color),
-	_fgColor(default_fg_color)
+	_fgColor(default_fg_color),
+	_bkgColorStr(default_bkg_color_str),
+	_fgColorStr(default_fg_color_str)
 
 {
+	SetMinSize(GetSize());
+	SetMaxSize(GetSize());
+
 	const wxString procPath = utix::GetFullProcDir();
 	default_render_full_path = (procPath + default_render_relative_path);
 	default_input_full_path = (procPath + default_input_relative_path);
 	default_sound_full_path = (procPath + default_sound_relative_path);
-	_bkgColorStr = default_bkg_color_str;
-	_fgColorStr = default_fg_color_str;
 
 	CreateControls();
 	UpdateConfigStr();
-	SetMinSize(GetSize());
-	SetMaxSize(GetSize());
 }
 
 
@@ -117,37 +126,59 @@ void SettingsWindow::UpdateConfigStr()
 
 void SettingsWindow::CreateControls()
 {
+	_panel = utix::make_unique<wxPanel>(this, wxID_ANY);
+	CreateTexts();
+	CreateButtons();
+}
+
+
+void SettingsWindow::CreateTexts()
+{
 	using utix::make_unique;
-
-
-	_panel = make_unique<wxPanel>(this, wxID_ANY);
-
-	_romsDirTxt = make_unique<wxStaticText>(_panel.get(), ID_ROMS_DIR_TEXT,_T("Directory: "), 
-                                            wxPoint(10,15), wxSize(80,25));
-
-	_romsDirTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_ROMS_DIR_TEXT_CTRL, _T(""), 
-                                            wxPoint(100,10), wxSize(320,20), wxTE_READONLY);
-
 	// validators 
-	wxIntegerValidator<int> cpuFreqValidator(nullptr, wxNUM_VAL_ZERO_AS_BLANK);
-	cpuFreqValidator.SetRange(1, 5000);
+	wxIntegerValidator<int> cpuHzValidador(nullptr, wxNUM_VAL_ZERO_AS_BLANK);
+	wxFloatingPointValidator<float> fpsValidador(2, nullptr, wxNUM_VAL_ZERO_AS_BLANK);
 
-	wxFloatingPointValidator<float> fpsValidator(2, nullptr, wxNUM_VAL_ZERO_AS_BLANK);
-	fpsValidator.SetRange(1.00, 120.00);
+	cpuHzValidador.SetRange(1, 5000);
+	fpsValidador.SetRange(1.00, 120.00);
 
-
+	// static texts
 	_cpuHzTxt = make_unique<wxStaticText>(_panel.get(), ID_CPU_HZ_TEXT,_T("CPU Hz: "), 
                                                  wxPoint(220,45), wxSize(60,25));
 
-	_cpuHzTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_CPU_HZ_TEXT_CTRL, default_cpu_hz, 
-                                                  wxPoint(320,40), wxSize(100,20), 0, cpuFreqValidator);
-
 	_fpsTxt = make_unique<wxStaticText>(_panel.get(), ID_FPS_TEXT,_T("FPS: "), 
-                                             wxPoint(10,45), wxSize(60,25));
+                                         wxPoint(10,45), wxSize(60,25));
 
+	_romsDirTxt = make_unique<wxStaticText>(_panel.get(), ID_ROMS_DIR_TEXT,_T("Directory: "), 
+	                                        wxPoint(10,15), wxSize(80,25));
+
+	// text controls
 	_fpsTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_FPS_TEXT_CTRL, default_fps,
-                                               wxPoint(100,40), wxSize(100,20), 0, fpsValidator);
+                                           wxPoint(100,40), wxSize(100,20), 0, fpsValidador);
 
+	_cpuHzTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_CPU_HZ_TEXT_CTRL, default_cpu_hz, 
+                                                  wxPoint(320,40), wxSize(100,20), 0, cpuHzValidador);
+
+	_romsDirTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_ROMS_DIR_TEXT_CTRL, _T(""), 
+                                               wxPoint(100,10), wxSize(320,20), wxTE_READONLY);
+
+	_renderTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_RENDER_TEXT_CTRL, default_render_full_path,
+                                                wxPoint(165, 120), wxSize(200, 20), wxTE_READONLY);
+
+	_inputTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_INPUT_TEXT_CTRL, default_input_full_path,
+                                           wxPoint(165, 160), wxSize(200, 20), wxTE_READONLY);
+
+	_soundTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_SOUND_TEXT_CTRL, default_sound_full_path, 
+                                           wxPoint(165, 200), wxSize(200, 20), wxTE_READONLY);
+}
+
+
+
+
+
+void SettingsWindow::CreateButtons()
+{
+	using utix::make_unique;
 
 	_buttonBKGColor= make_unique<wxButton>(_panel.get(), ID_BUTTON_BKG_COLOR, _T("Background Color"),
                                                 wxPoint(10, 75), wxSize(145, 35));
@@ -163,33 +194,15 @@ void SettingsWindow::CreateControls()
 
 	_buttonSound = make_unique<wxButton>(_panel.get(), ID_BUTTON_SOUND, _T("Sound Plugin"),
                                          wxPoint(10, 195), wxSize(140, 33));
-	
-	_renderTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_RENDER_TEXT_CTRL, default_render_full_path,
-                                                wxPoint(165, 120), wxSize(200, 20), wxTE_READONLY);
-
-	_inputTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_INPUT_TEXT_CTRL, default_input_full_path,
-                                           wxPoint(165, 160), wxSize(200, 20), wxTE_READONLY);
-
-	_soundTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_SOUND_TEXT_CTRL, default_sound_full_path, 
-                                           wxPoint(165, 200), wxSize(200, 20), wxTE_READONLY);
 
 	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BUTTON_OK, _T("Ok"), 
-                                           wxPoint(10, 250), wxSize(100, 35));
+	                                       wxPoint(10, 250), wxSize(100, 35));
 
 	_buttonCancel = make_unique<wxButton>(_panel.get(), ID_BUTTON_CANCEL, _T("Cancel"), 
-                                               wxPoint(120, 250), wxSize(100, 35));
+	                                           wxPoint(120, 250), wxSize(100, 35));
 
 	_buttonDefault = make_unique<wxButton>(_panel.get(), ID_BUTTON_DEFAULT, _T("Default"), 
-                                                wxPoint(230,250), wxSize(100, 35));
-	
-}
-
-
-
-void SettingsWindow::SaveSettings()
-{
-//	saveDirectory((const char*)_dirTxtCtrl->GetLineText(0).c_str(), 
-//                    std::to_string(_fpsValue), std::to_string(_cpuHzTxtCtrl));
+	                                            wxPoint(230,250), wxSize(100, 35));
 }
 
 
@@ -214,7 +227,6 @@ void SettingsWindow::OnCancel(wxCommandEvent&)
 void SettingsWindow::OnOkay(wxCommandEvent&)
 {
 	UpdateConfigStr();
-	SaveSettings();
 	Show(false);
 }
 
@@ -227,71 +239,34 @@ void SettingsWindow::OnDefault(wxCommandEvent&)
 }
 
 
-
 void SettingsWindow::OnSetRenderPlugin(wxCommandEvent&)
 {
-	wxFileDialog dlg(this, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-	
-	if (dlg.ShowModal() == wxID_CANCEL)
-		return;
-	
-	_renderTxtCtrl->Clear();
-	*_renderTxtCtrl << dlg.GetPath();
+	ExecuteWxFileDialog(this, _renderTxtCtrl.get());
 }
-
-
 
 
 void SettingsWindow::OnSetInputPlugin(wxCommandEvent&)
 {
-	wxFileDialog dlg(this, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-	
-	if (dlg.ShowModal() == wxID_CANCEL)
-		return;
-
-	_inputTxtCtrl->Clear();
-	*_inputTxtCtrl << dlg.GetPath();
-
-	
+	ExecuteWxFileDialog(this, _inputTxtCtrl.get());
 }
-
-
-
 
 
 void SettingsWindow::OnSetSoundPlugin(wxCommandEvent&)
 {
-
-	wxFileDialog dlg(this, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-	
-	if (dlg.ShowModal() == wxID_CANCEL)
-		return;
-	
-	_soundTxtCtrl->Clear();
-	*_soundTxtCtrl << dlg.GetPath();
-	
+	ExecuteWxFileDialog(this, _soundTxtCtrl.get());
 }
-
-
-
-
 
 
 void SettingsWindow::OnSetBKGColor(wxCommandEvent&)
 {
 	ExecuteWxColourDialog(this, &_bkgColor, &_bkgColorStr);
-	std::cout << "BKG: " << _bkgColorStr << '\n';
 }
 
 
 void SettingsWindow::OnSetFGColor(wxCommandEvent&)
 {
 	ExecuteWxColourDialog(this, &_fgColor, &_fgColorStr);
-	std::cout << "FG: " << _fgColorStr << '\n';
 }
-
-
-
 
 
 
@@ -312,7 +287,8 @@ void SettingsWindow::ResetSettings()
 	SetIfNotEq(_inputTxtCtrl, default_input_full_path);
 	SetIfNotEq(_soundTxtCtrl, default_sound_full_path);
 
-	// these are internal variables not shown on screen
+	// these variables are not shown on screen
+	// no bother cheking it
 	_bkgColor.SetRGB(default_bkg_color);
 	_fgColor.SetRGB(default_fg_color);
 	_bkgColorStr = default_bkg_color_str;
@@ -326,14 +302,17 @@ void SettingsWindow::ResetSettings()
 
 
 
+namespace {
 
-static void ExecuteWxColourDialog(wxFrame* frame, wxColour* color, std::string* str) 
+
+static void ExecuteWxColourDialog(wxFrame* const frame, wxColour* const color, std::string* const str)
 {
 	using std::to_string;
 	wxColourData data;
 	data.SetColour(*color);
 	wxColourDialog dialog(frame, &data);
-	if (dialog.ShowModal() == wxID_OK) 
+
+	if (dialog.ShowModal() == wxID_OK)
 	{
 		*color = dialog.GetColourData().GetColour();
 		*str = to_string(color->Red());
@@ -342,4 +321,21 @@ static void ExecuteWxColourDialog(wxFrame* frame, wxColour* color, std::string* 
 		*str += 'x';
 		*str += to_string(color->Blue());
 	}
+
+}
+
+
+static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl* const text_ctrl) 
+{
+	wxFileDialog dlg(frame, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+	
+	if (dlg.ShowModal() == wxID_OK) {
+		text_ctrl->Clear();
+		*text_ctrl << dlg.GetPath();
+	}
+	
+}
+
+
+
 }

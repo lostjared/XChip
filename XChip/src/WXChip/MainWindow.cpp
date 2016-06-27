@@ -64,12 +64,62 @@ wxEND_EVENT_TABLE()
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
 	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
-	using utix::make_unique;
 	utix::Log("Constructing WXChip MainWindow");
-	
+
+	CreateStatusBar();
+	SetStatusText("Welcome to WXChip");
+
 	ComputeEmuAppPath();
 	CreateControls();
+}
 
+
+MainWindow::~MainWindow()
+{
+	utix::Log("Destroying MainWindow...");
+	StopEmulator();
+	Destroy();
+}
+
+
+
+void MainWindow::CreateControls()
+{
+	using utix::make_unique;
+	CreateMenuBar();
+
+	_panel = make_unique<wxPanel>(this, wxID_ANY);
+
+	_settingsWin = make_unique<SettingsWindow>(this, "WXChip - Settings", wxPoint(150, 150));
+
+
+
+	_romsTxt = make_unique<wxStaticText>(_panel.get(), ID_ROMS_TEXT, _T("Roms"), 
+                                          wxPoint(10, 10), wxSize(100, 25));
+
+	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), 
+                                       0, nullptr, wxLB_SINGLE);
+
+	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
+
+
+	_buttonLoadRom = make_unique<wxButton>(_panel.get(), ID_BUTTON_LOAD_ROM, _T("Load Rom"), 
+                                           wxPoint(10, 400), wxSize(100, 35));
+
+	_buttonSelectDir = make_unique<wxButton>(_panel.get(), ID_BUTTON_SELECT_DIR, _T("Select Directory"), 
+                                           wxPoint(120, 400), wxSize(110, 35));
+
+	_buttonSettings = make_unique<wxButton>(_panel.get(), ID_BUTTON_SETTINGS, _T("Settings"), 
+                                                   wxPoint(240, 400), wxSize(100, 35));
+}
+
+
+
+
+
+void MainWindow::CreateMenuBar()
+{
+	using utix::make_unique;
 	auto menuFile = make_unique<wxMenu>();
 
 	menuFile->Append(ID_MENU_BAR_LOAD_ROM, "&Load Rom...\tCtrl-L", "Load a game rom");
@@ -89,18 +139,98 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
 	menuFile.release();
 	SetMenuBar(menuBar.release());
-
-	CreateStatusBar();
-	SetStatusText("Welcome to WXChip");
 }
 
 
-MainWindow::~MainWindow()
+
+
+
+
+void MainWindow::StartEmulator()
 {
-	utix::Log("Destroying MainWindow...");
 	StopEmulator();
-	Destroy();
+	if(!_process.Run(_emuApp + "-ROM \"" + _romPath + "\" " + _settingsWin->GetArguments()))
+		throw std::runtime_error(utix::GetLastLogError());
 }
+
+
+
+
+void MainWindow::StopEmulator()
+{
+	if (_process.IsRunning())
+		_process.Terminate();
+}
+
+
+
+
+void MainWindow::LoadList(const std::string &dirPath)
+{
+	using namespace utix;
+
+	if (dirPath == "nopath" || dirPath == _settingsWin->GetDirPath())
+		return;
+
+	DIR *dir = opendir(dirPath.c_str());
+
+	if (dir == nullptr)
+	{
+		LogError("Error could not open directory.");
+		return;
+	}
+	// close the dir in every exit path from this function
+	const auto cleanup = make_scope_exit([&dir]() noexcept { closedir(dir); });	
+	
+	wxArrayString dirFiles;
+	dirent *e;
+
+	while ((e = readdir(dir)) != nullptr)
+	{
+		if (e->d_type == DT_REG)
+		{
+			std::string file = e->d_name;
+			std::regex exp1("ch8$", std::regex_constants::icase);
+			std::regex exp2("([0-9a-zA-Z_\\ ]+)", std::regex_constants::icase);
+			// if found in 1 regex search, avoid doing the other search
+			bool isTag = std::regex_search(file, exp1) || std::regex_match(file, exp2);
+			if (isTag) 
+				dirFiles.Add(wxString(e->d_name));
+		}
+	}
+
+
+	if(!dirFiles.IsEmpty())
+	{
+		_listBox->Clear();
+		_listBox->InsertItems(dirFiles,0);
+		_settingsWin->SetDirPath(dirPath);
+	}
+}
+
+
+
+void MainWindow::ComputeEmuAppPath()
+{
+
+#ifdef _WIN32
+	constexpr const char* const finalEmuAppPath = "\\bin\\EmuApp.exe";
+#elif defined(__APPLE__) || defined(__linux__)
+	constexpr const char* const finalEmuAppPath = "/bin/EmuApp";
+#endif
+
+	_emuApp = utix::GetFullProcDir() + finalEmuAppPath;
+
+	if (!std::ifstream(_emuApp).good())
+		throw std::runtime_error("Could not find EmuApp executable!");
+
+	_emuApp.insert(0, "\"");
+	_emuApp += "\" ";
+
+	utix::Log("_emuApp after compute: %s", _emuApp.c_str());
+}
+
+
 
 
 
@@ -113,11 +243,13 @@ void MainWindow::OnExit(wxCommandEvent&)
 
 
 
+
 void MainWindow::OnAbout(wxCommandEvent&)
 {
 	wxMessageBox("WXChip - wxWidgets GUI for XChip",
 		"About WXChip", wxOK | wxICON_INFORMATION);
 }
+
 
 
 void MainWindow::OnLDown(wxMouseEvent& event)
@@ -144,10 +276,13 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 }
 
 
+
+
 void MainWindow::OnButtonSettings(wxCommandEvent&)
 {
 	_settingsWin->Show(true);
 }
+
 
 
 
@@ -158,161 +293,36 @@ void MainWindow::OnButtonLoadRom(wxCommandEvent&)
 }
 
 
+
+
 void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 {
-	wxDirDialog dlg(NULL, "Choose input directory", "",
-		wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+	wxDirDialog dlg(this, "Choose Roms Directory", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 
-	if (dlg.ShowModal() == wxID_CANCEL)
-		return;
-
-
-	wxString value = dlg.GetPath();
-	LoadList(std::string(value.c_str()));
+	if (dlg.ShowModal() == wxID_OK) {
+		wxString value = dlg.GetPath();
+		LoadList(std::string(value.c_str()));
+	}
 }
+
 
 
 
 void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 {
-	StopEmulator();
+	wxFileDialog openDialog(this, "Select Rom", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-	wxFileDialog openDialog(this, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-
-	if (openDialog.ShowModal() == wxID_OK) 
-	{
+	if (openDialog.ShowModal() == wxID_OK) {
 		_romPath = openDialog.GetPath().c_str();
 		utix::Log("Selected File: %s", _romPath.c_str());
 		StartEmulator();
 	}
-}
-
-
-
-void MainWindow::StartEmulator()
-{
-	StopEmulator();
-	if(!_process.Run(_emuApp + "-ROM \"" + _romPath + "\" " + _settingsWin->GetArguments()))
-		throw std::runtime_error(utix::GetLastLogError());
-}
-
-
-void MainWindow::StopEmulator()
-{
-	if (_process.IsRunning())
-	{
-		_process.Terminate();
-	}
-}
-
-
-
-
-void MainWindow::CreateControls()
-{
-	using utix::make_unique;
-
-
-	wxArrayString strings;
-
-	_panel = make_unique<wxPanel>(this, wxID_ANY);
-
-	_text = make_unique<wxStaticText>(_panel.get(), ID_TEXT, _T("Chip8 Roms"), 
-                                           wxPoint(10, 10), wxSize(100, 25));
-
-	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), 
-                                           strings, wxLB_SINGLE);
-
-
-	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
-
-
-	_buttonLoadRom = make_unique<wxButton>(_panel.get(), ID_BUTTON_LOAD_ROM, _T("Load Rom"), 
-                                           wxPoint(10, 400), wxSize(100, 35));
-
-
-	_buttonSelectDir = make_unique<wxButton>(_panel.get(), ID_BUTTON_SELECT_DIR, _T("Select Directory"), 
-                                           wxPoint(120, 400), wxSize(110, 35));
-
-
-	_buttonSettings = make_unique<wxButton>(_panel.get(), ID_BUTTON_SETTINGS, _T("Settings"), 
-                                                   wxPoint(240, 400), wxSize(100, 35));
-
-
-	_settingsWin = make_unique<SettingsWindow>("WXChip - Settings", wxPoint(150, 150));
 
 }
 
 
 
 
-
-
-
-
-void MainWindow::LoadList(const std::string &dirPath)
-{
-	using namespace utix;
-
-	if (dirPath == "nopath" || dirPath == _settingsWin->GetDirPath())
-		return;
-
-	DIR *dir = opendir(dirPath.c_str());
-
-	if (dir == nullptr)
-	{
-		LogError("Error could not open directory.");
-		return;
-	}
-
-	// close the dir in every exit path from this function
-	const auto cleanup = make_scope_exit([&dir]() noexcept { closedir(dir); });	
-	wxArrayString dirFiles;
-	dirent *e;
-
-	while ((e = readdir(dir)))
-	{
-		if (e->d_type == DT_REG)
-		{
-			std::string file = e->d_name;
-			std::regex exp1("ch8$", std::regex_constants::icase);
-			std::regex exp2("([0-9a-zA-Z_\\ ]+)", std::regex_constants::icase);
-			// if found in 1 regex search, avoid doing the other search
-			bool isTag = std::regex_search(file, exp1) || std::regex_match(file, exp2);
-			if (isTag) 
-				dirFiles.Add(wxString(e->d_name));
-		}
-	}
-
-	if(!dirFiles.IsEmpty())
-	{
-		_listBox->Clear();
-		_listBox->InsertItems(dirFiles,0);
-		_settingsWin->SetDirPath(dirPath);
-	}
-}
-
-
-
-void MainWindow::ComputeEmuAppPath()
-{
-#ifdef _WIN32
-	constexpr const char* const finalEmuAppPath = "\\bin\\EmuApp.exe";
-#elif defined(__APPLE__) || defined(__linux__)
-	constexpr const char* const finalEmuAppPath = "/bin/EmuApp";
-#endif
-
-	_emuApp = utix::GetFullProcDir() + finalEmuAppPath;
-
-	if (!std::ifstream(_emuApp).good())
-		throw std::runtime_error("Could not find EmuApp executable!");
-
-	_emuApp.insert(0, "\"");
-	_emuApp += "\" ";
-
-	utix::Log("_emuApp after compute: %s", _emuApp.c_str());
-
-}
 
 
 
