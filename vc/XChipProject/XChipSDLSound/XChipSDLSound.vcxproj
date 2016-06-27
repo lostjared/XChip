@@ -79,23 +79,25 @@
     <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\SDL2\WIN\include\;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <OutDir>$(SolutionDir)$(Configuration)\Plugins\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\WXChip\bin\plugins\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\SDL2\WIN\include\;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <OutDir>$(SolutionDir)$(Configuration)\Plugins\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\WXChip\bin\plugins\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\SDL2\WIN\include\;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WXChip\bin\plugins\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)..\..\XChip\include\;$(SolutionDir)..\..\XChip\dependencies\SDL2\WIN\include\;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WXChip\bin\plugins\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

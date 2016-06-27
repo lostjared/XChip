@@ -185,7 +185,10 @@ void set_plugin(const std::string& path);
 void load_plugins(const utix::CliOpts& opts)
 {
 #ifdef _WIN32
-	// a search dir for dlls 
+	// get current dll directory
+	char buffer[256];
+	GetDllDirectory(255, buffer);
+	// set our plugins folder as a dll directory
 	SetDllDirectory((utix::GetFullProcDir() + "\\plugins\\").c_str());
 #endif
 
@@ -203,6 +206,11 @@ void load_plugins(const utix::CliOpts& opts)
 		const auto opt = opts.GetOpt(it.first);
 		it.second(opt);
 	}
+
+#ifdef _WIN32
+	//set back 
+	SetDllDirectory(buffer);
+#endif
 }
 
 
@@ -474,7 +482,7 @@ utix::Color get_arg_rgb(const std::string& arg)
 		rgb[1] = std::stoul(arg.substr(firstSeparator + 1, secondSeparator));
 		rgb[2] = std::stoul(arg.substr(secondSeparator + 1, arg.size()));
 	} 
-	catch(std::exception& err) {
+	catch(...) {
 		throw std::runtime_error("Bad color input values, Please use values between 0-255, example: 0x255x127");
 	}
 

@@ -70,17 +70,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)$(Configuration)\Plugins\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\WXChip\bin\plugins\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)$(Configuration)\Plugins\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\WXChip\bin\plugins\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WXChip\bin\plugins\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\SFML\WIN\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\include;C:\Users\Rafael\Documents\GitHub\XChip\XChip\dependencies\Utix\Utix\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WXChip\bin\plugins\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

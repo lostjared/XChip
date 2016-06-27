@@ -102,9 +102,8 @@ void SettingsWindow::UpdateConfigStr()
 {
 	_configStr = "";
 	const auto AddArg = [this](const char* opt, const char* arg) {
-		((((_configStr += ' ') += opt) += ' ') += arg)  += ' ';
+		(((_configStr  += opt) += ' ') += arg) += ' ';
 	};
-
 
 	AddArg("-FPS", _fpsTxtCtrl->GetLineText(0).c_str());
 	AddArg("-CHZ", _cpuHzTxtCtrl->GetLineText(0).c_str());	
