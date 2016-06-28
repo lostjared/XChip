@@ -53,8 +53,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 // local functions declarations
 namespace {
-static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string* dest);
-static void FillRomPath(const wxString& fullPath, std::string* dest);
+static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string* const dest);
+static void FillRomPath(const wxString& fullPath, std::string* const dest);
 }
 
 
@@ -332,7 +332,7 @@ void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 namespace {
 
 
-static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string* dest)
+static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string* const dest)
 {
 #ifdef _WIN32
 		constexpr char dirSlash =  '\\';
@@ -348,7 +348,7 @@ static void FillRomPath(const wxString& dirPath, const wxString& filename, std::
 
 	(*dest += filename) += '\"';
 }
-static void FillRomPath(const wxString& fullPath, std::string* dest)
+static void FillRomPath(const wxString& fullPath, std::string* const dest)
 {
 	((*dest = '\"') += fullPath) += '\"';
 }

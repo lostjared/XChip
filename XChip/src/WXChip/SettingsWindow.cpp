@@ -262,7 +262,7 @@ void SettingsWindow::RestoreSettings()
 		auto idx = _configStr.find(opt);
 		if(idx != std::string::npos) {
 			idx += std::strlen(opt)+1;
-			auto idxEnd = _configStr.find('-', (idx+1));
+			auto idxEnd = _configStr.find('-', idx);
 			if( idxEnd == std::string::npos )
 				idxEnd = _configStr.size();
 
