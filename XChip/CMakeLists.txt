@@ -47,12 +47,12 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
 # "Debug" full debug information, no optimization, asserts enabled
 elseif(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g3 -D_DEBUG")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g3 -D_DEBUG -fno-omit-frame-pointer")
 
 
 # "Bench" better code generation but keep debug information
 elseif(${CMAKE_BUILD_TYPE} STREQUAL "Bench")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g  -DNDEBUG")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g  -DNDEBUG -fno-omit-frame-pointer")
 endif()
 
 
