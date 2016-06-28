@@ -50,6 +50,7 @@ private:
 	void ComputeEmuAppPath();
 
 	void OnExit(wxCommandEvent& ev);
+	void OnClose(wxCloseEvent& ev);
 	void OnAbout(wxCommandEvent& ev);
 	void OnLDown(wxMouseEvent& ev);
 	void OnButtonLoadRom(wxCommandEvent& ev);
@@ -57,6 +58,9 @@ private:
 	void OnButtonSelectDir(wxCommandEvent& ev);
 	void OnMenuBarLoadRom(wxCommandEvent& ev);
 
+	std::string _emuApp;
+	std::string _romPath;
+	utix::Process _process;
 
 	std::unique_ptr<wxPanel> _panel;
 	std::unique_ptr<wxStaticText> _romsTxt;
@@ -65,10 +69,6 @@ private:
 	std::unique_ptr<wxButton> _buttonSelectDir;
 	std::unique_ptr<wxButton> _buttonSettings;
 	std::unique_ptr<SettingsWindow> _settingsWin;
-	std::string _emuApp;
-	std::string _romPath;
-	utix::Process _process;
-	
 	wxDECLARE_EVENT_TABLE();
 };
 

@@ -23,10 +23,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+
 #include <cstdlib>
 #include <string>
+
 #include <wx/valnum.h>
 #include <wx/colordlg.h>
+#include <wx/colourdata.h>
 #include <Utix/Log.h>
 #include <Utix/Common.h>
 #include <WXChip/SaveList.h>
@@ -91,6 +94,8 @@ SettingsWindow::SettingsWindow(wxFrame* parent, const wxString &title, const wxP
 	CreateControls();
 	UpdateConfigStr();
 }
+
+
 
 
 

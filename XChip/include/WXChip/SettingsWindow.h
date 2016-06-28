@@ -26,10 +26,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <wx/frame.h>
 #include <wx/string.h>
-#include <wx/colourdata.h>
-
-#include <Utix/Color.h>
-#include <Utix/Vector2.h>
 #include <Utix/Memory.h>
 
 

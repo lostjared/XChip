@@ -52,6 +52,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(wxID_EXIT, MainWindow::OnExit)
+EVT_CLOSE(MainWindow::OnClose)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
 EVT_MENU(ID_MENU_BAR_LOAD_ROM, MainWindow::OnMenuBarLoadRom)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
@@ -78,7 +79,6 @@ MainWindow::~MainWindow()
 {
 	utix::Log("Destroying MainWindow...");
 	StopEmulator();
-	Destroy();
 }
 
 
@@ -234,13 +234,23 @@ void MainWindow::ComputeEmuAppPath()
 
 
 
-
-
 void MainWindow::OnExit(wxCommandEvent&)
 {
 	Close(true);
 }
 
+
+void MainWindow::OnClose(wxCloseEvent&)
+{	
+	_settingsWin.release()->Destroy();
+	_buttonSettings.release()->Destroy();
+	_buttonSelectDir.release()->Destroy();
+	_buttonLoadRom.release()->Destroy();
+	_listBox.release()->Destroy();
+	_romsTxt.release()->Destroy();
+	_panel.release()->Destroy();
+	Destroy();
+}
 
 
 

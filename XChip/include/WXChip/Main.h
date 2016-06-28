@@ -30,10 +30,7 @@ class WXChip final : public wxApp
 {
 public:
 	bool OnInit() override;
-
-private:
-	MainWindow* _mainwin;
-
+	int OnExit() override;
 };
 
 
