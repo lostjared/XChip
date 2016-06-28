@@ -50,6 +50,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <WXChip/MainWindow.h>
 
 
+
+// local functions declarations
+namespace {
+static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string* dest);
+static void FillRomPath(const wxString& fullPath, std::string* dest);
+}
+
+
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(wxID_EXIT, MainWindow::OnExit)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
@@ -64,7 +72,7 @@ wxEND_EVENT_TABLE()
 
 
 
-constexpr const char* const MainWindow::emuapp_relative_path;
+constexpr const char* const MainWindow::default_emuapp_relative_path;
 
 
 
@@ -154,7 +162,7 @@ void MainWindow::CreateMenuBar()
 void MainWindow::StartEmulator()
 {
 	StopEmulator();
-	if(!_process.Run(_emuApp + "-ROM \"" + _romPath + "\" " + _settingsWin->GetArguments()))
+	if(!_process.Run(_emuApp + " -ROM " + _romPath + ' ' + _settingsWin->GetArguments()))
 		throw std::runtime_error(utix::GetLastLogError());
 }
 
@@ -217,14 +225,14 @@ void MainWindow::LoadList(const std::string &dirPath)
 
 void MainWindow::ComputeEmuAppPath()
 {
-	_emuApp = utix::GetFullProcDir() + emuapp_relative_path;
+	_emuApp = utix::GetFullProcDir() + default_emuapp_relative_path;
 
 	if (!std::ifstream(_emuApp).good())
 		throw std::runtime_error("Could not find EmuApp executable!");
 
 	// insert quotes around the computed path
 	_emuApp.insert(0, "\"");
-	_emuApp += "\" ";
+	_emuApp += "\"";
 
 	utix::Log("_emuApp after compute: %s", _emuApp.c_str());
 }
@@ -268,15 +276,7 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 
 	if (item != wxNOT_FOUND)
 	{
-		wxString str = m_lbox->GetString(item);
-		_romPath = _settingsWin->GetDirPath();
-#ifdef _WIN32
-		_romPath += '\\';
-#elif defined(__APPLE__) || defined(__linux__)
-		_romPath += '/';
-#endif
-		_romPath += str.c_str();
-
+		FillRomPath(_settingsWin->GetDirPath(), m_lbox->GetString(item), &_romPath);
 		utix::Log("Start Rom At Path: %s", _romPath.c_str());
 		StartEmulator();
 	}
@@ -304,12 +304,10 @@ void MainWindow::OnButtonLoadRom(wxCommandEvent&)
 
 void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 {
-	wxDirDialog dlg(this, "Choose Roms Directory", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+	wxDirDialog dirDlg(this, "Choose Roms Directory", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 
-	if (dlg.ShowModal() == wxID_OK) {
-		wxString value = dlg.GetPath();
-		LoadList(std::string(value.c_str()));
-	}
+	if (dirDlg.ShowModal() == wxID_OK)
+		LoadList(std::string(dirDlg.GetPath().c_str()));
 }
 
 
@@ -317,10 +315,10 @@ void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 
 void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 {
-	wxFileDialog openDialog(this, "Select Rom", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+	wxFileDialog fdlg(this, "Select Rom", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
-	if (openDialog.ShowModal() == wxID_OK) {
-		_romPath = openDialog.GetPath().c_str();
+	if (fdlg.ShowModal() == wxID_OK) {
+		FillRomPath(fdlg.GetPath(), &_romPath);
 		utix::Log("Selected File: %s", _romPath.c_str());
 		StartEmulator();
 	}
@@ -330,6 +328,31 @@ void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 
 
 
+ // local functiosn definitions
+namespace {
 
+
+static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string* dest)
+{
+#ifdef _WIN32
+		constexpr char dirSlash =  '\\';
+#elif defined(__APPLE__) || defined(__linux__)
+		constexpr char dirSlash = '/';
+#endif
+	((*dest = '\"') += dirPath);
+
+	// check if dirPath had the last dirSlash
+	const auto slashIdx =  dest->size() - 1;
+	if(dest->at(slashIdx) != dirSlash)
+		*dest += dirSlash;
+
+	(*dest += filename) += '\"';
+}
+static void FillRomPath(const wxString& fullPath, std::string* dest)
+{
+	((*dest = '\"') += fullPath) += '\"';
+}
+
+}
 
 
