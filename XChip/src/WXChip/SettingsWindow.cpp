@@ -25,6 +25,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #endif
 
 #include <cstdlib>
+#include <cstring>
 #include <string>
 
 #include <wx/valnum.h>
@@ -36,11 +37,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <WXChip/SettingsWindow.h>
 
 
-// .cpp local functions
+// local functions declarations
 namespace {
 static void ExecuteWxColourDialog(wxFrame* const frame, wxColour* const color, std::string* const str);
 static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl* const text_ctrl);
 }
+
+
+
 
 
 wxBEGIN_EVENT_TABLE(SettingsWindow, wxFrame)
@@ -56,9 +60,6 @@ EVT_BUTTON(ID_BUTTON_FG_COLOR, SettingsWindow::OnSetFGColor)
 wxEND_EVENT_TABLE()
 
 
-
-
-
 constexpr decltype(SettingsWindow::default_cpu_hz) SettingsWindow::default_cpu_hz;
 constexpr decltype(SettingsWindow::default_fps) SettingsWindow::default_fps;
 constexpr const unsigned long SettingsWindow::default_bkg_color;
@@ -68,10 +69,6 @@ constexpr const char* const SettingsWindow::default_fg_color_str;
 constexpr const char* const SettingsWindow::default_render_relative_path;
 constexpr const char* const SettingsWindow::default_input_relative_path;
 constexpr const char* const SettingsWindow::default_sound_relative_path;
-
-
-
-
 
 
 SettingsWindow::SettingsWindow(wxFrame* parent, const wxString &title, const wxPoint &pos)
@@ -95,7 +92,7 @@ SettingsWindow::SettingsWindow(wxFrame* parent, const wxString &title, const wxP
 	UpdateConfigStr();
 }
 
-
+// gets / sets
 
 
 
@@ -112,22 +109,7 @@ void SettingsWindow::SetDirPath(const std::string &dirPath)
 }
 
 
-void SettingsWindow::UpdateConfigStr()
-{
-	_configStr = "";
-	const auto AddArg = [this](const char* opt, const char* arg) {
-		(((_configStr  += opt) += ' ') += arg) += ' ';
-	};
-
-	AddArg("-FPS", _fpsTxtCtrl->GetLineText(0).c_str());
-	AddArg("-CHZ", _cpuHzTxtCtrl->GetLineText(0).c_str());	
-	AddArg("-REN",_renderTxtCtrl->GetLineText(0).c_str());
-	AddArg("-INP", _inputTxtCtrl->GetLineText(0).c_str());
-	AddArg("-SND",_soundTxtCtrl->GetLineText(0).c_str());
-	AddArg("-COL", _fgColorStr.c_str());
-	AddArg("-BKG", _bkgColorStr.c_str());
-}
-
+// functionality 
 
 void SettingsWindow::CreateControls()
 {
@@ -213,6 +195,100 @@ void SettingsWindow::CreateButtons()
 
 
 
+
+
+
+
+void SettingsWindow::UpdateConfigStr()
+{
+	_configStr = "";
+	const auto AddArg = [this](const char* opt, const char* arg) {
+		(((_configStr  += opt) += ' ') += arg) += ' ';
+	};
+	AddArg("-CHZ", _cpuHzTxtCtrl->GetLineText(0).c_str());
+	AddArg("-FPS", _fpsTxtCtrl->GetLineText(0).c_str());
+	AddArg("-REN", _renderTxtCtrl->GetLineText(0).c_str());
+	AddArg("-INP", _inputTxtCtrl ->GetLineText(0).c_str());
+	AddArg("-SND", _soundTxtCtrl ->GetLineText(0).c_str());
+	AddArg("-COL", _fgColorStr.c_str());
+	AddArg("-BKG", _bkgColorStr.c_str());
+}
+
+
+
+void SettingsWindow::ResetSettings()
+{
+	// if wxTextCtrl are set  screen refreshes it
+	// we don't want to refresh the ones who are already defautl
+	const auto SetIfNotEq = [](std::unique_ptr<wxTextCtrl>& tc, const wxString& str) {
+		if( tc->GetLineText(0) != str ) {
+			tc->Clear();
+			*tc << str;
+		}
+	};
+
+	SetIfNotEq(_cpuHzTxtCtrl, wxString(default_cpu_hz));
+	SetIfNotEq(_fpsTxtCtrl, wxString(default_fps));
+	SetIfNotEq(_renderTxtCtrl, default_render_full_path);
+	SetIfNotEq(_inputTxtCtrl, default_input_full_path);
+	SetIfNotEq(_soundTxtCtrl, default_sound_full_path);
+
+	// these variables are not shown on screen
+	// no bother cheking it
+	_bkgColor.SetRGB(default_bkg_color);
+	_fgColor.SetRGB(default_fg_color);
+	_bkgColorStr = default_bkg_color_str;
+	_fgColorStr = default_fg_color_str;
+}
+
+
+
+void SettingsWindow::RestoreSettings()
+{
+	// this is not the best solution,
+	// as directory names can cause trouble
+	// so for now this code is enabled until i have time
+	// to develop a better way so
+	// TODO: create internal variables to represent 
+	// plugin paths and fps/hz values, so its likely
+	// to be faster and nicier to cancel the modifications
+
+	// this will find the old wxTextCtrl value in the _configStr
+	// if the user modified the wxTextCtrl but the changes were not
+	// saved on _configStr, this will get the value on _configStr
+	// and set the wxTextCtrl
+
+	const auto RestoreIfMod = [this](const char* opt, std::unique_ptr<wxTextCtrl>& tc) {
+		auto idx = _configStr.find(opt);
+		if(idx != std::string::npos) {
+			idx += std::strlen(opt)+1;
+			auto idxEnd = _configStr.find('-', (idx+1));
+			if( idxEnd == std::string::npos )
+				idxEnd = _configStr.size();
+
+			const auto str =  _configStr.substr(idx, (idxEnd - idx) - 1);
+			if( tc->GetLineText(0) != str ) {
+				tc->Clear();
+				*tc << str;
+			}
+		}
+	};
+
+	RestoreIfMod("-REN", _renderTxtCtrl);
+	RestoreIfMod("-INP", _inputTxtCtrl);
+	RestoreIfMod("-SND", _soundTxtCtrl);
+	RestoreIfMod("-CHZ", _cpuHzTxtCtrl);
+	RestoreIfMod("-FPS", _fpsTxtCtrl);
+}
+
+
+
+
+
+
+
+// GUI control 
+
 void SettingsWindow::OnCloseWindow(wxCloseEvent &event)
 {
 	Show(false);
@@ -224,6 +300,7 @@ void SettingsWindow::OnCloseWindow(wxCloseEvent &event)
 
 void SettingsWindow::OnCancel(wxCommandEvent&)
 {
+	RestoreSettings();
 	Show(false);
 }
 
@@ -242,6 +319,7 @@ void SettingsWindow::OnDefault(wxCommandEvent&)
 {
 	ResetSettings();
 }
+
 
 
 void SettingsWindow::OnSetRenderPlugin(wxCommandEvent&)
@@ -275,40 +353,9 @@ void SettingsWindow::OnSetFGColor(wxCommandEvent&)
 
 
 
-void SettingsWindow::ResetSettings()
-{
-	// if wxTextCtrl are set  screen refreshes it
-	// we don't want to refresh the ones who are already defautl
-	const auto SetIfNotEq = [](std::unique_ptr<wxTextCtrl>& tc, const wxString& str) {
-		if( tc->GetLineText(0) != str ) {
-			tc->Clear();
-			*tc << str;
-		}
-	};
-
-	SetIfNotEq(_cpuHzTxtCtrl, wxString(default_cpu_hz));
-	SetIfNotEq(_fpsTxtCtrl, wxString(default_fps));
-	SetIfNotEq(_renderTxtCtrl, default_render_full_path);
-	SetIfNotEq(_inputTxtCtrl, default_input_full_path);
-	SetIfNotEq(_soundTxtCtrl, default_sound_full_path);
-
-	// these variables are not shown on screen
-	// no bother cheking it
-	_bkgColor.SetRGB(default_bkg_color);
-	_fgColor.SetRGB(default_fg_color);
-	_bkgColorStr = default_bkg_color_str;
-	_fgColorStr = default_fg_color_str;
-}
-
-
-
-
-
-
-
 
 namespace {
-
+// local functions definitions
 
 static void ExecuteWxColourDialog(wxFrame* const frame, wxColour* const color, std::string* const str)
 {

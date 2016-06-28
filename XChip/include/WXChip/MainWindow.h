@@ -30,6 +30,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 class MainWindow final : public wxFrame
 {
+#ifdef _WIN32
+	constexpr static const char* const emuapp_relative_path = "\\bin\\EmuApp";
+#elif defined(__linux__) || defined(__APPLE__)
+	constexpr static const char* const emuapp_relative_path = "/bin/EmuApp";
+#else
+	#error CANNOT PICK EMUAPP_RELATIVE_PATH
+#endif
+
 public:
 	enum 
 	{ 

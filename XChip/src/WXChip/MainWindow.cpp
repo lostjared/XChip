@@ -52,24 +52,29 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 wxBEGIN_EVENT_TABLE(MainWindow, wxFrame)
 EVT_MENU(wxID_EXIT, MainWindow::OnExit)
-EVT_CLOSE(MainWindow::OnClose)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
 EVT_MENU(ID_MENU_BAR_LOAD_ROM, MainWindow::OnMenuBarLoadRom)
 EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
 EVT_BUTTON(ID_BUTTON_LOAD_ROM, MainWindow::OnButtonLoadRom)
 EVT_BUTTON(ID_BUTTON_SELECT_DIR, MainWindow::OnButtonSelectDir)
 EVT_BUTTON(ID_BUTTON_SETTINGS, MainWindow::OnButtonSettings)
+EVT_CLOSE(MainWindow::OnClose)
 wxEND_EVENT_TABLE()
+
+
+
+
+constexpr const char* const MainWindow::emuapp_relative_path;
+
+
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
 	: wxFrame(nullptr, 0, title, pos, size, wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX)
 {
 	utix::Log("Constructing WXChip MainWindow");
-
 	CreateStatusBar();
 	SetStatusText("Welcome to WXChip");
-
 	ComputeEmuAppPath();
 	CreateControls();
 }
@@ -86,12 +91,12 @@ MainWindow::~MainWindow()
 void MainWindow::CreateControls()
 {
 	using utix::make_unique;
+
 	CreateMenuBar();
 
 	_panel = make_unique<wxPanel>(this, wxID_ANY);
 
 	_settingsWin = make_unique<SettingsWindow>(this, "WXChip - Settings", wxPoint(150, 150));
-
 
 
 	_romsTxt = make_unique<wxStaticText>(_panel.get(), ID_ROMS_TEXT, _T("Roms"), 
@@ -212,18 +217,12 @@ void MainWindow::LoadList(const std::string &dirPath)
 
 void MainWindow::ComputeEmuAppPath()
 {
-
-#ifdef _WIN32
-	constexpr const char* const finalEmuAppPath = "\\bin\\EmuApp.exe";
-#elif defined(__APPLE__) || defined(__linux__)
-	constexpr const char* const finalEmuAppPath = "/bin/EmuApp";
-#endif
-
-	_emuApp = utix::GetFullProcDir() + finalEmuAppPath;
+	_emuApp = utix::GetFullProcDir() + emuapp_relative_path;
 
 	if (!std::ifstream(_emuApp).good())
 		throw std::runtime_error("Could not find EmuApp executable!");
 
+	// insert quotes around the computed path
 	_emuApp.insert(0, "\"");
 	_emuApp += "\" ";
 
@@ -279,9 +278,7 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 		_romPath += str.c_str();
 
 		utix::Log("Start Rom At Path: %s", _romPath.c_str());
-
 		StartEmulator();
-		
 	}
 }
 

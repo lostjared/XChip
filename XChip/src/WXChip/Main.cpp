@@ -53,6 +53,7 @@ bool WXChip::OnInit()
 }
 
 
-int WXChip::OnExit() {
+int WXChip::OnExit() 
+{
 	return wxApp::OnExit();
 }

@@ -81,6 +81,7 @@ private:
 	void CreateTexts();
 	void UpdateConfigStr();
 	void ResetSettings();
+	void RestoreSettings();
 
 	void OnCloseWindow(wxCloseEvent &event);
 	void OnCancel(wxCommandEvent& event);
