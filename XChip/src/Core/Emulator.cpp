@@ -30,6 +30,7 @@ namespace xchip {
 using namespace utix;
 
 
+// local functions declarations
 inline void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer);
 inline bool init_cpu_manager(CpuManager& m_manager);
 
@@ -413,6 +414,9 @@ bool Emulator::InitSound()
 
 
 
+
+
+// local functions definitions
 inline void init_emu_timers(Timer& instrTimer, Timer& frameTimer, Timer& chDelayTimer)
 {	
 	using namespace utix::literals;

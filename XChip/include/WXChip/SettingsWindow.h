@@ -37,9 +37,9 @@ class SettingsWindow : public wxFrame
 	// default compile time values
 	static constexpr const auto* const default_cpu_hz = _T("380");
 	static constexpr const auto* const default_fps = _T("60.00");
-	static constexpr const char* const default_render_relative_path = "/bin/plugins/XChipSDLRender";
-	static constexpr const char* const default_input_relative_path = "/bin/plugins/XChipSDLInput";
-	static constexpr const char* const default_sound_relative_path = "/bin/plugins/XChipSDLSound";
+	static constexpr const char* const default_render_relative_path = "bin/plugins/XChipSDLRender";
+	static constexpr const char* const default_input_relative_path = "bin/plugins/XChipSDLInput";
+	static constexpr const char* const default_sound_relative_path = "bin/plugins/XChipSDLSound";
 	static constexpr const char* const default_bkg_color_str = "0x0x0";
 	static constexpr const char* const default_fg_color_str = "255x255x255";
 	static constexpr const unsigned long default_bkg_color = 0x0000000;

@@ -54,8 +54,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 // local functions declarations
 namespace {
-static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string* const dest);
-static void FillRomPath(const wxString& fullPath, std::string* const dest);
+static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string& dest);
+static void FillRomPath(const wxString& fullPath, std::string& dest);
 }
 
 
@@ -226,7 +226,11 @@ void MainWindow::LoadList(const std::string &dirPath)
 
 void MainWindow::ComputeEmuAppPath()
 {
-	m_emuAppPath = utix::GetFullProcDir() + default_emuapp_relative_path;
+	const auto procDir = utix::GetFullProcDir();
+	if( procDir.empty() )
+		throw std::runtime_error("Could not get WXChip process path");
+
+	m_emuAppPath = procDir + default_emuapp_relative_path;
 
 	if (!std::ifstream(m_emuAppPath).good())
 		throw std::runtime_error("Could not find EmuApp executable!");
@@ -277,7 +281,7 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 
 	if (item != wxNOT_FOUND)
 	{
-		FillRomPath(m_settingsWin->GetDirPath(), m_lbox->GetString(item), &m_romPath);
+		FillRomPath(m_settingsWin->GetDirPath(), m_lbox->GetString(item), m_romPath);
 		utix::Log("Start Rom At Path: %s", m_romPath.c_str());
 		StartEmulator();
 	}
@@ -319,7 +323,7 @@ void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 	wxFileDialog fdlg(this, "Select Rom", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	if (fdlg.ShowModal() == wxID_OK) {
-		FillRomPath(fdlg.GetPath(), &m_romPath);
+		FillRomPath(fdlg.GetPath(), m_romPath);
 		utix::Log("Selected File: %s", m_romPath.c_str());
 		StartEmulator();
 	}
@@ -333,28 +337,29 @@ void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 namespace {
 
 
-static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string* const dest)
+static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string& dest)
 {
-	ASSERT_MSG( dest != nullptr, "FillRomPath NULL dest!");
 #ifdef _WIN32
 		constexpr char dirSlash =  '\\';
 #elif defined(__APPLE__) || defined(__linux__)
 		constexpr char dirSlash = '/';
 #endif
-	((*dest = '\"') += dirPath);
+	((dest = '\"') += dirPath);
 
 	// check if dirPath had the last dirSlash
-	const auto slashIdx =  dest->size() - 1;
-	if(dest->at(slashIdx) != dirSlash)
-		*dest += dirSlash;
+	const auto slashIdx =  dest.size() - 1;
+	if(dest.at(slashIdx) != dirSlash)
+		dest += dirSlash;
 
-	(*dest += filename) += '\"';
+	(dest += filename) += '\"';
 }
-static void FillRomPath(const wxString& fullPath, std::string* const dest)
+
+static void FillRomPath(const wxString& fullPath, std::string& dest)
 {
-	ASSERT_MSG( dest != nullptr, "FillRomPath NULL dest!");
-	((*dest = '\"') += fullPath) += '\"';
+	((dest = '\"') += fullPath) += '\"';
 }
+
+
 
 }
 

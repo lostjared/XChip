@@ -40,8 +40,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 // local functions declarations
 namespace {
-static void ExecuteWxColourDialog(wxFrame* const frame, wxColour* const color, std::string* const str);
-static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl* const text_ctrl);
+static void ExecuteWxColourDialog(wxFrame* const frame, wxColour& color, std::string& str);
+static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl& text_ctrl);
 }
 
 
@@ -84,10 +84,10 @@ SettingsWindow::SettingsWindow(wxFrame* parent, const wxString &title, const wxP
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
 
-	const wxString procPath = utix::GetFullProcDir();
-	default_render_full_path = (procPath + default_render_relative_path);
-	default_input_full_path = (procPath + default_input_relative_path);
-	default_sound_full_path = (procPath + default_sound_relative_path);
+	const wxString procDirPath = utix::GetFullProcDir();
+	default_render_full_path = (procDirPath + default_render_relative_path);
+	default_input_full_path = (procDirPath + default_input_relative_path);
+	default_sound_full_path = (procDirPath + default_sound_relative_path);
 
 	CreateControls();
 	UpdateConfigStr();
@@ -325,31 +325,31 @@ void SettingsWindow::OnDefault(wxCommandEvent&)
 
 void SettingsWindow::OnSetRenderPlugin(wxCommandEvent&)
 {
-	ExecuteWxFileDialog(this, m_renderTxtCtrl.get());
+	ExecuteWxFileDialog(this, *m_renderTxtCtrl);
 }
 
 
 void SettingsWindow::OnSetInputPlugin(wxCommandEvent&)
 {
-	ExecuteWxFileDialog(this, m_inputTxtCtrl.get());
+	ExecuteWxFileDialog(this, *m_inputTxtCtrl);
 }
 
 
 void SettingsWindow::OnSetSoundPlugin(wxCommandEvent&)
 {
-	ExecuteWxFileDialog(this, m_soundTxtCtrl.get());
+	ExecuteWxFileDialog(this, *m_soundTxtCtrl);
 }
 
 
 void SettingsWindow::OnSetBKGColor(wxCommandEvent&)
 {
-	ExecuteWxColourDialog(this, &m_bkgColor, &m_bkgColorStr);
+	ExecuteWxColourDialog(this, m_bkgColor, m_bkgColorStr);
 }
 
 
 void SettingsWindow::OnSetFGColor(wxCommandEvent&)
 {
-	ExecuteWxColourDialog(this, &m_fgColor, &m_fgColorStr);
+	ExecuteWxColourDialog(this, m_fgColor, m_fgColorStr);
 }
 
 
@@ -358,35 +358,35 @@ void SettingsWindow::OnSetFGColor(wxCommandEvent&)
 namespace {
 // local functions definitions
 
-static void ExecuteWxColourDialog(wxFrame* const frame, wxColour* const color, std::string* const str)
+static void ExecuteWxColourDialog(wxFrame* const frame, wxColour& color, std::string& str)
 {
-	ASSERT_MSG(frame && color && str, "ExecuteWxColourDialog can't have null parameters");
+	ASSERT_MSG(frame, "ExecuteWxColourDialog can't have null frame");
 	using std::to_string;
 	wxColourData data;
-	data.SetColour(*color);
+	data.SetColour(color);
 	wxColourDialog dialog(frame, &data);
 
 	if (dialog.ShowModal() == wxID_OK)
 	{
-		*color = dialog.GetColourData().GetColour();
-		*str = to_string(color->Red());
-		*str += 'x';
-		*str += to_string(color->Green());
-		*str += 'x';
-		*str += to_string(color->Blue());
+		color = dialog.GetColourData().GetColour();
+		str = to_string(color.Red());
+		str += 'x';
+		str += to_string(color.Green());
+		str += 'x';
+		str += to_string(color.Blue());
 	}
 
 }
 
 
-static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl* const text_ctrl) 
+static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl& text_ctrl) 
 {
-	ASSERT_MSG(frame && text_ctrl, "ExecuteWxFileDialog can't have null parameters");
+	ASSERT_MSG(frame, "ExecuteWxFileDialog can't have null frame");
 	wxFileDialog dlg(frame, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	
 	if (dlg.ShowModal() == wxID_OK) {
-		text_ctrl->Clear();
-		*text_ctrl << dlg.GetPath();
+		text_ctrl.Clear();
+		text_ctrl << dlg.GetPath();
 	}
 	
 }
