@@ -25,10 +25,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #endif
 #include <wx/msgdlg.h>
 
-#include <string>
 #include <Utix/Memory.h>
-#include <WXChip/MainWindow.h>
 #include <WXChip/Main.h>
+#include <WXChip/MainWindow.h>
+
 
 wxIMPLEMENT_APP(WXChip);
 
@@ -36,12 +36,13 @@ wxIMPLEMENT_APP(WXChip);
 bool WXChip::OnInit()
 {
 	using utix::make_unique;
+	
 	try {
 		if( wxApp::OnInit() ) 
 		{
-			auto mainwin = make_unique<MainWindow>("WXChip", wxPoint(50,50), wxSize(800, 600));
-			mainwin->Show(true);
-			SetTopWindow(mainwin.release());
+			auto main_window = make_unique<MainWindow>("WXChip", wxPoint(50,50), wxSize(800, 600));
+			main_window->Show(true);
+			SetTopWindow(main_window.release());
 			return true;
 		}
 	}

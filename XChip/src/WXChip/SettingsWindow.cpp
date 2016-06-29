@@ -32,6 +32,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <wx/colordlg.h>
 #include <wx/colourdata.h>
 #include <Utix/Log.h>
+#include <Utix/Assert.h>
 #include <Utix/Common.h>
 #include <WXChip/SaveList.h>
 #include <WXChip/SettingsWindow.h>
@@ -74,10 +75,10 @@ constexpr const char* const SettingsWindow::default_sound_relative_path;
 SettingsWindow::SettingsWindow(wxFrame* parent, const wxString &title, const wxPoint &pos)
 	: wxFrame(parent, wxID_ANY, title, pos, wxSize(450, 360), 
                   wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX),
-	_bkgColor(default_bkg_color),
-	_fgColor(default_fg_color),
-	_bkgColorStr(default_bkg_color_str),
-	_fgColorStr(default_fg_color_str)
+	m_bkgColor(default_bkg_color),
+	m_fgColor(default_fg_color),
+	m_bkgColorStr(default_bkg_color_str),
+	m_fgColorStr(default_fg_color_str)
 
 {
 	SetMinSize(GetSize());
@@ -98,14 +99,14 @@ SettingsWindow::SettingsWindow(wxFrame* parent, const wxString &title, const wxP
 
 std::string SettingsWindow::GetDirPath() const
 {
-	return static_cast<const char*>(_romsDirTxtCtrl->GetLineText(0).c_str());
+	return static_cast<const char*>(m_romsDirTxtCtrl->GetLineText(0).c_str());
 }
 
 
 void SettingsWindow::SetDirPath(const std::string &dirPath)
 {
-	_romsDirTxtCtrl->Clear();
-	*_romsDirTxtCtrl << dirPath.c_str();
+	m_romsDirTxtCtrl->Clear();
+	*m_romsDirTxtCtrl << dirPath.c_str();
 }
 
 
@@ -113,7 +114,7 @@ void SettingsWindow::SetDirPath(const std::string &dirPath)
 
 void SettingsWindow::CreateControls()
 {
-	_panel = utix::make_unique<wxPanel>(this, wxID_ANY);
+	m_panel = utix::make_unique<wxPanel>(this, wxID_ANY);
 	CreateTexts();
 	CreateButtons();
 }
@@ -130,32 +131,32 @@ void SettingsWindow::CreateTexts()
 	fpsValidador.SetRange(1.00, 120.00);
 
 	// static texts
-	_cpuHzTxt = make_unique<wxStaticText>(_panel.get(), ID_CPU_HZ_TEXT,_T("CPU Hz: "), 
+	m_cpuHzTxt = make_unique<wxStaticText>(m_panel.get(), ID_CPU_HZ_TEXT,_T("CPU Hz: "), 
                                                  wxPoint(220,45), wxSize(60,25));
 
-	_fpsTxt = make_unique<wxStaticText>(_panel.get(), ID_FPS_TEXT,_T("FPS: "), 
+	m_fpsTxt = make_unique<wxStaticText>(m_panel.get(), ID_FPS_TEXT,_T("FPS: "), 
                                          wxPoint(10,45), wxSize(60,25));
 
-	_romsDirTxt = make_unique<wxStaticText>(_panel.get(), ID_ROMS_DIR_TEXT,_T("Directory: "), 
+	m_romsDirTxt = make_unique<wxStaticText>(m_panel.get(), ID_ROMS_DIR_TEXT,_T("Directory: "), 
 	                                        wxPoint(10,15), wxSize(80,25));
 
 	// text controls
-	_fpsTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_FPS_TEXT_CTRL, default_fps,
+	m_fpsTxtCtrl = make_unique<wxTextCtrl>(m_panel.get(), ID_FPS_TEXT_CTRL, default_fps,
                                            wxPoint(100,40), wxSize(100,20), 0, fpsValidador);
 
-	_cpuHzTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_CPU_HZ_TEXT_CTRL, default_cpu_hz, 
+	m_cpuHzTxtCtrl = make_unique<wxTextCtrl>(m_panel.get(), ID_CPU_HZ_TEXT_CTRL, default_cpu_hz, 
                                                   wxPoint(320,40), wxSize(100,20), 0, cpuHzValidador);
 
-	_romsDirTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_ROMS_DIR_TEXT_CTRL, _T(""), 
+	m_romsDirTxtCtrl = make_unique<wxTextCtrl>(m_panel.get(), ID_ROMS_DIR_TEXT_CTRL, _T(""), 
                                                wxPoint(100,10), wxSize(320,20), wxTE_READONLY);
 
-	_renderTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_RENDER_TEXT_CTRL, default_render_full_path,
+	m_renderTxtCtrl = make_unique<wxTextCtrl>(m_panel.get(), ID_RENDER_TEXT_CTRL, default_render_full_path,
                                                 wxPoint(165, 120), wxSize(200, 20), wxTE_READONLY);
 
-	_inputTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_INPUT_TEXT_CTRL, default_input_full_path,
+	m_inputTxtCtrl = make_unique<wxTextCtrl>(m_panel.get(), ID_INPUT_TEXT_CTRL, default_input_full_path,
                                            wxPoint(165, 160), wxSize(200, 20), wxTE_READONLY);
 
-	_soundTxtCtrl = make_unique<wxTextCtrl>(_panel.get(), ID_SOUND_TEXT_CTRL, default_sound_full_path, 
+	m_soundTxtCtrl = make_unique<wxTextCtrl>(m_panel.get(), ID_SOUND_TEXT_CTRL, default_sound_full_path, 
                                            wxPoint(165, 200), wxSize(200, 20), wxTE_READONLY);
 }
 
@@ -167,28 +168,28 @@ void SettingsWindow::CreateButtons()
 {
 	using utix::make_unique;
 
-	_buttonBKGColor= make_unique<wxButton>(_panel.get(), ID_BUTTON_BKG_COLOR, _T("Background Color"),
+	m_buttonBKGColor= make_unique<wxButton>(m_panel.get(), ID_BUTTON_BKG_COLOR, _T("Background Color"),
                                                 wxPoint(10, 75), wxSize(145, 35));
 
-	_buttonFGColor= make_unique<wxButton>(_panel.get(), ID_BUTTON_FG_COLOR, _T("Frontground Color"),
+	m_buttonFGColor= make_unique<wxButton>(m_panel.get(), ID_BUTTON_FG_COLOR, _T("Frontground Color"),
                                             wxPoint(160, 75), wxSize(145, 35));
 
-	_buttonRender = make_unique<wxButton>(_panel.get(), ID_BUTTON_RENDER, _T("Render Plugin"),
+	m_buttonRender = make_unique<wxButton>(m_panel.get(), ID_BUTTON_RENDER, _T("Render Plugin"),
                                              wxPoint(10, 115), wxSize(140, 33));
 	
-	_buttonInput = make_unique<wxButton>(_panel.get(), ID_BUTTON_INPUT, _T("Input Plugin"),
+	m_buttonInput = make_unique<wxButton>(m_panel.get(), ID_BUTTON_INPUT, _T("Input Plugin"),
                                             wxPoint(10, 155), wxSize(140, 33));
 
-	_buttonSound = make_unique<wxButton>(_panel.get(), ID_BUTTON_SOUND, _T("Sound Plugin"),
+	m_buttonSound = make_unique<wxButton>(m_panel.get(), ID_BUTTON_SOUND, _T("Sound Plugin"),
                                          wxPoint(10, 195), wxSize(140, 33));
 
-	_buttonOk = make_unique<wxButton>(_panel.get(), ID_BUTTON_OK, _T("Ok"), 
+	m_buttonOk = make_unique<wxButton>(m_panel.get(), ID_BUTTON_OK, _T("Ok"), 
 	                                       wxPoint(10, 250), wxSize(100, 35));
 
-	_buttonCancel = make_unique<wxButton>(_panel.get(), ID_BUTTON_CANCEL, _T("Cancel"), 
+	m_buttonCancel = make_unique<wxButton>(m_panel.get(), ID_BUTTON_CANCEL, _T("Cancel"), 
 	                                           wxPoint(120, 250), wxSize(100, 35));
 
-	_buttonDefault = make_unique<wxButton>(_panel.get(), ID_BUTTON_DEFAULT, _T("Default"), 
+	m_buttonDefault = make_unique<wxButton>(m_panel.get(), ID_BUTTON_DEFAULT, _T("Default"), 
 	                                            wxPoint(230,250), wxSize(100, 35));
 }
 
@@ -201,17 +202,17 @@ void SettingsWindow::CreateButtons()
 
 void SettingsWindow::UpdateConfigStr()
 {
-	_configStr = "";
+	m_configStr = "";
 	const auto AddArg = [this](const char* opt, const char* arg) {
-		(((_configStr  += opt) += ' ') += arg) += ' ';
+		(((m_configStr  += opt) += ' ') += arg) += ' ';
 	};
-	AddArg("-CHZ", _cpuHzTxtCtrl->GetLineText(0).c_str());
-	AddArg("-FPS", _fpsTxtCtrl->GetLineText(0).c_str());
-	AddArg("-REN", _renderTxtCtrl->GetLineText(0).c_str());
-	AddArg("-INP", _inputTxtCtrl ->GetLineText(0).c_str());
-	AddArg("-SND", _soundTxtCtrl ->GetLineText(0).c_str());
-	AddArg("-COL", _fgColorStr.c_str());
-	AddArg("-BKG", _bkgColorStr.c_str());
+	AddArg("-CHZ", m_cpuHzTxtCtrl->GetLineText(0).c_str());
+	AddArg("-FPS", m_fpsTxtCtrl->GetLineText(0).c_str());
+	AddArg("-REN", m_renderTxtCtrl->GetLineText(0).c_str());
+	AddArg("-INP", m_inputTxtCtrl ->GetLineText(0).c_str());
+	AddArg("-SND", m_soundTxtCtrl ->GetLineText(0).c_str());
+	AddArg("-COL", m_fgColorStr.c_str());
+	AddArg("-BKG", m_bkgColorStr.c_str());
 }
 
 
@@ -227,18 +228,18 @@ void SettingsWindow::ResetSettings()
 		}
 	};
 
-	SetIfNotEq(_cpuHzTxtCtrl, wxString(default_cpu_hz));
-	SetIfNotEq(_fpsTxtCtrl, wxString(default_fps));
-	SetIfNotEq(_renderTxtCtrl, default_render_full_path);
-	SetIfNotEq(_inputTxtCtrl, default_input_full_path);
-	SetIfNotEq(_soundTxtCtrl, default_sound_full_path);
+	SetIfNotEq(m_cpuHzTxtCtrl, wxString(default_cpu_hz));
+	SetIfNotEq(m_fpsTxtCtrl, wxString(default_fps));
+	SetIfNotEq(m_renderTxtCtrl, default_render_full_path);
+	SetIfNotEq(m_inputTxtCtrl, default_input_full_path);
+	SetIfNotEq(m_soundTxtCtrl, default_sound_full_path);
 
 	// these variables are not shown on screen
 	// no bother cheking it
-	_bkgColor.SetRGB(default_bkg_color);
-	_fgColor.SetRGB(default_fg_color);
-	_bkgColorStr = default_bkg_color_str;
-	_fgColorStr = default_fg_color_str;
+	m_bkgColor.SetRGB(default_bkg_color);
+	m_fgColor.SetRGB(default_fg_color);
+	m_bkgColorStr = default_bkg_color_str;
+	m_fgColorStr = default_fg_color_str;
 }
 
 
@@ -253,20 +254,20 @@ void SettingsWindow::RestoreSettings()
 	// plugin paths and fps/hz values, so its likely
 	// to be faster and nicier to cancel the modifications
 
-	// this will find the old wxTextCtrl value in the _configStr
+	// this will find the old wxTextCtrl value in the m_configStr
 	// if the user modified the wxTextCtrl but the changes were not
-	// saved on _configStr, this will get the value on _configStr
+	// saved on m_configStr, this will get the value on m_configStr
 	// and set the wxTextCtrl
 
 	const auto RestoreIfMod = [this](const char* opt, std::unique_ptr<wxTextCtrl>& tc) {
-		auto idx = _configStr.find(opt);
+		auto idx = m_configStr.find(opt);
 		if(idx != std::string::npos) {
 			idx += std::strlen(opt)+1;
-			auto idxEnd = _configStr.find('-', idx);
+			auto idxEnd = m_configStr.find('-', idx);
 			if( idxEnd == std::string::npos )
-				idxEnd = _configStr.size();
+				idxEnd = m_configStr.size();
 
-			const auto str =  _configStr.substr(idx, (idxEnd - idx) - 1);
+			const auto str =  m_configStr.substr(idx, (idxEnd - idx) - 1);
 			if( tc->GetLineText(0) != str ) {
 				tc->Clear();
 				*tc << str;
@@ -274,11 +275,11 @@ void SettingsWindow::RestoreSettings()
 		}
 	};
 
-	RestoreIfMod("-REN", _renderTxtCtrl);
-	RestoreIfMod("-INP", _inputTxtCtrl);
-	RestoreIfMod("-SND", _soundTxtCtrl);
-	RestoreIfMod("-CHZ", _cpuHzTxtCtrl);
-	RestoreIfMod("-FPS", _fpsTxtCtrl);
+	RestoreIfMod("-REN", m_renderTxtCtrl);
+	RestoreIfMod("-INP", m_inputTxtCtrl);
+	RestoreIfMod("-SND", m_soundTxtCtrl);
+	RestoreIfMod("-CHZ", m_cpuHzTxtCtrl);
+	RestoreIfMod("-FPS", m_fpsTxtCtrl);
 }
 
 
@@ -324,31 +325,31 @@ void SettingsWindow::OnDefault(wxCommandEvent&)
 
 void SettingsWindow::OnSetRenderPlugin(wxCommandEvent&)
 {
-	ExecuteWxFileDialog(this, _renderTxtCtrl.get());
+	ExecuteWxFileDialog(this, m_renderTxtCtrl.get());
 }
 
 
 void SettingsWindow::OnSetInputPlugin(wxCommandEvent&)
 {
-	ExecuteWxFileDialog(this, _inputTxtCtrl.get());
+	ExecuteWxFileDialog(this, m_inputTxtCtrl.get());
 }
 
 
 void SettingsWindow::OnSetSoundPlugin(wxCommandEvent&)
 {
-	ExecuteWxFileDialog(this, _soundTxtCtrl.get());
+	ExecuteWxFileDialog(this, m_soundTxtCtrl.get());
 }
 
 
 void SettingsWindow::OnSetBKGColor(wxCommandEvent&)
 {
-	ExecuteWxColourDialog(this, &_bkgColor, &_bkgColorStr);
+	ExecuteWxColourDialog(this, &m_bkgColor, &m_bkgColorStr);
 }
 
 
 void SettingsWindow::OnSetFGColor(wxCommandEvent&)
 {
-	ExecuteWxColourDialog(this, &_fgColor, &_fgColorStr);
+	ExecuteWxColourDialog(this, &m_fgColor, &m_fgColorStr);
 }
 
 
@@ -359,6 +360,7 @@ namespace {
 
 static void ExecuteWxColourDialog(wxFrame* const frame, wxColour* const color, std::string* const str)
 {
+	ASSERT_MSG(frame && color && str, "ExecuteWxColourDialog can't have null parameters");
 	using std::to_string;
 	wxColourData data;
 	data.SetColour(*color);
@@ -379,6 +381,7 @@ static void ExecuteWxColourDialog(wxFrame* const frame, wxColour* const color, s
 
 static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl* const text_ctrl) 
 {
+	ASSERT_MSG(frame && text_ctrl, "ExecuteWxFileDialog can't have null parameters");
 	wxFileDialog dlg(frame, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	
 	if (dlg.ShowModal() == wxID_OK) {

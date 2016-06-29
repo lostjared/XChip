@@ -34,7 +34,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #endif
 
 
-#include <iostream>
+
 #include <fstream>
 #include <regex>
 #include <stdexcept>
@@ -103,27 +103,27 @@ void MainWindow::CreateControls()
 
 	CreateMenuBar();
 
-	_panel = make_unique<wxPanel>(this, wxID_ANY);
+	m_panel = make_unique<wxPanel>(this, wxID_ANY);
 
-	_settingsWin = make_unique<SettingsWindow>(this, "WXChip - Settings", wxPoint(150, 150));
+	m_settingsWin = make_unique<SettingsWindow>(this, "WXChip - Settings", wxPoint(150, 150));
 
 
-	_romsTxt = make_unique<wxStaticText>(_panel.get(), ID_ROMS_TEXT, _T("Roms"), 
+	m_romsTxt = make_unique<wxStaticText>(m_panel.get(), ID_ROMS_TEXT, _T("Roms"), 
                                           wxPoint(10, 10), wxSize(100, 25));
 
-	_listBox = make_unique<wxListBox>(_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), 
+	m_listBox = make_unique<wxListBox>(m_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), 
                                        0, nullptr, wxLB_SINGLE);
 
-	_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
+	m_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
 
 
-	_buttonLoadRom = make_unique<wxButton>(_panel.get(), ID_BUTTON_LOAD_ROM, _T("Load Rom"), 
+	m_buttonLoadRom = make_unique<wxButton>(m_panel.get(), ID_BUTTON_LOAD_ROM, _T("Load Rom"), 
                                            wxPoint(10, 400), wxSize(100, 35));
 
-	_buttonSelectDir = make_unique<wxButton>(_panel.get(), ID_BUTTON_SELECT_DIR, _T("Select Directory"), 
+	m_buttonSelectDir = make_unique<wxButton>(m_panel.get(), ID_BUTTON_SELECT_DIR, _T("Select Directory"), 
                                            wxPoint(120, 400), wxSize(110, 35));
 
-	_buttonSettings = make_unique<wxButton>(_panel.get(), ID_BUTTON_SETTINGS, _T("Settings"), 
+	m_buttonSettings = make_unique<wxButton>(m_panel.get(), ID_BUTTON_SETTINGS, _T("Settings"), 
                                                    wxPoint(240, 400), wxSize(100, 35));
 }
 
@@ -163,7 +163,7 @@ void MainWindow::CreateMenuBar()
 void MainWindow::StartEmulator()
 {
 	StopEmulator();
-	if(!_process.Run(_emuApp + " -ROM " + _romPath + ' ' + _settingsWin->GetArguments()))
+	if(!m_process.Run(m_emuAppPath + " -ROM " + m_romPath + ' ' + m_settingsWin->GetArguments()))
 		throw std::runtime_error(utix::GetLastLogError());
 }
 
@@ -172,8 +172,8 @@ void MainWindow::StartEmulator()
 
 void MainWindow::StopEmulator()
 {
-	if (_process.IsRunning())
-		_process.Terminate();
+	if (m_process.IsRunning())
+		m_process.Terminate();
 }
 
 
@@ -183,7 +183,7 @@ void MainWindow::LoadList(const std::string &dirPath)
 {
 	using namespace utix;
 
-	if (dirPath == "nopath" || dirPath == _settingsWin->GetDirPath())
+	if (dirPath == "nopath" || dirPath == m_settingsWin->GetDirPath())
 		return;
 
 	DIR *dir = opendir(dirPath.c_str());
@@ -216,9 +216,9 @@ void MainWindow::LoadList(const std::string &dirPath)
 
 	if(!dirFiles.IsEmpty())
 	{
-		_listBox->Clear();
-		_listBox->InsertItems(dirFiles,0);
-		_settingsWin->SetDirPath(dirPath);
+		m_listBox->Clear();
+		m_listBox->InsertItems(dirFiles,0);
+		m_settingsWin->SetDirPath(dirPath);
 	}
 }
 
@@ -226,16 +226,16 @@ void MainWindow::LoadList(const std::string &dirPath)
 
 void MainWindow::ComputeEmuAppPath()
 {
-	_emuApp = utix::GetFullProcDir() + default_emuapp_relative_path;
+	m_emuAppPath = utix::GetFullProcDir() + default_emuapp_relative_path;
 
-	if (!std::ifstream(_emuApp).good())
+	if (!std::ifstream(m_emuAppPath).good())
 		throw std::runtime_error("Could not find EmuApp executable!");
 
 	// insert quotes around the computed path
-	_emuApp.insert(0, "\"");
-	_emuApp += "\"";
+	m_emuAppPath.insert(0, "\"");
+	m_emuAppPath += "\"";
 
-	utix::Log("_emuApp after compute: %s", _emuApp.c_str());
+	utix::Log("m_emuAppPath after compute: %s", m_emuAppPath.c_str());
 }
 
 
@@ -250,13 +250,13 @@ void MainWindow::OnExit(wxCommandEvent&)
 
 void MainWindow::OnClose(wxCloseEvent&)
 {	
-	_settingsWin.release()->Destroy();
-	_buttonSettings.release()->Destroy();
-	_buttonSelectDir.release()->Destroy();
-	_buttonLoadRom.release()->Destroy();
-	_listBox.release()->Destroy();
-	_romsTxt.release()->Destroy();
-	_panel.release()->Destroy();
+	m_settingsWin.release()->Destroy();
+	m_buttonSettings.release()->Destroy();
+	m_buttonSelectDir.release()->Destroy();
+	m_buttonLoadRom.release()->Destroy();
+	m_listBox.release()->Destroy();
+	m_romsTxt.release()->Destroy();
+	m_panel.release()->Destroy();
 	Destroy();
 }
 
@@ -277,8 +277,8 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 
 	if (item != wxNOT_FOUND)
 	{
-		FillRomPath(_settingsWin->GetDirPath(), m_lbox->GetString(item), &_romPath);
-		utix::Log("Start Rom At Path: %s", _romPath.c_str());
+		FillRomPath(m_settingsWin->GetDirPath(), m_lbox->GetString(item), &m_romPath);
+		utix::Log("Start Rom At Path: %s", m_romPath.c_str());
 		StartEmulator();
 	}
 }
@@ -288,7 +288,7 @@ void MainWindow::OnLDown(wxMouseEvent& event)
 
 void MainWindow::OnButtonSettings(wxCommandEvent&)
 {
-	_settingsWin->Show(true);
+	m_settingsWin->Show(true);
 }
 
 
@@ -319,8 +319,8 @@ void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 	wxFileDialog fdlg(this, "Select Rom", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	if (fdlg.ShowModal() == wxID_OK) {
-		FillRomPath(fdlg.GetPath(), &_romPath);
-		utix::Log("Selected File: %s", _romPath.c_str());
+		FillRomPath(fdlg.GetPath(), &m_romPath);
+		utix::Log("Selected File: %s", m_romPath.c_str());
 		StartEmulator();
 	}
 

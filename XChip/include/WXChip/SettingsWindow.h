@@ -44,11 +44,6 @@ class SettingsWindow : public wxFrame
 	static constexpr const char* const default_fg_color_str = "255x255x255";
 	static constexpr const unsigned long default_bkg_color = 0x0000000;
 	static constexpr const unsigned long default_fg_color = 0x00ffffff;
-	// these plugin default values need to evaluate at runtime
-	// to be able to get the WXChip's working directory
-	wxString default_render_full_path;
-	wxString default_input_full_path;
-	wxString default_sound_full_path;
 
 public:
 	enum 
@@ -93,38 +88,46 @@ private:
 	void OnSetBKGColor(wxCommandEvent& event);
 	void OnSetFGColor(wxCommandEvent& event);
 
-	wxColour _bkgColor;
-	wxColour _fgColor;
-	
-	std::string _bkgColorStr;
-	std::string _fgColorStr;
-	std::string _configStr;
+	// these plugin default values need to evaluate at runtime
+	// to be able to get the WXChip's working directory
+	wxString default_render_full_path;
+	wxString default_input_full_path;
+	wxString default_sound_full_path;
 
-	std::unique_ptr<wxPanel> _panel;
-	std::unique_ptr<wxStaticText> _romsDirTxt;
-	std::unique_ptr<wxTextCtrl> _romsDirTxtCtrl;
-	std::unique_ptr<wxStaticText> _fpsTxt;
-	std::unique_ptr<wxTextCtrl> _fpsTxtCtrl;
-	std::unique_ptr<wxStaticText> _cpuHzTxt;
-	std::unique_ptr<wxTextCtrl> _cpuHzTxtCtrl;
-	std::unique_ptr<wxTextCtrl> _renderTxtCtrl;
-	std::unique_ptr<wxTextCtrl> _inputTxtCtrl;
-	std::unique_ptr<wxTextCtrl> _soundTxtCtrl;
-	std::unique_ptr<wxButton> _buttonBKGColor;
-	std::unique_ptr<wxButton> _buttonFGColor;
-	std::unique_ptr<wxButton> _buttonRender;
-	std::unique_ptr<wxButton> _buttonInput;
-	std::unique_ptr<wxButton> _buttonSound;
-	std::unique_ptr<wxButton> _buttonOk;
-	std::unique_ptr<wxButton> _buttonCancel;
-	std::unique_ptr<wxButton> _buttonDefault;
+
+
+	wxColour m_bkgColor;
+	wxColour m_fgColor;
+	
+	std::string m_bkgColorStr;
+	std::string m_fgColorStr;
+	std::string m_configStr;
+
+	std::unique_ptr<wxPanel> m_panel;
+	std::unique_ptr<wxStaticText> m_romsDirTxt;
+	std::unique_ptr<wxTextCtrl> m_romsDirTxtCtrl;
+	std::unique_ptr<wxStaticText> m_fpsTxt;
+	std::unique_ptr<wxTextCtrl> m_fpsTxtCtrl;
+	std::unique_ptr<wxStaticText> m_cpuHzTxt;
+	std::unique_ptr<wxTextCtrl> m_cpuHzTxtCtrl;
+	std::unique_ptr<wxTextCtrl> m_renderTxtCtrl;
+	std::unique_ptr<wxTextCtrl> m_inputTxtCtrl;
+	std::unique_ptr<wxTextCtrl> m_soundTxtCtrl;
+	std::unique_ptr<wxButton> m_buttonBKGColor;
+	std::unique_ptr<wxButton> m_buttonFGColor;
+	std::unique_ptr<wxButton> m_buttonRender;
+	std::unique_ptr<wxButton> m_buttonInput;
+	std::unique_ptr<wxButton> m_buttonSound;
+	std::unique_ptr<wxButton> m_buttonOk;
+	std::unique_ptr<wxButton> m_buttonCancel;
+	std::unique_ptr<wxButton> m_buttonDefault;
 	
 	wxDECLARE_EVENT_TABLE();
 };
 
 
 
-inline const std::string& SettingsWindow::GetArguments() const { return _configStr;  }
+inline const std::string& SettingsWindow::GetArguments() const { return m_configStr;  }
 
 
 

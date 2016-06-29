@@ -19,8 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _WXCHIP_MAIN_H_
-#define _WXCHIP_MAIN_H_
+#ifndef WXCHIP_MAIN_H_
+#define WXCHIP_MAIN_H_
 
 #include <wx/app.h>
 
@@ -78,7 +78,7 @@ wxDECLARE_APP(WXChip);
 
 
 
-#endif
+#endif // WXCHIP_MAIN_H_
 
 
 

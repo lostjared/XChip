@@ -19,8 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _WXCHIP_MAINWINDOW_H_
-#define _WXCHIP_MAINWINDOW_H_
+#ifndef WXCHIP_MAINWINDOW_H_
+#define WXCHIP_MAINWINDOW_H_
 
 
 #include <string>
@@ -66,17 +66,17 @@ private:
 	void OnButtonSelectDir(wxCommandEvent& ev);
 	void OnMenuBarLoadRom(wxCommandEvent& ev);
 
-	std::string _emuApp;
-	std::string _romPath;
-	utix::Process _process;
+	std::string m_emuAppPath;
+	std::string m_romPath;
+	utix::Process m_process;
 
-	std::unique_ptr<wxPanel> _panel;
-	std::unique_ptr<wxStaticText> _romsTxt;
-	std::unique_ptr<wxListBox> _listBox;
-	std::unique_ptr<wxButton> _buttonLoadRom;
-	std::unique_ptr<wxButton> _buttonSelectDir;
-	std::unique_ptr<wxButton> _buttonSettings;
-	std::unique_ptr<SettingsWindow> _settingsWin;
+	std::unique_ptr<wxPanel> m_panel;
+	std::unique_ptr<wxStaticText> m_romsTxt;
+	std::unique_ptr<wxListBox> m_listBox;
+	std::unique_ptr<wxButton> m_buttonLoadRom;
+	std::unique_ptr<wxButton> m_buttonSelectDir;
+	std::unique_ptr<wxButton> m_buttonSettings;
+	std::unique_ptr<SettingsWindow> m_settingsWin;
 	wxDECLARE_EVENT_TABLE();
 };
 
@@ -84,4 +84,4 @@ private:
 
 
 
-#endif
+#endif // WXCHIP_MAINWINDOW_H_
