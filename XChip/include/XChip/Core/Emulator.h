@@ -124,16 +124,14 @@ inline const iSound* Emulator::GetSound() const { return m_manager.GetSound(); }
 inline int Emulator::GetCpuFreq() const { return m_instrTimer.GetTargetHz(); }
 inline int Emulator::GetFps() const { return m_frameTimer.GetTargetHz(); }
 
-inline void Emulator::SetCpuFreq(int value)
+inline void Emulator::SetCpuFreq(const int value)
 {
-	utix::Clamp(60, 50000, &value);
-	m_instrTimer.SetTargetHz(value);
+	m_instrTimer.SetTargetHz(utix::Clamp(value, 60, 50000));
 }
 
-inline void Emulator::SetFps(int value)
+inline void Emulator::SetFps(const int value)
 {
-	utix::Clamp(10, 1000, &value);
-	m_frameTimer.SetTargetHz(value);
+	m_frameTimer.SetTargetHz(utix::Clamp(value, 10, 1000));
 }
 
 
