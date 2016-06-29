@@ -39,6 +39,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <regex>
 #include <stdexcept>
 
+
+
 #include <Utix/Assert.h>
 #include <Utix/ScopeExit.h>
 #include <Utix/Common.h>
@@ -46,6 +48,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <Utix/Log.h>
 #include <Utix/Memory.h>
 
+#include <WXChip/MessageBox.h>
 #include <WXChip/Main.h>
 #include <WXChip/SaveList.h>
 #include <WXChip/MainWindow.h>
@@ -190,7 +193,7 @@ void MainWindow::LoadList(const std::string &dirPath)
 
 	if (dir == nullptr)
 	{
-		LogError("Error could not open directory.");
+		WarningBox(wxT("Error could not open directory."), this);
 		return;
 	}
 	// close the dir in every exit path from this function
@@ -268,8 +271,8 @@ void MainWindow::OnClose(wxCloseEvent&)
 
 void MainWindow::OnAbout(wxCommandEvent&)
 {
-	wxMessageBox("WXChip - wxWidgets GUI for XChip",
-		"About WXChip", wxOK | wxICON_INFORMATION);
+	wxMessageBox(wxT("WXChip - wxWidgets GUI for XChip"),
+		wxT("About WXChip"), wxOK | wxICON_INFORMATION);
 }
 
 
@@ -309,7 +312,7 @@ void MainWindow::OnButtonLoadRom(wxCommandEvent&)
 
 void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 {
-	wxDirDialog dirDlg(this, "Choose Roms Directory", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+	wxDirDialog dirDlg(this, wxT("Choose Roms Directory"), "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 
 	if (dirDlg.ShowModal() == wxID_OK)
 		LoadList(std::string(dirDlg.GetPath().c_str()));
@@ -320,7 +323,7 @@ void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 
 void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 {
-	wxFileDialog fdlg(this, "Select Rom", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+	wxFileDialog fdlg(this, wxT("Select Rom"), "", "", wxT("All Files (*)|*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	if (fdlg.ShowModal() == wxID_OK) {
 		FillRomPath(fdlg.GetPath(), m_romPath);

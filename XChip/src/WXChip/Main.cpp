@@ -23,9 +23,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-#include <wx/msgdlg.h>
 
 #include <Utix/Memory.h>
+#include <WXChip/MessageBox.h>
 #include <WXChip/Main.h>
 #include <WXChip/MainWindow.h>
 
@@ -47,8 +47,11 @@ bool WXChip::OnInit()
 		}
 	}
 	catch(std::exception& err) {
-		wxMessageBox(err.what(), wxT("Fatal Exception"), wxICON_ERROR);
+		FatalExceptionBox(wxString(err.what()));
 		// continues and returns false
+	}
+	catch(...) {
+		FatalExceptionBox(wxT("Unknown Exception!"));
 	}
 	return false;
 }
