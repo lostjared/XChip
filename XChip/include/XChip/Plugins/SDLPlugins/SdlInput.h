@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_SDLINPUT_H_
-#define _XCHIP_SDLINPUT_H_
+#ifndef XCHIP_PLUGINS_SDLINPUT_H_
+#define XCHIP_PLUGINS_SDLINPUT_H_
 
 
 #include <SDL2/SDL_events.h>
@@ -34,7 +34,6 @@ namespace xchip {
 	
 class SdlInput final : public iInput
 {
-	struct KeyPair { Key chip8Key; SDL_Scancode sdlKey; };
 	static constexpr const char* const PLUGIN_NAME = "SdlInput";
 	static constexpr const char* const PLUGIN_VER = "SdlInput 1.0. Using SDL2";
 public:
@@ -57,15 +56,16 @@ public:
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept override;
 
 private:
-	utix::Vector<KeyPair> _keyPairs;
-	const unsigned char* _keyboardState = nullptr;
-	WaitKeyCallback _waitClbk = nullptr;
-	ResetKeyCallback _resetClbk = nullptr;
-	EscapeKeyCallback _escapeClbk = nullptr;
-	const void* _waitClbkArg;
-	const void* _resetClbkArg;
-	const void* _escapeClbkArg;
-	bool _initialized = false;
+	struct KeyPair { Key chip8Key; SDL_Scancode sdlKey; };
+	utix::Vector<KeyPair> m_keyPairs;
+	const unsigned char* m_keyboardState = nullptr;
+	WaitKeyCallback m_waitClbk = nullptr;
+	ResetKeyCallback m_resetClbk = nullptr;
+	EscapeKeyCallback m_escapeClbk = nullptr;
+	const void* m_waitClbkArg;
+	const void* m_resetClbkArg;
+	const void* m_escapeClbkArg;
+	bool m_initialized = false;
 
 };
 
@@ -92,4 +92,4 @@ private:
 
 
 
-#endif
+#endif // XCHIP_PLUGINS_SDLINPUT_H_

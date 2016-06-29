@@ -19,8 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 
-#ifndef __XCHIP_INSTRUCTIONS_H__
-#define __XCHIP_INSTRUCTIONS_H__
+#ifndef XCHIP_CORE_INSTRUCTIONS_H_
+#define XCHIP_CORE_INSTRUCTIONS_H_
 #include "CpuManager.h"
  
 namespace xchip { namespace instructions {
@@ -30,7 +30,7 @@ namespace xchip { namespace instructions {
 using InstrTable = void(*)(CpuManager&);
 extern InstrTable instrTable[16];
 
-extern void execute_instruction(CpuManager&);
+extern void ExecuteInstruction(CpuManager&);
 
 
 // Primary table
@@ -89,4 +89,4 @@ extern void op_FX33(CpuManager&); // BCD
 
 }}
 
-#endif
+#endif // XCHIP_CORE_INSTRUCTIONS_H_

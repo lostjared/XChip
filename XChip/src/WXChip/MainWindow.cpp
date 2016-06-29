@@ -39,6 +39,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <regex>
 #include <stdexcept>
 
+#include <Utix/Assert.h>
 #include <Utix/ScopeExit.h>
 #include <Utix/Common.h>
 #include <Utix/CliOpts.h>
@@ -334,6 +335,7 @@ namespace {
 
 static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string* const dest)
 {
+	ASSERT_MSG( dest != nullptr, "FillRomPath NULL dest!");
 #ifdef _WIN32
 		constexpr char dirSlash =  '\\';
 #elif defined(__APPLE__) || defined(__linux__)
@@ -350,6 +352,7 @@ static void FillRomPath(const wxString& dirPath, const wxString& filename, std::
 }
 static void FillRomPath(const wxString& fullPath, std::string* const dest)
 {
+	ASSERT_MSG( dest != nullptr, "FillRomPath NULL dest!");
 	((*dest = '\"') += fullPath) += '\"';
 }
 

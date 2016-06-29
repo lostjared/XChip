@@ -34,7 +34,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <XChip/Plugins/SDLPlugins/SdlSound.h>
 
  
-#define _SDLSOUND_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlSound is not initialized")
+#define _SDLSOUND_INITIALIZED_ASSERT_() ASSERT_MSG(m_initialized == true, "SdlSound is not initialized")
 
 namespace xchip {
 
@@ -45,12 +45,22 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
 
 
-inline float SdlSound::GetCurFreq() const { return _curFreq * _specs[Have].freq; }
-inline float SdlSound::GetPlayFreq() const { return _playFreq * _specs[Have].freq; }
-inline void SdlSound::SetCycleTime(const float hz) { _cycleTime = _specs[Have].freq / hz; }
-inline void SdlSound::SetCurFreq(const float hz) { _curFreq = hz / _specs[Have].freq; }
-inline void SdlSound::SetPlayFreq(const float hz) { _playFreq = hz / _specs[Have].freq; }
-inline void SdlSound::SetLenght(const unsigned int len) { _len = _cycleTime * len; }
+constexpr const char* const SdlSound::PLUGIN_NAME;
+constexpr const char* const SdlSound::PLUGIN_VER;
+constexpr float SdlSound::DEFAULT_FREQ;
+
+
+
+
+
+
+
+inline float SdlSound::GetCurFreq() const { return m_curFreq * m_specs[HAVE].freq; }
+inline float SdlSound::GetPlayFreq() const { return m_playFreq * m_specs[HAVE].freq; }
+inline void SdlSound::SetCycleTime(const float hz) { m_cycleTime = m_specs[HAVE].freq / hz; }
+inline void SdlSound::SetCurFreq(const float hz) { m_curFreq = hz / m_specs[HAVE].freq; }
+inline void SdlSound::SetPlayFreq(const float hz) { m_playFreq = hz / m_specs[HAVE].freq; }
+inline void SdlSound::SetLenght(const unsigned int len) { m_len = m_cycleTime * len; }
 
 
 
@@ -67,7 +77,7 @@ SdlSound::SdlSound() noexcept
 
 SdlSound::~SdlSound()
 {
-	if (_initialized)
+	if (m_initialized)
 		this->Dispose();
 
 	Log("Destroying SdlSound object...");
@@ -79,7 +89,7 @@ bool SdlSound::Initialize() noexcept
 {
 	using namespace utix::literals;
 
-	if (_initialized)
+	if (m_initialized)
 		this->Dispose();
 
 
@@ -89,30 +99,30 @@ bool SdlSound::Initialize() noexcept
 
 	const auto cleanup = make_scope_exit([this]() noexcept 
 	{
-		if (!this->_initialized)
+		if (!this->m_initialized)
 			this->Dispose();
 	});
 
 
-	_specs = new(std::nothrow) SDL_AudioSpec[2];
+	m_specs = new(std::nothrow) SDL_AudioSpec[2];
 
 	
-	if (!_specs) {
+	if (!m_specs) {
 		LogError("Could not allocate memory for SDL_AudioSpecs");
 		return false;
 	}
 
-	else if (!InitDevice(_specs[Want], _specs[Have])) {
+	else if (!InitDevice(m_specs[WANT], m_specs[HAVE])) {
 		return false;
 	}
 
-	_len = 0.f;
-	_pos = 0u;
-	_amplitude = 16000;
-	_cycleTime = _specs[Have].freq / 60.f;
-	this->SetCurFreq(defaultFreq);
+	m_len = 0.f;
+	m_pos = 0u;
+	m_amplitude = 16000;
+	m_cycleTime = m_specs[HAVE].freq / 60.f;
+	this->SetCurFreq(DEFAULT_FREQ);
 
-	_initialized = true;
+	m_initialized = true;
 	return true;
 }
 
@@ -120,26 +130,26 @@ bool SdlSound::Initialize() noexcept
 
 void SdlSound::Dispose() noexcept
 {
-	if (_dev != 0)
+	if (m_dev != 0)
 	{
-		SDL_CloseAudioDevice(_dev);
-		_dev = 0;
+		SDL_CloseAudioDevice(m_dev);
+		m_dev = 0;
 	}
 
-	if (_specs)
+	if (m_specs)
 	{
-		delete[] _specs;
-		_specs = nullptr;
+		delete[] m_specs;
+		m_specs = nullptr;
 	}
 
 	SDL_QuitSubSystem( SDL_INIT_AUDIO );
-	_initialized = false;
+	m_initialized = false;
 }
 
 
 bool SdlSound::IsInitialized() const noexcept
 {
-	return _initialized;
+	return m_initialized;
 }
 
 
@@ -172,20 +182,20 @@ float SdlSound::GetSoundFreq() const noexcept
 float SdlSound::GetCountdownFreq() const noexcept
 {
 	_SDLSOUND_INITIALIZED_ASSERT_();
-	return _specs[Have].freq / _cycleTime;
+	return m_specs[HAVE].freq / m_cycleTime;
 }
 
 bool SdlSound::IsPlaying() const  noexcept
 {
 	_SDLSOUND_INITIALIZED_ASSERT_();
-	return SDL_GetAudioDeviceStatus(_dev) == SDL_AUDIO_PLAYING;
+	return SDL_GetAudioDeviceStatus(m_dev) == SDL_AUDIO_PLAYING;
 }
 
 
 void SdlSound::SetCountdownFreq(const float hertz) noexcept 
 { 
 	_SDLSOUND_INITIALIZED_ASSERT_(); 
-	_cycleTime = _specs[Have].freq / hertz; 
+	m_cycleTime = m_specs[HAVE].freq / hertz; 
 }
 
 
@@ -208,13 +218,13 @@ void SdlSound::Play(const uint8_t soundTimer) noexcept
 	
 	else
 	{
-		SDL_LockAudioDevice(_dev);
+		SDL_LockAudioDevice(m_dev);
 		SetPlayFreq(GetCurFreq() + 2 * soundTimer);
 		SetLenght(soundTimer);
-		SDL_UnlockAudioDevice(_dev);
+		SDL_UnlockAudioDevice(m_dev);
 	}
 
-	SDL_PauseAudioDevice(_dev, 0);
+	SDL_PauseAudioDevice(m_dev, 0);
 }
 
 
@@ -226,9 +236,9 @@ void SdlSound::Stop() noexcept
  	_SDLSOUND_INITIALIZED_ASSERT_();
 	if (this->IsPlaying())
 	{
-		SDL_LockAudioDevice(_dev);
-		_len = 0;
-		SDL_UnlockAudioDevice(_dev);
+		SDL_LockAudioDevice(m_dev);
+		m_len = 0;
+		SDL_UnlockAudioDevice(m_dev);
 	}
 }
 
@@ -251,9 +261,9 @@ bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 	want.callback = SdlSound::audio_callback<Sint16>;
 	want.userdata = this;
 
-	_dev = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);
+	m_dev = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);
 
-	if (_dev < 2) 
+	if (m_dev < 2) 
 	{
 		LogError("SdlSound: Failed to open audio device: %s", SDL_GetError());
 		return false;
@@ -280,18 +290,18 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 
 
 	constexpr auto _2pi = static_cast<float>(2 * M_PI);
-	const auto ampl = _this->_amplitude;
-	const auto freq = _this->_playFreq;
-	auto pos = _this->_pos;
+	const auto ampl = _this->m_amplitude;
+	const auto freq = _this->m_playFreq;
+	auto pos = _this->m_pos;
 
 
-	if (_this->_len > 0)
+	if (_this->m_len > 0)
 	{
 		for (size_t i = 0; i < bufflen; ++i, ++pos)
 			buff[i] = static_cast<T>(ampl * std::sin(_2pi * freq * pos));
 
-		_this->_pos = pos;
-		_this->_len -= bufflen;
+		_this->m_pos = pos;
+		_this->m_len -= bufflen;
 	}
 
 	else
@@ -306,8 +316,8 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 
 		// pause the device from the callback function.
 		// is this ok ?
-		_this->_pos = 0;
-		SDL_PauseAudioDevice(_this->_dev, 1);
+		_this->m_pos = 0;
+		SDL_PauseAudioDevice(_this->m_dev, 1);
 		
 	}
 

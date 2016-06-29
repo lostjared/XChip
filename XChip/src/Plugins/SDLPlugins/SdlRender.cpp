@@ -26,21 +26,21 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <XChip/Plugins/SDLPlugins/SdlRender.h>
 
 
-#define _SDLRENDER_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlRender is not initialized")
+#define _SDLRENDER_INITIALIZED_ASSERT_() ASSERT_MSG(m_initialized == true, "SdlRender is not initialized")
 
 namespace xchip {
 
 using namespace utix;
 using namespace utix::literals;
 
+
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
 
 
 
-
-
-
+constexpr const char* const SdlRender::PLUGIN_NAME;
+constexpr const char* const SdlRender::PLUGIN_VER;
 
 
 SdlRender::SdlRender() noexcept
@@ -52,7 +52,7 @@ SdlRender::SdlRender() noexcept
 SdlRender::~SdlRender()
 {
 	Log("Destroying SdlRenderer object...");
-	if (_initialized)
+	if (m_initialized)
 		this->Dispose();
 }
 
@@ -60,7 +60,7 @@ SdlRender::~SdlRender()
 bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 {
 
-	if (_initialized)
+	if (m_initialized)
 		this->Dispose();
 
 
@@ -72,24 +72,24 @@ bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 	
 	const auto scope = make_scope_exit([this]() noexcept 
 	{
-		if (!this->_initialized) 
+		if (!this->m_initialized) 
 		{
 			LogError("Couldn't initialize SdlRender. SDL ERROR MSG: %s", SDL_GetError());
 			this->Dispose();
 		}
 	});
 
-	_pitch = res.x * sizeof(uint32_t);
+	m_pitch = res.x * sizeof(uint32_t);
 
-	_window = SDL_CreateWindow("Chip8 - SdlRender", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+	m_window = SDL_CreateWindow("Chip8 - SdlRender", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
                                     winSize.x, winSize.y, SDL_WINDOW_RESIZABLE);
 
-	if (!_window) 
+	if (!m_window) 
 		return false;
 
-	_rend = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+	m_rend = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
 
-	if (!_rend)
+	if (!m_rend)
 		return false;
 
 
@@ -97,10 +97,10 @@ bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 		return false;
 
 
-	SDL_SetRenderDrawColor(_rend, 0, 0, 0, 0xff);
-	SDL_RenderClear(_rend);
-	SDL_RenderPresent(_rend);
-	_initialized = true;
+	SDL_SetRenderDrawColor(m_rend, 0, 0, 0, 0xff);
+	SDL_RenderClear(m_rend);
+	SDL_RenderPresent(m_rend);
+	m_initialized = true;
 
 	return true;
 }
@@ -108,15 +108,15 @@ bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 
 void SdlRender::Dispose() noexcept
 {
-	SDL_DestroyTexture(_texture);
-	SDL_DestroyRenderer(_rend);
-	SDL_DestroyWindow(_window);
+	SDL_DestroyTexture(m_texture);
+	SDL_DestroyRenderer(m_rend);
+	SDL_DestroyWindow(m_window);
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
-	_window = nullptr;
-	_buffer = nullptr;
-	_closeClbk = nullptr;
-	_resizeClbk = nullptr;
-	_initialized = false;
+	m_window = nullptr;
+	m_buffer = nullptr;
+	m_closeClbk = nullptr;
+	m_resizeClbk = nullptr;
+	m_initialized = false;
 
 }
 
@@ -124,7 +124,7 @@ void SdlRender::Dispose() noexcept
 
 bool SdlRender::IsInitialized() const noexcept 
 { 
-	return _initialized; 
+	return m_initialized; 
 }
 
 
@@ -147,13 +147,13 @@ PluginDeleter SdlRender::GetPluginDeleter() const noexcept
 
 const uint32_t* SdlRender::GetBuffer() const noexcept 
 { 
-	return _buffer; 
+	return m_buffer; 
 }
 
 const char* SdlRender::GetWindowName() const noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	return SDL_GetWindowTitle(_window);
+	return SDL_GetWindowTitle(m_window);
 }
 
 
@@ -162,7 +162,7 @@ Color SdlRender::GetDrawColor() const noexcept
 	_SDLRENDER_INITIALIZED_ASSERT_();
 
 	uint8_t r, g, b;
-	SDL_GetTextureColorMod(_texture, &r, &g, &b);
+	SDL_GetTextureColorMod(m_texture, &r, &g, &b);
 	return {r, g, b};
 
 }
@@ -173,7 +173,7 @@ Color SdlRender::GetBackgroundColor() const noexcept
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	
 	uint8_t r, g, b;	
-	if(SDL_GetRenderDrawColor(_rend, &r, &g, &b, nullptr) == 0)
+	if(SDL_GetRenderDrawColor(m_rend, &r, &g, &b, nullptr) == 0)
 		return {r, g, b};
 	
 	LogError("Could not get render draw color: %s", SDL_GetError());
@@ -189,7 +189,7 @@ Vec2i SdlRender::GetResolution() const noexcept
 	_SDLRENDER_INITIALIZED_ASSERT_();
 
 	int x, y;
-	if( SDL_QueryTexture(_texture, nullptr, nullptr, &x, &y) == 0)
+	if( SDL_QueryTexture(m_texture, nullptr, nullptr, &x, &y) == 0)
 		return {x, y};
 	
 	LogError("Failed to get SDL_Texture resolution: %s", SDL_GetError());
@@ -204,7 +204,7 @@ Vec2i SdlRender::GetWindowSize() const noexcept
 	_SDLRENDER_INITIALIZED_ASSERT_();
 
 	int x, y;
-	SDL_GetWindowSize(_window, &x, &y);
+	SDL_GetWindowSize(m_window, &x, &y);
 	return {x, y};
 }
 
@@ -214,7 +214,7 @@ Vec2i SdlRender::GetWindowPosition() const noexcept
 	_SDLRENDER_INITIALIZED_ASSERT_();
 
 	int x, y;
-	SDL_GetWindowPosition(_window, &x, &y);
+	SDL_GetWindowPosition(m_window, &x, &y);
 	return { x, y };
 }
 
@@ -227,21 +227,21 @@ bool SdlRender::UpdateEvents() noexcept
 
 
 	bool hasEvent = false;
-	while (SDL_PollEvent(&_sdlevent) != 0)
+	while (SDL_PollEvent(&m_sdlevent) != 0)
 	{
-		if (_sdlevent.type == SDL_WINDOWEVENT)
+		if (m_sdlevent.type == SDL_WINDOWEVENT)
 		{
-			switch (_sdlevent.window.event)
+			switch (m_sdlevent.window.event)
 			{
 				case SDL_WINDOWEVENT_RESIZED: /* fall */
 				case SDL_WINDOWEVENT_RESTORED: 
-					if (_resizeClbk) 
-						_resizeClbk(_resizeClbkArg);  
+					if (m_resizeClbk) 
+						m_resizeClbk(m_resizeClbkArg);  
 					break;
 			
 				case SDL_WINDOWEVENT_CLOSE: 
-					if (_closeClbk) 
-						_closeClbk(_closeClbkArg); 
+					if (m_closeClbk) 
+						m_closeClbk(m_closeClbkArg); 
 				
 					break;
 			}
@@ -261,7 +261,7 @@ bool SdlRender::UpdateEvents() noexcept
 
 void SdlRender::SetBuffer(const uint32_t* gfx) noexcept 
 { 
-	_buffer = gfx;
+	m_buffer = gfx;
 }
 
 
@@ -271,7 +271,7 @@ void SdlRender::SetBuffer(const uint32_t* gfx) noexcept
 void SdlRender::SetWindowName(const char* name) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	SDL_SetWindowTitle(_window, name);
+	SDL_SetWindowTitle(m_window, name);
 }
 
 
@@ -281,7 +281,7 @@ bool SdlRender::SetResolution(const Vec2i& res) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 
-	_pitch = res.x * sizeof(uint32_t);
+	m_pitch = res.x * sizeof(uint32_t);
 	
 	const auto currentColor = this->GetDrawColor();
 
@@ -300,14 +300,14 @@ bool SdlRender::SetResolution(const Vec2i& res) noexcept
 void SdlRender::SetWindowSize(const Vec2i& size) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	SDL_SetWindowSize(_window, size.x, size.y);
+	SDL_SetWindowSize(m_window, size.x, size.y);
 }
 
 
 void SdlRender::SetWindowPosition(const Vec2i& pos) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	SDL_SetWindowPosition(_window, pos.x, pos.y);
+	SDL_SetWindowPosition(m_window, pos.x, pos.y);
 }
 
 
@@ -319,7 +319,7 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 	static Vec2i oldSize = { 0, 0 };
 	static Vec2i oldPos = { 0, 0 };
 
-	const auto IsFullScreen = [this]() { return (SDL_GetWindowFlags(_window) & SDL_WINDOW_FULLSCREEN) != 0; };
+	const auto IsFullScreen = [this]() { return (SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN) != 0; };
 
 	if(val)
 	{
@@ -342,7 +342,7 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 
 		this->SetWindowPosition({0,0});
 
-		if(SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN))
+		if(SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN))
 		{
 			this->SetWindowSize(oldSize);
 			this->SetWindowPosition(oldPos);
@@ -362,7 +362,7 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 		if( !IsFullScreen() )
 			return true;
 		
-		if(SDL_SetWindowFullscreen(_window, 0))
+		if(SDL_SetWindowFullscreen(m_window, 0))
 		{
 			LogError("Error while setting SdlRender Windowed: %s", SDL_GetError());
 			return false;
@@ -387,7 +387,7 @@ bool SdlRender::SetDrawColor(const Color& color) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	
-	if(SDL_SetTextureColorMod(_texture, color.r, color.g, color.b))
+	if(SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b))
 	{
 		LogError("Failed to set texture draw color: %s", + SDL_GetError());
 		return false;
@@ -405,7 +405,7 @@ bool SdlRender::SetBackgroundColor(const Color& color) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 
-	if(SDL_SetRenderDrawColor(_rend, color.r, color.g, color.b, 0xff))
+	if(SDL_SetRenderDrawColor(m_rend, color.r, color.g, color.b, 0xff))
 	{
 		LogError("Could not set render draw color: %s", SDL_GetError());
 		return false;
@@ -423,13 +423,13 @@ bool SdlRender::SetBackgroundColor(const Color& color) noexcept
 void SdlRender::DrawBuffer() noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	ASSERT_MSG(_buffer != nullptr, "attempt to draw null buffer");
+	ASSERT_MSG(m_buffer != nullptr, "attempt to draw null buffer");
 	
 
-	SDL_RenderClear(_rend);
-	SDL_UpdateTexture(_texture, nullptr, _buffer, _pitch);
-	SDL_RenderCopy(_rend, _texture, nullptr, nullptr);
-	SDL_RenderPresent(_rend);
+	SDL_RenderClear(m_rend);
+	SDL_UpdateTexture(m_texture, nullptr, m_buffer, m_pitch);
+	SDL_RenderCopy(m_rend, m_texture, nullptr, nullptr);
+	SDL_RenderPresent(m_rend);
 
 }
 
@@ -440,13 +440,13 @@ void SdlRender::DrawBuffer() noexcept
 void SdlRender::HideWindow() noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	SDL_HideWindow(_window);
+	SDL_HideWindow(m_window);
 }
 
 void SdlRender::ShowWindow() noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
-	SDL_ShowWindow(_window);
+	SDL_ShowWindow(m_window);
 }
 
 
@@ -456,8 +456,8 @@ void SdlRender::ShowWindow() noexcept
 
 void SdlRender::SetWinCloseCallback(const void* arg, WinCloseCallback callback) noexcept
 {
-	_closeClbkArg = arg;
-	_closeClbk = callback;
+	m_closeClbkArg = arg;
+	m_closeClbk = callback;
 }
 
 
@@ -465,8 +465,8 @@ void SdlRender::SetWinCloseCallback(const void* arg, WinCloseCallback callback) 
 
 void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback) noexcept 
 {
-	_resizeClbkArg = arg;
-	_resizeClbk = callback;
+	m_resizeClbkArg = arg;
+	m_resizeClbk = callback;
 }
 
 
@@ -482,7 +482,7 @@ bool SdlRender::CreateTexture(const int w, const int h)
 		return false;
 	}
 
-	auto* oldTexture = _texture;
+	auto* oldTexture = m_texture;
 	
 	const auto cleanup = make_scope_exit([&surface, &oldTexture]() noexcept
 	{
@@ -492,12 +492,12 @@ bool SdlRender::CreateTexture(const int w, const int h)
 
 
 	SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
-	_texture = SDL_CreateTextureFromSurface(_rend, surface);
+	m_texture = SDL_CreateTextureFromSurface(m_rend, surface);
 
-	if(!_texture)
+	if(!m_texture)
 	{
 		LogError("Could not create texture: %s", SDL_GetError());
-		_texture = oldTexture;
+		m_texture = oldTexture;
 		oldTexture = nullptr;
 		return false;
 	}

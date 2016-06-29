@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_SDLSOUND_H_
-#define _XCHIP_SDLSOUND_H_
+#ifndef XCHIP_PLUGINS_SDLSOUND_H_
+#define XCHIP_PLUGINS_SDLSOUND_H_
 
 #include <Utix/Ints.h>
 #include <XChip/Plugins/iSound.h>
@@ -38,7 +38,7 @@ class SdlSound final : public iSound
 {
 	static constexpr const char* const PLUGIN_NAME = "SdlSound";
 	static constexpr const char* const PLUGIN_VER = "1.0 using SDL2";
-	static constexpr float defaultFreq = 450;
+	static constexpr float DEFAULT_FREQ = 450;
 public:
 	SdlSound() noexcept;
 	~SdlSound();
@@ -71,16 +71,16 @@ private:
 	static void audio_callback(void* userdata, uint8_t* stream, int len) noexcept;
 
 
-	SDL_AudioSpec* _specs = nullptr;
-	SDL_AudioDeviceID _dev = 0;
-	float _cycleTime;
-	float _playFreq;
-	float _curFreq;
-	float _len;
-	unsigned int _pos;
-	int _amplitude;
-	bool _initialized = false;
-	enum SpecsID { Want, Have };
+	SDL_AudioSpec* m_specs = nullptr;
+	SDL_AudioDeviceID m_dev = 0;
+	float m_cycleTime;
+	float m_playFreq;
+	float m_curFreq;
+	float m_len;
+	unsigned int m_pos;
+	int m_amplitude;
+	bool m_initialized = false;
+	enum SpecsID { WANT, HAVE };
 };
 
 
@@ -108,4 +108,8 @@ private:
 
 
 }
-#endif
+
+
+
+
+#endif // XCHIP_PLUGINS_SDLSOUND_H_

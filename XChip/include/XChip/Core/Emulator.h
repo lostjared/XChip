@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_EMULATOR_H_
-#define _XCHIP_EMULATOR_H_
+#ifndef XCHIP_CORE_EMULATOR_H_
+#define XCHIP_CORE_EMULATOR_H_
 
 #include <Utix/Log.h>
 #include <Utix/Timer.h>
@@ -98,82 +98,82 @@ private:
 	bool InitInput();
 	bool InitSound();
 
-	CpuManager _manager;
-	utix::Timer _instrTimer;
-	utix::Timer _frameTimer;
-	utix::Timer _chDelayTimer;
-	UniqueRender _renderPlugin;
-	UniqueInput _inputPlugin;
-	UniqueSound _soundPlugin;
-	bool _initialized = false;
+	CpuManager m_manager;
+	utix::Timer m_instrTimer;
+	utix::Timer m_frameTimer;
+	utix::Timer m_chDelayTimer;
+	UniqueRender m_renderPlugin;
+	UniqueInput m_inputPlugin;
+	UniqueSound m_soundPlugin;
+	bool m_initialized = false;
 };
 
 
 
 
 
-inline bool Emulator::IsInitialized() const { return _initialized; }
-inline bool Emulator::Good() const { return _manager.GetFlags(Cpu::BAD_RENDER | Cpu::BAD_INPUT | Cpu::BAD_SOUND) == 0u; }
-inline bool Emulator::GetInstrFlag() const { return _manager.GetFlags(Cpu::INSTR) != 0u; }
-inline bool Emulator::GetDrawFlag() const { return _manager.GetFlags(Cpu::DRAW) != 0u; }
-inline bool Emulator::GetExitFlag() const { return _manager.GetFlags(Cpu::EXIT) != 0u; }
-inline const iRender* Emulator::GetRender() const { return _manager.GetRender(); }
-inline const iInput* Emulator::GetInput() const { return _manager.GetInput(); }
-inline const iSound* Emulator::GetSound() const { return _manager.GetSound(); }
+inline bool Emulator::IsInitialized() const { return m_initialized; }
+inline bool Emulator::Good() const { return m_manager.GetFlags(Cpu::BAD_RENDER | Cpu::BAD_INPUT | Cpu::BAD_SOUND) == 0u; }
+inline bool Emulator::GetInstrFlag() const { return m_manager.GetFlags(Cpu::INSTR) != 0u; }
+inline bool Emulator::GetDrawFlag() const { return m_manager.GetFlags(Cpu::DRAW) != 0u; }
+inline bool Emulator::GetExitFlag() const { return m_manager.GetFlags(Cpu::EXIT) != 0u; }
+inline const iRender* Emulator::GetRender() const { return m_manager.GetRender(); }
+inline const iInput* Emulator::GetInput() const { return m_manager.GetInput(); }
+inline const iSound* Emulator::GetSound() const { return m_manager.GetSound(); }
 
-inline int Emulator::GetCpuFreq() const { return _instrTimer.GetTargetHz(); }
-inline int Emulator::GetFps() const { return _frameTimer.GetTargetHz(); }
+inline int Emulator::GetCpuFreq() const { return m_instrTimer.GetTargetHz(); }
+inline int Emulator::GetFps() const { return m_frameTimer.GetTargetHz(); }
 
 inline void Emulator::SetCpuFreq(int value)
 {
 	utix::Clamp(60, 50000, &value);
-	_instrTimer.SetTargetHz(value);
+	m_instrTimer.SetTargetHz(value);
 }
 
 inline void Emulator::SetFps(int value)
 {
 	utix::Clamp(10, 1000, &value);
-	_frameTimer.SetTargetHz(value);
+	m_frameTimer.SetTargetHz(value);
 }
 
 
 inline void Emulator::SetDrawFlag(const bool val) 
 { 
 	if (val)
-		_manager.SetFlags(Cpu::DRAW);
+		m_manager.SetFlags(Cpu::DRAW);
 	else
-		_manager.UnsetFlags(Cpu::DRAW);
+		m_manager.UnsetFlags(Cpu::DRAW);
 }
 
 
 inline void Emulator::SetExitFlag(const bool val) 
 {
 	if (val)
-		_manager.SetFlags(Cpu::EXIT);
+		m_manager.SetFlags(Cpu::EXIT);
 	else
-		_manager.UnsetFlags(Cpu::EXIT);
+		m_manager.UnsetFlags(Cpu::EXIT);
 }
 
 
 
-inline bool Emulator::LoadRom(const std::string& fname) { return _manager.LoadRom(fname.c_str(), 0x200); }
+inline bool Emulator::LoadRom(const std::string& fname) { return m_manager.LoadRom(fname.c_str(), 0x200); }
 
-inline iRender* Emulator::GetRender() { return _manager.GetRender(); }
-inline iInput* Emulator::GetInput() { return _manager.GetInput(); }
-inline iSound* Emulator::GetSound() { return _manager.GetSound(); }
+inline iRender* Emulator::GetRender() { return m_manager.GetRender(); }
+inline iInput* Emulator::GetInput() { return m_manager.GetInput(); }
+inline iSound* Emulator::GetSound() { return m_manager.GetSound(); }
 
 inline void Emulator::ExecuteInstr()
 {
-	instructions::execute_instruction(_manager);
-	_manager.UnsetFlags(Cpu::INSTR);
+	instructions::ExecuteInstruction(m_manager);
+	m_manager.UnsetFlags(Cpu::INSTR);
 }
 
 
 inline void Emulator::Draw()
 {
-	ASSERT_MSG( !_manager.GetFlags(Cpu::BAD_RENDER), "bad render!");
-	_manager.GetRender()->DrawBuffer();
-	_manager.UnsetFlags(Cpu::DRAW);
+	ASSERT_MSG( !m_manager.GetFlags(Cpu::BAD_RENDER), "bad render!");
+	m_manager.GetRender()->DrawBuffer();
+	m_manager.UnsetFlags(Cpu::DRAW);
 }
 
 
@@ -196,4 +196,11 @@ inline UniqueSound Emulator::SwapPlugin<UniqueSound>(UniqueSound&& plugin) { ret
 
 
 }
-#endif
+
+
+
+
+
+
+
+#endif // XCHIP_CORE_EMULATOR_H_

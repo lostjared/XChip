@@ -48,7 +48,7 @@ CpuManager::CpuManager() noexcept
 {
 	Log("Creating CpuManager object...");
 	// init all members to 0
-	memset(&_cpu, 0, sizeof(Cpu));
+	memset(&m_cpu, 0, sizeof(Cpu));
 	SetFlags( Cpu::BAD_RENDER | Cpu::BAD_INPUT | Cpu::BAD_SOUND ); 
 }
 
@@ -65,16 +65,16 @@ CpuManager::~CpuManager()
 
 void CpuManager::Dispose() noexcept
 {
-	free_cpu_arr(&_cpu.gfx);
-	free_cpu_arr(&_cpu.stack);
-	free_cpu_arr(&_cpu.registers);
-	free_cpu_arr(&_cpu.memory);
+	free_cpu_arr(&m_cpu.gfx);
+	free_cpu_arr(&m_cpu.stack);
+	free_cpu_arr(&m_cpu.registers);
+	free_cpu_arr(&m_cpu.memory);
 }
 
 
 bool CpuManager::SetMemory(const size_t size)
 {
-	if (alloc_cpu_arr(size, &_cpu.memory))
+	if (alloc_cpu_arr(size, &m_cpu.memory))
 		return true;
 
 	LogError("Cannot allocate Cpu memory size: %zu", size);
@@ -85,7 +85,7 @@ bool CpuManager::SetMemory(const size_t size)
 
 bool CpuManager::SetRegisters(const size_t size)
 {
-	if (alloc_cpu_arr(size, &_cpu.registers))
+	if (alloc_cpu_arr(size, &m_cpu.registers))
 		return true;
 
 	LogError("Cannot allocate Cpu registers size: %zu", size);
@@ -95,7 +95,7 @@ bool CpuManager::SetRegisters(const size_t size)
 
 bool CpuManager::SetStack(const size_t size)
 {
-	if (alloc_cpu_arr(size, &_cpu.stack))
+	if (alloc_cpu_arr(size, &m_cpu.stack))
 		return true;
 
 	LogError("Cannot allocate Cpu stack size: %zu", size);
@@ -105,14 +105,14 @@ bool CpuManager::SetStack(const size_t size)
 
 bool CpuManager::SetGfxRes(const Vec2i& res)
 {
-	if (alloc_cpu_arr(res.x * res.y, &_cpu.gfx)) 
+	if (alloc_cpu_arr(res.x * res.y, &m_cpu.gfx)) 
 	{
-		_gfxRes = res;
+		m_gfxRes = res;
 		return true;
 	}
 
 	LogError("Cannot allocate Cpu memory size: %d", + res.x*res.y);
-	_gfxRes = 0;
+	m_gfxRes = 0;
 	return false;
 }
 
@@ -120,15 +120,15 @@ bool CpuManager::SetGfxRes(const Vec2i& res)
 
 bool CpuManager::SetGfxRes(const int w, const int h)
 {
-	if (alloc_cpu_arr(w * h, &_cpu.gfx)) 
+	if (alloc_cpu_arr(w * h, &m_cpu.gfx)) 
 	{
-		_gfxRes.x = w;
-		_gfxRes.y = h;
+		m_gfxRes.x = w;
+		m_gfxRes.y = h;
 		return true;
 	}
 
 	LogError("Cannot allocate Cpu memory size: %d", w*h);
-	_gfxRes = 0;
+	m_gfxRes = 0;
 	return false;
 }
 
@@ -138,7 +138,7 @@ bool CpuManager::SetGfxRes(const int w, const int h)
 
 bool CpuManager::ResizeMemory(const std::size_t size)
 {
-	if (realloc_cpu_arr(size, &_cpu.memory)) 
+	if (realloc_cpu_arr(size, &m_cpu.memory)) 
 		return true;
 
 
@@ -150,7 +150,7 @@ bool CpuManager::ResizeMemory(const std::size_t size)
 
 bool CpuManager::ResizeRegisters(const size_t size)
 {
-	if (realloc_cpu_arr(size, &_cpu.registers))
+	if (realloc_cpu_arr(size, &m_cpu.registers))
 		return true;
 
 	LogError("Cannot reallocate Cpu registers to size: %zu",  size);
@@ -162,7 +162,7 @@ bool CpuManager::ResizeRegisters(const size_t size)
 
 bool CpuManager::ResizeStack(const size_t size)
 {
-	if (realloc_cpu_arr(size, &_cpu.stack))
+	if (realloc_cpu_arr(size, &m_cpu.stack))
 		return true;
 
 	LogError("Cannot reallocate Cpu stack to size: %zu", size);
@@ -177,10 +177,10 @@ void CpuManager::LoadDefaultFont()
 	// default font is loaded right in the first memory bytes
 	// default font : [0] -> [DEFAULT_FONT_SIZE - 1] 
 
-	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
-	ASSERT_MSG((arr_size(_cpu.memory) >= arr_size(chip8DefaultFont)), "Memory size is too low");
+	ASSERT_MSG(m_cpu.memory != nullptr, "null Cpu::memory");
+	ASSERT_MSG((arr_size(m_cpu.memory) >= arr_size(chip8DefaultFont)), "Memory size is too low");
 
-	memcpy(_cpu.memory, chip8DefaultFont, arr_size(chip8DefaultFont));
+	memcpy(m_cpu.memory, chip8DefaultFont, arr_size(chip8DefaultFont));
 }
 
 void CpuManager::LoadHiResFont()
@@ -193,22 +193,22 @@ void CpuManager::LoadHiResFont()
 
 	constexpr const auto at = arr_size(chip8DefaultFont); 
 	
-	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
-	ASSERT_MSG( arr_size(_cpu.memory) >= ( at + arr_size(chip8HiResFont)), "Memory size is too low");
+	ASSERT_MSG(m_cpu.memory != nullptr, "null Cpu::memory");
+	ASSERT_MSG( arr_size(m_cpu.memory) >= ( at + arr_size(chip8HiResFont)), "Memory size is too low");
 	ASSERT_MSG((at + arr_size(chip8HiResFont)) < 0x200, "Hi res font is over 0x200 memory area");
 
-	memcpy(_cpu.memory + at, chip8HiResFont, arr_size(chip8HiResFont));
+	memcpy(m_cpu.memory + at, chip8HiResFont, arr_size(chip8HiResFont));
 }
 
 
 bool CpuManager::LoadRom(const char* fileName, const size_t at)
 {
-	// if the parameter 'at' is greater than _cpu.memory array,
-	// or the _cpu.memory ptr is null. It is the caller's error,
+	// if the parameter 'at' is greater than m_cpu.memory array,
+	// or the m_cpu.memory ptr is null. It is the caller's error,
 	// so here's an assert for that purpose.
 
-	ASSERT_MSG(_cpu.memory != nullptr, "null Cpu::memory");
-	ASSERT_MSG(arr_size(_cpu.memory) > at, "parameter 'at' greater than Cpu::memory size");
+	ASSERT_MSG(m_cpu.memory != nullptr, "null Cpu::memory");
+	ASSERT_MSG(arr_size(m_cpu.memory) > at, "parameter 'at' greater than Cpu::memory size");
 
 	Log("Loading %s", fileName);
 
@@ -231,15 +231,15 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 	
 	
 	// check if file size will not overflow emulated memory size
-	if ( (arr_size(_cpu.memory) - at) <= fileSize)
+	if ( (arr_size(m_cpu.memory) - at) <= fileSize)
 	{
 		LogError("Error, size of \'%s\' does not fit in memory at %zu! memory size: %zu, file size: %zu", 
-                           fileName, at, arr_size(_cpu.memory), fileSize);
+                           fileName, at, arr_size(m_cpu.memory), fileSize);
 
 		return false;
 	}
 
-	const auto readSize = std::fread(_cpu.memory + at, 1, fileSize, file);
+	const auto readSize = std::fread(m_cpu.memory + at, 1, fileSize, file);
 
 	if( readSize != fileSize ) 
 	{
@@ -258,29 +258,29 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 void CpuManager::SetRender(iRender* render) 
 {
 	set_plugin_flag(Cpu::BAD_RENDER, render, this);
-	_cpu.render = render; 
+	m_cpu.render = render; 
 }
 
 
 void CpuManager::SetInput(iInput* input) 
 {
 	set_plugin_flag(Cpu::BAD_INPUT, input, this);
-	_cpu.input = input; 
+	m_cpu.input = input; 
 }
 
 
 void CpuManager::SetSound(iSound* sound) 
 {
 	set_plugin_flag(Cpu::BAD_SOUND, sound, this);
-	_cpu.sound = sound; 
+	m_cpu.sound = sound; 
 }
 
 
 
 iRender* CpuManager::SwapRender(iRender* render)
 {
-	ASSERT_MSG(render != _cpu.render, "trying to swap the same addresses");
-	auto* const ret = _cpu.render;
+	ASSERT_MSG(render != m_cpu.render, "trying to swap the same addresses");
+	auto* const ret = m_cpu.render;
 	SetRender(render);
 	return ret;
 }
@@ -289,8 +289,8 @@ iRender* CpuManager::SwapRender(iRender* render)
 
 iInput* CpuManager::SwapInput(iInput* input)
 {
-	ASSERT_MSG(input != _cpu.input, "trying to swap the same addresses");
-	auto* const ret = _cpu.input;
+	ASSERT_MSG(input != m_cpu.input, "trying to swap the same addresses");
+	auto* const ret = m_cpu.input;
 	SetInput(input);
 	return ret;
 }
@@ -299,8 +299,8 @@ iInput* CpuManager::SwapInput(iInput* input)
 
 iSound* CpuManager::SwapSound(iSound* sound)
 {
-	ASSERT_MSG(sound != _cpu.sound, "trying to swap the same addresses");
-	auto* const ret = _cpu.sound;
+	ASSERT_MSG(sound != m_cpu.sound, "trying to swap the same addresses");
+	auto* const ret = m_cpu.sound;
 	SetSound(sound);
 	return ret;
 }

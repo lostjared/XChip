@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_PLUGINS_H_
-#define _XCHIP_PLUGINS_H_
+#ifndef XCHIP_PLUGINS_H_
+#define XCHIP_PLUGINS_H_
 #include "Plugins/iRender.h"
 #include "Plugins/iInput.h"
 #include "Plugins/iSound.h"
@@ -39,4 +39,4 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
-#endif
+#endif // XCHIP_PLUGINS_H_

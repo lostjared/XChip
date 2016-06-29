@@ -51,7 +51,7 @@ InstrTable instrTable[16] =
 
 
 
-void unknown_opcode(CpuManager& cpuMan)
+void UnknownOpcode(CpuManager& cpuMan)
 {
 	LogError("Unknown Opcode: $%X", cpuMan.GetOpcode());
 	cpuMan.SetFlags(Cpu::EXIT);
@@ -60,7 +60,7 @@ void unknown_opcode(CpuManager& cpuMan)
 
 
 
-void execute_instruction(CpuManager& cpuMan)
+void ExecuteInstruction(CpuManager& cpuMan)
 {
 	// decode the next opcode 
 	cpuMan.FetchOpcode();
@@ -189,7 +189,7 @@ void op_0xxx(CpuManager& cpuMan)
 
 			else
 			{
-				unknown_opcode(cpuMan);
+				UnknownOpcode(cpuMan);
 			}
 
 			break;
@@ -384,7 +384,7 @@ void op_EXxx(CpuManager& cpuMan)
 			break;
 
 		default: 
-			unknown_opcode(cpuMan); 
+			UnknownOpcode(cpuMan); 
 			break;
 	}
 }
@@ -413,9 +413,9 @@ static InstrTable op_8XYx_Table[16] =
 {
 	op_8XY0, op_8XY1, op_8XY2, op_8XY3,
 	op_8XY4, op_8XY5, op_8XY6, op_8XY7,
-	unknown_opcode, unknown_opcode, unknown_opcode,
-	unknown_opcode, unknown_opcode, unknown_opcode,
-	op_8XYE, unknown_opcode
+	UnknownOpcode, UnknownOpcode, UnknownOpcode,
+	UnknownOpcode, UnknownOpcode, UnknownOpcode,
+	op_8XYE, UnknownOpcode
 };
 
 void op_8XYx(CpuManager& cpuMan)
@@ -547,10 +547,10 @@ void op_8XYE(CpuManager& cpuMan)
 // FXxxx subtable start
 static InstrTable op_FXxx_Table[] =
 {
-	op_FX30, unknown_opcode, unknown_opcode,
-	op_FX33, unknown_opcode, op_FXx5, unknown_opcode,
-	op_FX07, op_FX18, op_FX29, op_FX0A, unknown_opcode,
-	unknown_opcode, unknown_opcode, op_FX1E
+	op_FX30, UnknownOpcode, UnknownOpcode,
+	op_FX33, UnknownOpcode, op_FXx5, UnknownOpcode,
+	op_FX07, op_FX18, op_FX29, op_FX0A, UnknownOpcode,
+	UnknownOpcode, UnknownOpcode, op_FX1E
 };
 
 
@@ -631,7 +631,7 @@ void op_FXx5(CpuManager& cpuMan)
 			break;
 		}
 		default: 
-			unknown_opcode(cpuMan); 
+			UnknownOpcode(cpuMan); 
 			break;
 
 

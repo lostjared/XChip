@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_PLUGINS_IINPUT_H_
-#define _XCHIP_PLUGINS_IINPUT_H_
+#ifndef XCHIP_PLUGINS_IINPUT_H_
+#define XCHIP_PLUGINS_IINPUT_H_
 #include <Utix/Ints.h>
 #include "iPlugin.h"
 
@@ -83,4 +83,4 @@ public:
 
 }
 
-#endif
+#endif // XCHIP_PLUGINS_IINPUT_H_

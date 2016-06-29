@@ -20,8 +20,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
-#ifndef _XCHIP_PLUGINS_UNIQUEPLUGIN_H_
-#define _XCHIP_PLUGINS_UNIQUEPLUGIN_H_
+#ifndef XCHIP_PLUGINS_UNIQUEPLUGIN_H_
+#define XCHIP_PLUGINS_UNIQUEPLUGIN_H_
 
 #include "iPlugin.h"
 #include <Utix/DLoader.h>
@@ -64,8 +64,8 @@ public:
 
 
 private:
-	utix::DLoader _dloader;
-	T* _plugin = nullptr;
+	utix::DLoader m_dloader;
+	T* m_plugin = nullptr;
 };
 
 inline void call_deleter(utix::DLoader&, iPlugin*) noexcept;
@@ -77,10 +77,10 @@ inline UniquePlugin<T>::UniquePlugin(const nullptr_t)
 
 template<class T>
 inline UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs) noexcept
-	:  _dloader(std::move(rhs._dloader)),
-	_plugin(rhs._plugin)
+	:  m_dloader(std::move(rhs.m_dloader)),
+	m_plugin(rhs.m_plugin)
 {
-	rhs._plugin = nullptr;
+	rhs.m_plugin = nullptr;
 }
 
 
@@ -107,28 +107,28 @@ inline UniquePlugin<T>::~UniquePlugin()
 template<class T>
 inline bool UniquePlugin<T>::operator!=(const T* addr) const
 {
-	return _plugin != addr;
+	return m_plugin != addr;
 }
 
 
 template<class T>
 inline bool UniquePlugin<T>::operator==(const T* addr) const
 {
-	return _plugin == addr;
+	return m_plugin == addr;
 }
 
 
 template<class T>
 inline bool UniquePlugin<T>::operator!=(const UniquePlugin& other) const
 {
-	return this->_plugin != other._plugin;
+	return this->m_plugin != other.m_plugin;
 }
 
 
 template<class T>
 inline bool UniquePlugin<T>::operator==(const UniquePlugin& other) const
 {
-	return this->_plugin == other._plugin;
+	return this->m_plugin == other.m_plugin;
 }
 
 
@@ -137,7 +137,7 @@ inline bool UniquePlugin<T>::operator==(const UniquePlugin& other) const
 template<class T>
 inline UniquePlugin<T>::operator bool() const
 {
-	return _plugin != nullptr;
+	return m_plugin != nullptr;
 }
 
 
@@ -146,14 +146,14 @@ inline UniquePlugin<T>::operator bool() const
 template<class T>
 inline const T* UniquePlugin<T>::operator->() const
 {
-	return _plugin;
+	return m_plugin;
 }
 
 
 template<class T>
 inline const T* UniquePlugin<T>::get() const
 {
-	return _plugin;
+	return m_plugin;
 }
 
 
@@ -161,14 +161,14 @@ inline const T* UniquePlugin<T>::get() const
 template<class T>
 inline T* UniquePlugin<T>::operator->()
 {
-	return _plugin;
+	return m_plugin;
 }
 
 
 template<class T>
 inline T* UniquePlugin<T>::get()
 {
-	return _plugin;
+	return m_plugin;
 }
 
 
@@ -212,11 +212,11 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 	}
 
 
-	if(_plugin)
-		call_deleter(_dloader, _plugin);
+	if(m_plugin)
+		call_deleter(m_dloader, m_plugin);
 
-	_dloader = std::move(newLoader);
-	_plugin = newPluginCast;
+	m_dloader = std::move(newLoader);
+	m_plugin = newPluginCast;
 	return true;
 }
 
@@ -227,11 +227,11 @@ bool UniquePlugin<T>::Load(const std::string& dlPath)
 template<class T>
 void UniquePlugin<T>::Free()
 {
-	if(_plugin) 
+	if(m_plugin) 
 	{
-		call_deleter(_dloader, _plugin);
-		_plugin = nullptr;
-		_dloader.Free();
+		call_deleter(m_dloader, m_plugin);
+		m_plugin = nullptr;
+		m_dloader.Free();
 	}
 }
 
@@ -243,10 +243,10 @@ void UniquePlugin<T>::Swap(UniquePlugin& other) noexcept
 {
 	if(&other != this)
 	{
-		this->_dloader.Swap(other._dloader);
-		auto* const aux = this->_plugin;
-		this->_plugin = other._plugin;
-		other._plugin = aux;
+		this->m_dloader.Swap(other.m_dloader);
+		auto* const aux = this->m_plugin;
+		this->m_plugin = other.m_plugin;
+		other.m_plugin = aux;
 	}
 }
 
@@ -297,4 +297,7 @@ inline void call_deleter(utix::DLoader& dloader, iPlugin* plugin) noexcept
 
 }
 
-#endif
+
+
+
+#endif // XCHIP_PLUGINS_UNIQUEPLUGIN_H_

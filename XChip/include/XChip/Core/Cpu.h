@@ -20,8 +20,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
-#ifndef __XCHIP_CPU_H__
-#define __XCHIP_CPU_H__
+#ifndef XCHIP_CORE_CPU_H_
+#define XCHIP_CORE_CPU_H_
 #include <Utix/Ints.h>
  
 
@@ -81,4 +81,4 @@ struct Cpu
 
 
 
-#endif
+#endif // XCHIP_CORE_CPU_H_

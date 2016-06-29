@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_SDLRENDER_H_
-#define _XCHIP_SDLRENDER_H_
+#ifndef XCHIP_PLUGINS_SDLRENDER_H_
+#define XCHIP_PLUGINS_SDLRENDER_H_
 #include <SDL2/SDL.h>
 #include <XChip/Plugins/iRender.h>
 
@@ -72,17 +72,17 @@ public:
 
 private:
 	bool CreateTexture(const int w, const int h);
-	SDL_Event _sdlevent;
-	SDL_Window* _window = nullptr;
-	SDL_Renderer* _rend = nullptr;
-	SDL_Texture* _texture = nullptr;
-	const uint32_t* _buffer = nullptr;
-	WinCloseCallback _closeClbk = nullptr;
-	WinResizeCallback _resizeClbk = nullptr;
-	const void* _closeClbkArg;
-	const void* _resizeClbkArg;
-	int _pitch;
-	bool _initialized = false;
+	SDL_Event m_sdlevent;
+	SDL_Window* m_window = nullptr;
+	SDL_Renderer* m_rend = nullptr;
+	SDL_Texture* m_texture = nullptr;
+	const uint32_t* m_buffer = nullptr;
+	WinCloseCallback m_closeClbk = nullptr;
+	WinResizeCallback m_resizeClbk = nullptr;
+	const void* m_closeClbkArg;
+	const void* m_resizeClbkArg;
+	int m_pitch;
+	bool m_initialized = false;
 };
 
 
@@ -108,4 +108,9 @@ private:
 
 
 }
-#endif
+
+
+
+
+
+#endif // XCHIP_PLUGINS_SDLRENDER_H_

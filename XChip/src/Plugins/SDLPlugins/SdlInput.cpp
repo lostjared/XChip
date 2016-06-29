@@ -27,13 +27,21 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <Utix/Assert.h>
 
 
-#define _SDLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized == true, "SdlInput is not initialized")
+#define _SDLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(m_initialized == true, "SdlInput is not initialized")
 
 namespace xchip {
 
 using namespace utix;
 
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
+
+
+
+
+
+constexpr const char* const SdlInput::PLUGIN_NAME;
+constexpr const char* const SdlInput::PLUGIN_VER;
+
 
 
 
@@ -45,7 +53,7 @@ SdlInput::SdlInput() noexcept
 
 SdlInput::~SdlInput()
 {
-	if (_keyboardState)
+	if (m_keyboardState)
 		this->Dispose();
 
 	Log("Destroying SdlInput object...");
@@ -58,22 +66,22 @@ bool SdlInput::Initialize() noexcept
 {
 	using namespace utix::literals;
 
-	if (_initialized)
+	if (m_initialized)
 		this->Dispose();
 
 	// TODO: Initialize events
 
-	_keyboardState = SDL_GetKeyboardState(NULL);
+	m_keyboardState = SDL_GetKeyboardState(NULL);
 
-	if (!_keyboardState) 
+	if (!m_keyboardState) 
 	{
 		LogError("Cannot get Keyboard State: %s", SDL_GetError());
 		return false;
 	}
 
-	if(_keyPairs.empty())
+	if(m_keyPairs.empty())
 	{
-		bool ret = _keyPairs.initialize({
+		bool ret = m_keyPairs.initialize({
 				{ Key::KEY_0, SDL_SCANCODE_KP_0 },{ Key::KEY_1, SDL_SCANCODE_KP_7 },{ Key::KEY_2, SDL_SCANCODE_KP_8 },
 				{ Key::KEY_3, SDL_SCANCODE_KP_9 },{ Key::KEY_4, SDL_SCANCODE_KP_4 },{ Key::KEY_5, SDL_SCANCODE_KP_5 },
 				{ Key::KEY_6, SDL_SCANCODE_KP_6 },{ Key::KEY_7, SDL_SCANCODE_KP_1 },{ Key::KEY_8, SDL_SCANCODE_KP_2 },
@@ -86,7 +94,7 @@ bool SdlInput::Initialize() noexcept
 			return false;
 	}
 
-	_initialized = true;
+	m_initialized = true;
 	return true;
 }
 
@@ -94,17 +102,17 @@ bool SdlInput::Initialize() noexcept
 
 void SdlInput::Dispose() noexcept
 {
-	_keyboardState = nullptr;
-	_resetClbk = nullptr;
-	_escapeClbk = nullptr;
-	_waitClbk = nullptr;
-	_initialized = false;
+	m_keyboardState = nullptr;
+	m_resetClbk = nullptr;
+	m_escapeClbk = nullptr;
+	m_waitClbk = nullptr;
+	m_initialized = false;
 }
 
 
 bool SdlInput::IsInitialized() const noexcept 
 { 
-	return _initialized; 
+	return m_initialized; 
 }
 
 
@@ -128,7 +136,7 @@ bool SdlInput::IsKeyPressed(const Key key) const noexcept
 {
 	_SDLINPUT_INITIALIZED_ASSERT_();
 
-	return _keyboardState[_keyPairs[ToSizeT(key)].sdlKey] == SDL_TRUE;
+	return m_keyboardState[m_keyPairs[ToSizeT(key)].sdlKey] == SDL_TRUE;
 }
 
 
@@ -138,21 +146,21 @@ bool SdlInput::UpdateKeys() noexcept
 	_SDLINPUT_INITIALIZED_ASSERT_();
 
 	SDL_PumpEvents();
-	_keyboardState = SDL_GetKeyboardState(NULL);
+	m_keyboardState = SDL_GetKeyboardState(NULL);
 
-	if (_keyboardState[SDL_SCANCODE_RETURN])
+	if (m_keyboardState[SDL_SCANCODE_RETURN])
 	{
-		if (_resetClbk) 
-			_resetClbk(_resetClbkArg);
+		if (m_resetClbk) 
+			m_resetClbk(m_resetClbkArg);
 
 		return false;
 	}
 
 
-	else if (_keyboardState[SDL_SCANCODE_ESCAPE])
+	else if (m_keyboardState[SDL_SCANCODE_ESCAPE])
 	{
-		if (_escapeClbk) 
-			_escapeClbk(_escapeClbkArg);
+		if (m_escapeClbk) 
+			m_escapeClbk(m_escapeClbkArg);
 
 		return false;
 	}
@@ -170,18 +178,18 @@ Key SdlInput::WaitKeyPress() noexcept
 {
 	_SDLINPUT_INITIALIZED_ASSERT_();
 	
-	if (_waitClbk != nullptr)
+	if (m_waitClbk != nullptr)
 	{
-		const auto begin = _keyPairs.cbegin();
-		const auto end = _keyPairs.cend();
+		const auto begin = m_keyPairs.cbegin();
+		const auto end = m_keyPairs.cend();
 		
-		while (_waitClbk(_waitClbkArg))
+		while (m_waitClbk(m_waitClbkArg))
 		{
 			if (this->UpdateKeys())
 			{
 				for (auto itr = begin; itr != end; ++itr)
 				{
-					if (_keyboardState[itr->sdlKey])
+					if (m_keyboardState[itr->sdlKey])
 						return itr->chip8Key;
 				}
 			}
@@ -198,22 +206,22 @@ Key SdlInput::WaitKeyPress() noexcept
 
 void SdlInput::SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) noexcept
 {
-	_waitClbkArg = arg;
-	_waitClbk = callback;
+	m_waitClbkArg = arg;
+	m_waitClbk = callback;
 }
 
 
 void SdlInput::SetResetKeyCallback(const void* arg, ResetKeyCallback callback) noexcept
 {
-	_resetClbkArg = arg;
-	_resetClbk = callback;
+	m_resetClbkArg = arg;
+	m_resetClbk = callback;
 }
 
 
 void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept
 {
-	_escapeClbkArg = arg;
-	_escapeClbk = callback;
+	m_escapeClbkArg = arg;
+	m_escapeClbk = callback;
 }
 
 

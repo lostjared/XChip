@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_CPU_MANAGER_H_
-#define _XCHIP_CPU_MANAGER_H_
+#ifndef XCHIP_CORE_MANAGER_H_
+#define XCHIP_CORE_MANAGER_H_
 
 #include <Utix/Alloc.h>
 #include <Utix/Vector2.h>
@@ -129,8 +129,8 @@ public:
 	static constexpr size_t GetHiResFontIndex();
 
 private:
-	Cpu _cpu;
-	utix::Vec2i _gfxRes = {0, 0};
+	Cpu m_cpu;
+	utix::Vec2i m_gfxRes = {0, 0};
 };
 
 
@@ -139,49 +139,49 @@ private:
 
 
 
-inline uint8_t CpuManager::GetDelayTimer() const { return _cpu.delayTimer; }
-inline uint8_t CpuManager::GetSoundTimer() const { return _cpu.soundTimer; }
-inline uint16_t CpuManager::GetOpcode() const { return _cpu.opcode; }
-inline uint16_t CpuManager::GetOpcode(const uint16_t mask) const { return _cpu.opcode & mask; }
-inline uint32_t CpuManager::GetFlags() const { return _cpu.flags; }
-inline uint32_t CpuManager::GetFlags(const uint32_t flags) const { return _cpu.flags & flags; }
-inline size_t CpuManager::GetIndexRegister() const { return _cpu.I; }
-inline size_t CpuManager::GetPC() const { return _cpu.pc; }
-inline size_t CpuManager::GetSP() const { return _cpu.sp; }
-inline size_t CpuManager::GetMemorySize() const { return utix::arr_size(_cpu.memory); }
-inline size_t CpuManager::GetRegistersSize() const { return utix::arr_size(_cpu.registers); }
-inline size_t CpuManager::GetStackSize() const { return utix::arr_size(_cpu.stack); }
-inline size_t CpuManager::GetGfxSize() const { return utix::arr_size(_cpu.gfx); }
-inline const utix::Vec2i& CpuManager::GetGfxRes() const { return _gfxRes; }
+inline uint8_t CpuManager::GetDelayTimer() const { return m_cpu.delayTimer; }
+inline uint8_t CpuManager::GetSoundTimer() const { return m_cpu.soundTimer; }
+inline uint16_t CpuManager::GetOpcode() const { return m_cpu.opcode; }
+inline uint16_t CpuManager::GetOpcode(const uint16_t mask) const { return m_cpu.opcode & mask; }
+inline uint32_t CpuManager::GetFlags() const { return m_cpu.flags; }
+inline uint32_t CpuManager::GetFlags(const uint32_t flags) const { return m_cpu.flags & flags; }
+inline size_t CpuManager::GetIndexRegister() const { return m_cpu.I; }
+inline size_t CpuManager::GetPC() const { return m_cpu.pc; }
+inline size_t CpuManager::GetSP() const { return m_cpu.sp; }
+inline size_t CpuManager::GetMemorySize() const { return utix::arr_size(m_cpu.memory); }
+inline size_t CpuManager::GetRegistersSize() const { return utix::arr_size(m_cpu.registers); }
+inline size_t CpuManager::GetStackSize() const { return utix::arr_size(m_cpu.stack); }
+inline size_t CpuManager::GetGfxSize() const { return utix::arr_size(m_cpu.gfx); }
+inline const utix::Vec2i& CpuManager::GetGfxRes() const { return m_gfxRes; }
 
-inline const iRender* CpuManager::GetRender() const { return _cpu.render; }
-inline const iInput* CpuManager::GetInput() const { return _cpu.input; }
-inline const iSound* CpuManager::GetSound() const { return _cpu.sound; }
-inline const uint8_t* CpuManager::GetMemory() const { return _cpu.memory; }
-inline const uint8_t* CpuManager::GetRegisters() const { return _cpu.registers; }
-inline const size_t* CpuManager::GetStack() const { return _cpu.stack; }
-inline const uint32_t* CpuManager::GetGfx() const { return _cpu.gfx; }
-inline const Cpu& CpuManager::GetCpu() const { return _cpu; }
+inline const iRender* CpuManager::GetRender() const { return m_cpu.render; }
+inline const iInput* CpuManager::GetInput() const { return m_cpu.input; }
+inline const iSound* CpuManager::GetSound() const { return m_cpu.sound; }
+inline const uint8_t* CpuManager::GetMemory() const { return m_cpu.memory; }
+inline const uint8_t* CpuManager::GetRegisters() const { return m_cpu.registers; }
+inline const size_t* CpuManager::GetStack() const { return m_cpu.stack; }
+inline const uint32_t* CpuManager::GetGfx() const { return m_cpu.gfx; }
+inline const Cpu& CpuManager::GetCpu() const { return m_cpu; }
 
 
 
 inline const uint8_t& CpuManager::GetMemory(const size_t offset) const 
 { 
 	ASSERT_MSG(GetMemorySize() > offset, "memory overflow"); 
-	return _cpu.memory[offset]; 
+	return m_cpu.memory[offset]; 
 }
 
 inline const uint8_t& CpuManager::GetRegisters(const size_t offset) const
 {
 	ASSERT_MSG(GetRegistersSize() > offset, "registers overflow"); 
-	return _cpu.registers[offset]; 
+	return m_cpu.registers[offset]; 
 }
 
 
 inline const size_t& CpuManager::GetStack(const size_t offset) const 
 { 
 	ASSERT_MSG(GetStackSize() > offset, "stack overflow");
-	return _cpu.stack[offset]; 
+	return m_cpu.stack[offset]; 
 
 }
 
@@ -189,22 +189,22 @@ inline const size_t& CpuManager::GetStack(const size_t offset) const
 inline const uint32_t& CpuManager::GetGfx(const size_t offset) const 
 { 
 	ASSERT_MSG(GetGfxSize() > offset, "GFX overflow"); 
-	return _cpu.gfx[offset]; 
+	return m_cpu.gfx[offset]; 
 }
 
 
 inline const uint32_t& CpuManager::GetGfx(const utix::Vec2i& point) const  
 {
-	ASSERT_MSG(_gfxRes.x >= point.x && _gfxRes.y >= point.y, "GFX overflow"); 
-	return _cpu.gfx[ ( _gfxRes.x * point.y ) + point.x]; 
+	ASSERT_MSG(m_gfxRes.x >= point.x && m_gfxRes.y >= point.y, "GFX overflow"); 
+	return m_cpu.gfx[ ( m_gfxRes.x * point.y ) + point.x]; 
 }
 
 
 
 inline const uint32_t& CpuManager::GetGfx(const int x, const int y) const  
 {
-	ASSERT_MSG(_gfxRes.x >= x && _gfxRes.y >= y, "GFX overflow"); 
-	return _cpu.gfx[ ( _gfxRes.x * y ) + x]; 
+	ASSERT_MSG(m_gfxRes.x >= x && m_gfxRes.y >= y, "GFX overflow"); 
+	return m_cpu.gfx[ ( m_gfxRes.x * y ) + x]; 
 }
 
 
@@ -212,110 +212,119 @@ inline const uint32_t& CpuManager::GetGfx(const int x, const int y) const
 
 
 
-inline iRender* CpuManager::GetRender() { return _cpu.render; }
-inline iInput* CpuManager::GetInput() { return _cpu.input; }
-inline iSound* CpuManager::GetSound() { return _cpu.sound; }
-inline uint8_t* CpuManager::GetMemory() { return _cpu.memory; }
-inline uint8_t* CpuManager::GetRegisters() { return _cpu.registers; }
-inline size_t* CpuManager::GetStack() { return _cpu.stack; }
-inline uint32_t* CpuManager::GetGfx() { return _cpu.gfx; }
-inline Cpu& CpuManager::GetCpu() { return _cpu; }
+inline iRender* CpuManager::GetRender() { return m_cpu.render; }
+inline iInput* CpuManager::GetInput() { return m_cpu.input; }
+inline iSound* CpuManager::GetSound() { return m_cpu.sound; }
+inline uint8_t* CpuManager::GetMemory() { return m_cpu.memory; }
+inline uint8_t* CpuManager::GetRegisters() { return m_cpu.registers; }
+inline size_t* CpuManager::GetStack() { return m_cpu.stack; }
+inline uint32_t* CpuManager::GetGfx() { return m_cpu.gfx; }
+inline Cpu& CpuManager::GetCpu() { return m_cpu; }
 
 
 inline uint8_t& CpuManager::GetMemory(const size_t offset) 
 { 
 	ASSERT_MSG(GetMemorySize() > offset, "memory overflow"); 
-	return _cpu.memory[offset]; 
+	return m_cpu.memory[offset]; 
 }
 
 
 inline uint8_t& CpuManager::GetRegisters(const size_t offset) 
 { 
 	ASSERT_MSG(GetRegistersSize() > offset, "registers overflow"); 
-	return _cpu.registers[offset]; 
+	return m_cpu.registers[offset]; 
 }
  
 inline size_t& CpuManager::GetStack(const size_t offset)  
 { 
 	ASSERT_MSG(GetStackSize() > offset, "stack overflow"); 
-	return _cpu.stack[offset]; 
+	return m_cpu.stack[offset]; 
 }
 
 
 inline uint32_t& CpuManager::GetGfx(const size_t offset) 
 { 
 	ASSERT_MSG(GetGfxSize() > offset, "GFX overflow"); 
-	return _cpu.gfx[offset]; 
+	return m_cpu.gfx[offset]; 
 }
 
 
 inline uint32_t& CpuManager::GetGfx(const utix::Vec2i& point)
 {
-	ASSERT_MSG(_gfxRes.x >= point.x && _gfxRes.y >= point.y, "GFX overflow"); 
-	return _cpu.gfx[ ( _gfxRes.x * point.y ) + point.x]; 
+	ASSERT_MSG(m_gfxRes.x >= point.x && m_gfxRes.y >= point.y, "GFX overflow"); 
+	return m_cpu.gfx[ ( m_gfxRes.x * point.y ) + point.x]; 
 }
 
 
 inline uint32_t& CpuManager::GetGfx(const int x, const int y)
 {
-	ASSERT_MSG(_gfxRes.x >= x && _gfxRes.y >= y, "GFX overflow"); 
-	return _cpu.gfx[ ( _gfxRes.x * y ) + x]; 
+	ASSERT_MSG(m_gfxRes.x >= x && m_gfxRes.y >= y, "GFX overflow"); 
+	return m_cpu.gfx[ ( m_gfxRes.x * y ) + x]; 
 }
 
 
 inline void CpuManager::FetchOpcode()
 {
-	_cpu.opcode = _cpu.memory[_cpu.pc] << 8 | _cpu.memory[_cpu.pc+1];
-	_cpu.pc += 2;
+	m_cpu.opcode = m_cpu.memory[m_cpu.pc] << 8 | m_cpu.memory[m_cpu.pc+1];
+	m_cpu.pc += 2;
 }
 
 
-inline void CpuManager::SetFlags(const uint32_t flags) { _cpu.flags |= flags; }
-inline void CpuManager::UnsetFlags(const uint32_t flags) { _cpu.flags ^= flags; }
-inline void CpuManager::CleanFlags() { _cpu.flags = 0; }
-inline void CpuManager::SetDelayTimer(const uint8_t val) { _cpu.delayTimer = val; }
-inline void CpuManager::SetSoundTimer(const uint8_t val) { _cpu.soundTimer = val; }
-inline void CpuManager::SetOpcode(const uint16_t val) { _cpu.opcode = val; }
-inline void CpuManager::SetIndexRegister(const size_t index) { _cpu.I = index; }
-inline void CpuManager::SetPC(const size_t offset) { _cpu.pc = offset; }
-inline void CpuManager::SetSP(const size_t offset) { _cpu.sp = offset; }
+inline void CpuManager::SetFlags(const uint32_t flags) { m_cpu.flags |= flags; }
+inline void CpuManager::UnsetFlags(const uint32_t flags) { m_cpu.flags ^= flags; }
+inline void CpuManager::CleanFlags() { m_cpu.flags = 0; }
+inline void CpuManager::SetDelayTimer(const uint8_t val) { m_cpu.delayTimer = val; }
+inline void CpuManager::SetSoundTimer(const uint8_t val) { m_cpu.soundTimer = val; }
+inline void CpuManager::SetOpcode(const uint16_t val) { m_cpu.opcode = val; }
+inline void CpuManager::SetIndexRegister(const size_t index) { m_cpu.I = index; }
+inline void CpuManager::SetPC(const size_t offset) { m_cpu.pc = offset; }
+inline void CpuManager::SetSP(const size_t offset) { m_cpu.sp = offset; }
 
 
 inline void CpuManager::CleanMemory() 
 { 
-	utix::arr_zero(_cpu.memory); 
+	utix::arr_zero(m_cpu.memory); 
 }
 
 inline void CpuManager::CleanRegisters() 
 { 
-	utix::arr_zero(_cpu.registers);
-	_cpu.I = 0;
-	_cpu.delayTimer = 0;
-	_cpu.soundTimer = 0;
+	utix::arr_zero(m_cpu.registers);
+	m_cpu.I = 0;
+	m_cpu.delayTimer = 0;
+	m_cpu.soundTimer = 0;
 }
 
 
 inline void CpuManager::CleanStack()
 {
-	utix::arr_zero(_cpu.stack);
-	_cpu.sp = 0;
+	utix::arr_zero(m_cpu.stack);
+	m_cpu.sp = 0;
 }
 
 
 inline void CpuManager::CleanGfx() 
 { 
-	utix::arr_zero(_cpu.gfx); 
+	utix::arr_zero(m_cpu.gfx); 
 }
 
 
 
-inline constexpr size_t CpuManager::GetDefaultFontIndex() { return 0; }
-inline constexpr size_t CpuManager::GetHiResFontIndex() { return utix::arr_size(fonts::chip8DefaultFont);  }
+constexpr size_t CpuManager::GetDefaultFontIndex() { return 0; }
+constexpr size_t CpuManager::GetHiResFontIndex() { return utix::arr_size(fonts::chip8DefaultFont);  }
 
 
 
 
 
-} // xchip namespace
+} 
 
-#endif
+
+
+
+
+
+
+
+
+
+#endif // _XCHIP_CPU_MANAGER_H_

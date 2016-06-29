@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_SFMLINPUT_H_
-#define _XCHIP_SFMLINPUT_H_
+#ifndef XCHIP_PLUGINS_SFMLINPUT_H_
+#define XCHIP_PLUGINS_SFMLINPUT_H_
 
 
 #include <SFML/Window/Keyboard.hpp>
@@ -32,12 +32,8 @@ namespace xchip {
 
 class SfmlInput final : public iInput
 {
-	struct KeyPair { Key chip8Key; sf::Keyboard::Key sfKey; };
-public:
-	using WaitKeyCallback = bool(*)(const void*);
-	using ResetKeyCallback = void(*)(const void*);
-	using EscapeKeyCallback = void(*)(const void*);
 
+public:
 	SfmlInput();
 	~SfmlInput();
 	bool Initialize() noexcept override;
@@ -56,15 +52,15 @@ public:
 	void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) noexcept override;
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept override;
 private:
-	utix::Vector<KeyPair> _keyPairs;
-	
-	const void* _waitArg = nullptr;
-	const void* _resetArg = nullptr;
-	const void* _escapeArg = nullptr;
-	WaitKeyCallback _waitCallback = nullptr;
-	ResetKeyCallback _resetCallback = nullptr;
-	EscapeKeyCallback _escapeCallback = nullptr;
-	bool _initialized = false;
+	struct KeyPair { Key chip8Key; sf::Keyboard::Key sfKey; };
+	utix::Vector<KeyPair> m_keyPairs;
+	const void* m_waitArg = nullptr;
+	const void* m_resetArg = nullptr;
+	const void* m_escapeArg = nullptr;
+	WaitKeyCallback m_waitCallback = nullptr;
+	ResetKeyCallback m_resetCallback = nullptr;
+	EscapeKeyCallback m_escapeCallback = nullptr;
+	bool m_initialized = false;
 };
 
 
@@ -87,6 +83,6 @@ private:
 
 
 
-#endif
+#endif // XCHIP_PLUGINS_SFMLINPUT_H_
 
 

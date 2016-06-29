@@ -19,8 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 
-#ifndef _XCHIP_CORE_H_
-#define _XCHIP_CORE_H_
+#ifndef XCHIP_CORE_H_
+#define XCHIP_CORE_H_
 #include "Core/Cpu.h"
 #include "Core/CpuManager.h"
 #include "Core/Emulator.h"
@@ -41,4 +41,4 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
-#endif
+#endif // XCHIP_CORE_H_

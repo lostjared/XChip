@@ -18,8 +18,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _XCHIP_FONTS_H_
-#define _XCHIP_FONTS_H_
+#ifndef XCHIP_CORE_FONTS_H_
+#define XCHIP_CORE_FONTS_H_
 #include <cstdint>
 
 
@@ -44,4 +44,4 @@ extern uint8_t chip8HiResFont[160];
 
 }}
 
-#endif
+#endif // XCHIP_CORE_FONTS_H_

@@ -25,7 +25,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <XChip/Plugins/SFMLPlugins/SfmlInput.h>
 
 
-#define _SFMLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(_initialized, "SfmlInput is not initiaized")
+#define _SFMLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(m_initialized, "SfmlInput is not initiaized")
 
 #define _XCHIP_PLUGIN_NAME_ "XCHIP SFML INPUT BY DHUST"
 #define _XCHIP_PLUGIN_VER_ "0.1"
@@ -47,7 +47,7 @@ SfmlInput::SfmlInput()
 
 SfmlInput::~SfmlInput()
 {
-	if(_initialized)
+	if(m_initialized)
 		this->Dispose();
 
 	Log("Destroying " _XCHIP_PLUGIN_NAME_ " Object...");
@@ -57,13 +57,13 @@ SfmlInput::~SfmlInput()
 
 bool SfmlInput::Initialize() noexcept
 {
-	if(_initialized)
+	if(m_initialized)
 		this->Dispose();
 
 	
-	if(_keyPairs.empty())
+	if(m_keyPairs.empty())
 	{
-		bool ret = _keyPairs.initialize({
+		bool ret = m_keyPairs.initialize({
 			{ Key::KEY_0, sf::Keyboard::Numpad0 }, { Key::KEY_1, sf::Keyboard::Numpad7 }, 
 			{ Key::KEY_2, sf::Keyboard::Numpad8 }, { Key::KEY_3, sf::Keyboard::Numpad9 }, 
 			{ Key::KEY_4, sf::Keyboard::Numpad4 }, { Key::KEY_5, sf::Keyboard::Numpad5 },
@@ -78,7 +78,7 @@ bool SfmlInput::Initialize() noexcept
 			return false;
 	}
 
-	_initialized = true;
+	m_initialized = true;
 	return true;
 
 }
@@ -86,20 +86,20 @@ bool SfmlInput::Initialize() noexcept
 
 void SfmlInput::Dispose() noexcept 
 {
-	_waitArg = nullptr;
-	_resetArg = nullptr;
-	_escapeArg = nullptr;
-	_waitCallback = nullptr;
-	_resetCallback = nullptr;
-	_escapeCallback = nullptr;
-	_initialized = false;		
+	m_waitArg = nullptr;
+	m_resetArg = nullptr;
+	m_escapeArg = nullptr;
+	m_waitCallback = nullptr;
+	m_resetCallback = nullptr;
+	m_escapeCallback = nullptr;
+	m_initialized = false;		
 }
 
 
 
 bool SfmlInput::IsInitialized() const noexcept
 {
-	return _initialized;
+	return m_initialized;
 }
 
 
@@ -128,7 +128,7 @@ PluginDeleter SfmlInput::GetPluginDeleter() const noexcept
 bool SfmlInput::IsKeyPressed(const Key key) const noexcept
 {
 	_SFMLINPUT_INITIALIZED_ASSERT_();
-	if( sf::Keyboard::isKeyPressed(_keyPairs[ToSizeT(key)].sfKey) )
+	if( sf::Keyboard::isKeyPressed(m_keyPairs[ToSizeT(key)].sfKey) )
 		return true;
 
 	return false;
@@ -141,11 +141,11 @@ bool SfmlInput::UpdateKeys() noexcept
 	_SFMLINPUT_INITIALIZED_ASSERT_();
 
 	if( sf::Keyboard::isKeyPressed(sf::Keyboard::Return) ) {
-		_resetCallback(_resetArg);
+		m_resetCallback(m_resetArg);
 		return false;
 	}
 	else if( sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) ) {
-		_escapeCallback(_escapeArg);
+		m_escapeCallback(m_escapeArg);
 		return false;
 	}
 
@@ -157,13 +157,13 @@ Key SfmlInput::WaitKeyPress() noexcept
 {
 	_SFMLINPUT_INITIALIZED_ASSERT_();
 
-	if( _waitCallback )
+	if( m_waitCallback )
 	{
-		while(_waitCallback(_waitArg))
+		while(m_waitCallback(m_waitArg))
 		{
 			if(UpdateKeys())
 			{
-				for(const auto& kpair : _keyPairs)
+				for(const auto& kpair : m_keyPairs)
 					if( sf::Keyboard::isKeyPressed(kpair.sfKey) )
 						return kpair.chip8Key;
 			}
@@ -177,24 +177,24 @@ Key SfmlInput::WaitKeyPress() noexcept
 
 void SfmlInput::SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) noexcept
 {
-	_waitCallback = callback;
-	_waitArg = arg;
+	m_waitCallback = callback;
+	m_waitArg = arg;
 }
 
 
 
 void SfmlInput::SetResetKeyCallback(const void* arg, ResetKeyCallback callback) noexcept
 {
-	_resetCallback = callback;
-	_resetArg = arg;
+	m_resetCallback = callback;
+	m_resetArg = arg;
 }
 
 
 
 void SfmlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept
 {
-	_escapeCallback = callback;
-	_escapeArg = arg;
+	m_escapeCallback = callback;
+	m_escapeArg = arg;
 }
 
 
