@@ -21,8 +21,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 // TODO: save configurations on file
 
-#ifndef _WXCHIP_SETTINGS_WINDOW_H_
-#define _WXCHIP_SETTINGS_WINDOW_H_
+#ifndef WXCHIP_SETTINGSWINDOW_H_
+#define WXCHIP_SETTINGSWINDOW_H_
 
 #include <wx/frame.h>
 #include <wx/string.h>
@@ -133,4 +133,14 @@ inline const std::string& SettingsWindow::GetArguments() const { return m_config
 
 
 
-#endif
+
+
+
+
+
+
+
+
+
+
+#endif // WXCHIP_SETTINGSWINDOW_H_

@@ -19,8 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef _WXCHIP_SAVELIST_H_
-#define _WXCHIP_SAVELIST_H_
+#ifndef WXCHIP_SAVELIST_H_
+#define WXCHIP_SAVELIST_H_
 
 #include <iostream>
 #include <fstream>
@@ -31,4 +31,4 @@ std::string getDirectory(std::string &fps, std::string &cpufreq);
 
 
 
-#endif
+#endif // WXCHIP_SAVELIST_H_
