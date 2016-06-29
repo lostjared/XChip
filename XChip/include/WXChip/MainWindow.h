@@ -54,8 +54,8 @@ private:
 	void CreateMenuBar();
 	void StartEmulator();
 	void StopEmulator();
-	void LoadList(const std::string &dirPath);
 	void ComputeEmuAppPath();
+
 
 	void OnExit(wxCommandEvent& ev);
 	void OnClose(wxCloseEvent& ev);

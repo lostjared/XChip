@@ -24,16 +24,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <wx/wx.h>
 #endif
 
-#ifdef _WIN32
-#include <stdlib.h>
-#include <windows.h>
-#include <WXChip/dirent.h>
-#elif defined(__APPLE__) || defined(__linux__)
-#include <unistd.h>
-#include <dirent.h>
-#endif
-
-
 
 #include <fstream>
 #include <regex>
@@ -48,7 +38,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <Utix/Log.h>
 #include <Utix/Memory.h>
 
-#include <WXChip/MessageBox.h>
+#include <WXChip/Dialog.h>
 #include <WXChip/Main.h>
 #include <WXChip/SaveList.h>
 #include <WXChip/MainWindow.h>
@@ -59,6 +49,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 namespace {
 static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string& dest);
 static void FillRomPath(const wxString& fullPath, std::string& dest);
+static bool LoadListBox(wxFrame* const parent, DIR* const dir, wxListBox& lbox);
 }
 
 
@@ -182,48 +173,6 @@ void MainWindow::StopEmulator()
 
 
 
-void MainWindow::LoadList(const std::string &dirPath)
-{
-	using namespace utix;
-
-	if (dirPath == "nopath" || dirPath == m_settingsWin->GetDirPath())
-		return;
-
-	DIR *dir = opendir(dirPath.c_str());
-
-	if (dir == nullptr)
-	{
-		WarningBox(wxT("Error could not open directory."), this);
-		return;
-	}
-	// close the dir in every exit path from this function
-	const auto cleanup = make_scope_exit([&dir]() noexcept { closedir(dir); });	
-	
-	wxArrayString dirFiles;
-	dirent *e;
-
-	while ((e = readdir(dir)) != nullptr)
-	{
-		if (e->d_type == DT_REG)
-		{
-			std::string file = e->d_name;
-			std::regex exp1("ch8$", std::regex_constants::icase);
-			std::regex exp2("([0-9a-zA-Z_\\ ]+)", std::regex_constants::icase);
-			// if found in 1 regex search, avoid doing the other search
-			bool isTag = std::regex_search(file, exp1) || std::regex_match(file, exp2);
-			if (isTag) 
-				dirFiles.Add(wxString(e->d_name));
-		}
-	}
-
-
-	if(!dirFiles.IsEmpty())
-	{
-		m_listBox->Clear();
-		m_listBox->InsertItems(dirFiles,0);
-		m_settingsWin->SetDirPath(dirPath);
-	}
-}
 
 
 
@@ -244,6 +193,8 @@ void MainWindow::ComputeEmuAppPath()
 
 	utix::Log("m_emuAppPath after compute: %s", m_emuAppPath.c_str());
 }
+
+
 
 
 
@@ -271,8 +222,7 @@ void MainWindow::OnClose(wxCloseEvent&)
 
 void MainWindow::OnAbout(wxCommandEvent&)
 {
-	wxMessageBox(wxT("WXChip - wxWidgets GUI for XChip"),
-		wxT("About WXChip"), wxOK | wxICON_INFORMATION);
+	InformationDlg(this, "WXChip - wxWidgets GUI for XChip");
 }
 
 
@@ -312,10 +262,10 @@ void MainWindow::OnButtonLoadRom(wxCommandEvent&)
 
 void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 {
-	wxDirDialog dirDlg(this, wxT("Choose Roms Directory"), "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
-
-	if (dirDlg.ShowModal() == wxID_OK)
-		LoadList(std::string(dirDlg.GetPath().c_str()));
+	wxString path;
+	auto dir = DirDlg(this, "Choose Roms Directory", &path);
+	if(LoadListBox(this, dir.data(), *m_listBox))
+		m_settingsWin->SetDirPath((const char*) path.c_str());
 }
 
 
@@ -361,6 +311,55 @@ static void FillRomPath(const wxString& fullPath, std::string& dest)
 {
 	((dest = '\"') += fullPath) += '\"';
 }
+
+
+
+
+
+
+bool LoadListBox(wxFrame* const parent, DIR* const dir, wxListBox& lbox)
+{
+	using namespace utix;
+
+	if( dir == nullptr )
+		return false;
+	
+	wxArrayString dirFiles;
+	dirent *e;
+
+	while ((e = readdir(dir)) != nullptr)
+	{
+		if (e->d_type == DT_REG)
+		{
+			std::string file = e->d_name;
+			std::regex exp1("ch8$", std::regex_constants::icase);
+			std::regex exp2("([0-9a-zA-Z_\\ ]+)", std::regex_constants::icase);
+			// if found in 1 regex search, avoid doing the other search
+			bool isTag = std::regex_search(file, exp1) || std::regex_match(file, exp2);
+			if (isTag) 
+				dirFiles.Add(wxString(e->d_name));
+		}
+	}
+
+
+	if(!dirFiles.IsEmpty()) {
+		lbox.Clear();
+		lbox.InsertItems(dirFiles,0);
+		return true;
+	}
+
+	WarningBox(parent, "Couldn't find any \'ch8\' files in this directory");
+	return false;
+}
+
+
+
+
+
+
+
+
+
 
 
 

@@ -25,7 +25,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #endif
 
 #include <Utix/Memory.h>
-#include <WXChip/MessageBox.h>
+#include <WXChip/Dialog.h>
 #include <WXChip/Main.h>
 #include <WXChip/MainWindow.h>
 
@@ -47,12 +47,13 @@ bool WXChip::OnInit()
 		}
 	}
 	catch(std::exception& err) {
-		FatalExceptionBox(wxString(err.what()));
+		FatalExceptionDlg(err.what());
 		// continues and returns false
 	}
 	catch(...) {
-		FatalExceptionBox(wxT("Unknown Exception!"));
+		FatalExceptionDlg("Unknown Exception!");
 	}
+	
 	return false;
 }
 
