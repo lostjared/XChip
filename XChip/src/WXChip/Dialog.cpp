@@ -22,6 +22,9 @@ wxString DirectoryDlg(wxFrame* const parent, const wxString& msg)
 	return wxString();
 }
 
+
+
+
 wxString FileDlg(wxFrame* const parent, const wxString& msg, const wxString& wildcard) 
 {
 	wxFileDialog fdlg(parent, msg, wxEmptyString, wxEmptyString, wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -31,6 +34,9 @@ wxString FileDlg(wxFrame* const parent, const wxString& msg, const wxString& wil
 
 	return wxString();
 }
+
+
+
 
 bool ColourDlg(wxFrame* const parent, wxColour& color)
 {

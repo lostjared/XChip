@@ -39,9 +39,10 @@ inline void InformationDlg(wxFrame* const parent, const wxString& msg) {
 	wxMessageBox(msg, wxT("WXChip - Information"), wxOK | wxICON_INFORMATION, parent);
 }
 
-// returns the directory path if succed , empty string if fails
+
+// returns the directory path if succeed , empty string if fails
 wxString DirectoryDlg(wxFrame* const parent, const wxString& msg);
-// returns the file path if succed , empty string if fails
+// returns the file path if succeed , empty string if fails
 wxString FileDlg(wxFrame* const parent, const wxString& msg, const wxString& wildcard);
 // returns true if color is modified, false if not
 bool ColourDlg(wxFrame* const parent, wxColour& color);
