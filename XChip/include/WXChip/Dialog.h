@@ -12,29 +12,39 @@
 #include <wx/msgdlg.h>
 #include <wx/string.h>
 #include <wx/frame.h>
-#include <Utix/RWrap.h>
+#include <wx/colour.h>
 
 
-inline bool ConfirmDlg(wxFrame* parent, const wxString& msg) {
+inline bool ConfirmDlg(wxFrame* const parent, const wxString& msg) {
 	return wxMessageBox(msg, wxT("WXChip - Confirm"), wxYES_NO | wxCANCEL, parent) == wxYES;
 }
+
 
 inline void FatalExceptionDlg(const wxString& msg) {
 	wxMessageBox(msg, wxT("WXChip - Fatal Exception"), wxICON_ERROR);
 }
 
-inline void WarningDlg(wxFrame* parent, const wxString& msg) {
+
+inline void WarningDlg(wxFrame* const parent, const wxString& msg) {
 	wxMessageBox(msg, wxT("WXChip - Warning"), wxICON_WARNING, parent);
 }
-inline void InformationDlg(wxFrame* parent, const wxString& msg) {
-	wxMessageBox(msg, wxT("WXChip - Information"), wxOK | wxICON_INFORMATION);
+
+
+inline void ErrorDlg(wxFrame* const parent, const wxString& msg) {
+	wxMessageBox(msg, wxT("WXChip - Error"), wxICON_ERROR, parent);	
 }
 
-// get a RWrap with a dir ptr which will be cleaned in scope's end
-extern utix::RWrap<DIR*, void(*)(DIR*)> 
-DirectoryDlg(wxFrame* parent, const wxString& msg, wxString* outPath = nullptr);
 
+inline void InformationDlg(wxFrame* const parent, const wxString& msg) {
+	wxMessageBox(msg, wxT("WXChip - Information"), wxOK | wxICON_INFORMATION, parent);
+}
 
+// returns the directory path if succed , empty string if fails
+wxString DirectoryDlg(wxFrame* const parent, const wxString& msg);
+// returns the file path if succed , empty string if fails
+wxString FileDlg(wxFrame* const parent, const wxString& msg, const wxString& wildcard);
+// returns true if color is modified, false if not
+bool ColourDlg(wxFrame* const parent, wxColour& color);
 
 
 

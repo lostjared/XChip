@@ -49,7 +49,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 namespace {
 static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string& dest);
 static void FillRomPath(const wxString& fullPath, std::string& dest);
-static bool LoadListBox(wxFrame* const parent, DIR* const dir, wxListBox& lbox);
+static bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& lbox);
 }
 
 
@@ -262,10 +262,11 @@ void MainWindow::OnButtonLoadRom(wxCommandEvent&)
 
 void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 {
-	wxString path;
-	auto dir = DirDlg(this, "Choose Roms Directory", &path);
-	if(LoadListBox(this, dir.data(), *m_listBox))
-		m_settingsWin->SetDirPath((const char*) path.c_str());
+	wxString path = DirectoryDlg(this, "Choose Roms Directory");
+	if(path.empty() == false) {
+		if(LoadListBox(this, path, *m_listBox))
+			m_settingsWin->SetDirPath((const char*) path.c_str());
+	}
 }
 
 
@@ -273,10 +274,10 @@ void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 
 void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 {
-	wxFileDialog fdlg(this, wxT("Select Rom"), "", "", wxT("All Files (*)|*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-
-	if (fdlg.ShowModal() == wxID_OK) {
-		FillRomPath(fdlg.GetPath(), m_romPath);
+	const wxString path = FileDlg(this, "Select Rom", "All Files (*)|*");
+	if (path.empty() == false)
+	{
+		FillRomPath(path, m_romPath);
 		utix::Log("Selected File: %s", m_romPath.c_str());
 		StartEmulator();
 	}
@@ -317,12 +318,18 @@ static void FillRomPath(const wxString& fullPath, std::string& dest)
 
 
 
-bool LoadListBox(wxFrame* const parent, DIR* const dir, wxListBox& lbox)
+bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& lbox)
 {
 	using namespace utix;
-
-	if( dir == nullptr )
+	
+	errno = 0;
+	DIR* dir = opendir(path.c_str());
+	if( dir == nullptr ) 
+	{
+		const auto errno_code = errno;
+		ErrorDlg(parent, "Error opening \"" + path +"\": " + strerror(errno_code));
 		return false;
+	}
 	
 	wxArrayString dirFiles;
 	dirent *e;
@@ -342,13 +349,14 @@ bool LoadListBox(wxFrame* const parent, DIR* const dir, wxListBox& lbox)
 	}
 
 
-	if(!dirFiles.IsEmpty()) {
+	if(!dirFiles.IsEmpty()) 
+	{
 		lbox.Clear();
 		lbox.InsertItems(dirFiles,0);
 		return true;
 	}
 
-	WarningBox(parent, "Couldn't find any \'ch8\' files in this directory");
+	WarningDlg(parent, "Couldn't find any \'ch8\' files in this directory");
 	return false;
 }
 

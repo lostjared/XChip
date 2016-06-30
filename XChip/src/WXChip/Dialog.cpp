@@ -2,51 +2,49 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+
 #include <wx/dirdlg.h>
-#include <Utix/RWrap.h>
+#include <wx/filedlg.h>
+#include <wx/colordlg.h>
+#include <wx/colourdata.h>
 #include <WXChip/Dialog.h>
 
 
 
-utix::RWrap<DIR*, void(*)(DIR*)> DirDlg(wxFrame* parent, const wxString& msg, wxString* outPath)
+wxString DirectoryDlg(wxFrame* const parent, const wxString& msg)
 {
 
 	wxDirDialog dirDlg(parent, msg, wxEmptyString, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
 
 	if(dirDlg.ShowModal() == wxID_OK)
-	{
-		wxString path = dirDlg.GetPath();
-		if(path != "nopath")
-		{
-			DIR* dir;
-			errno = 0;
-			if( ( dir = opendir(path.c_str()) ) != nullptr) 
-			{
-				if( outPath )
-					*outPath = std::move(path);
+		return dirDlg.GetPath();
 
-				const auto cleanup = [](DIR* d) { closedir(d); }; 
-				return utix::make_rwrap( (DIR*) dir, (void(*)(DIR*)) cleanup);
-			}
-			else 
-			{
-				const int errno_code = errno;
-				const wxString errMsg = 
-                                               "Couldn't open directory \"" + path + "\". " + strerror(errno_code);
-
-				WarningBox(parent, errMsg);
-			}
-		}
-	}
-
-	return utix::make_rwrap( (DIR*)nullptr, ( void(*)(DIR*) ) nullptr);
+	return wxString();
 }
 
+wxString FileDlg(wxFrame* const parent, const wxString& msg, const wxString& wildcard) 
+{
+	wxFileDialog fdlg(parent, msg, wxEmptyString, wxEmptyString, wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
+	if (fdlg.ShowModal() == wxID_OK)
+		return fdlg.GetPath();
 
+	return wxString();
+}
 
+bool ColourDlg(wxFrame* const parent, wxColour& color)
+{
+	wxColourData data;
+	data.SetColour(color);
+	wxColourDialog dialog(parent, &data);
 
+	if (dialog.ShowModal() == wxID_OK) {
+		color = dialog.GetColourData().GetColour();
+		return true;
+	}
 
+	return false;	
+}
 
 
 

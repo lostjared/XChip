@@ -29,12 +29,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <string>
 
 #include <wx/valnum.h>
-#include <wx/colordlg.h>
-#include <wx/colourdata.h>
 #include <Utix/Log.h>
 #include <Utix/Assert.h>
 #include <Utix/Common.h>
-#include <WXChip/SaveList.h>
+#include <WXChip/Dialog.h>
 #include <WXChip/SettingsWindow.h>
 
 
@@ -362,13 +360,9 @@ static void ExecuteWxColourDialog(wxFrame* const frame, wxColour& color, std::st
 {
 	ASSERT_MSG(frame, "ExecuteWxColourDialog can't have null frame");
 	using std::to_string;
-	wxColourData data;
-	data.SetColour(color);
-	wxColourDialog dialog(frame, &data);
 
-	if (dialog.ShowModal() == wxID_OK)
+	if (ColourDlg(frame, color))
 	{
-		color = dialog.GetColourData().GetColour();
 		str = to_string(color.Red());
 		str += 'x';
 		str += to_string(color.Green());
@@ -382,13 +376,13 @@ static void ExecuteWxColourDialog(wxFrame* const frame, wxColour& color, std::st
 static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl& text_ctrl) 
 {
 	ASSERT_MSG(frame, "ExecuteWxFileDialog can't have null frame");
-	wxFileDialog dlg(frame, "", "", "", "All Files (*)|*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+	const wxString filepath = FileDlg(frame, "Select File", "All Files (*)|*");
 	
-	if (dlg.ShowModal() == wxID_OK) {
+	if (filepath.empty() == false) {
 		text_ctrl.Clear();
-		text_ctrl << dlg.GetPath();
+		text_ctrl << filepath;
 	}
-	
+
 }
 
 
