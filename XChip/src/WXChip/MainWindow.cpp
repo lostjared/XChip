@@ -265,7 +265,7 @@ void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 	wxString path = DirectoryDlg(this, "Choose Roms Directory");
 	if(path.empty() == false) {
 		if(LoadListBox(this, path, *m_listBox))
-			m_settingsWin->SetDirPath((const char*) path.c_str());
+			m_settingsWin->SetDirPath( static_cast<const char*>(path.c_str()) );
 	}
 }
 
