@@ -222,7 +222,7 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 		return false;
 	}
 
-	const auto fileClose = make_scope_exit([file]() noexcept { std::fclose(file); });
+	const auto fileClose = make_scope_exit([&file]() noexcept { std::fclose(file); });
 
 	// get file size
 	std::fseek(file, 0, SEEK_END);

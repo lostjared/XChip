@@ -6,6 +6,7 @@ project(XChip)
      
 # sanitizers to check leaks and undefined behavior
 option(ADDRESS_SANITIZER OFF)
+option(MEMORY_SANITIZER OFF)
 option(UNDEFINED_SANITIZER OFF)
 
 
@@ -57,8 +58,13 @@ endif()
 
 
 if( ADDRESS_SANITIZER )
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=memory")
 endif()
+
+if( MEMORY_SANITIZER )
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory -fsanitize-memory-track-origins=2")
+endif()
+
 
 if( UNDEFINED_SANITIZER )
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")

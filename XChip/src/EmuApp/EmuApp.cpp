@@ -125,8 +125,8 @@ int main(int argc, char **argv)
 			throw std::runtime_error(utix::GetLastLogError());
 
 		const CliOpts opts(argc-1, argv+1);
-		const auto romPath = opts.GetOpt("-ROM");
-		
+		auto romPath = opts.GetOpt("-ROM");
+
 		if (romPath.empty())
 			throw std::runtime_error("Missing -ROM argument");
 		
