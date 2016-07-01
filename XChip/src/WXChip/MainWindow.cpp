@@ -47,9 +47,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 // local functions declarations
 namespace {
-static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string& dest);
-static void FillRomPath(const wxString& fullPath, std::string& dest);
+static void FillRomPath(const wxString& dirPath, const wxString& filename, wxString& dest);
+inline void FillRomPath(const wxString& fullPath, wxString& dest);
 static bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& lbox);
+inline std::string ComputeEmuAppArgs(const wxString& emuAppPath, const wxString& rom, const wxString& cliArgs);
+inline const char* ToCStr(const wxString& wxstr);
 }
 
 
@@ -108,7 +110,10 @@ void MainWindow::CreateControls()
 	m_listBox = make_unique<wxListBox>(m_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), 
                                        0, nullptr, wxLB_SINGLE);
 
-	m_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnLDown), NULL, this);
+	m_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnListBoxDoubleClick), NULL, this);
+	m_listBox->Connect(wxEVT_RIGHT_DCLICK, wxMouseEventHandler(MainWindow::OnListBoxDoubleClick), NULL, this);
+	m_listBox->Connect(wxEVT_LEFT_UP, wxMouseEventHandler(MainWindow::OnListBoxMouseUp), NULL, this);
+	m_listBox->Connect(wxEVT_RIGHT_UP, wxMouseEventHandler(MainWindow::OnListBoxMouseUp), NULL, this);
 
 
 	m_buttonLoadRom = make_unique<wxButton>(m_panel.get(), ID_BUTTON_LOAD_ROM, _T("Load Rom"), 
@@ -157,8 +162,15 @@ void MainWindow::CreateMenuBar()
 void MainWindow::StartEmulator()
 {
 	StopEmulator();
-	if(!m_process.Run(m_emuAppPath + " -ROM " + m_romPath + ' ' + m_settingsWin->GetArguments()))
-		throw std::runtime_error(utix::GetLastLogError());
+	if(m_romPath.empty() == false) 
+	{
+		utix::Log("Start Rom At Path: %s", ToCStr(m_romPath));
+		if(!m_process.Run(ComputeEmuAppArgs(m_emuAppPath, m_romPath, m_settingsWin->GetArguments())))
+			throw std::runtime_error(utix::GetLastLogError());
+	}
+	else {
+		InformationDlg(this, "No rom selected.");
+	}
 }
 
 
@@ -191,7 +203,7 @@ void MainWindow::ComputeEmuAppPath()
 	m_emuAppPath.insert(0, "\"");
 	m_emuAppPath += "\"";
 
-	utix::Log("m_emuAppPath after compute: %s", m_emuAppPath.c_str());
+	utix::Log("m_emuAppPath after compute: %s", ToCStr(m_emuAppPath));
 }
 
 
@@ -227,17 +239,24 @@ void MainWindow::OnAbout(wxCommandEvent&)
 
 
 
-void MainWindow::OnLDown(wxMouseEvent& event)
+void MainWindow::OnListBoxDoubleClick(wxMouseEvent& event)
+{
+	auto m_lbox = static_cast<wxListBox*>(event.GetEventObject());
+	int item = m_lbox->HitTest(event.GetPosition());
+
+	if (item != wxNOT_FOUND) {
+		FillRomPath(m_settingsWin->GetDirPath(), m_lbox->GetString(item), m_romPath);
+		StartEmulator();
+	}
+}
+
+void MainWindow::OnListBoxMouseUp(wxMouseEvent& event)
 {
 	auto m_lbox = static_cast<wxListBox*>(event.GetEventObject());
 	int item = m_lbox->HitTest(event.GetPosition());
 
 	if (item != wxNOT_FOUND)
-	{
 		FillRomPath(m_settingsWin->GetDirPath(), m_lbox->GetString(item), m_romPath);
-		utix::Log("Start Rom At Path: %s", m_romPath.c_str());
-		StartEmulator();
-	}
 }
 
 
@@ -253,7 +272,6 @@ void MainWindow::OnButtonSettings(wxCommandEvent&)
 
 void MainWindow::OnButtonLoadRom(wxCommandEvent&)
 {
-	utix::Log("Starting Rom...");
 	StartEmulator();
 }
 
@@ -263,9 +281,9 @@ void MainWindow::OnButtonLoadRom(wxCommandEvent&)
 void MainWindow::OnButtonSelectDir(wxCommandEvent&)
 {
 	wxString path = DirectoryDlg(this, "Choose Roms Directory");
-	if(path.empty() == false) {
+	if(path.empty() == false && path != m_settingsWin->GetDirPath()) {
 		if(LoadListBox(this, path, *m_listBox))
-			m_settingsWin->SetDirPath( static_cast<const char*>(path.c_str()) );
+			m_settingsWin->SetDirPath(std::move(path));
 	}
 }
 
@@ -278,7 +296,7 @@ void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 	if (path.empty() == false)
 	{
 		FillRomPath(path, m_romPath);
-		utix::Log("Selected File: %s", m_romPath.c_str());
+		utix::Log("Selected File: %s", ToCStr(m_romPath));
 		StartEmulator();
 	}
 
@@ -291,7 +309,7 @@ void MainWindow::OnMenuBarLoadRom(wxCommandEvent&)
 namespace {
 
 
-static void FillRomPath(const wxString& dirPath, const wxString& filename, std::string& dest)
+static void FillRomPath(const wxString& dirPath, const wxString& filename, wxString& dest)
 {
 #ifdef _WIN32
 		constexpr char dirSlash =  '\\';
@@ -308,12 +326,12 @@ static void FillRomPath(const wxString& dirPath, const wxString& filename, std::
 	(dest += filename) += '\"';
 }
 
-static void FillRomPath(const wxString& fullPath, std::string& dest)
+
+
+inline void FillRomPath(const wxString& fullPath, wxString& dest)
 {
 	((dest = '\"') += fullPath) += '\"';
 }
-
-
 
 
 
@@ -324,12 +342,15 @@ bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& lbox)
 	
 	errno = 0;
 	DIR* dir = opendir(path.c_str());
+
 	if( dir == nullptr ) 
 	{
 		const auto errno_code = errno;
 		ErrorDlg(parent, "Error opening \"" + path +"\": " + strerror(errno_code));
 		return false;
 	}
+
+	const auto cleanup = make_scope_exit([&dir]()noexcept { closedir(dir); });
 	
 	wxArrayString dirFiles;
 	dirent *e;
@@ -341,9 +362,7 @@ bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& lbox)
 			std::string file = e->d_name;
 			std::regex exp1("ch8$", std::regex_constants::icase);
 			std::regex exp2("([0-9a-zA-Z_\\ ]+)", std::regex_constants::icase);
-			// if found in 1 regex search, avoid doing the other search
-			bool isTag = std::regex_search(file, exp1) || std::regex_match(file, exp2);
-			if (isTag) 
+			if( std::regex_search(file, exp1) || std::regex_match(file, exp2) )
 				dirFiles.Add(wxString(e->d_name));
 		}
 	}
@@ -363,10 +382,16 @@ bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& lbox)
 
 
 
+inline std::string ComputeEmuAppArgs(const wxString& emuAppPath, const wxString& rom, const wxString& cliArgs)
+{
+	return static_cast<const char*>((emuAppPath + " -ROM " + rom + ' ' + cliArgs));
+}
 
 
-
-
+inline const char* ToCStr(const wxString& wxstr) 
+{
+	return static_cast<const char*>(wxstr);
+}
 
 
 

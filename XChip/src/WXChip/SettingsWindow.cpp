@@ -38,7 +38,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 // local functions declarations
 namespace {
-static void ExecuteWxColourDialog(wxFrame* const frame, wxColour& color, std::string& str);
+static void ExecuteWxColourDialog(wxFrame* const frame, wxColour& color, wxString& str);
 static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl& text_ctrl);
 }
 
@@ -59,8 +59,8 @@ EVT_BUTTON(ID_BUTTON_FG_COLOR, SettingsWindow::OnSetFGColor)
 wxEND_EVENT_TABLE()
 
 
-constexpr decltype(SettingsWindow::default_cpu_hz) SettingsWindow::default_cpu_hz;
-constexpr decltype(SettingsWindow::default_fps) SettingsWindow::default_fps;
+constexpr const char* const SettingsWindow::default_cpu_hz;
+constexpr const char* const SettingsWindow::default_fps;
 constexpr const unsigned long SettingsWindow::default_bkg_color;
 constexpr const unsigned long SettingsWindow::default_fg_color;
 constexpr const char* const SettingsWindow::default_bkg_color_str;
@@ -81,12 +81,6 @@ SettingsWindow::SettingsWindow(wxFrame* parent, const wxString &title, const wxP
 {
 	SetMinSize(GetSize());
 	SetMaxSize(GetSize());
-
-	const wxString procDirPath = utix::GetFullProcDir();
-	default_render_full_path = (procDirPath + default_render_relative_path);
-	default_input_full_path = (procDirPath + default_input_relative_path);
-	default_sound_full_path = (procDirPath + default_sound_relative_path);
-
 	CreateControls();
 	UpdateConfigStr();
 }
@@ -95,16 +89,16 @@ SettingsWindow::SettingsWindow(wxFrame* parent, const wxString &title, const wxP
 
 
 
-std::string SettingsWindow::GetDirPath() const
+wxString SettingsWindow::GetDirPath() const
 {
-	return static_cast<const char*>(m_romsDirTxtCtrl->GetLineText(0).c_str());
+	return m_romsDirTxtCtrl->GetLineText(0);
 }
 
 
-void SettingsWindow::SetDirPath(const std::string &dirPath)
+void SettingsWindow::SetDirPath(const wxString& dirPath)
 {
 	m_romsDirTxtCtrl->Clear();
-	*m_romsDirTxtCtrl << dirPath.c_str();
+	*m_romsDirTxtCtrl << dirPath;
 }
 
 
@@ -113,6 +107,7 @@ void SettingsWindow::SetDirPath(const std::string &dirPath)
 void SettingsWindow::CreateControls()
 {
 	m_panel = utix::make_unique<wxPanel>(this, wxID_ANY);
+	EvaluateDefaultPlugins();
 	CreateTexts();
 	CreateButtons();
 }
@@ -194,7 +189,20 @@ void SettingsWindow::CreateButtons()
 
 
 
-
+void SettingsWindow::EvaluateDefaultPlugins()
+{
+	const wxString procDirPath = utix::GetFullProcDir();
+	if(procDirPath.empty() == false) 
+	{
+		default_render_full_path = (procDirPath + default_render_relative_path);
+		default_input_full_path = (procDirPath + default_input_relative_path);
+		default_sound_full_path = (procDirPath + default_sound_relative_path);
+	}
+	else 
+	{
+		WarningDlg(this, "Could not get WXChip process's path! Please, set Plugins paths manualy");
+	}
+}
 
 
 
@@ -356,7 +364,11 @@ void SettingsWindow::OnSetFGColor(wxCommandEvent&)
 namespace {
 // local functions definitions
 
-static void ExecuteWxColourDialog(wxFrame* const frame, wxColour& color, std::string& str)
+
+
+
+
+static void ExecuteWxColourDialog(wxFrame* const frame, wxColour& color, wxString& str)
 {
 	ASSERT_MSG(frame, "ExecuteWxColourDialog can't have null frame");
 	using std::to_string;
@@ -373,6 +385,8 @@ static void ExecuteWxColourDialog(wxFrame* const frame, wxColour& color, std::st
 }
 
 
+
+
 static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl& text_ctrl) 
 {
 	ASSERT_MSG(frame, "ExecuteWxFileDialog can't have null frame");
@@ -384,6 +398,13 @@ static void ExecuteWxFileDialog(wxFrame* const frame, wxTextCtrl& text_ctrl)
 	}
 
 }
+
+
+
+
+
+
+
 
 
 

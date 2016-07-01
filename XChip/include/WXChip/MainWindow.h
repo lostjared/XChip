@@ -60,14 +60,15 @@ private:
 	void OnExit(wxCommandEvent& ev);
 	void OnClose(wxCloseEvent& ev);
 	void OnAbout(wxCommandEvent& ev);
-	void OnLDown(wxMouseEvent& ev);
+	void OnListBoxDoubleClick(wxMouseEvent& ev);
+	void OnListBoxMouseUp(wxMouseEvent& ev);
 	void OnButtonLoadRom(wxCommandEvent& ev);
 	void OnButtonSettings(wxCommandEvent& ev);
 	void OnButtonSelectDir(wxCommandEvent& ev);
 	void OnMenuBarLoadRom(wxCommandEvent& ev);
 
-	std::string m_emuAppPath;
-	std::string m_romPath;
+	wxString m_emuAppPath;
+	wxString m_romPath;
 	utix::Process m_process;
 
 	std::unique_ptr<wxPanel> m_panel;

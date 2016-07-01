@@ -35,8 +35,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 class SettingsWindow : public wxFrame
 {
 	// default compile time values
-	static constexpr const auto* const default_cpu_hz = _T("380");
-	static constexpr const auto* const default_fps = _T("60.00");
+	static constexpr const char* const default_cpu_hz = "380";
+	static constexpr const char* const default_fps = "60.00";
 	static constexpr const char* const default_render_relative_path = "bin/plugins/XChipSDLRender";
 	static constexpr const char* const default_input_relative_path = "bin/plugins/XChipSDLInput";
 	static constexpr const char* const default_sound_relative_path = "bin/plugins/XChipSDLSound";
@@ -65,15 +65,16 @@ public:
 
 
 	SettingsWindow(wxFrame* parent, const wxString &title, const wxPoint &pos);
-	const std::string& GetArguments() const;
-	std::string GetDirPath() const;
-	void SetDirPath(const std::string& path);
+	const wxString& GetArguments() const;
+	wxString GetDirPath() const;
+	void SetDirPath(const wxString& path);
 
 
 private:
 	void CreateControls();
 	void CreateButtons();
 	void CreateTexts();
+	void EvaluateDefaultPlugins();
 	void UpdateConfigStr();
 	void ResetSettings();
 	void RestoreSettings();
@@ -99,9 +100,9 @@ private:
 	wxColour m_bkgColor;
 	wxColour m_fgColor;
 	
-	std::string m_bkgColorStr;
-	std::string m_fgColorStr;
-	std::string m_configStr;
+	wxString m_bkgColorStr;
+	wxString m_fgColorStr;
+	wxString m_configStr;
 
 	std::unique_ptr<wxPanel> m_panel;
 	std::unique_ptr<wxStaticText> m_romsDirTxt;
@@ -127,7 +128,7 @@ private:
 
 
 
-inline const std::string& SettingsWindow::GetArguments() const { return m_configStr;  }
+inline const wxString& SettingsWindow::GetArguments() const { return m_configStr;  }
 
 
 
