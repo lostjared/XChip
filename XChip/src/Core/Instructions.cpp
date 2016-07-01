@@ -308,10 +308,11 @@ void op_DXYN(CpuManager& cpuMan)
 
 	for (int i = 0; i < height; ++i, ++_8bitRow)
 	{
+		const uint8_t byte = *_8bitRow;
 		for (int j = 0; j < 8; ++j)
 		{
+			const bool memoryBit = (byte & (1 << (7 - j))) != 0;
 			auto& gfxPixel = cpuMan.GetGfx((vx + j) & res.x,  (vy + i) & res.y);
-			const bool memoryBit = (*_8bitRow & (1 << (7 - j))) != 0;
 			VF |= ((gfxPixel != 0) && memoryBit);
 			gfxPixel ^= (memoryBit) ? 0xFFFFFFFF : 0;
 		}
@@ -339,16 +340,17 @@ void op_DXYN_ex(CpuManager& cpuMan)
 
 	for(int i = 0; i < 16; ++i, ++_8bitRow)
 	{
+		uint8_t byte = *_8bitRow;
 		for(int j = 0, bitmask = 0; j < 16; ++j, ++bitmask) 
 		{
-			if( bitmask == 8 )
+			if( bitmask == 8 ) 
 			{
 				bitmask = 0;
-				++_8bitRow;
+				byte = *(++_8bitRow);
 			}
 
+			const bool memoryBit = (byte & (1 << (7 - bitmask))) != 0;
 			auto& gfxPixel = cpuMan.GetGfx((vx + j) & res.x,  (vy + i) & res.y);
-			const bool memoryBit = (*_8bitRow & (1 << (7 - bitmask))) != 0;
 			VF |= ((gfxPixel > 0) & memoryBit);
 			gfxPixel ^= (memoryBit) ? 0xFFFFFFFF : 0;
 		}
