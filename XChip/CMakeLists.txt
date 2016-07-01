@@ -8,7 +8,7 @@ project(XChip)
 option(ADDRESS_SANITIZER OFF)
 option(MEMORY_SANITIZER OFF)
 option(UNDEFINED_SANITIZER OFF)
-
+option(ENABLE_LTO OFF)
 
 #set on plugins libraries to build
 option(BUILD_SDL_PLUGINS OFF)
@@ -71,6 +71,9 @@ if( UNDEFINED_SANITIZER )
 endif()
 
 
+if( ENABLE_LTO )
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")
+endif()
 
 
 
