@@ -31,9 +31,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <stdexcept>
 #include <algorithm>
 #include <utility>
-#include <fstream>
 
-
+#include <SDL2/SDL.h>
 #include <Utix/Log.h>
 #include <Utix/CliOpts.h>
 #include <Utix/Common.h>
@@ -67,9 +66,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 static xchip::Emulator g_emulator;
 
-
-void load_plugins(const utix::CliOpts& opts);
-void configure_emulator(const utix::CliOpts& opts);
+namespace {
+void DisplayErrorMsg(const std::string& title, const std::string& errmsg);
+void LoadPlugins(const utix::CliOpts& opts);
+void ConfigureEmulator(const utix::CliOpts& opts);
+}
 
 #if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum);
@@ -118,8 +119,7 @@ int main(int argc, char **argv)
 
 
 
-	try
-	{
+	try {
 		// initialize with no plugins.
 		if(!g_emulator.Initialize())
 			throw std::runtime_error(utix::GetLastLogError());
@@ -134,16 +134,15 @@ int main(int argc, char **argv)
 			throw std::runtime_error(utix::GetLastLogError());
 	
 
-		load_plugins(opts);
-		configure_emulator(opts);
+		LoadPlugins(opts);
+		ConfigureEmulator(opts);
 
 		if(!g_emulator.Good())
 			throw std::runtime_error("Could not initialize emulator!");
 		
 	}
-	catch(std::exception& err)
-	{
-		std::cerr << "Exception: " << err.what() << '\n';
+	catch(std::exception& err) {
+		DisplayErrorMsg("Fatal Exception", err.what());
 		return EXIT_FAILURE;
 	}
 	
@@ -164,7 +163,8 @@ int main(int argc, char **argv)
 	return EXIT_SUCCESS;
 }
 
-
+// locals functions definitions
+namespace {
 
 template<class P>
 constexpr const char* DefaultPluginPath();
@@ -173,16 +173,16 @@ template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { retu
 template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "XChipSDLInput.dll";}
 template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "XChipSDLSound.dll"; }
 #elif defined(__linux__) || defined(__APPLE__)
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "/plugins/XChipSDLRender"; }
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "/plugins/XChipSDLInput";}
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "/plugins/XChipSDLSound";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "plugins/XChipSDLRender"; }
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "plugins/XChipSDLInput";}
+template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "plugins/XChipSDLSound";}
 #endif
 
 template<class PluginType>
-void set_plugin(const std::string& path);
+void SetPlugin(const std::string& path);
 
 
-void load_plugins(const utix::CliOpts& opts)
+void LoadPlugins(const utix::CliOpts& opts)
 {
 #ifdef _WIN32
 	// get current dll directory
@@ -196,9 +196,9 @@ void load_plugins(const utix::CliOpts& opts)
 	
 	const ConfigPair configPairs[] = 
 	{
-		{"-REN", set_plugin<xchip::UniqueRender>},
-		{"-INP", set_plugin<xchip::UniqueInput>},
-		{"-SND", set_plugin<xchip::UniqueSound>}
+		{"-REN", SetPlugin<xchip::UniqueRender>},
+		{"-INP", SetPlugin<xchip::UniqueInput>},
+		{"-SND", SetPlugin<xchip::UniqueSound>}
 	};
 
 	for(const auto& it : configPairs)
@@ -215,7 +215,7 @@ void load_plugins(const utix::CliOpts& opts)
 
 
 template<class PluginType>
-void set_plugin(const std::string& path)
+void SetPlugin(const std::string& path)
 {
 	using namespace utix::literals;
 	using utix::CliOpts;
@@ -247,13 +247,13 @@ void set_plugin(const std::string& path)
 
 utix::Color get_arg_rgb(const std::string& arg);
 void res_config(const std::string& arg);
-void cfq_config(const std::string& arg);
-void sfq_config(const std::string& arg);
+void chz_config(const std::string& arg);
+void shz_config(const std::string& arg);
 void col_config(const std::string& arg);
 void bkg_config(const std::string& arg);
 void fps_config(const std::string& arg);
 
-void configure_emulator(const utix::CliOpts& opts)
+void ConfigureEmulator(const utix::CliOpts& opts)
 {
 	std::cout << "\n*** setting up the emulator ***\n";
 
@@ -264,8 +264,8 @@ void configure_emulator(const utix::CliOpts& opts)
 	ConfigPair configPairs[] = 
 	{
 		{"-RES", res_config},
-		{"-CHZ", cfq_config},
-		{"-SHZ", sfq_config},
+		{"-CHZ", chz_config},
+		{"-SHZ", shz_config},
 		{"-COL", col_config},
 		{"-BKG", bkg_config},
 		{"-FPS", fps_config}
@@ -296,8 +296,7 @@ void res_config(const std::string& arg)
 {
 	using utix::Vec2i;
 
-	try
-	{
+	try {
 		std::cout << "setting window size...\n";
 
 		if(!g_emulator.GetRender())
@@ -327,10 +326,8 @@ void res_config(const std::string& arg)
 		std::cout << "done.\n";
 
 	}
-
-	catch(std::exception& e)
-	{
-		std::cerr << "failed to set window size: " << e.what() << '\n';
+	catch(std::exception& e) {
+		DisplayErrorMsg("res_config", e.what());
 	}
 
 
@@ -339,29 +336,26 @@ void res_config(const std::string& arg)
 
 
 
-void cfq_config(const std::string& arg)
+void chz_config(const std::string& arg)
 {
-	try
-	{
+	try {
 		std::cout << "setting CPU frequency...\n";		
 		const auto cfq = std::stoi(arg);
 		g_emulator.SetCpuFreq(cfq);
 		std::cout << "CPU frequency: " << g_emulator.GetCpuFreq() << '\n';
 		std::cout << "done.\n";
 	}
-	catch(std::exception& e)
-	{
-		std::cerr << "failed to set CPU frequency: " << e.what() << '\n';
+	catch(std::exception& e) {
+		DisplayErrorMsg("chz_config", e.what());
 	}
 
 }
 
 
 
-void sfq_config(const std::string& arg)
+void shz_config(const std::string& arg)
 {
-	try
-	{
+	try {
 		std::cout << "setting sound tone...\n";
 		const auto sfq = std::stof(arg);
 
@@ -372,9 +366,8 @@ void sfq_config(const std::string& arg)
 		std::cout << "sound tone frequency: " << g_emulator.GetSound()->GetSoundFreq() << '\n';
 		std::cout << "done.\n";
 	}
-	catch(std::exception& e)
-	{
-		std::cerr << "Failed to set sound tone: " << e.what() << '\n';
+	catch(std::exception& e) {
+		DisplayErrorMsg("shz_config", e.what());
 	}
 	
 }
@@ -386,8 +379,7 @@ void sfq_config(const std::string& arg)
 
 void col_config(const std::string& arg)
 {
-	try
-	{
+	try {
 		std::cout << "setting render color...\n";
 		const auto color = get_arg_rgb(arg);
 
@@ -401,9 +393,8 @@ void col_config(const std::string& arg)
 		std::cout << "done.\n";
 		
 	}
-	catch(std::exception& e)
-	{
-		std::cerr << "Failed to set render color: " << e.what() << '\n';
+	catch(std::exception& e) {
+		DisplayErrorMsg("col_config", e.what());
 	}
 
 }
@@ -417,8 +408,7 @@ void col_config(const std::string& arg)
 
 void bkg_config(const std::string& arg)
 {
-	try
-	{
+	try {
 		std::cout << "setting background color...\n";
 		
 		const auto color = get_arg_rgb(arg);
@@ -433,9 +423,8 @@ void bkg_config(const std::string& arg)
 		std::cout << "done.\n";
 		
 	}
-	catch(std::exception& e)
-	{
-		std::cerr << "Failed to set render background color: " << e.what() << '\n';
+	catch(std::exception& e) {
+		DisplayErrorMsg("bkg_config", e.what());
 	}
 
 }
@@ -446,17 +435,15 @@ void bkg_config(const std::string& arg)
 
 void fps_config(const std::string& arg)
 {
-	try
-	{
+	try {
 		std::cout << "setting emulator FPS...\n";
 		const auto fps = std::stoi(arg);
 		g_emulator.SetFps(fps);
 		std::cout << "emulator FPS: " << g_emulator.GetFps() << '\n';
 		std::cout << "done.\n";
 	}
-	catch(std::exception& e)
-	{
-		std::cerr << "Failed to set emulator FPS: " << e.what() << '\n';
+	catch(std::exception& e) {
+		DisplayErrorMsg("fps_config", e.what());
 	}
 
 }
@@ -465,8 +452,6 @@ void fps_config(const std::string& arg)
 utix::Color get_arg_rgb(const std::string& arg)
 {
 	const auto firstSeparator = arg.find('x');
-
-	
 	const auto secondSeparator = arg.find('x', firstSeparator + 1);
 
 	if (firstSeparator == std::string::npos || 
@@ -499,22 +484,35 @@ utix::Color get_arg_rgb(const std::string& arg)
 
 
 
+void DisplayErrorMsg(const std::string& title, const std::string& errmsg)
+{
+	if(SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title.c_str(), errmsg.c_str(), nullptr) != 0)
+		std::cerr << title << ": " << errmsg << '\n';
+}
 
 
+
+
+
+
+
+
+}
+
+
+// signals
 
 #if defined(__linux__) || defined(__APPLE__)
 void signals_sigint(const int signum)
 {
-	std::cout << "Received sigint! signum: " << signum << '\n';
-	std::cout << "Closing Application!\n";
+	std::cout << "Received sigint! signum: " << signum << "\nClosing Application!\n";
 	g_emulator.SetExitFlag(true);
 }
 
 #elif defined(_WIN32)
 bool _stdcall ctrl_handler(DWORD ctrlType)
 {
-	std::cout << "Received ctrlType: " << ctrlType << '\n';
-	std::cout << "Closing Application!\n";
+	std::cout << "Received ctrlType: " << ctrlType << "\nClosing Application!\n";
 	g_emulator.SetExitFlag(true);
 	return true;
 }
