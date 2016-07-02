@@ -20,7 +20,55 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
+#include <Utix/NotNull.h>
+using namespace utix;
+extern "C" {
 
+
+	bool not_null(NotNull<int*> nnptr) {
+		/*
+		cmpl    $100, (%rdi)
+		setg    %al
+		retq
+		*/
+		return *nnptr > 100 ? true : false;
+	}
+
+
+	bool raw(int* ptr) {
+	/*
+		testq   %rdi, %rdi
+		je  .LBB1_1
+		cmpl    $100, (%rdi)
+		setg    %al
+		retq
+		.LBB1_1:
+		xorl    %eax, %eax
+		retq
+	*/
+		if(ptr)
+			return *ptr > 100 ? true : false;
+		return false;
+	}
+}
+
+
+int main() {
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#if 0
 #include <cstdlib>
 #include <iostream>
 #include <Utix/RWrap.h>
@@ -85,7 +133,7 @@ int main()
 
 
 
-
+#endif
 #if 0
 int main(int argc, char** argv)
 {
