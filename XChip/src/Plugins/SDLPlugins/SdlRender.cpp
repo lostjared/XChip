@@ -70,7 +70,7 @@ bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 		return false;
 	}
 	
-	const auto scope = make_scope_exit([this]() noexcept 
+	const auto scope = MakeScopeExit([this]() noexcept 
 	{
 		if (!this->m_initialized) 
 		{
@@ -497,7 +497,7 @@ bool SdlRender::CreateTexture(const int w, const int h)
 
 	auto* oldTexture = m_texture;
 	
-	const auto cleanup = make_scope_exit([&surface, &oldTexture]() noexcept
+	const auto cleanup = MakeScopeExit([&surface, &oldTexture]() noexcept
 	{
 		SDL_FreeSurface(surface);
 		SDL_DestroyTexture(oldTexture);

@@ -21,15 +21,12 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #ifndef XCHIP_PLUGINS_SDLSOUND_H_
 #define XCHIP_PLUGINS_SDLSOUND_H_
 
+#include <SDL2/SDL.h>
 #include <Utix/Ints.h>
 #include <XChip/Plugins/iSound.h>
 
 
 
-
-
-struct SDL_AudioSpec;
-typedef uint32_t SDL_AudioDeviceID;
 
 namespace xchip {
 
@@ -60,13 +57,15 @@ public:
 
 
 private:
-	bool InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have);
 	float GetPlayFreq() const;
 	float GetCurFreq() const;
 	void SetPlayFreq(const float hz);
 	void SetCurFreq(const float hz);
 	void SetCycleTime(const float hz);
 	void SetLenght(const unsigned int len);
+
+	bool OpenAudioDevice();
+	void CloseAudioDevice();
 	template<class T>
 	static void audio_callback(void* userdata, uint8_t* stream, int len) noexcept;
 

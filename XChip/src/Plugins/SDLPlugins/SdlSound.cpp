@@ -24,8 +24,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <cstdlib>
 #include <cstring>
 
-#include <SDL2/SDL.h>
-
 #include <Utix/Log.h>
 #include <Utix/Timer.h>
 #include <Utix/ScopeExit.h>
@@ -45,11 +43,11 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 
 
 
+
+
 constexpr const char* const SdlSound::PLUGIN_NAME;
 constexpr const char* const SdlSound::PLUGIN_VER;
 constexpr float SdlSound::DEFAULT_FREQ;
-
-
 
 
 
@@ -96,25 +94,13 @@ bool SdlSound::Initialize() noexcept
 	if( SDL_InitSubSystem(SDL_INIT_AUDIO) )
 		return false;
 
-
-	const auto cleanup = make_scope_exit([this]() noexcept 
-	{
+	const auto cleanup = MakeScopeExit([this]() noexcept {
 		if (!this->m_initialized)
 			this->Dispose();
 	});
-
-
-	m_specs = new(std::nothrow) SDL_AudioSpec[2];
-
 	
-	if (!m_specs) {
-		LogError("Could not allocate memory for SDL_AudioSpecs");
+	if( !OpenAudioDevice() )
 		return false;
-	}
-
-	else if (!InitDevice(m_specs[WANT], m_specs[HAVE])) {
-		return false;
-	}
 
 	m_len = 0.f;
 	m_pos = 0u;
@@ -130,18 +116,7 @@ bool SdlSound::Initialize() noexcept
 
 void SdlSound::Dispose() noexcept
 {
-	if (m_dev != 0)
-	{
-		SDL_CloseAudioDevice(m_dev);
-		m_dev = 0;
-	}
-
-	if (m_specs)
-	{
-		delete[] m_specs;
-		m_specs = nullptr;
-	}
-
+	CloseAudioDevice();
 	SDL_QuitSubSystem( SDL_INIT_AUDIO );
 	m_initialized = false;
 }
@@ -249,9 +224,32 @@ void SdlSound::Stop() noexcept
 
 
 
-bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
+
+
+
+
+
+
+// private methods
+
+
+bool SdlSound::OpenAudioDevice()
 {
-	using namespace utix::literals;
+
+	auto specs = (SDL_AudioSpec*) std::malloc( sizeof(SDL_AudioSpec) * 2 );
+
+	if (!specs) {
+		LogError("Could not allocate memory for SDL_AudioSpecs");
+		return false;
+	}
+
+	const auto cleanup = MakeScopeExit([&specs]() noexcept { 
+		if(specs) 
+			std::free(specs); 
+	});
+
+	auto& want = specs[WANT];
+	auto& have = specs[HAVE];
 
 	memset(&want, 0, sizeof(SDL_AudioSpec));
 	want.freq = 44100;
@@ -263,14 +261,36 @@ bool SdlSound::InitDevice(SDL_AudioSpec& want, SDL_AudioSpec& have)
 
 	m_dev = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);
 
-	if (m_dev < 2) 
+	if ( m_dev < 2 ) 
 	{
+		m_dev = 0;
 		LogError("SdlSound: Failed to open audio device: %s", SDL_GetError());
 		return false;
 	}
 
+	m_specs = specs;
+	specs = nullptr;
 	return true;
 }
+
+
+void SdlSound::CloseAudioDevice() 
+{
+	if(m_specs) {
+		std::free(m_specs);
+		m_specs = nullptr;
+	}
+
+	if( m_dev != 0 ) {
+		SDL_CloseAudioDevice(m_dev);
+		m_dev = 0;
+	}
+}
+
+
+
+
+
 
 
 
@@ -335,6 +355,11 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 
 
 
+
+
+
+
+// export
 
 extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {

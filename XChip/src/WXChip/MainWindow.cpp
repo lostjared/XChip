@@ -350,7 +350,7 @@ static bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& 
 		return false;
 	}
 
-	const auto cleanup = make_scope_exit([&dir]()noexcept { closedir(dir); });
+	const auto cleanup = MakeScopeExit([&dir]()noexcept { closedir(dir); });
 	
 	wxArrayString dirFiles;
 	dirent *e;
