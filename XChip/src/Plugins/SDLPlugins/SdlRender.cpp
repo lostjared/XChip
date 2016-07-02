@@ -304,11 +304,60 @@ void SdlRender::SetWindowSize(const Vec2i& size) noexcept
 }
 
 
+
+
 void SdlRender::SetWindowPosition(const Vec2i& pos) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	SDL_SetWindowPosition(m_window, pos.x, pos.y);
 }
+
+
+
+
+bool SdlRender::SetDrawColor(const Color& color) noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+	
+	if(SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b))
+	{
+		LogError("Failed to set texture draw color: %s", + SDL_GetError());
+		return false;
+	}
+
+	return true;
+}
+
+
+
+
+
+
+bool SdlRender::SetBackgroundColor(const Color& color) noexcept
+{
+	_SDLRENDER_INITIALIZED_ASSERT_();
+
+	if(SDL_SetRenderDrawColor(m_rend, color.r, color.g, color.b, 0xff))
+	{
+		LogError("Could not set render draw color: %s", SDL_GetError());
+		return false;
+	}
+
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -377,42 +426,6 @@ bool SdlRender::SetFullScreen(const bool val) noexcept
 }
 
 
-
-
-
-
-
-
-bool SdlRender::SetDrawColor(const Color& color) noexcept
-{
-	_SDLRENDER_INITIALIZED_ASSERT_();
-	
-	if(SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b))
-	{
-		LogError("Failed to set texture draw color: %s", + SDL_GetError());
-		return false;
-	}
-
-	return true;
-}
-
-
-
-
-
-
-bool SdlRender::SetBackgroundColor(const Color& color) noexcept
-{
-	_SDLRENDER_INITIALIZED_ASSERT_();
-
-	if(SDL_SetRenderDrawColor(m_rend, color.r, color.g, color.b, 0xff))
-	{
-		LogError("Could not set render draw color: %s", SDL_GetError());
-		return false;
-	}
-
-	return true;
-}
 
 
 

@@ -120,20 +120,12 @@ inline bool Emulator::GetExitFlag() const { return m_manager.GetFlags(Cpu::EXIT)
 inline const iRender* Emulator::GetRender() const { return m_manager.GetRender(); }
 inline const iInput* Emulator::GetInput() const { return m_manager.GetInput(); }
 inline const iSound* Emulator::GetSound() const { return m_manager.GetSound(); }
-
 inline int Emulator::GetCpuFreq() const { return m_instrTimer.GetTargetHz(); }
 inline int Emulator::GetFps() const { return m_frameTimer.GetTargetHz(); }
 
-inline void Emulator::SetCpuFreq(const int value)
-{
-	m_instrTimer.SetTargetHz(utix::Clamp(value, 60, 50000));
-}
 
-inline void Emulator::SetFps(const int value)
-{
-	m_frameTimer.SetTargetHz(utix::Clamp(value, 10, 1000));
-}
-
+inline void Emulator::SetCpuFreq(const int value) { m_instrTimer.SetTargetHz(utix::Clamp(value, 60, 50000)); }
+inline void Emulator::SetFps(const int value) { m_frameTimer.SetTargetHz(utix::Clamp(value, 10, 1000)); }
 
 inline void Emulator::SetDrawFlag(const bool val) 
 { 

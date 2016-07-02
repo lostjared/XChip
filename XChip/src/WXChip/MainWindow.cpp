@@ -336,7 +336,7 @@ inline void FillRomPath(const wxString& fullPath, wxString& dest)
 
 
 
-bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& lbox)
+static bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& lbox)
 {
 	using namespace utix;
 	
