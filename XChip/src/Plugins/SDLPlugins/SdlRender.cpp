@@ -489,33 +489,24 @@ bool SdlRender::CreateTexture(const int w, const int h)
 {
 	auto* const surface = SDL_CreateRGBSurface(0, w, h, 32, 0,0,0,0);
 
-	if(!surface)
-	{
+	if(!surface) {
 		LogError("Could not create surface: %s", SDL_GetError());
 		return false;
 	}
 
-	auto* oldTexture = m_texture;
+	const auto surface_cleanup = MakeScopeExit([surface]()noexcept { SDL_FreeSurface(surface); });
 	
-	const auto cleanup = MakeScopeExit([&surface, &oldTexture]() noexcept
-	{
-		SDL_FreeSurface(surface);
-		SDL_DestroyTexture(oldTexture);
-	});
-
-
 	SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
-	m_texture = SDL_CreateTextureFromSurface(m_rend, surface);
+	auto* const newTexture = SDL_CreateTextureFromSurface(m_rend, surface);
 
-	if(!m_texture)
-	{
+	if(!newTexture) {
 		LogError("Could not create texture: %s", SDL_GetError());
-		m_texture = oldTexture;
-		oldTexture = nullptr;
 		return false;
 	}
 
-	return true;	
+	SDL_DestroyTexture(m_texture);
+	m_texture = newTexture;
+	return true;
 }
 
 

@@ -341,7 +341,7 @@ static bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& 
 	using namespace utix;
 	
 	errno = 0;
-	DIR* dir = opendir(path.c_str());
+	DIR* const dir = opendir(path.c_str());
 
 	if( dir == nullptr ) 
 	{
@@ -350,7 +350,7 @@ static bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& 
 		return false;
 	}
 
-	const auto cleanup = MakeScopeExit([&dir]()noexcept { closedir(dir); });
+	const auto dir_cleanup = MakeScopeExit([dir]()noexcept { closedir(dir); });
 	
 	wxArrayString dirFiles;
 	dirent *e;

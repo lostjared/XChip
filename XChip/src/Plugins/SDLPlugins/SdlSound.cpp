@@ -236,20 +236,15 @@ void SdlSound::Stop() noexcept
 bool SdlSound::OpenAudioDevice()
 {
 
-	auto specs = (SDL_AudioSpec*) std::malloc( sizeof(SDL_AudioSpec) * 2 );
+	m_specs = (SDL_AudioSpec*) std::malloc( sizeof(SDL_AudioSpec) * 2 );
 
-	if (!specs) {
+	if (!m_specs) {
 		LogError("Could not allocate memory for SDL_AudioSpecs");
 		return false;
 	}
 
-	const auto cleanup = MakeScopeExit([&specs]() noexcept { 
-		if(specs) 
-			std::free(specs); 
-	});
-
-	auto& want = specs[WANT];
-	auto& have = specs[HAVE];
+	auto& want = m_specs[WANT];
+	auto& have = m_specs[HAVE];
 
 	memset(&want, 0, sizeof(SDL_AudioSpec));
 	want.freq = 44100;
@@ -263,13 +258,13 @@ bool SdlSound::OpenAudioDevice()
 
 	if ( m_dev < 2 ) 
 	{
+		std::free(m_specs);
+		m_specs = nullptr;
 		m_dev = 0;
 		LogError("SdlSound: Failed to open audio device: %s", SDL_GetError());
 		return false;
 	}
 
-	m_specs = specs;
-	specs = nullptr;
 	return true;
 }
 
