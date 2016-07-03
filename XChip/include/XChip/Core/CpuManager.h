@@ -327,4 +327,4 @@ constexpr size_t CpuManager::GetHiResFontIndex() { return utix::arr_size(fonts::
 
 
 
-#endif // _XCHIP_CPU_MANAGER_H_
+#endif // XCHIP_CPU_MANAGER_H_

@@ -374,7 +374,7 @@ static bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& 
 
 inline std::string ComputeEmuAppCommand(const wxString& emuAppPath, const wxString& rom, const wxString& cliArgs)
 {
-	return static_cast<const char*>((emuAppPath + " -ROM " + rom + ' ' + cliArgs));
+	return static_cast<const char*>((emuAppPath + " -ROM " + rom + ' ' + cliArgs).c_str());
 }
 
 

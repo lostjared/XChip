@@ -195,7 +195,7 @@ void LoadPlugins(const utix::CliOpts& opts)
 	auto ren_path = opts.GetOpt("-REN");
 	auto inp_path = opts.GetOpt("-INP");
 	auto snd_path = opts.GetOpt("-SND");
-	const auto SetIfEmpty = [](const std::string src, std::string& dest) { if(dest.empty()) dest = src; };
+	const auto SetIfEmpty = [](const char* src, std::string& dest) { if(dest.empty()) dest = src; };
 #ifdef _WIN32
 	// setting the dll directory on windows
 	// make possible to load the plugin's dependencies dlls
@@ -209,9 +209,9 @@ void LoadPlugins(const utix::CliOpts& opts)
 	SetIfEmpty(DefaultPluginPath<UniqueInput>(), inp_path);
 	SetIfEmpty(DefaultPluginPath<UniqueSound>(), snd_path);
 #elif defined(__linux__) || defined(__APPLE__)
-	SetIfEmpty(procDir + DefaultPluginPath<UniqueRender>(), ren_path);
-	SetIfEmpty(procDir + DefaultPluginPath<UniqueInput>(), inp_path);
-	SetIfEmpty(procDir + DefaultPluginPath<UniqueSound>(), snd_path);
+	SetIfEmpty((procDir + DefaultPluginPath<UniqueRender>()).c_str(), ren_path);
+	SetIfEmpty((procDir + DefaultPluginPath<UniqueInput>()).c_str(), inp_path);
+	SetIfEmpty((procDir + DefaultPluginPath<UniqueSound>()).c_str(), snd_path);
 #else
 	#error Unknown Plataform
 #endif
