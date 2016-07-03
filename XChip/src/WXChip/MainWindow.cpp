@@ -50,7 +50,7 @@ namespace {
 static void FillRomPath(const wxString& dirPath, const wxString& filename, wxString& dest);
 inline void FillRomPath(const wxString& fullPath, wxString& dest);
 static bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& lbox);
-inline std::string ComputeEmuAppArgs(const wxString& emuAppPath, const wxString& rom, const wxString& cliArgs);
+inline std::string ComputeEmuAppCommand(const wxString& emuAppPath, const wxString& rom, const wxString& cliArgs);
 inline const char* ToCStr(const wxString& wxstr);
 }
 
@@ -162,11 +162,11 @@ void MainWindow::StartEmulator()
 	if(m_romPath.empty() == false) 
 	{
 		utix::Log("Start Rom At Path: %s", ToCStr(m_romPath));
-		if(!m_process.Run(ComputeEmuAppArgs(m_emuAppPath, m_romPath, m_settingsWin->GetArguments())))
+		if(!m_process.Run(ComputeEmuAppCommand(m_emuAppPath, m_romPath, m_settingsWin->GetArguments())))
 			throw std::runtime_error(utix::GetLastLogError());
 	}
 	else {
-		InformationDlg(this, "No rom selected.");
+		InformationDlg(this, "No ROM Selected.");
 	}
 }
 
@@ -372,7 +372,7 @@ static bool LoadListBox(wxFrame* const parent, const wxString& path, wxListBox& 
 
 
 
-inline std::string ComputeEmuAppArgs(const wxString& emuAppPath, const wxString& rom, const wxString& cliArgs)
+inline std::string ComputeEmuAppCommand(const wxString& emuAppPath, const wxString& rom, const wxString& cliArgs)
 {
 	return static_cast<const char*>((emuAppPath + " -ROM " + rom + ' ' + cliArgs));
 }
