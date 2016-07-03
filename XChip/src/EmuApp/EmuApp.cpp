@@ -1,6 +1,6 @@
 /*
 
-WXChip - chip8 emulator using XChip library and a wxWidgets gui.
+EmuApp - chip8 emulator implementation using XChip/Utix.
 Copyright (C) 2016  Rafael Moura
 
 This program is free software: you can redistribute it and/or modify
@@ -166,82 +166,74 @@ int main(int argc, char **argv)
 // locals functions definitions
 namespace {
 
-template<class P>
-constexpr const char* DefaultPluginPath();
+
 #ifdef _WIN32
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "XChipSDLRender.dll";}
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "XChipSDLInput.dll";}
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "XChipSDLSound.dll"; }
+template<class P>
+constexpr const char* DefaultPluginPath() {
+	return utix::is_same<P, xchip::UniqueRender>::value ? "XChipSDLRender.dll" 
+	: utix::is_same<P, xchip::UniqueInput>::value ?  "XChipSDLInput.dll" : "XChipSDLSound.dll";
+}
 #elif defined(__linux__) || defined(__APPLE__)
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueRender>() { return "plugins/XChipSDLRender"; }
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueInput>() { return "plugins/XChipSDLInput";}
-template<> constexpr const char* DefaultPluginPath<xchip::UniqueSound>() { return "plugins/XChipSDLSound";}
+template<class P>
+constexpr const char* DefaultPluginPath() {
+	return utix::is_same<P, xchip::UniqueRender>::value ? "plugins/XChipSDLRender"
+	: utix::is_same<P, xchip::UniqueInput>::value ?  "plugins/XChipSDLInput" : "plugins/XChipSDLSound";
+}
 #endif
-
-template<class PluginType>
-void SetPlugin(const std::string& path);
-
 
 void LoadPlugins(const utix::CliOpts& opts)
 {
+	using xchip::UniqueRender;
+	using xchip::UniqueInput;
+	using xchip::UniqueSound;
+
+	const auto procDir = utix::GetFullProcDir();
+
+	if(procDir.empty())
+		DisplayErrorMsg("Load Plugins", "Couldn't get process directory!");
+
+	auto ren_path = opts.GetOpt("-REN");
+	auto inp_path = opts.GetOpt("-INP");
+	auto snd_path = opts.GetOpt("-SND");
+	const auto SetIfEmpty = [](const std::string src, std::string& dest) { if(dest.empty()) dest = src; };
 #ifdef _WIN32
-	// get current dll directory
-	char buffer[256];
-	GetDllDirectory(255, buffer);
-	// set our plugins folder as a dll directory
-	SetDllDirectory((utix::GetFullProcDir() + "\\plugins\\").c_str());
-#endif
-
-	using ConfigPair = std::pair<const char*, void(*)(const std::string&)>;
-	
-	const ConfigPair configPairs[] = 
-	{
-		{"-REN", SetPlugin<xchip::UniqueRender>},
-		{"-INP", SetPlugin<xchip::UniqueInput>},
-		{"-SND", SetPlugin<xchip::UniqueSound>}
-	};
-
-	for(const auto& it : configPairs)
-	{
-		const auto opt = opts.GetOpt(it.first);
-		it.second(opt);
-	}
-
-#ifdef _WIN32
-	//set back 
-	SetDllDirectory(buffer);
-#endif
-}
-
-
-template<class PluginType>
-void SetPlugin(const std::string& path)
-{
-	using namespace utix::literals;
-	using utix::CliOpts;
-
-	PluginType plugin;
-
-	if (path.empty())
-	{
-
-#ifdef _WIN32
-		if (!plugin.Load(DefaultPluginPath<PluginType>()))			
+	// setting the dll directory on windows
+	// make possible to load the plugin's dependencies dlls
+	// such as SDL.dll from plugins folder.
+	char oldDir[256];
+	GetDllDirectory(255, oldDir);
+	SetDllDirectory((procDir + "\\plugins\\").c_str());
+	const auto ddl_dir_cleanup = MakeScopeExit([oldDir]()noexcept{ SetDllDirectory(oldDir); });
+	// since the dll directory is set, no need to use procDir here:
+	SetIfEmpty(DefaultPluginPath<UniqueRender>(), ren_path);
+	SetIfEmpty(DefaultPluginPath<UniqueInput>(), inp_path);
+	SetIfEmpty(DefaultPluginPath<UniqueSound>(), snd_path);
 #elif defined(__linux__) || defined(__APPLE__)
-		if (!plugin.Load(utix::GetFullProcDir() + DefaultPluginPath<PluginType>()))
+	SetIfEmpty(procDir + DefaultPluginPath<UniqueRender>(), ren_path);
+	SetIfEmpty(procDir + DefaultPluginPath<UniqueInput>(), inp_path);
+	SetIfEmpty(procDir + DefaultPluginPath<UniqueSound>(), snd_path);
+#else
+	#error Unknown Plataform
 #endif
 
-			throw std::runtime_error(utix::GetLastLogError());
-	}
-	else if (!plugin.Load(path))
-	{
-		throw std::runtime_error(utix::GetLastLogError());
-	}
+	UniqueRender rend;
+	UniqueInput input;
+	UniqueSound sound;
+	if(!rend.Load(ren_path))
+		throw std::runtime_error("Failed to load Render Plugin: " + utix::GetLastLogError());
+	if(!input.Load(inp_path))
+		throw std::runtime_error("Failed to load Input Plugin: " + utix::GetLastLogError());
+	if(!sound.Load(snd_path))
+		throw std::runtime_error("Failed to load Sound Plugin: " + utix::GetLastLogError());
 
-	if (!g_emulator.SetPlugin(std::move(plugin)))
-		throw std::runtime_error(utix::GetLastLogError());
-
+	g_emulator.SetPlugin(std::move(rend));
+	g_emulator.SetPlugin(std::move(input));
+	g_emulator.SetPlugin(std::move(sound));
 }
+
+
+
+
 
 
 
