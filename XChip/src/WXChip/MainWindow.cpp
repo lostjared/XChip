@@ -108,10 +108,9 @@ void MainWindow::CreateControls()
                                           wxPoint(10, 10), wxSize(100, 25));
 
 	m_listBox = make_unique<wxListBox>(m_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), 
-                                       0, nullptr, wxLB_SINGLE);
-	
-	m_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnListBoxMouseClick), nullptr, this);
+                                       0, nullptr, wxLB_SINGLE);	
 	m_listBox->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(MainWindow::OnListBoxMouseClick), nullptr, this);
+	m_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnListBoxMouseClick), nullptr, this);
 
 
 	m_buttonLoadRom = make_unique<wxButton>(m_panel.get(), ID_BUTTON_LOAD_ROM, _T("Load Rom"), 
