@@ -32,7 +32,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <algorithm>
 #include <utility>
 
-#include <SDL2/SDL.h>
+#include <SDL2/SDL_messagebox.h>
 #include <Utix/Log.h>
 #include <Utix/CliOpts.h>
 #include <Utix/Common.h>
@@ -203,7 +203,7 @@ void LoadPlugins(const utix::CliOpts& opts)
 	char oldDir[256];
 	GetDllDirectory(255, oldDir);
 	SetDllDirectory((procDir + "\\plugins\\").c_str());
-	const auto ddl_dir_cleanup = MakeScopeExit([oldDir]()noexcept{ SetDllDirectory(oldDir); });
+	const auto ddl_dir_cleanup = utix::MakeScopeExit([oldDir=&oldDir[0]]()noexcept{ SetDllDirectory(oldDir); });
 	// since the dll directory is set, no need to use procDir here:
 	SetIfEmpty(DefaultPluginPath<UniqueRender>(), ren_path);
 	SetIfEmpty(DefaultPluginPath<UniqueInput>(), inp_path);

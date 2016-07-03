@@ -19,12 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\XChip\src\WXChip\Dialog.cpp" />
     <ClCompile Include="..\..\..\XChip\src\WXChip\Main.cpp" />
     <ClCompile Include="..\..\..\XChip\src\wXChip\MainWindow.cpp" />
     <ClCompile Include="..\..\..\XChip\src\WXChip\SaveList.cpp" />
     <ClCompile Include="..\..\..\XChip\src\WXChip\SettingsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\XChip\include\WXChip\Dialog.h" />
     <ClInclude Include="..\..\..\XChip\include\wXChip\dirent.h" />
     <ClInclude Include="..\..\..\XChip\include\WXChip\Main.h" />
     <ClInclude Include="..\..\..\XChip\include\wXChip\MainWindow.h" />

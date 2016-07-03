@@ -109,11 +109,9 @@ void MainWindow::CreateControls()
 
 	m_listBox = make_unique<wxListBox>(m_panel.get(), ID_LISTBOX, wxPoint(10, 35), wxSize(620, 360), 
                                        0, nullptr, wxLB_SINGLE);
-
-	m_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnListBoxDoubleClick), NULL, this);
-	m_listBox->Connect(wxEVT_RIGHT_DCLICK, wxMouseEventHandler(MainWindow::OnListBoxDoubleClick), NULL, this);
-	m_listBox->Connect(wxEVT_LEFT_UP, wxMouseEventHandler(MainWindow::OnListBoxMouseUp), NULL, this);
-	m_listBox->Connect(wxEVT_RIGHT_UP, wxMouseEventHandler(MainWindow::OnListBoxMouseUp), NULL, this);
+	
+	m_listBox->Connect(wxEVT_LEFT_DCLICK, wxMouseEventHandler(MainWindow::OnListBoxMouseClick), nullptr, this);
+	m_listBox->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(MainWindow::OnListBoxMouseClick), nullptr, this);
 
 
 	m_buttonLoadRom = make_unique<wxButton>(m_panel.get(), ID_BUTTON_LOAD_ROM, _T("Load Rom"), 
@@ -195,8 +193,7 @@ void MainWindow::ComputeEmuAppPath()
 		throw std::runtime_error("Could not get WXChip process path");
 
 	m_emuAppPath = procDir + default_emuapp_relative_path;
-
-	if (!std::ifstream(m_emuAppPath).good())
+	if (!std::ifstream(ToCStr(m_emuAppPath)).good())
 		throw std::runtime_error("Could not find EmuApp executable!");
 
 	// insert quotes around the computed path
@@ -239,24 +236,18 @@ void MainWindow::OnAbout(wxCommandEvent&)
 
 
 
-void MainWindow::OnListBoxDoubleClick(wxMouseEvent& event)
+void MainWindow::OnListBoxMouseClick(wxMouseEvent& event)
 {
-	auto m_lbox = static_cast<wxListBox*>(event.GetEventObject());
-	int item = m_lbox->HitTest(event.GetPosition());
+	auto lbox = static_cast<wxListBox*>(event.GetEventObject());
+	int item = lbox->HitTest(event.GetPosition());
 
-	if (item != wxNOT_FOUND) {
-		FillRomPath(m_settingsWin->GetDirPath(), m_lbox->GetString(item), m_romPath);
-		StartEmulator();
+	if (item != wxNOT_FOUND) 
+	{
+		lbox->SetSelection(item);
+		FillRomPath(m_settingsWin->GetDirPath(), lbox->GetString(item),m_romPath);
+		if (event.ButtonDClick())
+			this->StartEmulator();
 	}
-}
-
-void MainWindow::OnListBoxMouseUp(wxMouseEvent& event)
-{
-	auto m_lbox = static_cast<wxListBox*>(event.GetEventObject());
-	int item = m_lbox->HitTest(event.GetPosition());
-
-	if (item != wxNOT_FOUND)
-		FillRomPath(m_settingsWin->GetDirPath(), m_lbox->GetString(item), m_romPath);
 }
 
 
@@ -390,7 +381,7 @@ inline std::string ComputeEmuAppArgs(const wxString& emuAppPath, const wxString&
 
 inline const char* ToCStr(const wxString& wxstr) 
 {
-	return static_cast<const char*>(wxstr);
+	return static_cast<const char*>(wxstr.c_str());
 }
 
 

@@ -27,6 +27,9 @@
     <ClCompile Include="..\..\..\XChip\src\WXChip\SaveList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\XChip\src\WXChip\Dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\XChip\include\wXChip\dirent.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XChip\include\WXChip\SaveList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XChip\include\WXChip\Dialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

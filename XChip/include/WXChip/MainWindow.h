@@ -31,7 +31,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 class MainWindow final : public wxFrame
 {
 #ifdef _WIN32
-	constexpr static const char* const default_emuapp_relative_path = "bin\\EmuApp";
+	constexpr static const char* const default_emuapp_relative_path = "bin\\EmuApp.exe";
 #elif defined(__linux__) || defined(__APPLE__)
 	constexpr static const char* const default_emuapp_relative_path = "bin/EmuApp";
 #else
@@ -60,8 +60,7 @@ private:
 	void OnExit(wxCommandEvent& ev);
 	void OnClose(wxCloseEvent& ev);
 	void OnAbout(wxCommandEvent& ev);
-	void OnListBoxDoubleClick(wxMouseEvent& ev);
-	void OnListBoxMouseUp(wxMouseEvent& ev);
+	void OnListBoxMouseClick(wxMouseEvent& ev);
 	void OnButtonLoadRom(wxCommandEvent& ev);
 	void OnButtonSettings(wxCommandEvent& ev);
 	void OnButtonSelectDir(wxCommandEvent& ev);
