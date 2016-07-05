@@ -18,6 +18,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+// TODO: add support for plugins as shared libraries
+// for that is needed to compile SDL plugins as .so own their own
+// and pack it into the .apk somehow
 
 #include "SDL_main.h"
 #include <android/log.h>
@@ -63,7 +66,7 @@ int main(int, char**)
 		return EXIT_FAILURE;
 	}
 
-	else if( ! emulator->LoadRom("/data/local/tmp/Ant.ch8") ) {
+	else if( ! emulator->LoadRom("/data/local/tmp/Game.ch8") ) {
 		return EXIT_FAILURE;
 	}
 
@@ -79,6 +82,6 @@ int main(int, char**)
 			emulator->Draw();
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
