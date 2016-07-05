@@ -214,7 +214,7 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 	Log("Loading %s", fileName);
 
-	auto *const file = std::fopen(fileName, "rb");
+	auto *const file = fopen(fileName, "rb");
 
 	if (!file)
 	{
@@ -222,12 +222,14 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 		return false;
 	}
 
-	const auto fileClose = MakeScopeExit([file]() noexcept { std::fclose(file); });
+	const auto fileClose = MakeScopeExit([file]() noexcept { 
+		fclose(file); 
+	});
 
 	// get file size
-	std::fseek(file, 0, SEEK_END);
-	const auto fileSize = static_cast<size_t>(std::ftell(file));
-	std::fseek(file, 0, SEEK_SET);
+	fseek(file, 0, SEEK_END);
+	const auto fileSize = static_cast<size_t>(ftell(file));
+	fseek(file, 0, SEEK_SET);
 
 
 	
@@ -241,7 +243,7 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 		return false;
 	}
 
-	const auto readSize = std::fread(m_cpu.memory + at, 1, fileSize, file);
+	const auto readSize = fread(m_cpu.memory + at, 1, fileSize, file);
 
 	if( readSize != fileSize ) 
 	{

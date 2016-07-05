@@ -1,0 +1,2 @@
+/usr/bin/ar qc libCore.a  CMakeFiles/Core.dir/Emulator.cpp.o CMakeFiles/Core.dir/Fonts.cpp.o CMakeFiles/Core.dir/Instructions.cpp.o CMakeFiles/Core.dir/CpuManager.cpp.o
+/usr/bin/ranlib libCore.a

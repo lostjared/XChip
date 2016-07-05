@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC  -Wall -Wextra -std=c++11 -pedantic -O2 -g  -DNDEBUG -fno-omit-frame-pointer  -shared -Wl,-soname,XChipSDLInput.so -o XChipSDLInput.so CMakeFiles/XChipSDLInput.dir/SdlInput.cpp.o  -L/usr/local/lib -lSDL2 ../../../dependencies/Utix/Utix/src/Utix/libUtixFPIC.a -ldl -Wl,-rpath,/usr/local/lib: 

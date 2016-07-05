@@ -1,0 +1,1 @@
+/usr/bin/c++    -Wall -Wextra -std=c++11 -pedantic -O2 -g  -DNDEBUG -fno-omit-frame-pointer   CMakeFiles/EmuApp.dir/EmuApp.cpp.o  -o EmuApp  -L/usr/local/lib -rdynamic ../../dependencies/Utix/Utix/src/Utix/libUtix.a ../Core/libCore.a -lSDL2 ../../dependencies/Utix/Utix/src/Utix/libUtix.a -ldl -Wl,-rpath,/usr/local/lib: 

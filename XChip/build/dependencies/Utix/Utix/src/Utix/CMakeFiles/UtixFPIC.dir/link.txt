@@ -1,0 +1,2 @@
+/usr/bin/ar qc libUtixFPIC.a  CMakeFiles/UtixFPIC.dir/Alloc.cpp.o CMakeFiles/UtixFPIC.dir/CliOpts.cpp.o CMakeFiles/UtixFPIC.dir/Process.cpp.o CMakeFiles/UtixFPIC.dir/DLoader.cpp.o CMakeFiles/UtixFPIC.dir/Log.cpp.o CMakeFiles/UtixFPIC.dir/Common.cpp.o
+/usr/bin/ranlib libUtixFPIC.a

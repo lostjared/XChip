@@ -18,6 +18,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+#include <string.h>
 #include <algorithm>
 #include <XChip/Plugins.h>
 #include <XChip/Core.h>
@@ -95,7 +96,7 @@ void op_0xxx(CpuManager& cpuMan)
 			for( int y = 0; y < res.y; ++y )
 			{
 				uint32_t* lineBeg = cpuMan.GetGfx() + res.x * y;
-				std::memmove(lineBeg+4, lineBeg, sizeof(uint32_t) * (res.x-4));
+				memmove(lineBeg+4, lineBeg, sizeof(uint32_t) * (res.x-4));
 				std::fill(lineBeg, lineBeg+4, 0);
 			}
 
@@ -112,7 +113,7 @@ void op_0xxx(CpuManager& cpuMan)
 			{
 				uint32_t* lineBeg = cpuMan.GetGfx() + res.x * y;
 				uint32_t* lineEnd = lineBeg + res.x;
-				std::memmove(lineBeg, lineBeg+4, sizeof(uint32_t) * (res.x-4));
+				memmove(lineBeg, lineBeg+4, sizeof(uint32_t) * (res.x-4));
 				std::fill(lineEnd-4, lineEnd, 0); 
 			}
 			

@@ -33,7 +33,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 namespace xchip {
 
 
-
+#ifndef __ANDROID__
+	
 template<class T>
 class UniquePlugin
 {
@@ -280,17 +281,185 @@ inline void call_deleter(utix::DLoader& dloader, iPlugin* plugin) noexcept
 
 
 
+#elif defined(__ANDROID__)
+
+template<class T>
+class UniquePlugin
+{
+	static_assert(utix::is_same<T, iRender>::value || 
+		           utix::is_same<T, iInput>::value || 
+		           utix::is_same<T, iSound>::value, 
+		           "UniquePlugin must be a type of iPlugin interface");
+public:
+	UniquePlugin(const UniquePlugin& rhs) = delete;
+	UniquePlugin& operator=(const UniquePlugin& rhs) = delete;
+	UniquePlugin() = default;
+	UniquePlugin(const nullptr_t);
+	UniquePlugin(UniquePlugin&& rhs) noexcept;
+	UniquePlugin& operator=(UniquePlugin&& rhs) noexcept;
+	~UniquePlugin();
+	bool operator!=(const T* addr) const;
+	bool operator==(const T* addr) const;
+	bool operator!=(const UniquePlugin& other) const;
+	bool operator==(const UniquePlugin& other) const;
+	operator bool() const;
+	const T* operator->() const;
+	const T* get() const;
+	T* get();
+	T* operator->();
+	bool Load(T* plugin);
+	void Free();
+	void Swap(UniquePlugin& rhs) noexcept;
+
+
+private:
+	T* m_plugin = nullptr;
+};
+
+template<class T>
+inline UniquePlugin<T>::UniquePlugin(const nullptr_t)
+{
+	
+}
+
+template<class T>
+inline UniquePlugin<T>::UniquePlugin(UniquePlugin&& rhs) noexcept
+	: m_plugin(rhs.m_plugin)
+{
+	rhs.m_plugin = nullptr;
+}
+
+
+
+template<class T>
+inline UniquePlugin<T>& UniquePlugin<T>::operator=(UniquePlugin&& rhs) noexcept
+{
+	this->Swap(rhs);
+	return *this;
+}
+
+
+
+template<class T>
+inline UniquePlugin<T>::~UniquePlugin()
+{
+	this->Free();
+}
+
+
+
+
+
+template<class T>
+inline bool UniquePlugin<T>::operator!=(const T* addr) const
+{
+	return m_plugin != addr;
+}
+
+
+template<class T>
+inline bool UniquePlugin<T>::operator==(const T* addr) const
+{
+	return m_plugin == addr;
+}
+
+
+template<class T>
+inline bool UniquePlugin<T>::operator!=(const UniquePlugin& other) const
+{
+	return this->m_plugin != other.m_plugin;
+}
+
+
+template<class T>
+inline bool UniquePlugin<T>::operator==(const UniquePlugin& other) const
+{
+	return this->m_plugin == other.m_plugin;
+}
+
+
+
+
+template<class T>
+inline UniquePlugin<T>::operator bool() const
+{
+	return m_plugin != nullptr;
+}
+
+
+
+
+template<class T>
+inline const T* UniquePlugin<T>::operator->() const
+{
+	return m_plugin;
+}
+
+
+template<class T>
+inline const T* UniquePlugin<T>::get() const
+{
+	return m_plugin;
+}
+
+
+
+template<class T>
+inline T* UniquePlugin<T>::operator->()
+{
+	return m_plugin;
+}
+
+
+template<class T>
+inline T* UniquePlugin<T>::get()
+{
+	return m_plugin;
+}
+
+
+
+template<class T>
+bool UniquePlugin<T>::Load(T* plugin)
+{
+	m_plugin = plugin;
+	return true;
+}
+
+
+
+
+
+template<class T>
+void UniquePlugin<T>::Free()
+{
+	if(m_plugin) 
+	{
+		delete m_plugin;
+		m_plugin = nullptr;
+	}
+}
+
+
+
+
+template<class T>
+void UniquePlugin<T>::Swap(UniquePlugin& other) noexcept
+{
+	if(&other != this)
+	{
+		auto* const tmp_plugin = this->m_plugin;
+		this->m_plugin = other.m_plugin;
+		other.m_plugin = tmp_plugin;
+	}
+}
 
 
 
 
 
 
-
-
-
-
-
+#endif // __ANDROID__
 
 
 

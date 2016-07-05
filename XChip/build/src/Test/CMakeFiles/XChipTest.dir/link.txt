@@ -1,0 +1,1 @@
+/usr/bin/c++    -Wall -Wextra -std=c++11 -pedantic -O2 -g  -DNDEBUG -fno-omit-frame-pointer -fno-exceptions   CMakeFiles/XChipTest.dir/test.cpp.o  -o XChipTest  -L/usr/local/lib -rdynamic -ldl ../../dependencies/Utix/Utix/src/Utix/libUtix.a ../Core/libCore.a ../../dependencies/Utix/Utix/src/Utix/libUtix.a -ldl -Wl,-rpath,/usr/local/lib: 

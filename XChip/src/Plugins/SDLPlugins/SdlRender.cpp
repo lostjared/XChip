@@ -18,6 +18,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
+
 #include <cstdlib>
 #include <Utix/Log.h>
 #include <Utix/ScopeExit.h>
@@ -33,9 +34,11 @@ namespace xchip {
 using namespace utix;
 using namespace utix::literals;
 
-
+#ifndef __ANDROID__
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
-
+#else
+#define XCHIP_FreePlugin nullptr
+#endif
 
 
 
@@ -519,7 +522,7 @@ bool SdlRender::CreateTexture(const int w, const int h)
 
 
 
-
+#ifndef __ANDROID__
 extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlRender();
@@ -540,7 +543,7 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 	SDL_Quit();
 }
 
-
+#endif
 
 
 

@@ -33,8 +33,11 @@ namespace xchip {
 
 using namespace utix;
 
+#ifndef __ANDROID__
 extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
-
+#else
+#define XCHIP_FreePlugin nullptr
+#endif
 
 
 
@@ -237,7 +240,7 @@ void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback)
 
 
 
-
+#ifndef __ANDROID__
 
 extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {
@@ -258,7 +261,7 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 	delete sdlinput;
 }
 
-
+#endif
 
 
 

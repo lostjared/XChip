@@ -29,5 +29,15 @@ Its available for Mac OSX, Linux, Windows
 ![ScreenShot](https://github.com/dhustkoder/XChip/blob/master/Tools/Images/WXChip.png?raw=true "WXChip")
 
 
+
+
+
+An Android version is also being developed.
+![ScreenShot](https://github.com/dhustkoder/XChip/blob/master/Tools/Images/XChipAndroid.png?raw=true "XChipAndroid")
+
+
+
+
+
 If you would like to contribute, please follow 
 [Dolphin guideline] (https://github.com/dolphin-emu/dolphin/blob/master/Contributing.md)
