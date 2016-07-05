@@ -1,7 +1,9 @@
 # CMake files
 *.txt.user*
 build/
-
+*build/
+Build/
+*Build/
 
 #scripts
 push_master.sh

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libUtix.a  CMakeFiles/Utix.dir/Alloc.cpp.o CMakeFiles/Utix.dir/CliOpts.cpp.o CMakeFiles/Utix.dir/Process.cpp.o CMakeFiles/Utix.dir/DLoader.cpp.o CMakeFiles/Utix.dir/Log.cpp.o CMakeFiles/Utix.dir/Common.cpp.o
-/usr/bin/ranlib libUtix.a
