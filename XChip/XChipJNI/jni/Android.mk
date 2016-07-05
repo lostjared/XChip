@@ -1,14 +1,15 @@
-LOCAL_PATH := $(call my-dir)
-include $(${LOCAL_PATH}/../../dependencies/Utix/UtixJNI/jni/Android.mk)
+XCHIP_JNI_PATH := $(call my-dir)
+
+include ${XCHIP_JNI_PATH}/../../dependencies/Utix/UtixJNI/jni/Android.mk
 
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := XChip
 
-XCHIP_SRC_DIR :=../../src/
-XCHIP_INCLUDE_DIR :=../../include/
-UTIX_INCLUDE_DIR :=../../dependencies/Utix/Utix/include/
-SDL2_INCLUDE_DIR :=../../dependencies/SDL2/ANDROID/include/
+XCHIP_SRC_DIR :=${XCHIP_JNI_PATH}/../../src/
+XCHIP_INCLUDE_DIR :=${XCHIP_JNI_PATH}/../../include/
+UTIX_INCLUDE_DIR :=${XCHIP_JNI_PATH}/../../dependencies/Utix/Utix/include/
+SDL2_INCLUDE_DIR :=${XCHIP_JNI_PATH}/../../dependencies/SDL2/ANDROID/include/
 
 
 LOCAL_C_INCLUDES += ${XCHIP_INCLUDE_DIR} \
