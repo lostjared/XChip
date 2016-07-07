@@ -18,19 +18,16 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-// TODO: add support for plugins as shared libraries
-// for that is needed to compile SDL plugins as .so own their own
-// and pack it into the .apk somehow
+
 
 #include "SDL_main.h"
-#include <android/log.h>
 #include <Utix/Log.h>
 #include <Utix/ScopeExit.h>
 #include <XChip/Core/Emulator.h>
 #include <XChip/Core/Instructions.h>
 #include <XChip/Plugins/UniquePlugin.h>
 #include <XChip/Plugins/SDLPlugins/SdlRender.h>
-#include <XChip/Plugins/SDLPlugins/SdlInput.h>
+#include <XChip/Plugins/SDLPlugins/SdlAndroidInput.h>
 #include <XChip/Plugins/SDLPlugins/SdlSound.h>
 
 
@@ -59,7 +56,7 @@ int main(int, char**)
 	UniqueInput input;
 	UniqueSound sound;
 	render.Load(new(std::nothrow) xchip::SdlRender());
-	input.Load(new(std::nothrow) xchip::SdlInput());
+	input.Load(new(std::nothrow) xchip::SdlAndroidInput());
 	sound.Load(new(std::nothrow) xchip::SdlSound());
 
 	if ( ! emulator->Initialize(move(render), move(input), move(sound)) ) {

@@ -18,13 +18,12 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#ifndef XCHIP_PLUGINS_SDLINPUT_H_
-#define XCHIP_PLUGINS_SDLINPUT_H_
+#ifndef XCHIP_PLUGINS_SDLANDROIDINPUT_H_
+#define XCHIP_PLUGINS_SDLANDROIDINPUT_H_
 
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_scancode.h>
-#include <Utix/Vector.h>
 #include <XChip/Plugins/iInput.h>
 
  
@@ -32,13 +31,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 namespace xchip {
 
 	
-class SdlInput final : public iInput
+class SdlAndroidInput final : public iInput
 {
-	static constexpr const char* const PLUGIN_NAME = "SdlInput";
-	static constexpr const char* const PLUGIN_VER = "SdlInput 1.0. Using SDL2";
+	static constexpr const char* const PLUGIN_NAME = "SdlAndroidInput";
+	static constexpr const char* const PLUGIN_VER = "SdlAndroidInput 1.0. Using SDL2";
 public:
-	SdlInput() noexcept;
-	~SdlInput();
+	SdlAndroidInput() noexcept;
+	~SdlAndroidInput();
 	
 	bool Initialize() noexcept override;
 	void Dispose() noexcept override;
@@ -56,9 +55,10 @@ public:
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept override;
 
 private:
-	struct KeyPair { Key chip8Key; SDL_Scancode sdlKey; };
-	utix::Vector<KeyPair> m_keyPairs;
-	const unsigned char* m_keyboardState = nullptr;
+	enum { LEFT = 1, RIGHT };
+	SDL_Event m_sdlevent;
+	int m_lastX;
+	uint8_t m_direction = 0;
 	WaitKeyCallback m_waitClbk = nullptr;
 	ResetKeyCallback m_resetClbk = nullptr;
 	EscapeKeyCallback m_escapeClbk = nullptr;
@@ -92,4 +92,4 @@ private:
 
 
 
-#endif // XCHIP_PLUGINS_SDLINPUT_H_
+#endif // XCHIP_PLUGINS_SDLANDROIDINPUT_H_

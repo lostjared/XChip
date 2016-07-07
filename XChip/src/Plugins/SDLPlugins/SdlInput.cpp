@@ -20,12 +20,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <cstdlib>
 #include <SDL2/SDL_events.h>
-
-#include <XChip/Plugins/SDLPlugins/SdlInput.h>
 #include <Utix/Log.h>
 #include <Utix/ScopeExit.h>
 #include <Utix/Assert.h>
-
+#include <XChip/Plugins/SDLPlugins/SdlInput.h>
 
 #define _SDLINPUT_INITIALIZED_ASSERT_() ASSERT_MSG(m_initialized == true, "SdlInput is not initialized")
 
@@ -38,7 +36,6 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin*);
 #else
 #define XCHIP_FreePlugin nullptr
 #endif
-
 
 
 
@@ -56,7 +53,7 @@ SdlInput::SdlInput() noexcept
 
 SdlInput::~SdlInput()
 {
-	if (m_keyboardState)
+	if (m_initialized)
 		this->Dispose();
 
 	Log("Destroying SdlInput object...");
@@ -67,8 +64,6 @@ SdlInput::~SdlInput()
 
 bool SdlInput::Initialize() noexcept
 {
-	using namespace utix::literals;
-
 	if (m_initialized)
 		this->Dispose();
 
@@ -239,17 +234,20 @@ void SdlInput::SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback)
 
 
 
-
 #ifndef __ANDROID__
+extern "C" {
 
-extern "C" XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
+
+
+
+XCHIP_EXPORT iPlugin* XCHIP_LoadPlugin()
 {
 	return new(std::nothrow) SdlInput();
 }
 
 
 
-extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
+XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 {
 	const auto* sdlinput = dynamic_cast<const SdlInput*>( plugin );
 	if(! sdlinput )
@@ -261,15 +259,15 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 	delete sdlinput;
 }
 
-#endif
 
 
 
 
 
 
+}
 
-
+#endif // __ANDROID__
 
 
 
