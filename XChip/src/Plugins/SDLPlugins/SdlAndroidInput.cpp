@@ -20,7 +20,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 #include <cstdlib>
 #include <SDL2/SDL_events.h>
-
 #include <Utix/Log.h>
 #include <Utix/ScopeExit.h>
 #include <Utix/Assert.h>
@@ -100,6 +99,8 @@ PluginDeleter SdlAndroidInput::GetPluginDeleter() const noexcept
 }
 
 
+
+
 bool SdlAndroidInput::IsKeyPressed(const Key key) const noexcept
 {
 	_SDLANDROIDINPUT_INITIALIZED_ASSERT_();
@@ -112,17 +113,18 @@ bool SdlAndroidInput::UpdateKeys() noexcept
 {
 	_SDLANDROIDINPUT_INITIALIZED_ASSERT_();
 	
-	constexpr const auto finger_event = SDL_MOUSEBUTTONDOWN | SDL_MOUSEBUTTONUP;
-		
-	while(SDL_PollEvent(&m_sdlevent)) 
-	{
-		if((m_sdlevent.type & finger_event) != 0)
-			m_direction = m_sdlevent.button.x > m_middleScreen ? RIGHT : LEFT;
-		else if( m_sdlevent.type == SDL_MOUSEMOTION)
-			m_direction = m_sdlevent.motion.x > m_middleScreen ? RIGHT : LEFT;
+	// This is treating mouse input as touch
+	// which behaves the same unless SplitMouseTouch is 
+	// set for SDL.
+	// Ask if touch is pressed.
+	int x;
+	if(SDL_GetMouseState(&x, nullptr) & SDL_BUTTON(1)) {
+		m_direction = x > m_middleScreen ? RIGHT : LEFT;
+		return true;
 	}
-
-	return true;
+	
+	m_direction = 0;
+	return false;
 }
 
 

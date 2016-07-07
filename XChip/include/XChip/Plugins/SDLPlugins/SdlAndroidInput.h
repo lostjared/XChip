@@ -22,14 +22,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #define XCHIP_PLUGINS_SDLANDROIDINPUT_H_
 
 
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_scancode.h>
 #include <XChip/Plugins/iInput.h>
 
  
 
 namespace xchip {
-
 	
 class SdlAndroidInput final : public iInput
 {
@@ -57,7 +54,6 @@ public:
 
 private:
 	enum { LEFT = 1, RIGHT };
-	SDL_Event m_sdlevent;
 	uint8_t m_direction = 0;
 	int m_middleScreen = 32;
 	WaitKeyCallback m_waitClbk = nullptr;

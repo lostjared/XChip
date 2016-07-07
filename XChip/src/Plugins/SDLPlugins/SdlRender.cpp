@@ -23,7 +23,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 #include <Utix/Log.h>
 #include <Utix/ScopeExit.h>
 #include <Utix/Assert.h>
-
 #include <XChip/Plugins/SDLPlugins/SdlRender.h>
 
 
@@ -230,28 +229,25 @@ bool SdlRender::UpdateEvents() noexcept
 	_SDLRENDER_INITIALIZED_ASSERT_();
 
 
-	bool hasEvent = false;
-	while (SDL_PollEvent(&m_sdlevent) != 0)
+	while (SDL_PollEvent(&m_sdlevent))
 	{
 		switch (m_sdlevent.type)
 		{
-			case SDL_WINDOWEVENT_RESIZED: /* fall */
+			case SDL_WINDOWEVENT_RESIZED: // fall
 			case SDL_WINDOWEVENT_RESTORED: 
 				if (m_resizeClbk) 
 					m_resizeClbk(m_resizeClbkArg);
-				hasEvent = true;
-				break;
+				return true;
 
-			case SDL_QUIT: /* fall */
+			case SDL_QUIT: // fall
 			case SDL_WINDOWEVENT_CLOSE: 
 				if (m_closeClbk) 
 					m_closeClbk(m_closeClbkArg);
-				hasEvent = true;
-				break;
+				return true;
 		}
 	}
 
-	return hasEvent;
+	return false;
 }
 
 
