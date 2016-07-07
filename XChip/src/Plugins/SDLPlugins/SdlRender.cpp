@@ -233,26 +233,22 @@ bool SdlRender::UpdateEvents() noexcept
 	bool hasEvent = false;
 	while (SDL_PollEvent(&m_sdlevent) != 0)
 	{
-		if (m_sdlevent.type == SDL_WINDOWEVENT)
+		switch (m_sdlevent.type)
 		{
-			switch (m_sdlevent.window.event)
-			{
-				case SDL_WINDOWEVENT_RESIZED: /* fall */
-				case SDL_WINDOWEVENT_RESTORED: 
-					if (m_resizeClbk) 
-						m_resizeClbk(m_resizeClbkArg);  
-					break;
-			
-				case SDL_WINDOWEVENT_CLOSE: 
-					if (m_closeClbk) 
-						m_closeClbk(m_closeClbkArg); 
-				
-					break;
-			}
+			case SDL_WINDOWEVENT_RESIZED: /* fall */
+			case SDL_WINDOWEVENT_RESTORED: 
+				if (m_resizeClbk) 
+					m_resizeClbk(m_resizeClbkArg);
+				hasEvent = true;
+				break;
 
-			hasEvent = true;		
+			case SDL_QUIT: /* fall */
+			case SDL_WINDOWEVENT_CLOSE: 
+				if (m_closeClbk) 
+					m_closeClbk(m_closeClbkArg);
+				hasEvent = true;
+				break;
 		}
-
 	}
 
 	return hasEvent;
