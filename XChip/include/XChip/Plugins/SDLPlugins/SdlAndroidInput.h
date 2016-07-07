@@ -50,6 +50,7 @@ public:
 	bool UpdateKeys() noexcept override;
 	Key WaitKeyPress() noexcept override;
 
+	void SetMiddleScreen(const int middleScreen) noexcept { m_middleScreen = middleScreen; }
 	void SetWaitKeyCallback(const void* arg, WaitKeyCallback callback) noexcept override;
 	void SetResetKeyCallback(const void* arg, ResetKeyCallback callback) noexcept override;
 	void SetEscapeKeyCallback(const void* arg, EscapeKeyCallback callback) noexcept override;
@@ -57,8 +58,8 @@ public:
 private:
 	enum { LEFT = 1, RIGHT };
 	SDL_Event m_sdlevent;
-	int m_lastX;
 	uint8_t m_direction = 0;
+	int m_middleScreen = 32;
 	WaitKeyCallback m_waitClbk = nullptr;
 	ResetKeyCallback m_resetClbk = nullptr;
 	EscapeKeyCallback m_escapeClbk = nullptr;

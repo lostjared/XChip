@@ -52,23 +52,27 @@ int main(int, char**)
 		delete emulator;
 	});
 
-	UniqueRender render;
-	UniqueInput input;
-	UniqueSound sound;
-	render.Load(new(std::nothrow) xchip::SdlRender());
-	input.Load(new(std::nothrow) xchip::SdlAndroidInput());
-	sound.Load(new(std::nothrow) xchip::SdlSound());
+	{
+		UniqueRender render;
+		UniqueInput input;
+		UniqueSound sound;
+		render.Load(new(std::nothrow) xchip::SdlRender());
+		input.Load(new(std::nothrow) xchip::SdlAndroidInput());
+		sound.Load(new(std::nothrow) xchip::SdlSound());
 
-	if ( ! emulator->Initialize(move(render), move(input), move(sound)) ) {
-		return EXIT_FAILURE;
-	}
 
-	else if( ! emulator->LoadRom("/data/local/tmp/Game.ch8") ) {
-		return EXIT_FAILURE;
+		if ( ! emulator->Initialize(move(render), move(input), move(sound)) ) {
+			return EXIT_FAILURE;
+		}
+
+		else if( ! emulator->LoadRom("/data/local/tmp/Game.ch8") ) {
+			return EXIT_FAILURE;
+		}
+		
 	}
 
 	emulator->GetRender()->SetFullScreen(true);
-
+	static_cast<xchip::SdlAndroidInput*>(emulator->GetInput())->SetMiddleScreen(emulator->GetRender()->GetWindowSize().x/2);
 	while(emulator->GetExitFlag() == false) 
 	{
 		emulator->UpdateSystems();

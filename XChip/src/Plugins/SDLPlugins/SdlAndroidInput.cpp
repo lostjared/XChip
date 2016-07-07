@@ -103,12 +103,7 @@ PluginDeleter SdlAndroidInput::GetPluginDeleter() const noexcept
 bool SdlAndroidInput::IsKeyPressed(const Key key) const noexcept
 {
 	_SDLANDROIDINPUT_INITIALIZED_ASSERT_();
-	if(key == Key::KEY_6)
-		return m_direction == RIGHT;
-	else if(key == Key::KEY_4)
-		return m_direction == LEFT;
-
-	return false;
+	return (key == Key::KEY_6 && m_direction == RIGHT) || (key == Key::KEY_4 && m_direction == LEFT);
 }
 
 
@@ -117,14 +112,15 @@ bool SdlAndroidInput::UpdateKeys() noexcept
 {
 	_SDLANDROIDINPUT_INITIALIZED_ASSERT_();
 	
-	constexpr const auto finger_event = SDL_FINGERDOWN | SDL_FINGERUP | SDL_FINGERMOTION;
-	
-	while(SDL_PollEvent(&m_sdlevent)) {
-		Log("FINGER X: %i\n", m_sdlevent.tfinger.x);
-		Log("FINGER Y: %i\n", m_sdlevent.tfinger.y);
+	constexpr const auto finger_event = SDL_MOUSEBUTTONDOWN | SDL_MOUSEBUTTONUP;
+		
+	while(SDL_PollEvent(&m_sdlevent)) 
+	{
+		if((m_sdlevent.type & finger_event) != 0)
+			m_direction = m_sdlevent.button.x > m_middleScreen ? RIGHT : LEFT;
+		else if( m_sdlevent.type == SDL_MOUSEMOTION)
+			m_direction = m_sdlevent.motion.x > m_middleScreen ? RIGHT : LEFT;
 	}
-
-
 
 	return true;
 }

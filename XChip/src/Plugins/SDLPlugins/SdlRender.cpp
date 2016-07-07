@@ -85,7 +85,8 @@ bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 	m_pitch = res.x * sizeof(uint32_t);
 
 	m_window = SDL_CreateWindow("Chip8 - SdlRender", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-                                    winSize.x, winSize.y, SDL_WINDOW_RESIZABLE);
+                                 winSize.x, winSize.y, 
+                                 SDL_WINDOW_RESIZABLE | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS);
 
 	if (!m_window) 
 		return false;
