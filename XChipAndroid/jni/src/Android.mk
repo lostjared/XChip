@@ -21,7 +21,7 @@ LOCAL_C_INCLUDES += ${LOCAL_PATH}/../../../XChip/dependencies/Utix/Utix/include/
 LOCAL_CPPFLAGS += -std=c++11 -O3 -Wall -Wextra -fPIC
 # Add your application source files here...
 LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
-	main.cpp
+                   main.cpp
 
 LOCAL_SHARED_LIBRARIES := SDL2
 LOCAL_STATIC_LIBRARIES += Utix XChip
