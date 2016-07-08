@@ -63,8 +63,7 @@ bool Emulator::Initialize() noexcept
 	if (m_initialized) 
 		this->Dispose();
 
-	const auto scope = MakeScopeExit([this]() noexcept 
-	{
+	const auto cleanup = MakeScopeExit([this]() noexcept {
 		if (!this->m_initialized)
 			this->Dispose();
 	});
@@ -91,8 +90,7 @@ bool Emulator::Initialize(UniqueRender&& render, UniqueInput&& input, UniqueSoun
 	if (m_initialized) 
 		this->Dispose();
 
-	const auto scope = MakeScopeExit([this]() noexcept 
-	{
+	const auto cleanup = MakeScopeExit([this]() noexcept {
 		if (!this->m_initialized)
 			this->Dispose();
 	});
@@ -302,8 +300,7 @@ UniqueSound Emulator::SwapSound(UniqueSound sound)
 bool Emulator::InitRender()
 {
 	iRender* const rend = m_renderPlugin.get();
-	const auto end_scope = MakeScopeExit([this]()noexcept 
-	{ 
+	const auto set_render = MakeScopeExit([this]() noexcept { 
 		m_manager.SetRender(m_renderPlugin.get());
 	});
 
@@ -330,8 +327,7 @@ bool Emulator::InitRender()
 bool Emulator::InitInput()
 {
 	iInput* const input = m_inputPlugin.get();
-	const auto end_scope = MakeScopeExit([this]()noexcept
-	{
+	const auto set_input = MakeScopeExit([this]() noexcept {
 		m_manager.SetInput(m_inputPlugin.get());
 	});
 
@@ -384,8 +380,7 @@ bool Emulator::InitInput()
 bool Emulator::InitSound()
 {
 	iSound* const sound = m_soundPlugin.get();
-	const auto end_scope = MakeScopeExit([this]()noexcept
-	{
+	const auto set_sound = MakeScopeExit([this]() noexcept {
 		m_manager.SetSound(m_soundPlugin.get());
 	});
 

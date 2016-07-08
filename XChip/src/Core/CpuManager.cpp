@@ -216,8 +216,7 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 
 	auto *const file = fopen(fileName, "rb");
 
-	if (!file)
-	{
+	if (!file) {
 		LogError("Error opening ROM file \'%s\'", fileName);
 		return false;
 	}
@@ -238,7 +237,7 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 	if ( (arr_size(m_cpu.memory) - at) <= fileSize)
 	{
 		LogError("Error, size of \'%s\' does not fit in memory at %zu! memory size: %zu, file size: %zu", 
-                           fileName, at, arr_size(m_cpu.memory), fileSize);
+                   fileName, at, arr_size(m_cpu.memory), fileSize);
 
 		return false;
 	}
@@ -248,7 +247,7 @@ bool CpuManager::LoadRom(const char* fileName, const size_t at)
 	if( readSize != fileSize ) 
 	{
 		LogError("Could not read the file \'%s\' properly. bytes asked %zu , bytes read %zu", 
-                          fileName, fileSize, readSize);
+                   fileName, fileSize, readSize);
 		return false;
 	}
 
