@@ -151,7 +151,7 @@ bool SdlInput::UpdateKeys() noexcept
 		if (m_resetClbk) 
 			m_resetClbk(m_resetClbkArg);
 
-		return false;
+		return true;
 	}
 
 
@@ -160,10 +160,10 @@ bool SdlInput::UpdateKeys() noexcept
 		if (m_escapeClbk) 
 			m_escapeClbk(m_escapeClbkArg);
 
-		return false;
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 
@@ -183,7 +183,7 @@ Key SdlInput::WaitKeyPress() noexcept
 		
 		while (m_waitClbk(m_waitClbkArg))
 		{
-			if (this->UpdateKeys())
+			if (!this->UpdateKeys())
 			{
 				for (auto itr = begin; itr != end; ++itr)
 				{

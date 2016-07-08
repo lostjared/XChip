@@ -17,9 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
-
-
-
 #include "SDL_main.h"
 #include <Utix/Log.h>
 #include <Utix/ScopeExit.h>
@@ -32,47 +29,29 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 
 
+
+static bool InitializeEmulator(xchip::Emulator* const emulator);
+
+
 int main(int, char**)
 {
-
-	utix::Log("Testing Utix Log");
-	using utix::move;
-	using utix::MakeScopeExit;
-	using xchip::Emulator;
-	using xchip::UniqueRender;
-	using xchip::UniqueInput;
-	using xchip::UniqueSound;
-
-
-	Emulator* emulator = new(std::nothrow) Emulator();
+	xchip::Emulator* const emulator = new(std::nothrow) xchip::Emulator();
+	
 	if(emulator == nullptr)
 		return EXIT_FAILURE;
 
-	const auto emulator_cleanup = MakeScopeExit([emulator]()noexcept{
+	const auto emulator_cleanup = utix::MakeScopeExit([emulator]() noexcept {
 		delete emulator;
 	});
 
-	{
-		UniqueRender render;
-		UniqueInput input;
-		UniqueSound sound;
-		render.Load(new(std::nothrow) xchip::SdlRender());
-		input.Load(new(std::nothrow) xchip::SdlAndroidInput());
-		sound.Load(new(std::nothrow) xchip::SdlSound());
 
+	if(!InitializeEmulator(emulator))
+		return EXIT_FAILURE;
 
-		if ( ! emulator->Initialize(move(render), move(input), move(sound)) ) {
-			return EXIT_FAILURE;
-		}
+	else if(!emulator->LoadRom("/data/local/tmp/Game.ch8"))
+		return EXIT_FAILURE;
 
-		else if( ! emulator->LoadRom("/data/local/tmp/Game.ch8") ) {
-			return EXIT_FAILURE;
-		}
-		
-	}
-
-	emulator->GetRender()->SetFullScreen(true);
-	static_cast<xchip::SdlAndroidInput*>(emulator->GetInput())->SetMiddleScreen(emulator->GetRender()->GetWindowSize().x/2);
+	
 	while(emulator->GetExitFlag() == false) 
 	{
 		emulator->UpdateSystems();
@@ -85,4 +64,36 @@ int main(int, char**)
 
 	return EXIT_SUCCESS;
 }
+
+
+
+static bool InitializeEmulator(xchip::Emulator* const emulator)
+{
+	using utix::move;
+
+	xchip::UniqueRender render;
+	xchip::UniqueInput input;
+	xchip::UniqueSound sound;
+
+	render.Load(new(std::nothrow) xchip::SdlRender());
+	input.Load(new(std::nothrow) xchip::SdlAndroidInput());
+	sound.Load(new(std::nothrow) xchip::SdlSound());
+
+	if ( emulator->Initialize(move(render), move(input), move(sound)) ) 
+	{
+		auto android_input = static_cast<xchip::SdlAndroidInput*>(emulator->GetInput());
+		auto render = static_cast<xchip::SdlRender*>(emulator->GetRender());
+		render->SetFullScreen(true);
+		android_input->SetMiddleScreen(render->GetWindowSize().x / 2);
+		return true;
+	}
+
+	return false;
+}
+
+
+
+
+
+
 

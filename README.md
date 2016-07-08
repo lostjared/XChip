@@ -39,5 +39,5 @@ An Android version is also being developed.
 
 
 
-If you would like to contribute, please follow 
-[Dolphin guideline] (https://github.com/dolphin-emu/dolphin/blob/master/Contributing.md)
+If you'd like to contribute to this project, please read 
+[Dolphin Contributing] (https://github.com/dolphin-emu/dolphin/blob/master/Contributing.md)

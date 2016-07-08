@@ -120,6 +120,8 @@ public class SDLActivity extends Activity {
         Log.v(TAG, "Model: " + android.os.Build.MODEL);
         Log.v(TAG, "onCreate(): " + mSingleton);
         super.onCreate(savedInstanceState);
+        // set orientation to landscape only
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         SDLActivity.initialize();
         // So we can call stuff from static callbacks
