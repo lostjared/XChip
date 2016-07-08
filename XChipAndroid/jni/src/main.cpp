@@ -19,6 +19,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 #include "SDL_main.h"
 #include <Utix/Log.h>
+#include <Utix/Assert.h>
 #include <Utix/ScopeExit.h>
 #include <XChip/Core/Emulator.h>
 #include <XChip/Core/Instructions.h>
@@ -35,6 +36,9 @@ static bool InitializeEmulator(xchip::Emulator* const emulator);
 
 int main(int, char**)
 {
+	ASSERT_MSG(false, "TESTING ASSERT MSG");
+
+
 	xchip::Emulator* const emulator = new(std::nothrow) xchip::Emulator();
 	
 	if(emulator == nullptr)
