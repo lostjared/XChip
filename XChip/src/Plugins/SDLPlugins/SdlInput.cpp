@@ -18,7 +18,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#include <cstdlib>
+#include <stdlib.h>
 #include <SDL2/SDL_events.h>
 #include <Utix/Log.h>
 #include <Utix/ScopeExit.h>
@@ -253,7 +253,7 @@ XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 	if(! sdlinput )
 	{
 		LogError("XCHIP_FreePlugin: dynamic_cast iPlugin to SdlInput failed!");
-		std::exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 	
 	delete sdlinput;

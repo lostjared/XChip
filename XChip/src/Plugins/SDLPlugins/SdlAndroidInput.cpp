@@ -18,7 +18,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 */
 
-#include <cstdlib>
+#include <stdlib.h>
 #include <SDL2/SDL_events.h>
 #include <Utix/Log.h>
 #include <Utix/ScopeExit.h>

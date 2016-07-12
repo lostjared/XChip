@@ -52,7 +52,7 @@ public:
 	virtual void SetWindowPosition(const utix::Vec2i& pos) noexcept = 0;
 	virtual bool SetDrawColor(const utix::Color& color) noexcept = 0;
 	virtual bool SetBackgroundColor(const utix::Color& color) noexcept = 0;
-	virtual bool SetFullScreen(const bool value) noexcept = 0;
+	virtual bool SetFullScreen(const bool option) noexcept = 0;
 	virtual void SetBuffer(const uint32_t* gfx) noexcept = 0;
 	virtual void DrawBuffer() noexcept = 0;
 	virtual void HideWindow() noexcept = 0;

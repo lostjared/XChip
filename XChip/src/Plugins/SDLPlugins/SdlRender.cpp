@@ -19,7 +19,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 */
 
 
-#include <cstdlib>
+#include <stdlib.h>
 #include <Utix/Log.h>
 #include <Utix/ScopeExit.h>
 #include <Utix/Assert.h>
@@ -65,17 +65,13 @@ bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 	if (m_initialized)
 		this->Dispose();
 
-
-	if( SDL_InitSubSystem( SDL_INIT_VIDEO ) )
-	{
+	if( SDL_InitSubSystem( SDL_INIT_VIDEO ) ) {
 		LogError("Could not initialize SDL2 Video: %s", SDL_GetError());
 		return false;
 	}
 	
-	const auto scope = MakeScopeExit([this]() noexcept 
-	{
-		if (!this->m_initialized) 
-		{
+	const auto scope = MakeScopeExit([this]() noexcept {
+		if (!this->m_initialized) {
 			LogError("Couldn't initialize SdlRender. SDL ERROR MSG: %s", SDL_GetError());
 			this->Dispose();
 		}
@@ -99,12 +95,10 @@ bool SdlRender::Initialize(const Vec2i& winSize, const Vec2i& res) noexcept
 	if(!CreateTexture(res.x, res.y))
 		return false;
 
-
 	SDL_SetRenderDrawColor(m_rend, 0, 0, 0, 0xff);
 	SDL_RenderClear(m_rend);
 	SDL_RenderPresent(m_rend);
 	m_initialized = true;
-
 	return true;
 }
 
@@ -357,66 +351,52 @@ bool SdlRender::SetBackgroundColor(const Color& color) noexcept
 
 
 
-bool SdlRender::SetFullScreen(const bool val) noexcept
+bool SdlRender::SetFullScreen(const bool option) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 
-	static Vec2i oldSize = { 0, 0 };
-	static Vec2i oldPos = { 0, 0 };
+	const auto IsFullScreen = [this] {
+		return ( SDL_GetWindowFlags(this->m_window) & SDL_WINDOW_FULLSCREEN	) != 0;
+	};
 
-	const auto IsFullScreen = [this]() { return (SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN) != 0; };
-
-	if(val)
+	if(option) 
 	{
 		if(IsFullScreen())
 			return true;
 
-		// get current size / pos before setting fullscreen
-		oldSize = this->GetWindowSize();
-		oldPos = this->GetWindowPosition();
+		const auto oldSize = this->GetWindowSize();
+		const auto oldPos = this->GetWindowPosition();
 
-		// set size to desktop's size, and pos 0, 0
-		// so the window fits the screen perfectly even without a proper Window Manager
+		// set window size to desktop's size, and position to 0, 0
+		// so the window fits the screen nice even without a proper Window Manager
 
-		SDL_DisplayMode dispMode;
+		SDL_DisplayMode display_mode;
 
-		if(SDL_GetCurrentDisplayMode(0, &dispMode))
-			LogError("Could not get display mode: %s", SDL_GetError());
+		if( SDL_GetCurrentDisplayMode(0, &display_mode) )
+			LogError("failed to get display mode: %s", SDL_GetError());
 		else
-			this->SetWindowSize({ dispMode.w, dispMode.h });
+			this->SetWindowSize({display_mode.w, display_mode.h});
+		
+		this->SetWindowPosition({0, 0});
 
-		this->SetWindowPosition({0,0});
-
-		if(SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN))
+		if( SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN) ) 
 		{
 			this->SetWindowSize(oldSize);
 			this->SetWindowPosition(oldPos);
-
-			LogError("Error while setting SdlRender Fullscreen: %s", SDL_GetError());
+			LogError("failed to set window fullscreen: %s", SDL_GetError());
 			return false;
 		}
-
-		else if(SDL_ShowCursor(0) < 0) 
-		{
-			LogError("Error while hiding cursor: %s", SDL_GetError());
-		}
 	}
-
-	else
+	else 
 	{
-		if( !IsFullScreen() )
+		if(!IsFullScreen())
 			return true;
 		
-		if(SDL_SetWindowFullscreen(m_window, 0))
-		{
-			LogError("Error while setting SdlRender Windowed: %s", SDL_GetError());
+		if( SDL_SetWindowFullscreen(m_window, 0) ) {
+			LogError("failed to set window windowed mode: %s", SDL_GetError());
 			return false;
 		}
-		
-		this->SetWindowSize(oldSize);
-		this->SetWindowPosition(oldPos);
 	}
-
 
 	return true;
 }
@@ -529,7 +509,7 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 	if(!sdlrend)
 	{
 		LogError("XCHIP_FreePlugin: dynamic_cast from iPlugin* to SdlRender* Failed");
-		std::exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	delete sdlrend;

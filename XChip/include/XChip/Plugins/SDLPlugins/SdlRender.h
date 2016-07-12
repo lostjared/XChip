@@ -61,7 +61,7 @@ public:
 	void SetWindowPosition(const utix::Vec2i& pos) noexcept override;
 	bool SetDrawColor(const utix::Color& color) noexcept override;
 	bool SetBackgroundColor(const utix::Color& color) noexcept override;
-	bool SetFullScreen(const bool val) noexcept override;
+	bool SetFullScreen(const bool option) noexcept override;
 	bool UpdateEvents() noexcept override;
 	void DrawBuffer() noexcept override;
 	void HideWindow() noexcept override;

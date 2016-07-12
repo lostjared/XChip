@@ -20,9 +20,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
 
 // needed for M_PI 
 #define _USE_MATH_DEFINES 
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <Utix/Log.h>
 #include <Utix/Timer.h>
@@ -239,7 +239,7 @@ void SdlSound::Stop() noexcept
 bool SdlSound::OpenAudioDevice()
 {
 
-	m_specs = (SDL_AudioSpec*) std::malloc( sizeof(SDL_AudioSpec) * 2 );
+	m_specs = static_cast<SDL_AudioSpec*>( malloc( sizeof(SDL_AudioSpec) * 2 ) );
 
 	if (!m_specs) {
 		LogError("Could not allocate memory for SDL_AudioSpecs");
@@ -261,7 +261,7 @@ bool SdlSound::OpenAudioDevice()
 
 	if ( m_dev < 2 ) 
 	{
-		std::free(m_specs);
+		free(m_specs);
 		m_specs = nullptr;
 		m_dev = 0;
 		LogError("SdlSound: Failed to open audio device: %s", SDL_GetError());
@@ -275,7 +275,7 @@ bool SdlSound::OpenAudioDevice()
 void SdlSound::CloseAudioDevice() 
 {
 	if(m_specs) {
-		std::free(m_specs);
+		free(m_specs);
 		m_specs = nullptr;
 	}
 
@@ -316,7 +316,7 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 	if (_this->m_len > 0)
 	{
 		for (size_t i = 0; i < bufflen; ++i, ++pos)
-			buff[i] = static_cast<T>(ampl * std::sin(_2pi * freq * pos));
+			buff[i] = static_cast<T>(ampl * sin(_2pi * freq * pos));
 
 		_this->m_pos = pos;
 		_this->m_len -= bufflen;
@@ -327,7 +327,7 @@ void SdlSound::audio_callback(void* userdata, uint8_t* const stream, const int l
 		auto downAmpl = ampl;
 		for (size_t i = 0; i < bufflen; ++i, ++pos)
 		{
-			buff[i] = static_cast<T>(downAmpl * std::sin(_2pi * freq * pos));
+			buff[i] = static_cast<T>(downAmpl * sin(_2pi * freq * pos));
 			if (downAmpl > 100)
 				downAmpl -= 60;
 		}
@@ -374,7 +374,7 @@ extern "C" XCHIP_EXPORT void XCHIP_FreePlugin(const iPlugin* plugin)
 	if(!sdlsound)
 	{
 		LogError("XCHIP_FreePlugin: dynamic_cast from iPlugin* to SdlSound* Failed");
-		std::exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	delete sdlsound;
