@@ -271,7 +271,7 @@ inline void CpuManager::FetchOpcode()
 
 
 inline void CpuManager::SetFlags(const uint32_t flags) { m_cpu.flags |= flags; }
-inline void CpuManager::UnsetFlags(const uint32_t flags) { m_cpu.flags ^= flags; }
+inline void CpuManager::UnsetFlags(const uint32_t flags) { m_cpu.flags &= ~flags; }
 inline void CpuManager::CleanFlags() { m_cpu.flags = 0; }
 inline void CpuManager::SetDelayTimer(const uint8_t val) { m_cpu.delayTimer = val; }
 inline void CpuManager::SetSoundTimer(const uint8_t val) { m_cpu.soundTimer = val; }
