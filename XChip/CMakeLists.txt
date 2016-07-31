@@ -11,17 +11,17 @@ option(UNDEFINED_SANITIZER OFF)
 option(ENABLE_LTO OFF)
 
 #set on plugins libraries to build
-option(BUILD_SDL_PLUGINS OFF)
+option(BUILD_SDL_PLUGINS ON)
 option(BUILD_SFML_PLUGINS OFF)
 
-
+set(BUILD_SDL_PLUGINS ON)
 #build Test ?
 option(BUILD_TEST OFF)
 
          
 #build EmuApp ?
-option(BUILD_EMUAPP OFF)
-
+option(BUILD_EMUAPP ON)
+set(BUILD_EMUAPP ON)
 
 # build WXChip ?
 option(BUILD_WXCHIP OFF)
