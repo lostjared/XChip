@@ -1,5 +1,4 @@
 /*
-
 XChip - A chip8 lib and emulator.
 Copyright (C) 2016  Rafael Moura
 
@@ -15,10 +14,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
-
 */
 
-#include <string.h>
+
 #include <algorithm>
 #include <XChip/Plugins.h>
 #include <XChip/Core.h>
@@ -84,22 +82,19 @@ void op_0xxx(CpuManager& cpuMan)
 			break;
 
 		case 0x00EE: // return from a subroutine ( unwind stack )
-			cpuMan.SetSP( cpuMan.GetSP() - 1 );
-			cpuMan.SetPC( cpuMan.GetStack( cpuMan.GetSP() ) );
+			cpuMan.SetSP(cpuMan.GetSP() - 1);
+			cpuMan.SetPC(cpuMan.GetStack(cpuMan.GetSP()));
 			break;
 
 		case 0x00FB: // 0x00FB* SuperChip: scrolls display 4 pixels right:
 		{
 			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
-			const auto& res = cpuMan.GetGfxRes();
-			
-			for( int y = 0; y < res.y; ++y )
-			{
-				uint32_t* lineBeg = cpuMan.GetGfx() + res.x * y;
-				memmove(lineBeg+4, lineBeg, sizeof(uint32_t) * (res.x-4));
-				std::fill(lineBeg, lineBeg+4, 0);
+			const auto res = cpuMan.GetGfxRes();
+			for (int y = 0; y < res.y; ++y) {
+				uint32_t* const lineBeg = cpuMan.GetGfx() + res.x * y;
+				std::copy_n(lineBeg, res.x - 4, lineBeg+4);
+				std::fill_n(lineBeg, 4, 0);
 			}
-
 			break;
 		}
 
@@ -107,16 +102,12 @@ void op_0xxx(CpuManager& cpuMan)
 		case 0x00FC: // 0x00FC* SuperChip: scrolls display 4 pixels left:
 		{
 			ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
-			const auto& res = cpuMan.GetGfxRes();
-			
-			for( int y = 0; y < res.y; ++y )
-			{
-				uint32_t* lineBeg = cpuMan.GetGfx() + res.x * y;
-				uint32_t* lineEnd = lineBeg + res.x;
-				memmove(lineBeg, lineBeg+4, sizeof(uint32_t) * (res.x-4));
-				std::fill(lineEnd-4, lineEnd, 0); 
+			const auto res = cpuMan.GetGfxRes();
+			for (int y = 0; y < res.y; ++y) {
+				uint32_t* const lineBeg = cpuMan.GetGfx() + res.x * y;
+				std::copy_n(lineBeg+4, res.x-4, lineBeg);
+				std::fill_n(lineBeg + res.x-4, 4, 0); 
 			}
-			
 			break;
 		}
 
@@ -174,22 +165,16 @@ void op_0xxx(CpuManager& cpuMan)
 
 		default: // 0NNN or 00CN
 		{
-			if( (cpuMan.GetOpcode(0x00F0)) == 0x00C0 )
-			{
+			if( (cpuMan.GetOpcode(0x00F0)) == 0x00C0 ) {
 				ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
 				// 00CN* SuperChip: Scroll display N lines down:
-				const auto& res = cpuMan.GetGfxRes();
-				uint32_t* gfx = cpuMan.GetGfx();
-				const int lines = N;			
-			    for (int i = res.y - 1; i >= lines; --i)
-			        memcpy(&gfx[i * res.x], &gfx[(i - lines) * res.x], sizeof(uint32_t) * res.x);
+				const auto res = cpuMan.GetGfxRes();
+				uint32_t* const gfx = cpuMan.GetGfx();
+				const int lines = N;
+				std::copy_n(gfx, (res.y-lines) * res.x, gfx + (lines * res.x));
+				std::fill_n(gfx, lines * res.x, 0);
 
-			    memset(&gfx[0], 0, sizeof(uint32_t)*(lines * res.x));
-
-			}
-
-			else
-			{
+			} else {
 				UnknownOpcode(cpuMan);
 			}
 
@@ -307,12 +292,10 @@ void op_DXYN(CpuManager& cpuMan)
 	const int height = N;
 	const uint8_t* _8bitRow =  cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 
-	for (int i = 0; i < height; ++i, ++_8bitRow)
-	{
+	for (int i = 0; i < height; ++i, ++_8bitRow) {
 		const uint8_t byte = *_8bitRow;
-		for (int j = 0; j < 8; ++j)
-		{
-			const bool memoryBit = (byte & (1 << (7 - j))) != 0;
+		for (int j = 0; j < 8; ++j) {
+			const bool memoryBit = (byte & (0x80 >> j)) != 0;
 			auto& gfxPixel = cpuMan.GetGfx((vx + j) & res.x,  (vy + i) & res.y);
 			VF |= ((gfxPixel != 0) && memoryBit);
 			gfxPixel ^= (memoryBit) ? 0xFFFFFFFF : 0;
@@ -326,38 +309,18 @@ void op_DXYN(CpuManager& cpuMan)
 void op_DXYN_ex(CpuManager& cpuMan)
 {
 	ASSERT_MSG(!cpuMan.GetFlags(Cpu::BAD_RENDER), "BAD RENDER");
-	if(N)
-	{
+
+	if (N) {
 		op_DXYN(cpuMan);
 		return; 
 	}
-
 
 	VF = 0;
 	const auto vx = VX;
 	const auto vy = VY;
 	const auto res = cpuMan.GetGfxRes() - 1;
-	const uint8_t* _8bitRow = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
-
-	for(int i = 0; i < 16; ++i, ++_8bitRow)
-	{
-		uint8_t byte = *_8bitRow;
-		for(int j = 0, bitmask = 0; j < 16; ++j, ++bitmask) 
-		{
-			if( bitmask == 8 ) 
-			{
-				bitmask = 0;
-				byte = *(++_8bitRow);
-			}
-
-			const bool memoryBit = (byte & (1 << (7 - bitmask))) != 0;
-			auto& gfxPixel = cpuMan.GetGfx((vx + j) & res.x,  (vy + i) & res.y);
-			VF |= ((gfxPixel > 0) & memoryBit);
-			gfxPixel ^= (memoryBit) ? 0xFFFFFFFF : 0;
-		}
-	}
+	const uint8_t* data = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 }
-
 
 
 

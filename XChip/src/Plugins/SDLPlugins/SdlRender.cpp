@@ -309,7 +309,7 @@ bool SdlRender::SetDrawColor(const Color& color) noexcept
 {
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	
-	if(SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b))
+	if(SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b) != 0)
 	{
 		LogError("Failed to set texture draw color: %s", + SDL_GetError());
 		return false;
@@ -414,12 +414,22 @@ void SdlRender::DrawBuffer() noexcept
 	_SDLRENDER_INITIALIZED_ASSERT_();
 	ASSERT_MSG(m_buffer != nullptr, "attempt to draw null buffer");
 	
-
 	SDL_RenderClear(m_rend);
-	SDL_UpdateTexture(m_texture, nullptr, m_buffer, m_pitch);
+	Uint8* pixels;
+
+	if(SDL_LockTexture(m_texture, nullptr, (void**)&pixels, &m_pitch)!=0) {
+		fprintf(stderr, "failed: %s\n", SDL_GetError());
+		return;
+	}
+
+	const auto res = GetResolution();
+
+	memcpy(pixels, m_buffer, res.y * res.x * sizeof(uint32_t));
+
+	SDL_UnlockTexture(m_texture);
+	
 	SDL_RenderCopy(m_rend, m_texture, nullptr, nullptr);
 	SDL_RenderPresent(m_rend);
-
 }
 
 
@@ -463,20 +473,19 @@ void SdlRender::SetWinResizeCallback(const void* arg, WinResizeCallback callback
 
 bool SdlRender::CreateTexture(const int w, const int h)
 {
-	auto* const surface = SDL_CreateRGBSurface(0, w, h, 32, 0,0,0,0);
+	SDL_Texture* newTexture = SDL_CreateTexture(m_rend,
+		SDL_PIXELFORMAT_RGBA8888,
+		SDL_TEXTUREACCESS_STREAMING,
+		w, h);
 
-	if(!surface) {
-		LogError("Could not create surface: %s", SDL_GetError());
+	if (!newTexture) {
+		fprintf(stderr, "failed to create texture: %s\n", SDL_GetError());
 		return false;
 	}
 
-	const auto surface_cleanup = MakeScopeExit([surface]()noexcept { SDL_FreeSurface(surface); });
-	
-	SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0, 0));
-	auto* const newTexture = SDL_CreateTextureFromSurface(m_rend, surface);
-
-	if(!newTexture) {
-		LogError("Could not create texture: %s", SDL_GetError());
+	if (SDL_SetTextureBlendMode(newTexture, SDL_BLENDMODE_BLEND) != 0) {
+		fprintf(stderr, "failed to set blend mode: %s\n", SDL_GetError());
+		SDL_DestroyTexture(newTexture);
 		return false;
 	}
 
