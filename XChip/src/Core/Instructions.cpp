@@ -290,15 +290,15 @@ void op_DXYN(CpuManager& cpuMan)
 	const auto vx = VX;
 	const auto vy = VY;
 	const int height = N;
-	const uint8_t* _8bitRow =  cpuMan.GetMemory() + cpuMan.GetIndexRegister();
+	const uint8_t* data =  cpuMan.GetMemory() + cpuMan.GetIndexRegister();
 
-	for (int i = 0; i < height; ++i, ++_8bitRow) {
-		const uint8_t byte = *_8bitRow;
-		for (int j = 0; j < 8; ++j) {
-			const bool memoryBit = (byte & (0x80 >> j)) != 0;
-			auto& gfxPixel = cpuMan.GetGfx((vx + j) & res.x,  (vy + i) & res.y);
-			VF |= ((gfxPixel != 0) && memoryBit);
-			gfxPixel ^= (memoryBit) ? 0xFFFFFFFF : 0;
+	for (int y = 0; y < height; ++y) {
+		const uint8_t byte = *data++;
+		for (int pix = 0; pix < 8; ++pix) {
+			const bool bit = (byte & (0x80 >> pix)) != 0;
+			auto& gfxPixel = cpuMan.GetGfx((vx + pix) & res.x, (vy + y) & res.y);
+			VF |= ((gfxPixel != 0) && bit);
+			gfxPixel ^= bit ? ~0 : 0;
 		}
 	}
 }
@@ -320,6 +320,17 @@ void op_DXYN_ex(CpuManager& cpuMan)
 	const auto vy = VY;
 	const auto res = cpuMan.GetGfxRes() - 1;
 	const uint8_t* data = cpuMan.GetMemory() + cpuMan.GetIndexRegister();
+	for (int y = 0; y < 16; ++y) {
+		for (int x = 0; x < 2; ++x) {
+			const uint8_t byte = *data++;
+			for (int pix = 0; pix < 8; ++pix) {
+				const bool bit = byte & (0x80 >> pix);
+				auto& gfxPix = cpuMan.GetGfx(((vx + x * 8) + pix) & res.x, (vy + y) & res.y);
+				VF |= ((gfxPix!=0) && bit);
+				gfxPix ^= bit ? ~0 : 0;
+			}
+		}
+	}
 }
 
 
