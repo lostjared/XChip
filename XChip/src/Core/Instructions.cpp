@@ -296,7 +296,9 @@ void op_DXYN(CpuManager& cpuMan)
 		const uint8_t byte = *data++;
 		for (int pix = 0; pix < 8; ++pix) {
 			const bool bit = (byte & (0x80 >> pix)) != 0;
-			auto& gfxPixel = cpuMan.GetGfx((vx + pix) & res.x, (vy + y) & res.y);
+			const auto xpos = (vx + pix) & res.x;
+			const auto ypos = (vy + y) & res.y;
+			auto& gfxPixel = cpuMan.GetGfx(xpos, ypos);
 			VF |= ((gfxPixel != 0) && bit);
 			gfxPixel ^= bit ? ~0 : 0;
 		}
@@ -325,7 +327,9 @@ void op_DXYN_ex(CpuManager& cpuMan)
 			const uint8_t byte = *data++;
 			for (int pix = 0; pix < 8; ++pix) {
 				const bool bit = byte & (0x80 >> pix);
-				auto& gfxPix = cpuMan.GetGfx(((vx + x * 8) + pix) & res.x, (vy + y) & res.y);
+				const auto xpos = (vx + (x * 8) + pix) & res.x;
+				const auto ypos = (vy + y) & res.y;
+				auto& gfxPix = cpuMan.GetGfx(xpos, ypos);
 				VF |= ((gfxPix!=0) && bit);
 				gfxPix ^= bit ? ~0 : 0;
 			}
